@@ -1,0 +1,15 @@
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.deps.json
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.runtimeconfig.json
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.dll
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.pdb
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.csproj.AssemblyReference.cache
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.GeneratedMSBuildEditorConfig.editorconfig
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.AssemblyInfoInputs.cache
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.AssemblyInfo.cs
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.csproj.CoreCompileInputs.cache
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\EFCoreSqlServerNetTopologySuite.cs
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.dll
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\refint\SupFAmof.Data.dll
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.pdb
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.genruntimeconfig.cache
+F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\ref\SupFAmof.Data.dll

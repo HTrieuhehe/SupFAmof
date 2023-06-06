@@ -38,14 +38,15 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Create                        
+        /// Get Role By Id                        
         /// </summary>
-        [HttpPost]
-        public async Task<ActionResult<BaseResponseViewModel<RoleResponse>>> CreateRole([FromBody] CreateRoleRequest request)
+        [HttpGet("{roleId}")]
+        public async Task<ActionResult<BaseResponseViewModel<RoleResponse>>> GetRoleById
+            ([FromRoute] int roleId)
         {
             try
             {
-                return await _roleService.CreateRole(request);
+                return await _roleService.GetRoleById(roleId);
             }
             catch (Exception ex)
             {

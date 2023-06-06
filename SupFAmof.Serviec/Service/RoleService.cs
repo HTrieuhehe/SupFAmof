@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Algorithm;
 using NTQ.Sdk.Core.Filters;
 using NTQ.Sdk.Core.Utilities;
@@ -24,7 +25,7 @@ namespace SupFAmof.Service.Service
         Task<BaseResponsePagingViewModel<RoleResponse>> GetRoles(RoleResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<RoleResponse>> GetRoleById(int roleId);
         Task<BaseResponseViewModel<RoleResponse>> CreateRole(CreateRoleRequest request);
-        Task<BaseResponseViewModel<RoleResponse>> UpdateRole(int role, UpdateRoleRequest request);
+        Task<BaseResponseViewModel<RoleResponse>> UpdateRole(int roleId, UpdateRoleRequest request);
     }
 
     public class RoleService : IRoleService
@@ -74,9 +75,34 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<RoleResponse>> GetRoleById(int roleId)
+        public async Task<BaseResponseViewModel<RoleResponse>> GetRoleById(int roleId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var role = _unitOfWork.Repository<Role>().GetAll()
+                                      .FirstOrDefault(x => x.Id == roleId);
+
+                if (role == null)
+                {
+                    throw new ErrorResponse(404, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                         RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                return new BaseResponseViewModel<RoleResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<RoleResponse>(role)
+                };
+            }
+            catch (ErrorResponse ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<BaseResponsePagingViewModel<RoleResponse>> GetRoles(RoleResponse filter, PagingRequest paging)
@@ -107,9 +133,41 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<RoleResponse>> UpdateRole(int role, UpdateRoleRequest request)
+        public async Task<BaseResponseViewModel<RoleResponse>> UpdateRole(int roleId, UpdateRoleRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Role role = _unitOfWork.Repository<Role>().Find(x => x.Id == roleId);
+
+                if (role == null)
+                {
+                    throw new ErrorResponse(404, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                             RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                var updateRole = _mapper.Map<UpdateRoleRequest, Role>(request, role);
+
+                updateRole.UpdateAt = DateTime.Now;
+
+                await _unitOfWork.Repository<Role>().UpdateDetached(updateRole);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<RoleResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<RoleResponse>(role)
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }

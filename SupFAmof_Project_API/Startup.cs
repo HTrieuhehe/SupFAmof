@@ -1,7 +1,10 @@
 ﻿using Autofac;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.OpenApi.Models;
+using SupFAmof.API.AppStart;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.Mapper;
 using SupFAmof.Data.MakeConnection;
@@ -52,7 +55,7 @@ namespace SupFAmof.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Capstone Project API",
+                    Title = "SupFAmof API",
                     Version = "v1"
                 });
 
@@ -81,15 +84,15 @@ namespace SupFAmof.API
                     }
                 });
             });
-            //services.ConfigureAuthServices(Configuration);
+            services.ConfigureAuthServices(Configuration);
             services.ConnectToConnectionString(Configuration);
 
             #region Firebase
-            //var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "Keys", "firebase.json");
-            //FirebaseApp.Create(new AppOptions
-            //{
-            //    Credential = GoogleCredential.FromFile(pathToKey)
-            //});
+            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "Keys", "firebase.json");
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile(pathToKey)
+            });
             #endregion 
         }
 
@@ -99,6 +102,9 @@ namespace SupFAmof.API
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
 
             builder.RegisterType<RoleService>().As<IRoleService>();
+            builder.RegisterType<AccountService>().As<IAccountService>();
+            builder.RegisterType<FcmTokenService>().As<IFcmTokenService>();
+            builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
 
             builder.RegisterGeneric(typeof(GenericRepository<>))
             .As(typeof(IGenericRepository<>))
@@ -110,7 +116,7 @@ namespace SupFAmof.API
             //app.ConfigMigration<>();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseExceptionHandler("/error");
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -122,7 +128,7 @@ namespace SupFAmof.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseDeveloperExceptionPage();
-            //AuthConfig.Configure(app);
+            AuthConfig.Configure(app);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

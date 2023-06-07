@@ -13,6 +13,13 @@ namespace SupFAmof.Service.Helpers
         //400 Bad Request
         //404 Not Found
 
+        public enum FcmTokenErrorEnums
+        {
+            //404
+            [Display(Name = "Invalid fcm token!")]
+            INVALID_TOKEN = 4001
+        }
+
         public enum RoleErrorEnums
         {
             //400
@@ -23,5 +30,21 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Not Found Role")]
             ROLE_NOTE_FOUND = 404,
         }
+
+        public enum AccountErrorEnums
+        {
+            //400
+            [Display(Name = "Invalid Account")]
+            ACCOUNT_INVALID = 400,
+
+            //404
+            [Display(Name = "Not Found Account")]
+            ACCOUNT_NOT_FOUND = 404,
+
+            //400
+            [Display(Name = "Invalid phone number")]
+            ACCOUNT_PHONE_INVALID = 400,
+        }
+
     }
 }

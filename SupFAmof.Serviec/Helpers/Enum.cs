@@ -13,9 +13,9 @@ namespace SupFAmof.Service.Helpers
         public enum SystemRoleEnum
         {
             [Display(Name = "Những con báo kỳ 9")]
-            SystemAdmin = 1,
+            SystemAdmin = 0,
             [Display(Name = "Cán bộ tuyển sinh")]
-            AdmissionManager = 2,
+            AdmissionManager = 1,
         }
     }
 }

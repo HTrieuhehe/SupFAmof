@@ -11,7 +11,7 @@ namespace Service.Commons
         public const int DefaultPaging = 50;
         public const int LimitPaging = 500;
 
-        public const string NOTIFICATION_TOPIC = "uni_order_reminder";
+        public const string NOTIFICATION_TOPIC = "supfamof_booking_reminder";
 
     }
 }

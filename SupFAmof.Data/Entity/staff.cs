@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SupFAmof.Data.Entity;
 
 namespace SupFAmof.Data.Entity
 {
@@ -7,11 +8,10 @@ namespace SupFAmof.Data.Entity
     {
         public staff()
         {
-            AccessTokens = new HashSet<AccessToken>();
+            Fcmtokens = new HashSet<Fcmtoken>();
         }
 
         public int Id { get; set; }
-        public int RoleId { get; set; }
         public string Name { get; set; } = null!;
         public string Username { get; set; } = null!;
         public byte[] Password { get; set; } = null!;
@@ -19,7 +19,6 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual Role Role { get; set; } = null!;
-        public virtual ICollection<AccessToken> AccessTokens { get; set; }
+        public virtual ICollection<Fcmtoken> Fcmtokens { get; set; }
     }
 }

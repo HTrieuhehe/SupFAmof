@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 
-namespace Service.Utilities
+namespace SupFAmof.Service.Utilities
 {
     public static class Ultils
     {

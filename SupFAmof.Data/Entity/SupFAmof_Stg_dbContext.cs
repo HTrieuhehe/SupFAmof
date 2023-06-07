@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SupFAmof.Data.Entity;
 
 namespace SupFAmof.Data.Entity
 {
@@ -16,12 +17,12 @@ namespace SupFAmof.Data.Entity
         {
         }
 
-        public virtual DbSet<AccessToken> AccessTokens { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<AccountBanned> AccountBanneds { get; set; } = null!;
         public virtual DbSet<AccountCertificate> AccountCertificates { get; set; } = null!;
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
+        public virtual DbSet<Fcmtoken> Fcmtokens { get; set; } = null!;
         public virtual DbSet<FinancialReport> FinancialReports { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
         public virtual DbSet<PostPosition> PostPositions { get; set; } = null!;
@@ -37,34 +38,17 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<staff> staff { get; set; } = null!;
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                optionsBuilder.UseSqlServer("Server=54.179.129.105;Database=SupFAmof_Stg_db;User ID=sa;Password=lWN5!fI98WG02zE26ix$;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
-//            }
-//        }
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        //                optionsBuilder.UseSqlServer("Server=54.179.129.105;Database=SupFAmof_Stg_db;User ID=sa;Password=lWN5!fI98WG02zE26ix$;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
+        //            }
+        //        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AccessToken>(entity =>
-            {
-                entity.ToTable("AccessToken");
-
-                entity.Property(e => e.AccessToken1).HasColumnName("AccessToken");
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Staff)
-                    .WithMany(p => p.AccessTokens)
-                    .HasForeignKey(d => d.StaffId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AccessToken_Staff");
-            });
-
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");
@@ -154,6 +138,25 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.ActionLog1).HasColumnName("ActionLog");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Fcmtoken>(entity =>
+            {
+                entity.ToTable("FCMToken");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Fcmtokens)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK_FCMToken_Account");
+
+                entity.HasOne(d => d.Staff)
+                    .WithMany(p => p.Fcmtokens)
+                    .HasForeignKey(d => d.StaffId)
+                    .HasConstraintName("FK_AccessToken_Staff");
             });
 
             modelBuilder.Entity<FinancialReport>(entity =>
@@ -368,12 +371,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Username).HasMaxLength(100);
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.staff)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Staff_Role");
             });
 
             OnModelCreatingPartial(modelBuilder);

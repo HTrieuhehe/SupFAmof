@@ -18,6 +18,7 @@ namespace SupFAmof.Service.Utilities
 
         public static byte[] GetHash(string password, string fineSugar)
         {
+            //convert conbine password and config of appsetting
             byte[] byteCode = Encoding.Unicode.GetBytes(string.Concat(password, fineSugar));
 
             SHA256Managed hashCode = new SHA256Managed();

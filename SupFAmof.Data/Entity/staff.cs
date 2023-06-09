@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SupFAmof.Data.Entity;
 
 namespace SupFAmof.Data.Entity
 {

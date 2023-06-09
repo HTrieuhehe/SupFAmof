@@ -2,7 +2,9 @@
 using SupFAmof.Data.Entity;
 using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Role;
+using SupFAmof.Service.DTO.Request.Staff;
 using SupFAmof.Service.DTO.Response;
+using System.Text;
 
 namespace SupFAmof.API.Mapper
 {
@@ -22,6 +24,13 @@ namespace SupFAmof.API.Mapper
             CreateMap<UpdateAccountRequest, Account>();
             #endregion
 
+            #region Staff
+            CreateMap<staff, StaffResponse>().ReverseMap();
+            CreateMap<CreateStaffRequest, staff>()
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
+            CreateMap<UpdateStaffRequest, staff>()
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
+            #endregion
         }
     }
 }

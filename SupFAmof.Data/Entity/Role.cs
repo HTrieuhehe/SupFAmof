@@ -8,7 +8,6 @@ namespace SupFAmof.Data.Entity
         public Role()
         {
             Accounts = new HashSet<Account>();
-            staff = new HashSet<staff>();
         }
 
         public int Id { get; set; }
@@ -19,6 +18,5 @@ namespace SupFAmof.Data.Entity
         public DateTime? UpdateAt { get; set; }
 
         public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<staff> staff { get; set; }
     }
 }

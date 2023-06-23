@@ -21,7 +21,7 @@ namespace SupFAmof.API.Controllers
         /// Login Admin
         /// </summary>
         [HttpPost("login")]
-        public async Task<ActionResult<StaffResponse>> Login(LoginRequest request)
+        public async Task<ActionResult<StaffResponse>> Login([FromBody] LoginRequest request)
         {
             try
             {

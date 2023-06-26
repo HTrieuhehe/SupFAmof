@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SupFAmof.Data.Entity;
 
-namespace SupFAmof.Data.Test
+namespace SupFAmof.Data.Entity
 {
     public partial class Post
     {

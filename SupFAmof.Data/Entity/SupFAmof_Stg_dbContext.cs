@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using SupFAmof.Data.Entity;
 
-namespace SupFAmof.Data.Test
+namespace SupFAmof.Data.Entity
 {
     public partial class SupFAmof_Stg_dbContext : DbContext
     {

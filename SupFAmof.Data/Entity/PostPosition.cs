@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SupFAmof.Data.Test
+namespace SupFAmof.Data.Entity
 {
     public partial class PostPosition
     {

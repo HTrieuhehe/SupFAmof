@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using ServiceStack;
 
 namespace SupFAmof.Service.Utilities
 {
@@ -82,6 +84,18 @@ namespace SupFAmof.Service.Utilities
         public static DateTime GetEndOfDate(this DateTime value)
         {
             return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);
+        }
+    
+        public static bool CheckStudentId(string studentId)
+        {
+            string strRegex = @"^SE\d{6}$";
+            return Regex.IsMatch(studentId, strRegex);
+        }
+
+        public static bool CheckPersonalId(string personId)
+        {
+            string strRegex = @"^\d{6}$";
+            return Regex.IsMatch(personId, strRegex);
         }
     }
 }

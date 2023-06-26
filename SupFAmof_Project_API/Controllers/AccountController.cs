@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [HttpGet("accountId")]
+        [HttpGet("/GetAccountById/accountId")]
         public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
         {
             try
@@ -46,7 +46,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [HttpGet("Authorization")]
+        [HttpGet("/GetAccountByToken/Authorization")]
         public async Task<ActionResult<AccountResponse>> GetAccountByToken()
         {
             try

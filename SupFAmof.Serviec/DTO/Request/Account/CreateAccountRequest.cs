@@ -9,7 +9,6 @@ namespace SupFAmof.Service.DTO.Request.Account
 {
     public class CreateAccountRequest
     {
-        public int RoleId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }

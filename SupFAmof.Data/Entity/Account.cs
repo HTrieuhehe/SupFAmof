@@ -25,6 +25,7 @@ namespace SupFAmof.Data.Entity
         public string? PersonalIdDestination { get; set; }
         public byte[]? PersonalIdImgFront { get; set; }
         public byte[]? PersonalIdImgBack { get; set; }
+        public string? TaxNumber { get; set; }
         public string? IdStudent { get; set; }
         public string? FbUrl { get; set; }
         public DateTime? DateOfBirth { get; set; }

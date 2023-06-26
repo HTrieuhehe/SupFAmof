@@ -71,6 +71,7 @@ namespace SupFAmof.Service.Service
                 #endregion
 
                 account.RoleId = roleInfo.Id;
+                account.IsPremium = false;
                 account.IsActive = true;
                 account.CreateAt = DateTime.Now;
 
@@ -202,9 +203,9 @@ namespace SupFAmof.Service.Service
                 //check exist account
                 var account = _unitOfWork.Repository<Account>().GetAll()
                                          .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
-                
+
                 //create new Account
-                if(account == null)
+                if (account == null)
                 {
                     CreateAccountRequest newAccount = new CreateAccountRequest()
                     {
@@ -296,7 +297,10 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
+                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.PersonalId);
 
                 if(checkPhone == false)
                 {
@@ -304,7 +308,18 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
                 }
 
+                if (checkStuId == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
+                                        AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                }
+               
                 account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
+                if (!string.IsNullOrEmpty(account.PersonalIdDestination))
+                {
+                    account.PersonalIdDestination = account.PersonalIdDestination.ToUpper();
+                }
+                account.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();

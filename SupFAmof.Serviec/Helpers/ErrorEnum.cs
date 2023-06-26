@@ -35,15 +35,20 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Invalid Account")]
-            ACCOUNT_INVALID = 400,
-
-            //404
-            [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 404,
+            ACCOUNT_INVALID = 4001,
 
             //400
             [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 400,
+            ACCOUNT_PHONE_INVALID = 4002,
+
+            //400
+            [Display(Name = "Invalid Student Id")]
+            ACCOUNT_STUDENTID_INVALID = 4003,
+
+            //404
+            [Display(Name = "Not Found Account")]
+            ACCOUNT_NOT_FOUND = 4041,
+
         }
 
     }

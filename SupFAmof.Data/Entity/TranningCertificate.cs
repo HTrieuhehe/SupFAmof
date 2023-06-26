@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SupFAmof.Data.Entity
+namespace SupFAmof.Data.Test
 {
     public partial class TranningCertificate
     {
@@ -10,7 +10,5 @@ namespace SupFAmof.Data.Entity
         public string CertificateName { get; set; } = null!;
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-
-        public virtual TranningType TrainingType { get; set; } = null!;
     }
 }

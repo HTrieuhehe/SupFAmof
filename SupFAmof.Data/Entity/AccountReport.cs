@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SupFAmof.Data.Entity
+namespace SupFAmof.Data.Test
 {
     public partial class AccountReport
     {

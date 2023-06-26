@@ -3,13 +3,12 @@ using System.Collections.Generic;
 
 namespace SupFAmof.Data.Test
 {
-    public partial class PostPosition
+    public partial class CheckAttendance
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string Position { get; set; } = null!;
-        public int Amount { get; set; }
-        public double Salary { get; set; }
+        public string IdStudent { get; set; } = null!;
+        public bool IsPresent { get; set; }
 
         public virtual Post Post { get; set; } = null!;
     }

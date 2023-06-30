@@ -1,16 +1,16 @@
 ﻿using Autofac;
 using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.OpenApi.Models;
-using SupFAmof.API.AppStart;
-using SupFAmof.API.Helpers;
 using SupFAmof.API.Mapper;
-using SupFAmof.Data.MakeConnection;
+using SupFAmof.API.Helpers;
+using SupFAmof.API.AppStart;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.OpenApi.Models;
 using SupFAmof.Data.Repository;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
+using SupFAmof.Data.MakeConnection;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace SupFAmof.API
 {
@@ -103,6 +103,7 @@ namespace SupFAmof.API
 
             builder.RegisterType<RoleService>().As<IRoleService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
+            builder.RegisterType<AccountBankingService>().As<IAccountBankingService>();
             builder.RegisterType<FcmTokenService>().As<IFcmTokenService>();
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<StaffService>().As<IStaffService>();

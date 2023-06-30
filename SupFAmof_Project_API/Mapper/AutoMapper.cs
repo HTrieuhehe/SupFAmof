@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using System.Text;
 using SupFAmof.Data.Entity;
-using SupFAmof.Service.DTO.Request.Account;
+using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Request.Staff;
-using SupFAmof.Service.DTO.Response;
-using System.Text;
+using SupFAmof.Service.DTO.Request.Account;
+using SupFAmof.Service.DTO.Request.AccounBanking;
 
 namespace SupFAmof.API.Mapper
 {
@@ -30,6 +31,13 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
             CreateMap<UpdateStaffRequest, staff>()
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
+            #endregion
+
+            #region AccountBanking
+            CreateMap<AccountBanking, AccountBankingResponse>().ReverseMap();
+            CreateMap<CreateAccountBankingRequest, AccountBanking>();
+            CreateMap<UpdateAccountBankingRequest, AccountBanking>();
+
             #endregion
         }
     }

@@ -1,24 +1,18 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Castle.Core.Resource;
-using FirebaseAdmin.Auth;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using NTQ.Sdk.Core.Filters;
-using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
+using FirebaseAdmin.Auth;
+using NTQ.Sdk.Core.Filters;
 using SupFAmof.Data.Entity;
+using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.DTO.Request;
-using SupFAmof.Service.DTO.Request.Account;
-using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SupFAmof.Service.DTO.Request;
+using Microsoft.EntityFrameworkCore;
+using SupFAmof.Service.DTO.Response;
+using AutoMapper.QueryableExtensions;
+using Microsoft.Extensions.Configuration;
+using SupFAmof.Service.DTO.Request.Account;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service

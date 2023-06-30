@@ -1,8 +1,8 @@
 ﻿using System;
+using SupFAmof.Data.Entity;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using SupFAmof.Data.Entity;
 
 namespace SupFAmof.Data.Entity
 {
@@ -84,7 +84,6 @@ namespace SupFAmof.Data.Entity
 
             modelBuilder.Entity<AccountBanking>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("AccountBanking");
 
@@ -120,7 +119,6 @@ namespace SupFAmof.Data.Entity
 
             modelBuilder.Entity<AccountCertificate>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("AccountCertificate");
 

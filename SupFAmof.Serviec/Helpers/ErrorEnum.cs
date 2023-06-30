@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupFAmof.Service.Helpers
 {
@@ -32,6 +32,25 @@ namespace SupFAmof.Service.Helpers
         }
 
         public enum AccountErrorEnums
+        {
+            //400
+            [Display(Name = "Invalid Account")]
+            ACCOUNT_INVALID = 4001,
+
+            //400
+            [Display(Name = "Invalid phone number")]
+            ACCOUNT_PHONE_INVALID = 4002,
+
+            //400
+            [Display(Name = "Invalid Student Id")]
+            ACCOUNT_STUDENTID_INVALID = 4003,
+
+            //404
+            [Display(Name = "Not Found Account")]
+            ACCOUNT_NOT_FOUND = 4041,
+
+        }
+        public enum AccountBankingErrorEnums
         {
             //400
             [Display(Name = "Invalid Account")]

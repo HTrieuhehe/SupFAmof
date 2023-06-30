@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Algorithm;
-using NTQ.Sdk.Core.Filters;
 using NTQ.Sdk.Core.Utilities;
 using Pipelines.Sockets.Unofficial.Arenas;
 using Service.Commons;
@@ -11,6 +10,7 @@ using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

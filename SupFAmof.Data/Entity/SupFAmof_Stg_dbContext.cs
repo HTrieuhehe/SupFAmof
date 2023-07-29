@@ -1,8 +1,8 @@
 ﻿using System;
-using SupFAmof.Data.Entity;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace SupFAmof.Data.Entity
 {
@@ -21,7 +21,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountBanking> AccountBankings { get; set; } = null!;
         public virtual DbSet<AccountBanned> AccountBanneds { get; set; } = null!;
         public virtual DbSet<AccountCertificate> AccountCertificates { get; set; } = null!;
-        public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
+        public virtual DbSet<AccountInformation> AccountInformations { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
@@ -32,26 +32,32 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostRegistrationDetail> PostRegistrationDetails { get; set; } = null!;
         public virtual DbSet<PostTitle> PostTitles { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<TrainingPosition> TrainingPositions { get; set; } = null!;
         public virtual DbSet<TranningCertificate> TranningCertificates { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<staff> staff { get; set; } = null!;
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                optionsBuilder.UseSqlServer("Server=54.179.129.105;Database=SupFAmof_Stg_db;User ID=sa;Password=lWN5!fI98WG02zE26ix$;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
-//            }
-//        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                IConfiguration config = new ConfigurationBuilder()
+                                    .SetBasePath(Directory.GetCurrentDirectory())
+                                    .AddJsonFile("appsettings.json").Build();
+
+
+                string connectionString = config.GetConnectionString("SQLServerDatabase");
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+
+            base.OnConfiguring(optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");
-
-                entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
@@ -64,12 +70,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.IdStudent).HasMaxLength(10);
 
                 entity.Property(e => e.Name).HasMaxLength(100);
-
-                entity.Property(e => e.PersonalId).HasMaxLength(20);
-
-                entity.Property(e => e.PersonalIdDate).HasColumnType("date");
-
-                entity.Property(e => e.PersonalIdDestination).HasMaxLength(225);
 
                 entity.Property(e => e.Phone).HasMaxLength(15);
 
@@ -84,7 +84,6 @@ namespace SupFAmof.Data.Entity
 
             modelBuilder.Entity<AccountBanking>(entity =>
             {
-
                 entity.ToTable("AccountBanking");
 
                 entity.Property(e => e.AccountNumber).HasMaxLength(50);
@@ -96,7 +95,7 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany()
+                    .WithMany(p => p.AccountBankings)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountBanking_Account");
@@ -110,50 +109,53 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.DayStart).HasColumnType("date");
 
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.BannedPerson)
                     .WithMany(p => p.AccountBanneds)
-                    .HasForeignKey(d => d.AccountId)
+                    .HasForeignKey(d => d.BannedPersonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountBanned_Account");
             });
 
             modelBuilder.Entity<AccountCertificate>(entity =>
             {
-
                 entity.ToTable("AccountCertificate");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany()
+                    .WithMany(p => p.AccountCertificates)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountCertificate_Account");
 
                 entity.HasOne(d => d.TraningCertificate)
-                    .WithMany()
+                    .WithMany(p => p.AccountCertificates)
                     .HasForeignKey(d => d.TraningCertificateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountCertificate_TranningCertificate");
             });
 
-            modelBuilder.Entity<AccountReport>(entity =>
+            modelBuilder.Entity<AccountInformation>(entity =>
             {
-                entity.ToTable("AccountReport");
+                entity.ToTable("AccountInformation");
 
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+                entity.Property(e => e.Address).HasMaxLength(225);
 
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+                entity.Property(e => e.PersonalId).HasMaxLength(20);
+
+                entity.Property(e => e.PersonalIdDate).HasColumnType("date");
+
+                entity.Property(e => e.PlaceOfIssue).HasMaxLength(100);
+
+                entity.Property(e => e.TaxNumber).HasMaxLength(50);
 
                 entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountReports)
+                    .WithMany(p => p.AccountInformations)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AccountReport_Account");
+                    .HasConstraintName("FK_AccountInformation_Account");
             });
 
             modelBuilder.Entity<ActionLog>(entity =>
@@ -218,15 +220,25 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("Post");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DateFrom).HasColumnType("date");
 
                 entity.Property(e => e.DateTo).HasColumnType("date");
 
-                entity.Property(e => e.PostCode).HasMaxLength(50);
+                entity.Property(e => e.Location).HasMaxLength(100);
+
+                entity.Property(e => e.PostCode).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Posts)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Post_Account");
 
                 entity.HasOne(d => d.PostTitle)
                     .WithMany(p => p.Posts)
@@ -310,6 +322,17 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.RoleName).HasMaxLength(20);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<TrainingPosition>(entity =>
+            {
+                entity.ToTable("TrainingPosition");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainingPosition_Post");
             });
 
             modelBuilder.Entity<TranningCertificate>(entity =>

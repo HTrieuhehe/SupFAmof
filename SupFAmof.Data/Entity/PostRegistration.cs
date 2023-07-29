@@ -9,6 +9,7 @@ namespace SupFAmof.Data.Entity
         public string? RegistationCode { get; set; }
         public int AccountId { get; set; }
         public int Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

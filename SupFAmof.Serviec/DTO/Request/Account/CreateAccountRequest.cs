@@ -12,9 +12,11 @@ namespace SupFAmof.Service.DTO.Request.Account
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
-        public string? IdStudent { get; set; }
-        public string? FbUrl { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? ImgUrl { get; set; }
+        public bool PostPermission { get; set; }
+        public bool? IsPremium { get; set; }
+        public bool IsActive { get; set; }
+
     }
 }

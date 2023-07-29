@@ -15,6 +15,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cán bộ tuyển sinh")]
             AdmissionManager = 1,
 
+            [Display(Name = "Sinh viên")]
+            Student = 2,
+
             [Display(Name = "Những con báo kỳ 9")]
             SystemAdmin = 3,
         }

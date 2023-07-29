@@ -65,10 +65,6 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
-                entity.Property(e => e.FbUrl).HasMaxLength(225);
-
-                entity.Property(e => e.IdStudent).HasMaxLength(10);
-
                 entity.Property(e => e.Name).HasMaxLength(100);
 
                 entity.Property(e => e.Phone).HasMaxLength(15);
@@ -142,6 +138,10 @@ namespace SupFAmof.Data.Entity
                 entity.ToTable("AccountInformation");
 
                 entity.Property(e => e.Address).HasMaxLength(225);
+
+                entity.Property(e => e.FbUrl).HasMaxLength(225);
+
+                entity.Property(e => e.IdStudent).HasMaxLength(10);
 
                 entity.Property(e => e.PersonalId).HasMaxLength(20);
 

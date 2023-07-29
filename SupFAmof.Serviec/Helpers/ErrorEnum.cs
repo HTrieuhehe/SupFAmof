@@ -35,38 +35,46 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Invalid Account")]
-            ACCOUNT_INVALID = 4001,
+            ACCOUNT_INVALID = 400,
+
+            //400
+            [Display(Name = "Invalid ACcount Personal ID")]
+            ACCOUNT_INVALID_PERSONAL_ID = 400,
+
+            //400
+            [Display(Name = "Account Information Existed!")]
+            ACCOUNT_INFOMRATION_EXISTED = 400,
 
             //400
             [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 4002,
+            ACCOUNT_PHONE_INVALID = 400,
 
             //400
             [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 4003,
+            ACCOUNT_STUDENTID_INVALID = 400,
 
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 4041,
+            ACCOUNT_NOT_FOUND = 404,
 
         }
         public enum AccountBankingErrorEnums
         {
             //400
             [Display(Name = "Invalid Account")]
-            ACCOUNT_INVALID = 4001,
+            ACCOUNT_INVALID = 400,
 
             //400
             [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 4002,
+            ACCOUNT_PHONE_INVALID = 400,
 
             //400
             [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 4003,
+            ACCOUNT_STUDENTID_INVALID = 400,
 
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 4041,
+            ACCOUNT_NOT_FOUND = 404,
 
         }
 

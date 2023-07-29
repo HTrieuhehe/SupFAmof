@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Castle.Core.Internal;
 using Castle.Core.Resource;
 using FirebaseAdmin.Auth;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Helpers;
+using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
@@ -23,17 +25,6 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
-    public interface IAccountService
-    {
-        Task<BaseResponsePagingViewModel<AccountResponse>> GetAccounts(AccountResponse request, PagingRequest paging);
-        Task<BaseResponseViewModel<AccountResponse>> GetAccountById(int accountId);
-        Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email);   
-        Task<BaseResponseViewModel<AccountResponse>> CreateAccount(CreateAccountRequest request);
-        Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request);
-        Task Logout(string fcmToken); 
-        Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);
-    }
-
     public class AccountService : IAccountService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -71,13 +62,14 @@ namespace SupFAmof.Service.Service
                 #endregion
 
                 account.RoleId = roleInfo.Id;
+                account.PostPermission = false;
                 account.IsPremium = false;
                 account.IsActive = true;
                 account.CreateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Account>().InsertAsync(account);
                 await _unitOfWork.CommitAsync();
-
+                
                 return new BaseResponseViewModel<AccountResponse>()
                 {
                     Status = new StatusViewModel()
@@ -95,12 +87,78 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, CreateAccountInformationRequest request)
+        {
+            try
+            {
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                                        .FirstOrDefault(x => x.Id == accountId);
+
+                if(account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //check account Information
+
+                var accountInfoCheck = _unitOfWork.Repository<AccountInformation>().GetAll().FirstOrDefault(x => x.AccountId == accountId);
+
+                if (accountInfoCheck != null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED,
+                                                          AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED.GetDisplayName());
+                }
+
+                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.PersonalId);
+
+                if (checkPersonalId == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_INVALID_PERSONAL_ID,
+                                        AccountErrorEnums.ACCOUNT_INVALID_PERSONAL_ID.GetDisplayName());
+                }
+
+                if (checkStuId == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
+                                        AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                }
+
+                var accountInfo = _mapper.Map<AccountInformation>(request);
+
+                accountInfo.AccountId = account.Id;
+                accountInfo.PlaceOfIssue = accountInfo.PlaceOfIssue.ToUpper();
+
+                await _unitOfWork.Repository<AccountInformation>().InsertAsync(accountInfo);
+                await _unitOfWork.CommitAsync();
+
+                var result = _mapper.Map<AccountResponse>(accountInfo);
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(result)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email)
         {
             try
             {
-                var account = await _unitOfWork.Repository<Account>().GetAll()
-                                                .Where(x => x.Email.Contains(email)).FirstOrDefaultAsync();
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                                                .Where(x => x.Email.Contains(email)).FirstOrDefault();
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -299,8 +357,8 @@ namespace SupFAmof.Service.Service
 
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
-                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.PersonalId);
+                var checkStuId = Ultils.CheckStudentId(request.UpdateAccountInformation.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.PersonalId);
 
                 if(checkPhone == false)
                 {
@@ -313,12 +371,14 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
                                         AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
                 }
-               
-                account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
-                if (!string.IsNullOrEmpty(account.PersonalIdDestination))
+
+                if (!string.IsNullOrEmpty(request.UpdateAccountInformation.PlaceOfIssue))
                 {
-                    account.PersonalIdDestination = account.PersonalIdDestination.ToUpper();
+                    request.UpdateAccountInformation.PlaceOfIssue = request.UpdateAccountInformation.PlaceOfIssue.ToUpper();
                 }
+
+                account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
+                
                 account.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);

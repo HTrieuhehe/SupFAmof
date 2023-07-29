@@ -28,5 +28,22 @@ namespace SupFAmof.Service.DTO.Response
         public bool IsActive { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+
+        public List<AccountInformationResponse>? AccountInformations { get; set; }
+    }
+
+    public class AccountInformationResponse
+    {
+        public int Id { get; set; }
+        public int AccountId { get; set; }
+        public string? PersonalId { get; set; }
+        public string? IdStudent { get; set; }
+        public string? FbUrl { get; set; }
+        public string? Address { get; set; }
+        public DateTime? PersonalIdDate { get; set; }
+        public string? PlaceOfIssue { get; set; }
+        public byte[]? PersonalIdFrontImg { get; set; }
+        public byte[]? PersonalIdBackImg { get; set; }
+        public string? TaxNumber { get; set; }
     }
 }

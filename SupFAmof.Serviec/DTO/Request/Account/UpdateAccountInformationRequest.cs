@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SupFAmof.Data.Entity
+namespace SupFAmof.Service.DTO.Request.Account
 {
-    public partial class AccountInformation
+    public class UpdateAccountInformationRequest
     {
-        public int Id { get; set; }
-        public int AccountId { get; set; }
         public string? PersonalId { get; set; }
         public string? IdStudent { get; set; }
         public string? FbUrl { get; set; }
@@ -16,7 +17,5 @@ namespace SupFAmof.Data.Entity
         public byte[]? PersonalIdFrontImg { get; set; }
         public byte[]? PersonalIdBackImg { get; set; }
         public string? TaxNumber { get; set; }
-
-        public virtual Account Account { get; set; } = null!;
     }
 }

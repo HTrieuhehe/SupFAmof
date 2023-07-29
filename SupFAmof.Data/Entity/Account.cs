@@ -22,8 +22,6 @@ namespace SupFAmof.Data.Entity
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
-        public string? IdStudent { get; set; }
-        public string? FbUrl { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? ImgUrl { get; set; }
         public bool PostPermission { get; set; }

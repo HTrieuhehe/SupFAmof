@@ -20,11 +20,16 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Account
-            CreateMap<Account, AccountResponse>().ReverseMap();
+            CreateMap<Account, AccountResponse>()
+                .ReverseMap();
+            CreateMap<AccountInformation, AccountInformationResponse>()
+                .ReverseMap();
+           
             CreateMap<CreateAccountRequest, Account>();
+            CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();
             CreateMap<UpdateAccountRequest, Account>();
             #endregion
-
+            
             #region Staff
             CreateMap<staff, StaffResponse>().ReverseMap();
             CreateMap<CreateStaffRequest, staff>()

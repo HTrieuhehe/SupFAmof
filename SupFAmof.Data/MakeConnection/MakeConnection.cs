@@ -12,7 +12,6 @@ namespace SupFAmof.Data.MakeConnection
             services.AddDbContext<SupFAmof_Stg_dbContext>(options =>
             {
                 options.UseLazyLoadingProxies();
-                options.UseSqlServer(configuration.GetConnectionString("SQLServerDatabase"), sql => sql.UseNetTopologySuite());
             });
             return services;
         }

@@ -8,9 +8,7 @@ namespace SupFAmof.Service.DTO.Request.AccounBanking
 {
     public class CreateAccountBankingRequest
     {
-        public int AccountId { get; set; }
-        public string AccountNumber { get; set; } = null!;
-        public string BankName { get; set; } = null!;
-
+        public string? AccountNumber { get; set; } 
+        public string? BankName { get; set; }
     }
 }

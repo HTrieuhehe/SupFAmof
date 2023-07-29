@@ -5,6 +5,7 @@ using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.AccounBanking;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
 {
@@ -19,25 +20,12 @@ namespace SupFAmof.API.Controllers
             _accountBankingService = accountBankingService;
         }
 
-        [HttpGet("/GetAccountBankingById/accountId")]
-        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankingById(int accountId)
+        [HttpGet("getById/accountBankingId")]
+        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankingById(int accountBankingId)
         {
             try
             {
-                var result = await _accountBankingService.GetAccountBankingById(accountId);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
-        [HttpGet("/GetAccountBanking")]
-        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankings([FromQuery] AccountBankingResponse request, [FromQuery] PagingRequest paging)
-        {
-            try
-            {
-                var result = await _accountBankingService.GetAccountBankings(request,paging);
+                var result = await _accountBankingService.GetAccountBankingById(accountBankingId);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -46,8 +34,22 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpPost("/CreateAccountBanking")]
-        public async Task<ActionResult<AccountBankingResponse>> CreateAccountBanking(CreateAccountBankingRequest request)
+        [HttpGet("getAccountBanking")]
+        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankings([FromQuery] AccountBankingResponse request, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var result = await _accountBankingService.GetAccountBankings(request, paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        [HttpPost("createAccountBanking")]
+        public async Task<ActionResult<AccountBankingResponse>> CreateAccountBanking([FromBody] CreateAccountBankingRequest request)
         {
             try
             {
@@ -59,12 +61,13 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-        [HttpPut("/UpdateAccountBanking/accountId")]
-        public async Task<ActionResult<AccountBankingResponse>> UpdateAccountBanking(int accountId, UpdateAccountBankingRequest request)
+
+        [HttpPut("updateAccountBanking/accountBankingId")]
+        public async Task<ActionResult<AccountBankingResponse>> UpdateAccountBanking([FromQuery] int accountBankingId, [FromBody] UpdateAccountBankingRequest request)
         {
             try
             {
-                var result = await _accountBankingService.UpdateAccountBanking(accountId,request);
+                var result = await _accountBankingService.UpdateAccountBanking(accountBankingId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

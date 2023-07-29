@@ -18,19 +18,10 @@ using Microsoft.Extensions.Configuration;
 using SupFAmof.Service.DTO.Request.Account;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.AccounBanking;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.Service.Service
 {
-    public interface IAccountBankingService
-    {
-        Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingById(int id);
-        Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse request,PagingRequest paging);
-        Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(CreateAccountBankingRequest request);
-            Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, UpdateAccountBankingRequest request);
-
-    }
-
-
     public class AccountBankingService : IAccountBankingService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -71,7 +62,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-
         public async Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse request,PagingRequest paging)
         {
             try
@@ -123,12 +113,12 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, UpdateAccountBankingRequest request)
+        public async Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountBankingId, UpdateAccountBankingRequest request)
         {
             try
             {
                 AccountBanking account = _unitOfWork.Repository<AccountBanking>()
-                                         .Find(x => x.Id == accountId);
+                                         .Find(x => x.Id == accountBankingId);
 
                 if (account == null)
                 {

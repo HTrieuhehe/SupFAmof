@@ -8,11 +8,8 @@ namespace SupFAmof.Service.DTO.Request.AccounBanking
 {
     public class UpdateAccountBankingRequest
     {
-        public int AccountId { get; set; }
-        public string AccountNumber { get; set; } = null!;
-        public string BankName { get; set; } = null!;
+        public string? AccountNumber { get; set; }
+        public string? BankName { get; set; }
         public bool IsActive { get; set; }
-        public DateTime? UpdateAt { get; set; }
-
     }
 }

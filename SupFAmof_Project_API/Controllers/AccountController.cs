@@ -25,7 +25,7 @@ namespace SupFAmof.API.Controllers
         /// Get Account By Id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("/GetAccountById/accountId")]
+        [HttpGet("getAccountById/accountId")]
         public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
         {
             try
@@ -43,7 +43,7 @@ namespace SupFAmof.API.Controllers
         /// Get Account By Token
         /// </summary>
         /// <returns></returns>
-        [HttpGet("/GetAccountByToken/authorization")]
+        [HttpGet("getAccountByToken/authorization")]
         public async Task<ActionResult<AccountResponse>> GetAccountByToken()
         {
             try
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account
         /// </summary>
         /// <returns></returns>
-        [HttpPut("accountId")]
+        [HttpPut("update/accountId")]
         public async Task<ActionResult<AccountResponse>> UpdateAccount([FromBody] UpdateAccountRequest data)
         {
             try
@@ -92,7 +92,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPost("CreateAccountInformation")]
+        [HttpPost("createAccountInformation")]
         public async Task<ActionResult<AccountResponse>> CreateAccountInformation([FromBody] CreateAccountInformationRequest request)
         {
             try

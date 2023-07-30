@@ -2,24 +2,10 @@
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.Service.Service
 {
-    public interface IFcmTokenService
-    {
-        void AddFcmToken(string fcmToken, int customerId);
-
-        void AddStaffFcmToken(string fcmToken, int staffId);
-
-        int RemoveFcmTokens(ICollection<string> fcmTokens);
-
-        void UnsubscribeAll(int accountId);
-
-        void SubscribeAll(int accountId);
-
-        Task<bool> ValidToken(string fcmToken);
-    }
-
     public class FcmTokenService : IFcmTokenService
     {
         private readonly IFirebaseMessagingService _fmService;

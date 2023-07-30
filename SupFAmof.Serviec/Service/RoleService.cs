@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Algorithm;
 using NTQ.Sdk.Core.Utilities;
 using Pipelines.Sockets.Unofficial.Arenas;
 using Service.Commons;
@@ -11,23 +9,11 @@ using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
-    public interface IRoleService
-    {
-        Task<BaseResponsePagingViewModel<RoleResponse>> GetRoles(RoleResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<RoleResponse>> GetRoleById(int roleId);
-        Task<BaseResponseViewModel<RoleResponse>> CreateRole(CreateRoleRequest request);
-        Task<BaseResponseViewModel<RoleResponse>> UpdateRole(int roleId, UpdateRoleRequest request);
-    }
-
     public class RoleService : IRoleService
     {
         private IMapper _mapper;

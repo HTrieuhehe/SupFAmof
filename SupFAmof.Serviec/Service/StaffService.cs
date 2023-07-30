@@ -1,11 +1,6 @@
 ﻿using SupFAmof.Service.DTO.Request.Staff;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using SupFAmof.Data.UnitOfWork;
 using Microsoft.Extensions.Configuration;
@@ -14,22 +9,13 @@ using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Exceptions;
 using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Service.Utilities;
-using System.Collections;
 using AutoMapper.QueryableExtensions;
 using Service.Commons;
 using SupFAmof.Service.Helpers;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.Service.Service
 {
-    public interface IStaffService
-    {
-        Task<BaseResponsePagingViewModel<StaffResponse>> GetStaffs(StaffResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<StaffResponse>> GetStaffById(int staffId);
-        Task<BaseResponseViewModel<dynamic>> Login(LoginRequest request);
-        Task<BaseResponseViewModel<StaffResponse>> CreateAdminManager(CreateStaffRequest request);
-        Task<BaseResponseViewModel<StaffResponse>> UpdateStaff(int staffId, UpdateStaffRequest request);
-    }
-
     public class StaffService : IStaffService
     {
         private readonly IMapper _mapper;

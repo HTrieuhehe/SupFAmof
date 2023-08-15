@@ -25,7 +25,7 @@ namespace SupFAmof.API.Controllers
         /// Get Account By Id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getAccountById/accountId")]
+        [HttpGet("getAccountById")]
         public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
         {
             try
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account
         /// </summary>
         /// <returns></returns>
-        [HttpPut("update/accountId")]
+        [HttpPut("update")]
         public async Task<ActionResult<AccountResponse>> UpdateAccount([FromBody] UpdateAccountRequest data)
         {
             try
@@ -132,16 +132,27 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        ///  Logout
+        /// Disable Account
         /// </summary>
-        /// <param name="data"></param>
         /// <returns></returns>
-        [HttpPost("logout")]
-        public async Task<ActionResult> Logout([FromBody] LogoutRequest request)
+        [HttpPut("disable")]
+        public async Task<ActionResult<AccountResponse>> DisableAccount()
         {
-            await _accountService.Logout(request.FcmToken);
-            return Ok();
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (accountId == -1)
+                {
+                    return Unauthorized();
+                }
+                var result = await _accountService.DisableAccount(accountId);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
         }
-
     }
 }

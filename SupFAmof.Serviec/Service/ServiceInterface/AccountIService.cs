@@ -12,6 +12,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountResponse>> CreateAccount(CreateAccountRequest request);
         Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, CreateAccountInformationRequest request);
         Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request);
+        Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId);
         Task Logout(string fcmToken);
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);
     }

@@ -88,7 +88,7 @@ namespace SupFAmof.Service.Utilities
     
         public static bool CheckStudentId(string studentId)
         {
-            string strRegex = @"^SE\d{6}$";
+            string strRegex = @"^[A-Za-z]{2}\d{6}$";
             return Regex.IsMatch(studentId, strRegex);
         }
 

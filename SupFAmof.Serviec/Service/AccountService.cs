@@ -106,7 +106,7 @@ namespace SupFAmof.Service.Service
 
                 if (accountInfoCheck != null)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED,
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED,
                                                           AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED.GetDisplayName());
                 }
 

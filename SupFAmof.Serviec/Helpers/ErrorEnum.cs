@@ -17,7 +17,7 @@ namespace SupFAmof.Service.Helpers
         {
             //404
             [Display(Name = "Invalid fcm token!")]
-            INVALID_TOKEN = 4001
+            INVALID_TOKEN = 400
         }
 
         public enum RoleErrorEnums

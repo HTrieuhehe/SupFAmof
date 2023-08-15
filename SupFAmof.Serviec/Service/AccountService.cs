@@ -245,7 +245,7 @@ namespace SupFAmof.Service.Service
                                              FcmTokenErrorEnums.INVALID_TOKEN.GetDisplayName());
                 }
 
-                //decode token 
+                #region Decode Token
 
                 //tham chiếu đến phiên bản mặc định của lớp FirebaseAuth từ Firebase Admin SDK. FirebaseAuth cung cấp
                 //các phương thức và chức năng để quản lý và xác thực người dùng trong Firebase
@@ -257,6 +257,8 @@ namespace SupFAmof.Service.Service
 
                 //Phương thức này lấy thông tin người dùng từ Firebase dựa trên Uid (User ID) được trích xuất từ token đã giải mã trước đó.
                 UserRecord userRecord = await auth.GetUserAsync(decodeToken.Uid);
+
+                #endregion
 
                 //check exist account
                 var account = _unitOfWork.Repository<Account>().GetAll()
@@ -281,7 +283,7 @@ namespace SupFAmof.Service.Service
                                 .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
 
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, 0, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token 
                     if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)

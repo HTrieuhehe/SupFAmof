@@ -25,6 +25,14 @@ namespace SupFAmof.Service.Helpers
             if (role != 0)
             {
                 permClaims.Add(new Claim(ClaimTypes.Role, ((SystemRoleEnum)role).ToString()));
+
+                var newtoken = new JwtSecurityToken(tokenConfig["Issuer"],
+                tokenConfig["Issuer"],
+                permClaims,
+                expires: DateTime.Now.AddDays(30),
+                signingCredentials: credentials);
+
+                return new JwtSecurityTokenHandler().WriteToken(newtoken);
             }
 
             var token = new JwtSecurityToken(tokenConfig["Issuer"],

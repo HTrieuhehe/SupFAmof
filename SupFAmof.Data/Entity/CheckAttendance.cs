@@ -7,9 +7,10 @@ namespace SupFAmof.Data.Entity
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string IdStudent { get; set; } = null!;
+        public int AccountId { get; set; }
         public bool IsPresent { get; set; }
 
+        public virtual Account Account { get; set; } = null!;
         public virtual Post Post { get; set; } = null!;
     }
 }

@@ -9,8 +9,10 @@ namespace SupFAmof.Data.Entity
         {
             AccountBankings = new HashSet<AccountBanking>();
             AccountBanneds = new HashSet<AccountBanned>();
-            AccountCertificates = new HashSet<AccountCertificate>();
+            AccountCertificateAccounts = new HashSet<AccountCertificate>();
+            AccountCertificateCreatePeople = new HashSet<AccountCertificate>();
             AccountInformations = new HashSet<AccountInformation>();
+            CheckAttendances = new HashSet<CheckAttendance>();
             Fcmtokens = new HashSet<Fcmtoken>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
@@ -33,8 +35,10 @@ namespace SupFAmof.Data.Entity
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AccountBanking> AccountBankings { get; set; }
         public virtual ICollection<AccountBanned> AccountBanneds { get; set; }
-        public virtual ICollection<AccountCertificate> AccountCertificates { get; set; }
+        public virtual ICollection<AccountCertificate> AccountCertificateAccounts { get; set; }
+        public virtual ICollection<AccountCertificate> AccountCertificateCreatePeople { get; set; }
         public virtual ICollection<AccountInformation> AccountInformations { get; set; }
+        public virtual ICollection<CheckAttendance> CheckAttendances { get; set; }
         public virtual ICollection<Fcmtoken> Fcmtokens { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }

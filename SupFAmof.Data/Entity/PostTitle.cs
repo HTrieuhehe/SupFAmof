@@ -13,7 +13,7 @@ namespace SupFAmof.Data.Entity
 
         public int Id { get; set; }
         public string PostTitleDescription { get; set; } = null!;
-        public int PostTitleType { get; set; }
+        public string PostTitleType { get; set; } = null!;
         public bool IsActive { get; set; }
         public DateTime CreatAt { get; set; }
         public DateTime? UpdateAt { get; set; }

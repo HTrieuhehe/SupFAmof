@@ -121,10 +121,15 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountCertificates)
+                    .WithMany(p => p.AccountCertificateAccounts)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountCertificate_Account");
+
+                entity.HasOne(d => d.CreatePerson)
+                    .WithMany(p => p.AccountCertificateCreatePeople)
+                    .HasForeignKey(d => d.CreatePersonId)
+                    .HasConstraintName("FK_AccountCertificate_Account1");
 
                 entity.HasOne(d => d.TraningCertificate)
                     .WithMany(p => p.AccountCertificates)
@@ -171,7 +176,11 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("CheckAttendance");
 
-                entity.Property(e => e.IdStudent).HasMaxLength(15);
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.CheckAttendances)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CheckAttendance_Account");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.CheckAttendances)
@@ -230,7 +239,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Location).HasMaxLength(100);
 
-                entity.Property(e => e.PostCode).ValueGeneratedOnAdd();
+                entity.Property(e => e.PostTitleId).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
@@ -306,7 +315,9 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreatAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PostTitleDescription).HasMaxLength(50);
+                entity.Property(e => e.PostTitleDescription).HasMaxLength(100);
+
+                entity.Property(e => e.PostTitleType).HasMaxLength(10);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });

@@ -153,6 +153,35 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId)
+        {
+            Account account = _unitOfWork.Repository<Account>()
+                                         .Find(x => x.Id == accountId);
+
+            if (account == null)
+            {
+                throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                    AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+            }
+
+            account.UpdateAt = DateTime.Now;
+            account.IsActive = false;
+
+            await _unitOfWork.Repository<Account>().UpdateDetached(account);
+            await _unitOfWork.CommitAsync();
+
+            return new BaseResponseViewModel<AccountResponse>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Message = "Success",
+                    Success = true,
+                    ErrorCode = 0
+                },
+                Data = _mapper.Map<AccountResponse>(account)
+            };
+        }
+
         public async Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email)
         {
             try

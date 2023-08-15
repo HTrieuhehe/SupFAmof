@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
+using SupFAmof.Service.Service.ServiceInterface;
 using System.Net.NetworkInformation;
 
 namespace SupFAmof.API.Controllers
@@ -21,9 +23,9 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Get List Areas    
+        /// Get List Role
         /// </summary>    
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<RoleResponse>>> GetRoles
             ([FromQuery] RoleResponse request, [FromQuery] PagingRequest paging)
         {
@@ -31,26 +33,26 @@ namespace SupFAmof.API.Controllers
             {
                 return await _roleService.GetRoles(request, paging);
             }
-            catch (Exception ex)
+            catch (ErrorResponse ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Error);
             }
         }
 
         /// <summary>
         /// Get Role By Id                        
         /// </summary>
-        [HttpGet("{roleId}")]
+        [HttpGet("getById")]
         public async Task<ActionResult<BaseResponseViewModel<RoleResponse>>> GetRoleById
-            ([FromRoute] int roleId)
+            ([FromQuery] int roleId)
         {
             try
             {
                 return await _roleService.GetRoleById(roleId);
             }
-            catch (Exception ex)
+            catch (ErrorResponse ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Error);
             }
         }
     }

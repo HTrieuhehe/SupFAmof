@@ -338,10 +338,10 @@ namespace SupFAmof.Service.Service
 
         public async Task Logout(string fcmToken)
         {
-            if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
-            {
-                _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
-            }
+                if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
+                {
+                    _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
+                }
         }
 
         public async Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request)

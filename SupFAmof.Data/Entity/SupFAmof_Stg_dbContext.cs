@@ -350,6 +350,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
+                entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
+
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });
 

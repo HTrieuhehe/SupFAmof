@@ -11,7 +11,7 @@ namespace SupFAmof.Data.Entity
         }
 
         public int Id { get; set; }
-        public int TrainingTypeId { get; set; }
+        public string TrainingTypeId { get; set; } = null!;
         public string CertificateName { get; set; } = null!;
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }

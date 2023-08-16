@@ -229,8 +229,6 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("Post");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DateFrom).HasColumnType("date");
@@ -238,8 +236,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.DateTo).HasColumnType("date");
 
                 entity.Property(e => e.Location).HasMaxLength(100);
-
-                entity.Property(e => e.PostCode).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 

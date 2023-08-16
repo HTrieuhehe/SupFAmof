@@ -239,7 +239,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Location).HasMaxLength(100);
 
-                entity.Property(e => e.PostTitleId).ValueGeneratedOnAdd();
+                entity.Property(e => e.PostCode).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 

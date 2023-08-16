@@ -9,7 +9,7 @@ namespace SupFAmof.Data.MakeConnection
     {
         public static IServiceCollection ConnectToConnectionString(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<SupFAmof_Stg_dbContext>(options =>
+            services.AddDbContext<SupFAmOf_Stg_DbContext>(options =>
             {
                 options.UseLazyLoadingProxies();
             });

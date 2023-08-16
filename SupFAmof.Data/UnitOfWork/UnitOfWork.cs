@@ -10,9 +10,9 @@ namespace SupFAmof.Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly SupFAmof_Stg_dbContext _context;
+        private readonly SupFAmOf_Stg_DbContext _context;
 
-        public UnitOfWork(SupFAmof_Stg_dbContext context)
+        public UnitOfWork(SupFAmOf_Stg_DbContext context)
         {
             _context = context;
         }

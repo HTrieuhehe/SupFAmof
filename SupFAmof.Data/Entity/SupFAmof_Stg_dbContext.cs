@@ -6,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace SupFAmof.Data.Entity
 {
-    public partial class SupFAmof_Stg_dbContext : DbContext
+    public partial class SupFAmOf_Stg_DbContext : DbContext
     {
-        public SupFAmof_Stg_dbContext()
+        public SupFAmOf_Stg_DbContext()
         {
         }
 
-        public SupFAmof_Stg_dbContext(DbContextOptions<SupFAmof_Stg_dbContext> options)
+        public SupFAmOf_Stg_DbContext(DbContextOptions<SupFAmOf_Stg_DbContext> options)
             : base(options)
         {
         }
@@ -271,7 +271,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.RegistationCode).HasMaxLength(30);
+                entity.Property(e => e.RegistrationCode).HasMaxLength(30);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
@@ -279,30 +279,26 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.PostRegistrations)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistation_Account");
+                    .HasConstraintName("FK_PostRegistration_Account");
             });
 
             modelBuilder.Entity<PostRegistrationDetail>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("PostRegistrationDetail");
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Note).HasMaxLength(256);
 
                 entity.HasOne(d => d.Post)
-                    .WithMany()
+                    .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostRegistrationDetail_Post");
 
                 entity.HasOne(d => d.PostRegistration)
-                    .WithMany()
+                    .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration1");
+                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration");
             });
 
             modelBuilder.Entity<PostTitle>(entity =>

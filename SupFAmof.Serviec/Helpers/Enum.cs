@@ -22,18 +22,19 @@ namespace SupFAmof.Service.Helpers
             SystemAdmin = 3,
         }
 
-        public enum StaffErrorEnum
+        public enum PostRegistrationStatusEnum
         {
-            //404
-            [Display(Name = "Staff ID not found!")]
-            NOT_FOUND_ID = 4041,
+            [Display(Name = "Pending")]
+            Pending = 1,
 
-            //400
-            [Display(Name = "This staff already exsist!")]
-            STAFF_EXSIST = 4001,
+            [Display(Name = "Confirm")]
+            Confirm = 2,
 
-            [Display(Name = "Username or password is not correct")]
-            LOGIN_FAIL = 4002,
+            [Display(Name = "Reject")]
+            Reject = 3,
+
+            [Display(Name = "Cancel")]
+            Cancel = 4,
         }
     }
 }

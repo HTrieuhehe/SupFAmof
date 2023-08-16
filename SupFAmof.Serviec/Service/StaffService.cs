@@ -13,6 +13,7 @@ using AutoMapper.QueryableExtensions;
 using Service.Commons;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {

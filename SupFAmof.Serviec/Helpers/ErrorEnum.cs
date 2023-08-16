@@ -78,5 +78,18 @@ namespace SupFAmof.Service.Helpers
 
         }
 
+        public enum StaffErrorEnum
+        {
+            //404
+            [Display(Name = "Staff ID not found!")]
+            NOT_FOUND_ID = 4041,
+
+            //400
+            [Display(Name = "This staff already exsist!")]
+            STAFF_EXSIST = 4001,
+
+            [Display(Name = "Username or password is not correct")]
+            LOGIN_FAIL = 4002,
+        }
     }
 }

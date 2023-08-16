@@ -18,9 +18,11 @@ using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -220,6 +222,50 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+                #region Calculating Post and Salary
+
+                var postRegistrations = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                      .Include(x => x.PostRegistrationDetails)
+                                      .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                      .ToList();
+                int totalPost = 0;
+                double totalSalary = 0;
+
+                if (postRegistrations.Any())
+                {
+                    totalPost = postRegistrations.Count();
+                    foreach (var postRegistration in postRegistrations)
+                    {
+                        foreach (var detail in postRegistration.PostRegistrationDetails)
+                        {
+                            totalSalary += detail.FinalSalary;
+                        }
+                    }
+
+                    var accountResponse = _mapper.Map<AccountResponse>(account);
+
+                    accountResponse.AccountMonthlyReport.TotalPost = totalPost;
+                    accountResponse.AccountMonthlyReport.TotalSalary = totalSalary;
+
+                    #endregion
+
+                    return new BaseResponseViewModel<AccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = accountResponse
+                    };
+                }
+
+                var accountResponseMapping = _mapper.Map<AccountResponse>(account);
+
+                accountResponseMapping.AccountMonthlyReport.TotalPost = totalPost;
+                accountResponseMapping.AccountMonthlyReport.TotalSalary = totalSalary;
+
                 return new BaseResponseViewModel<AccountResponse>()
                 {
                     Status = new StatusViewModel()
@@ -228,7 +274,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AccountResponse>(account)
+                    Data = accountResponseMapping
                 };
             }
             catch (Exception ex)

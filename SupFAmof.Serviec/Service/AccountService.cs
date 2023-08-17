@@ -64,6 +64,7 @@ namespace SupFAmof.Service.Service
                 #endregion
 
                 account.RoleId = roleInfo.Id;
+                account.AccountInformationId = 0;
                 account.PostPermission = false;
                 account.IsPremium = false;
                 account.IsActive = true;

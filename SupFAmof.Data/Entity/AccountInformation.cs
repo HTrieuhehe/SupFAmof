@@ -5,6 +5,11 @@ namespace SupFAmof.Data.Entity
 {
     public partial class AccountInformation
     {
+        public AccountInformation()
+        {
+            Accounts = new HashSet<Account>();
+        }
+
         public int Id { get; set; }
         public int AccountId { get; set; }
         public string? PersonalId { get; set; }
@@ -18,5 +23,6 @@ namespace SupFAmof.Data.Entity
         public string? TaxNumber { get; set; }
 
         public virtual Account Account { get; set; } = null!;
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

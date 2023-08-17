@@ -21,6 +21,7 @@ namespace SupFAmof.Data.Entity
 
         public int Id { get; set; }
         public int RoleId { get; set; }
+        public int? AccountInformationId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
@@ -32,6 +33,7 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
+        public virtual AccountInformation? AccountInformation { get; set; }
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AccountBanking> AccountBankings { get; set; }
         public virtual ICollection<AccountBanned> AccountBanneds { get; set; }

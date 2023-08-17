@@ -71,6 +71,11 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.AccountInformation)
+                    .WithMany(p => p.Accounts)
+                    .HasForeignKey(d => d.AccountInformationId)
+                    .HasConstraintName("FK_Account_AccountInformation");
+
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)

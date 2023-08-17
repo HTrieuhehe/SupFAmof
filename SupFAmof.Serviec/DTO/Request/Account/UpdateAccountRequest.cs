@@ -9,7 +9,6 @@ namespace SupFAmof.Service.DTO.Request.Account
     public class UpdateAccountRequest
     {
         public string? Name { get; set; }
-        public string? Email { get; set; }
         public string? Phone { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? ImgUrl { get; set; }

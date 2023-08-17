@@ -35,23 +35,23 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Invalid Account")]
-            ACCOUNT_INVALID = 400,
+            ACCOUNT_INVALID = 4001,
 
             //400
             [Display(Name = "Invalid ACcount Personal ID")]
-            ACCOUNT_INVALID_PERSONAL_ID = 400,
+            ACCOUNT_INVALID_PERSONAL_ID = 4002,
 
             //400
             [Display(Name = "Account Information Existed!")]
-            ACCOUNT_INFOMRATION_EXISTED = 400,
+            ACCOUNT_INFOMRATION_EXISTED = 4003,
 
             //400
             [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 400,
+            ACCOUNT_PHONE_INVALID = 4004,
 
             //400
             [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 400,
+            ACCOUNT_STUDENTID_INVALID = 4005,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -62,15 +62,15 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Invalid Account")]
-            ACCOUNT_INVALID = 400,
+            ACCOUNT_INVALID = 4001,
 
             //400
             [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 400,
+            ACCOUNT_PHONE_INVALID = 4002,
 
             //400
             [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 400,
+            ACCOUNT_STUDENTID_INVALID = 4003,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -88,6 +88,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "This staff already exsist!")]
             STAFF_EXSIST = 4001,
 
+            //400
             [Display(Name = "Username or password is not correct")]
             LOGIN_FAIL = 4002,
         }

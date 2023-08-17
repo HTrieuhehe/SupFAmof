@@ -22,6 +22,7 @@ namespace SupFAmof.API.Mapper
             #region Account
             CreateMap<Account, AccountResponse>()
                 .ReverseMap();
+            CreateMap<AccountInformation, AccountResponse>().ReverseMap();
             CreateMap<AccountInformation, AccountInformationResponse>()
                 .ReverseMap();
            

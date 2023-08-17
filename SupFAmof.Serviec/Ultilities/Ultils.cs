@@ -94,7 +94,7 @@ namespace SupFAmof.Service.Utilities
 
         public static bool CheckPersonalId(string personId)
         {
-            string strRegex = @"^\d{6}$";
+            string strRegex = @"^\d{12}$";
             return Regex.IsMatch(personId, strRegex);
         }
     }

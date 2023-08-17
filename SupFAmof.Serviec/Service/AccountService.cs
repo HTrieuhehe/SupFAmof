@@ -135,7 +135,19 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<AccountInformation>().InsertAsync(accountInfo);
                 await _unitOfWork.CommitAsync();
 
-                var result = _mapper.Map<AccountResponse>(accountInfo);
+                //update AccountInformationId to Account Table
+                var updateAccount = _unitOfWork.Repository<AccountInformation>().GetAll().FirstOrDefault(x => x.AccountId == accountId);
+
+                account.AccountInformationId = updateAccount.Id;
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(updateAccount);
+                await _unitOfWork.CommitAsync();
+
+                //response new Infomation
+                var finalInfo = _unitOfWork.Repository<Account>().GetAll()
+                                       .FirstOrDefault(x => x.Id == accountId);
+
+                var result = _mapper.Map<AccountResponse>(finalInfo);
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {

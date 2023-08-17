@@ -27,6 +27,7 @@ namespace SupFAmof.Data.Entity
         public string Location { get; set; } = null!;
         public bool AttendanceComplete { get; set; }
         public bool IsActive { get; set; }
+        public bool IsEnd { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

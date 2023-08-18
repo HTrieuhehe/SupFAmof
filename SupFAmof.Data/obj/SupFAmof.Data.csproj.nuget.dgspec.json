@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "F:\\CapstoneProject\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj": {}
+    "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj": {}
   },
   "projects": {
-    "F:\\CapstoneProject\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj": {
+    "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\CapstoneProject\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj",
         "projectName": "SupFAmof.Data",
-        "projectPath": "F:\\CapstoneProject\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj",
-        "packagesPath": "C:\\Users\\Hai Trieu\\.nuget\\packages\\",
-        "outputPath": "F:\\CapstoneProject\\SupFAmof\\SupFAmof.Data\\obj\\",
+        "projectPath": "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Data\\SupFAmof.Data.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Data\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Hai Trieu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -69,6 +65,14 @@
             "Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite": {
               "target": "Package",
               "version": "[6.0.16, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[6.0.0, )"
             }
           },
           "imports": [

@@ -75,8 +75,5 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-
-
-        //test CICD
     }
 }

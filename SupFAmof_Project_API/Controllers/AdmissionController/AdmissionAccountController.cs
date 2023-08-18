@@ -1,0 +1,133 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SupFAmof.Service.DTO.Request.Account;
+using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.Service;
+using SupFAmof.Service.Service.ServiceInterface.AdmissionIService;
+using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+
+namespace SupFAmof.API.Controllers.AdmissionController
+{
+    [Route(Helpers.SettingVersionAPI.ApiAdmisionVersion)]
+    [ApiController]
+    public class AdmissionAccountController : ControllerBase
+    {
+        private IAdmissionAccountService _admissionAccountService;
+
+        public AdmissionAccountController(IAdmissionAccountService admissionAccountService)
+        {
+            _admissionAccountService = admissionAccountService;
+        }
+
+        /// <summary>
+        /// Get Account By Id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getAccountById")]
+        public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
+        {
+            try
+            {
+                var result = await _admissionAccountService.GetAccountById(accountId);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Get Account By Token
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getAccountByToken/authorization")]
+        public async Task<ActionResult<AccountResponse>> GetAccountByToken()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (accountId == -1)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.GetAccountById(accountId);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Account
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("update")]
+        public async Task<ActionResult<AccountResponse>> UpdateAccount([FromBody] UpdateAdmissionAccountRequest data)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (accountId == -1)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.UpdateAccount(accountId, data);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Google Login
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost("login")]
+        public async Task<ActionResult<AccountResponse>> LoginGoogle([FromBody] ExternalAuthRequest data)
+        {
+            try
+            {
+                var result = await _admissionAccountService.Login(data);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Disable Account
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("disable")]
+        public async Task<ActionResult<AccountResponse>> DisableAccount()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (accountId == -1)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.DisableAccount(accountId);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+    }
+}

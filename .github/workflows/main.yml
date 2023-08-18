@@ -19,7 +19,10 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Navigate to project directory
-      run: cd SupFAmof_Project_API  # Update this path if needed
+      run: cd SupFAmof_Project_API
+
+    - name: Restore NuGet packages
+      run: dotnet restore
 
     - name: Build and publish
       run: |

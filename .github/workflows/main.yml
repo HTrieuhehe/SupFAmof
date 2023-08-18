@@ -19,14 +19,14 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Navigate to project directory
-      run: cd SupFAmof
+      run: cd SupFAmof_Project_API
 
     - name: Restore NuGet packages
       run: dotnet restore
 
     - name: Build and publish
       run: |
-        dotnet publish -c Release -o out
+        dotnet publish -c Release -o app/out
         echo "Application published to out directory"
 
     - name: Build Docker image

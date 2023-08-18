@@ -18,15 +18,15 @@ jobs:
       with:
         dotnet-version: 6.0.x
     
-    
+
     - name: Build and publish
       run: |
-        dotnet publish -c Release -o app/out "SupFAmof.API.csproj"
+       dotnet publish SupFAmof_Project_API.sln -c Release -o out
         echo "Application published to app/out directory"
+
 
     - name: Build Docker image
       run: |
-        cd ..
         docker build -t manh222/supfamof:0.0.4 .
         docker push manh222/supfamof:0.0.4
 

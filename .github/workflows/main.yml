@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Navigate to project directory
-      run: cd SupFAmof_Project_API
+      run: cd SupFAmof
 
     - name: Restore NuGet packages
       run: dotnet restore

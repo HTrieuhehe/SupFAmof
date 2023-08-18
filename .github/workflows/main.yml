@@ -18,6 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     
+    
     - name: Build and publish
       run: |
         dotnet publish -c Release -o app/out "SupFAmof.API.csproj"

@@ -21,7 +21,7 @@ jobs:
     - name: Log in to Docker Hub
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        
+
     - name: Build Docker image
       run: |
         docker build -t manh222/supfamof:0.0.4 .
@@ -39,4 +39,5 @@ jobs:
           sudo docker rm my-testdeploy || true
           sudo docker pull manh222/supfamof:0.0.4
           sudo docker run -d --name my-testdeploy -p 7049:80 manh222/supfamof:0.0.4
+
 

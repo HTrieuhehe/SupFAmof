@@ -8,6 +8,7 @@ using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.DTO.Request.Admission;
 
 namespace SupFAmof.API.Mapper
 {
@@ -53,6 +54,12 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
             CreateMap<UpdateAdmissionAccountRequest, Account>();
 
+            #endregion
+
+            #region Admission PostTitle
+            CreateMap<PostTitle, PostTitleResponse>().ReverseMap();
+            CreateMap<CreatePostTitleRequest, PostTitle>();
+            CreateMap<UpdatePostTitleRequest, PostTitle>();
             #endregion
         }
     }

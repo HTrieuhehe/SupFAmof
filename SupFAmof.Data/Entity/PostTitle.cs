@@ -15,7 +15,7 @@ namespace SupFAmof.Data.Entity
         public string PostTitleDescription { get; set; } = null!;
         public string PostTitleType { get; set; } = null!;
         public bool IsActive { get; set; }
-        public DateTime CreatAt { get; set; }
+        public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public virtual ICollection<Contract> Contracts { get; set; }

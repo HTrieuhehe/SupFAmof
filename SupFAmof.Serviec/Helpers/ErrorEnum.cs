@@ -92,5 +92,20 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Username or password is not correct")]
             LOGIN_FAIL = 4002,
         }
+
+        public enum PostTitleErrorEnum
+        {
+            //400
+            [Display(Name = "Post Title Type can not null or empty")]
+            INVALID_POST_TITLE_TYPE = 4001,
+
+            //400
+            [Display(Name = "Post Title Type Existed")]
+            POST_TITLE_TYPE_EXISTED = 4002,
+
+            //404
+            [Display(Name = "Post Title ID not found!")]
+            NOT_FOUND_ID = 4041,
+        }
     }
 }

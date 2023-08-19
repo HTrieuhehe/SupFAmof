@@ -310,7 +310,7 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("PostTitle");
 
-                entity.Property(e => e.CreatAt).HasColumnType("datetime");
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.PostTitleDescription).HasMaxLength(100);
 

@@ -12,11 +12,11 @@ namespace SupFAmof.API.Controllers
     [ApiController]
     public class PostRegistrationController : ControllerBase
     {
-        private readonly PostRegistrationIService postRegistrationService;
+        private readonly PostRegistrationIService _postRegistrationService;
 
         public PostRegistrationController(PostRegistrationIService postRegistrationService)
         {
-            this.postRegistrationService = postRegistrationService;
+            _postRegistrationService = postRegistrationService;
         }
 
 
@@ -28,12 +28,12 @@ namespace SupFAmof.API.Controllers
         /// - 200 OK: Returns a list of PostRegistrationResponse objects associated with the specified accountId.
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
-        [HttpGet]
+        [HttpGet("getById")]
         public async Task<ActionResult<List<PostRegistrationResponse>>> GetPostRegistrationsByAccountId(int accountId)
         {
             try
             {
-                var result = await postRegistrationService.GetPostRegistrationByAccountId(accountId);
+                var result = await _postRegistrationService.GetPostRegistrationByAccountId(accountId);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -42,24 +42,12 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
             try
             {
-                var result = await postRegistrationService.CreatePostRegistration(request);
-                return Ok(result);
-            }catch(ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
-        [HttpPost("create-post-registration-detail")]
-        public async Task<ActionResult<PostRegistrationDetailResponse>> CreatePostRegistrationDetail(PostRegistrationDetailRequest request)
-        {
-            try
-            {
-                var result = await postRegistrationService.CreatePostRegistrationDetail(request);
+                var result = await _postRegistrationService.CreatePostRegistration(request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -68,21 +56,28 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpDelete("cancel-post-registration")]
-        public async Task<ActionResult> CancelPostRegistration(int postRegistrationId)
+        [HttpPost("createDetail")]
+        public async Task<ActionResult<PostRegistrationDetailResponse>> CreatePostRegistrationDetail(PostRegistrationDetailRequest request)
         {
             try
             {
-                postRegistrationService.CancelPostregistration(postRegistrationId);
-                StatusViewModel? statusviewModel= new StatusViewModel
-                {
-                    ErrorCode = 0,
-                Success = true,
-                Message = "Cancel Successfully"
+                var result = await _postRegistrationService.CreatePostRegistrationDetail(request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
 
-            };
-                return Ok(statusviewModel);
-            }catch(ErrorResponse ex)
+        [HttpDelete("cancel")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
+        {
+            try
+            {
+                return await _postRegistrationService.CancelPostregistration(postRegistrationId);
+            }
+            catch (ErrorResponse ex)
             {
                 return BadRequest(ex);
             }

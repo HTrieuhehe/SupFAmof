@@ -95,11 +95,9 @@ namespace SupFAmof.Service.Helpers
 
         public enum PostRegistrationErrorEnum
         {
-
             //404
             [Display(Name = "Post Registration not found!")]
-            NOT_FOUND_POST = 404,
-
+            NOT_FOUND_POST = 4041,
         }
 
     }

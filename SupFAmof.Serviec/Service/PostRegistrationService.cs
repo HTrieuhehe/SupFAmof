@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using System.Threading.Channels;
 
 namespace SupFAmof.Service.Service
 {
@@ -114,20 +115,37 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task CancelPostregistration (int postRegistrationId)
+
+        public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int postRegistrationId)
         {
             try
             {
-                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x=>x.Id == postRegistrationId);
-                if(postRegistration == null)
+                var postRegistration = _unitOfWork.Repository<PostRegistration>()
+                                                .GetAll()
+                                                .FirstOrDefault(x => x.Id == postRegistrationId);
+                
+                if (postRegistration == null)
                 {
-                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST, PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST, 
+                                            PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
+                
                 postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
+
                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                 await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Success = true,
+                        Message = "Cancel Successfully",
+                        ErrorCode = 200
+                    }
+                };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }

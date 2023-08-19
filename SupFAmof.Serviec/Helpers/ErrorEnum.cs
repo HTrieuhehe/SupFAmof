@@ -100,5 +100,19 @@ namespace SupFAmof.Service.Helpers
             NOT_FOUND_POST = 4041,
         }
 
+        public enum PostTitleErrorEnum
+        {
+            //404
+            [Display(Name = "Post Title existed!")]
+            POST_TITLE_TYPE_EXISTED = 4001,
+
+            //404
+            [Display(Name = "Post Title Type invalid!")]
+            INVALID_POST_TITLE_TYPE = 4001,
+
+            //404
+            [Display(Name = "Post Title not found!")]
+            NOT_FOUND_ID = 4041,
+        }    
     }
 }

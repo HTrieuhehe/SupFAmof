@@ -138,7 +138,5 @@ namespace SupFAmof.API
                 endpoints.MapControllers();
             });
         }
-
-
     }
 }

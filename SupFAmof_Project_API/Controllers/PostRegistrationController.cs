@@ -56,19 +56,6 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpPost("createDetail")]
-        public async Task<ActionResult<PostRegistrationDetailResponse>> CreatePostRegistrationDetail(PostRegistrationDetailRequest request)
-        {
-            try
-            {
-                var result = await _postRegistrationService.CreatePostRegistrationDetail(request);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
 
         [HttpDelete("cancel")]
         public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)

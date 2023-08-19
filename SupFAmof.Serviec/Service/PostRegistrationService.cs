@@ -2,6 +2,7 @@
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using System.Security.Principal;
+using System.Threading.Channels;
 using SupFAmof.Service.Exceptions;
 using Microsoft.OpenApi.Extensions;
 using SupFAmof.Service.DTO.Request;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using System.Threading.Channels;
 
 namespace SupFAmof.Service.Service
 {
@@ -90,31 +90,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<PostRegistrationDetailResponse>> CreatePostRegistrationDetail(PostRegistrationDetailRequest request)
-        {
-            try
-            {
-                var PostRegistration = _mapper.Map<PostRegistrationDetail>(request);
-                string specific = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                await _unitOfWork.Repository<PostRegistrationDetail>().InsertAsync(PostRegistration);
-                await _unitOfWork.CommitAsync();
-                return new BaseResponseViewModel<PostRegistrationDetailResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<PostRegistrationDetailResponse>(PostRegistration)
-                };
-
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+       
 
         public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int postRegistrationId)
         {

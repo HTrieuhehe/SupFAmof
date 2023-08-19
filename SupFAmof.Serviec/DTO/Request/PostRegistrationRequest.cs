@@ -11,11 +11,11 @@ namespace SupFAmof.Service.DTO.Request
         public int AccountId { get; set; }
         public string RegistrationCode { get; set; } = null!;
         public bool? SchoolBusOption { get; set; }
+        public ICollection<PostRegistrationDetailRequest> PostRegistrationDetails { get; set; }
     }
 
     public class PostRegistrationDetailRequest
     {
-        public int PostRegistrationId { get; set; }
         public int PostId { get; set; }
         public int PositionId { get; set; }
     }

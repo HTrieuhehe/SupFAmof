@@ -66,9 +66,15 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
                 .ReverseMap();
-            CreateMap<PostRegistrationRequest,PostRegistration>().ReverseMap();
+          
             CreateMap<PostRegistrationDetailRequest, PostRegistrationDetail>().ReverseMap();
-            
+            CreateMap<PostRegistrationRequest, PostRegistration>()
+              .ForMember(dest => dest.PostRegistrationDetails, opt =>
+              {
+                  opt.MapFrom(src => src.PostRegistrationDetails);
+              })
+              .ReverseMap();
+
 
             #endregion
         }

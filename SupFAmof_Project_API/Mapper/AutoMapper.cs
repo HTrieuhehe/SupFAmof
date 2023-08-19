@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using System.Text;
 using SupFAmof.Data.Entity;
+using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Request.Staff;
 using SupFAmof.Service.DTO.Request.Account;
-using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 
 namespace SupFAmof.API.Mapper
@@ -52,6 +53,22 @@ namespace SupFAmof.API.Mapper
             CreateMap<Account, AdmissionAccountResponse>()
                 .ReverseMap();
             CreateMap<UpdateAdmissionAccountRequest, Account>();
+
+            #endregion
+
+            #region PostRegistration
+            CreateMap<PostRegistration, PostRegistrationResponse>()
+              .ForMember(dest => dest.PostRegistrationDetails, opt =>
+              {
+                  opt.MapFrom(src => src.PostRegistrationDetails);
+              })
+              .ReverseMap();
+
+            CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
+                .ReverseMap();
+            CreateMap<PostRegistrationRequest,PostRegistration>().ReverseMap();
+            CreateMap<PostRegistrationDetailRequest, PostRegistrationDetail>().ReverseMap();
+            
 
             #endregion
         }

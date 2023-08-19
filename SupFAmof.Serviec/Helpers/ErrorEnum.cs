@@ -92,5 +92,15 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Username or password is not correct")]
             LOGIN_FAIL = 4002,
         }
+
+        public enum PostRegistrationErrorEnum
+        {
+
+            //404
+            [Display(Name = "Post Registration not found!")]
+            NOT_FOUND_POST = 404,
+
+        }
+
     }
 }

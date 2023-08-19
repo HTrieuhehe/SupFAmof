@@ -9,9 +9,9 @@ using SupFAmof.Data.Repository;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
 using SupFAmof.Data.MakeConnection;
+using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API
 {
@@ -108,6 +108,8 @@ namespace SupFAmof.API
             builder.RegisterType<FcmTokenService>().As<IFcmTokenService>();
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<StaffService>().As<IStaffService>();
+            builder.RegisterType<PostRegistrationService>().As<PostRegistrationIService>();
+
 
 
             builder.RegisterGeneric(typeof(GenericRepository<>))

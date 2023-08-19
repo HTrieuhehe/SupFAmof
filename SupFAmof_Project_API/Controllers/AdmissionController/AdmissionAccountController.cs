@@ -4,9 +4,9 @@ using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Service;
-using SupFAmof.Service.Service.ServiceInterface.AdmissionIService;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -14,9 +14,9 @@ namespace SupFAmof.API.Controllers.AdmissionController
     [ApiController]
     public class AdmissionAccountController : ControllerBase
     {
-        private IAdmissionAccountService _admissionAccountService;
+        private IAccountService _admissionAccountService;
 
-        public AdmissionAccountController(IAdmissionAccountService admissionAccountService)
+        public AdmissionAccountController(IAccountService admissionAccountService)
         {
             _admissionAccountService = admissionAccountService;
         }
@@ -78,7 +78,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.UpdateAccount(accountId, data);
+                var result = await _admissionAccountService.UpdateAdmissionAccount(accountId, data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

@@ -12,8 +12,6 @@ using SupFAmof.Data.MakeConnection;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SupFAmof.Service.Service.ServiceInterface;
-using SupFAmof.Service.Service.AdmissionService;
-using SupFAmof.Service.Service.ServiceInterface.AdmissionIService;
 
 namespace SupFAmof.API
 {
@@ -111,9 +109,6 @@ namespace SupFAmof.API
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<StaffService>().As<IStaffService>();
 
-            #region Admission
-            builder.RegisterType<AdmissionAccountService>().As<IAdmissionAccountService>();
-            #endregion
 
             builder.RegisterGeneric(typeof(GenericRepository<>))
             .As(typeof(IGenericRepository<>))

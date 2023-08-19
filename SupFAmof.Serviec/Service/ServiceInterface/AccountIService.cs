@@ -1,6 +1,8 @@
 ﻿using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
@@ -12,6 +14,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountResponse>> CreateAccount(CreateAccountRequest request);
         Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, CreateAccountInformationRequest request);
         Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request);
+        Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccount(int accountId, UpdateAdmissionAccountRequest request);
         Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId);
         Task Logout(string fcmToken);
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);

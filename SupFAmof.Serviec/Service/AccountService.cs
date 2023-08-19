@@ -11,7 +11,9 @@ using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Request.Account;
+using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -486,6 +488,52 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccount(int accountId, UpdateAdmissionAccountRequest request)
+        {
+            try
+            {
+                Account account = _unitOfWork.Repository<Account>()
+                                         .Find(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+
+                var checkPhone = Ultils.CheckVNPhone(request.Phone);
+
+                if (checkPhone == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
+                                        AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                }
+
+                account = _mapper.Map<UpdateAdmissionAccountRequest, Account>(request, account);
+
+                account.UpdateAt = DateTime.Now;
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionAccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionAccountResponse>(account)
+                };
+            }
+            catch (Exception ex)
             {
                 throw;
             }

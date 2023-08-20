@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
-using FirebaseAdmin;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
-using System.Security.Principal;
-using System.Threading.Channels;
 using SupFAmof.Service.Exceptions;
 using Microsoft.OpenApi.Extensions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
@@ -182,27 +178,29 @@ namespace SupFAmof.Service.Service
             {
                 var original = _unitOfWork.Repository<PostRegistration>()
                                           .GetAll()
-                                          .SingleOrDefault(x => x.Id == PotRegistrationRequestId);
-                if (original == null|| request==null)
+                                          .FirstOrDefault(x => x.Id == PotRegistrationRequestId);
+                if (original == null || request == null)
                 {
                     throw new ErrorResponse(404,
                         (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                         PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                }else if (!CompareDateTime(original.CreateAt, request.CreateAt,TimeSpan.FromHours(2)))
+                }
+                else if (!CompareDateTime(original.CreateAt, request.CreateAt, TimeSpan.FromHours(2)))
                 {
                     throw new ErrorResponse(400,
                        (int)PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT,
                        PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT.GetDisplayName());
-                }else
+                }
+                else
                 {
-                    original.Status = (int)PostRegistrationStatusEnum.Update_Request;
-                    original.SchoolBusOption = request.SchoolBusOption;
-                    original.CreateAt = request.CreateAt;
-                    original.PostRegistrationDetails.First().PositionId = request.PostRegistrationDetails.First().PositionId;
-
-                    var updatedEntity = _mapper.Map<PostRegistrationRequest>(original);
-                    var finalUpdate = _mapper.Map<PostRegistration>(updatedEntity);
-                    await _unitOfWork.Repository<PostRegistration>().InsertAsync(finalUpdate);
+                    var updateEntity = _mapper.Map<PostRegistration>(request);
+                    string specific = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    updateEntity.CreateAt = DateTime.Parse(specific);
+                    updateEntity.AccountId = original.AccountId;
+                    updateEntity.RegistrationCode = "UPDATE REQUEST";
+                    updateEntity.Status = (int)PostRegistrationStatusEnum.Update_Request;
+                    updateEntity.PostRegistrationDetails.First().PostId = original.PostRegistrationDetails.First().PostId;
+                    await _unitOfWork.Repository<PostRegistration>().InsertAsync(updateEntity);
                     await _unitOfWork.CommitAsync();
                     return new BaseResponseViewModel<PostRegistrationResponse>()
                     {
@@ -212,13 +210,55 @@ namespace SupFAmof.Service.Service
                             Success = true,
                             ErrorCode = 0
                         },
-                        Data = _mapper.Map<PostRegistrationResponse>(original)
+                        Data = _mapper.Map<PostRegistrationResponse>(updateEntity)
                     };
                 }
-                
-                
-            }catch
+            }
+            catch
             (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id)
+        {
+            try
+            {
+                var FindRequest = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Id == Id);
+                if(FindRequest==null)
+                {
+                    throw new ErrorResponse(404,
+                        (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
+                var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.AccountId == FindRequest.AccountId
+                                                                                && x.PostRegistrationDetails.First().PostId == FindRequest.PostRegistrationDetails.First().PostId);
+                var CheckMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
+                if(CheckMatching.Contains(matchingEntity))
+                {
+                    matchingEntity.SchoolBusOption = FindRequest.SchoolBusOption;
+                    matchingEntity.PostRegistrationDetails.First().PositionId = FindRequest.PostRegistrationDetails.First().PositionId;
+                    if (CompareDateTime(matchingEntity.CreateAt, FindRequest.CreateAt, TimeSpan.FromHours(2)))
+                    {
+                        matchingEntity.UpdateAt = DateTime.Now;
+                        await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity,matchingEntity.Id);
+                        await _unitOfWork.CommitAsync();
+
+                    }
+                 
+                }
+                return new BaseResponseViewModel<PostRegistrationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<PostRegistrationResponse>(matchingEntity)
+                };
+            }
+            catch(Exception ex)
             {
                 throw;
             }

@@ -12,7 +12,9 @@ namespace SupFAmof.Service.DTO.Request
         public int AccountId { get; set; }
         public string RegistrationCode { get; set; } = null!;
         [JsonIgnore]
-        public DateTime CreateAt { get; set; } 
+        public DateTime CreateAt { get; set; }
+        [JsonIgnore]
+        public int Status { get; set; }
         public bool? SchoolBusOption { get; set; }
         public ICollection<PostRegistrationDetailRequest> PostRegistrationDetails { get; set; }
     }

@@ -7,6 +7,7 @@ using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.API.Controllers
 {
@@ -49,12 +50,12 @@ namespace SupFAmof.API.Controllers
             try
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
                 {
                     return Unauthorized();
                 }
-                var result = await _accountService.GetAccountById(accountId);
+                var result = await _accountService.GetAccountById(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -72,13 +73,14 @@ namespace SupFAmof.API.Controllers
         {
             try
             {
+
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
                 {
                     return Unauthorized();
                 }
-                var result = await _accountService.UpdateAccount(accountId, data);
+                var result = await _accountService.UpdateAccount(account.Id, data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -97,13 +99,14 @@ namespace SupFAmof.API.Controllers
         {
             try
             {
+
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
                 {
                     return Unauthorized();
                 }
-                var result = await _accountService.CreateAccountInformation(accountId, request);
+                var result = await _accountService.CreateAccountInformation(account.Id, request);
                 return Ok(result);
             }
             catch(ErrorResponse ex)
@@ -140,13 +143,14 @@ namespace SupFAmof.API.Controllers
         {
             try
             {
+
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
                 {
                     return Unauthorized();
                 }
-                var result = await _accountService.DisableAccount(accountId);
+                var result = await _accountService.DisableAccount(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

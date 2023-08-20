@@ -10,7 +10,7 @@ using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers.AdminController
 {
-    [Route(Helpers.SettingVersionAPI.ApiAdminVersion + "/staff")]
+    [Route(Helpers.SettingVersionAPI.ApiAdminVersion)]
     [ApiController]
     public class AdminStaffController : ControllerBase
     {
@@ -24,7 +24,7 @@ namespace SupFAmof.API.Controllers.AdminController
         /// <summary>
         /// Get List Staff    
         /// </summary>
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<StaffResponse>>> GetStaffs
             ([FromQuery] StaffResponse request, [FromQuery] PagingRequest paging)
         {
@@ -34,7 +34,7 @@ namespace SupFAmof.API.Controllers.AdminController
         /// <summary>
         /// Get Staff By Id
         /// </summary>
-        [HttpGet("{staffId}")]
+        [HttpGet("getById")]
         public async Task<ActionResult<BaseResponseViewModel<StaffResponse>>> GetStaffById
             ([FromRoute] int staffId)
         {
@@ -44,7 +44,7 @@ namespace SupFAmof.API.Controllers.AdminController
         /// <summary>
         /// Create Admin Account                        
         /// </summary>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<BaseResponseViewModel<StaffResponse>>> CreateAdminManager([FromBody] CreateStaffRequest request)
         {
             return await _staffService.CreateAdminManager(request);
@@ -53,18 +53,18 @@ namespace SupFAmof.API.Controllers.AdminController
         /// <summary>
         /// Update Staff 
         /// </summary>
-        [HttpPut("{staffId}")]
+        [HttpPut("update")]
         public async Task<ActionResult<BaseResponseViewModel<StaffResponse>>> UpdateStaff
             ([FromRoute] int staffId, [FromBody] UpdateStaffRequest request)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
-                {
-                    return Unauthorized();
-                }
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (accountId.Id == -1)
+                //{
+                //    return Unauthorized();
+                //}
                 var result = await _staffService.UpdateStaff(staffId, request);
                 return Ok(result);
             }

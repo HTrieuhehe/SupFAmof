@@ -98,6 +98,14 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Post Registration not found!")]
             NOT_FOUND_POST = 4041,
+
+            //400
+            [Display(Name = "UPDATE POST REGISTRATION FAILED")]
+            UPDATE_FAILED_POST = 400,
+
+            //400
+            [Display(Name = "EXCEEDING TIME LIMIT ")]
+            EXCEEDING_TIME_LIMIT = 400,
         }
 
     }

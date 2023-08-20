@@ -41,7 +41,29 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-
+        /// <summary>
+        /// This action method handles an HTTP POST request to create a request a PostRegistration objects.
+        /// </summary>
+        /// <param name="request">The PostRegistrationRequest create the PostRegistration objects.</param>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /create
+        ///      {
+        ///       "accountId": 5,
+        ///       "registrationCode": "REGISTRATE #5",
+        ///       "schoolBusOption": true,
+        ///       "postRegistrationDetails": [
+        ///         {
+        ///           "postId": 1,
+        ///            "positionId": 1
+        ///         }
+        ///       ]
+        ///       }
+        ///
+        /// </remarks>
+        /// <response code="200">Returns the newly created item</response>
+        /// <response code="400">Failed to create</response>
         [HttpPost("create")]
         public async Task<ActionResult<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
@@ -55,8 +77,12 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-
-
+        /// <summary>
+        /// Cancel Post Registration By Id.
+        /// </summary>
+        /// <param name="postRegistrationId">Id need to be submitted.</param>
+        /// <response code="200">Cancel success</response>
+        /// <response code="400">Failed to Cancel</response>
         [HttpDelete("cancel")]
         public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
         {
@@ -69,6 +95,51 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex);
             }
         }
+        /// <summary>
+        /// Update Post Registration By Id.
+        /// </summary>
+        /// <param name="postRegistrationId">Id need to be submitted.</param>
+        /// <param name="request">Update object</param>
+        ///     {
+        ///     "schoolBusOption": true,
+        ///     "postRegistrationDetails": [
+        ///        {
+        ///         "positionId": 0
+        ///        }
+        ///     ]
+        ///     }
+        /// <response code="200">Update success</response>
+        /// <response code="400">Failed to Update</response>
+        [HttpPut("update")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId,PostRegistrationUpdateRequest request)
+        {
+            try
+            {
+                var result = await _postRegistrationService.UpdatePostRegistration(postRegistrationId, request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+
+        [HttpPost("sendUpdateRquest")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> SendUpdateRequest(int postRegistrationId,PostRegistrationUpdateBookingRequest request)
+        {
+            try
+            {
+                var result = await _postRegistrationService.UpdateRequest(postRegistrationId,request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+
+        }
 
     }
+    
 }

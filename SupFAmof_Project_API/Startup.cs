@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using FirebaseAdmin;
+using System.Reflection;
 using SupFAmof.API.Mapper;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.AppStart;
@@ -59,7 +60,8 @@ namespace SupFAmof.API
                     Title = "SupFAmof API",
                     Version = "v1"
                 });
-
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
                 var securitySchema = new OpenApiSecurityScheme

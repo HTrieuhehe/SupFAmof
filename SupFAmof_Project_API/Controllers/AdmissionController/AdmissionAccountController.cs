@@ -7,6 +7,9 @@ using SupFAmof.Service.Service;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Data.Entity;
+using System.Security.Principal;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -49,12 +52,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
             try
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.GetAccountById(accountId);
+                var result = await _admissionAccountService.GetAccountById(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -73,12 +76,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
             try
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.UpdateAdmissionAccount(accountId, data);
+                var result = await _admissionAccountService.UpdateAdmissionAccount(account.Id, data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -116,12 +119,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
             try
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var accountId = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (accountId == -1)
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.DisableAccount(accountId);
+                var result = await _admissionAccountService.DisableAccount(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

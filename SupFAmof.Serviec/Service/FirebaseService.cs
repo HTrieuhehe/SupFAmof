@@ -10,7 +10,7 @@ namespace SupFAmof.Service.Service
 {
     public class FireBaseService
     {
-        public static int GetUserIdFromHeaderToken(string accessToken)
+        public static GetUser GetUserIdFromHeaderToken(string accessToken)
         {
             var handler = new JwtSecurityTokenHandler();
             try
@@ -19,12 +19,26 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception)
             {
-                return -1;
+                return new GetUser()
+                {
+                    Id = -1
+                };
             }
             var tokenS = handler.ReadToken(accessToken) as JwtSecurityToken;
             var claims = tokenS.Claims;
             var id = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value.ToString());
-            return id;
+            var roleId = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value.ToString());
+            return new GetUser()
+            {
+                Id = id,
+                RoleId = roleId,
+            };
+        }
+
+        public class GetUser
+        {
+            public int Id { get; set; }
+            public int RoleId { get; set; }
         }
     }
 }

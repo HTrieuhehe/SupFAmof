@@ -391,9 +391,9 @@ namespace SupFAmof.Service.Service
                 else
                 {
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, 0, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
-                    //Add fcm token 
+                    //Add fcm token     
                     if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
                         _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
 

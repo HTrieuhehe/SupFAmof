@@ -10,6 +10,12 @@ namespace SupFAmof.Service.Helpers
 {
     public class Enum
     {
+        public enum SystemAuthorize
+        {
+            [Display(Name = "Not Authorize")]
+            NotAuthorize = -1,
+        }
+
         public enum SystemRoleEnum
         {
             [Display(Name = "Cán bộ tuyển sinh")]

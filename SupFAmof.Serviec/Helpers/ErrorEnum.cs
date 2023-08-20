@@ -102,17 +102,32 @@ namespace SupFAmof.Service.Helpers
 
         public enum PostTitleErrorEnum
         {
-            //404
+            //400
             [Display(Name = "Post Title existed!")]
             POST_TITLE_TYPE_EXISTED = 4001,
 
-            //404
+            //400
             [Display(Name = "Post Title Type invalid!")]
             INVALID_POST_TITLE_TYPE = 4001,
 
             //404
             [Display(Name = "Post Title not found!")]
             NOT_FOUND_ID = 4041,
-        }    
+        }
+
+        public enum TrainingCertificateErrorEnum
+        {
+            //404
+            [Display(Name = "Training Certificate existed!")]
+            TRAINING_CERTIFICATE_EXISTED = 4001,
+
+            //404
+            [Display(Name = "Training Certificate Type invalid!")]
+            INVALID_TRAINING_CERTIFICAT_TYPE = 4001,
+
+            //404
+            [Display(Name = "Training Certificate not found!")]
+            NOT_FOUND_ID = 4041,
+        }
     }
 }

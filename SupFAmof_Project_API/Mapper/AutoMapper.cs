@@ -85,6 +85,12 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreatePostTitleRequest, PostTitle>();
             CreateMap<UpdatePostTitleRequest, PostTitle>();
             #endregion
+
+            #region Admission Training Certificate
+            CreateMap<TranningCertificate, TrainingCertificateResponse>().ReverseMap();
+            CreateMap<CreateTrainingCertificateRequest, TranningCertificate>();
+            CreateMap<UpdateTrainingCertificateRequest, TranningCertificate>();
+            #endregion
         }
     }
 }

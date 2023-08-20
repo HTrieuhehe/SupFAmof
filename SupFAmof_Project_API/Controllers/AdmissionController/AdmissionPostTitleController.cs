@@ -7,6 +7,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -64,6 +65,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await _postTitleService.CreatePostTitle(request);
             }
             catch (ErrorResponse ex)
@@ -81,6 +88,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await _postTitleService.UpdatePostTitle(postTitleId, request);
             }
             catch (ErrorResponse ex)

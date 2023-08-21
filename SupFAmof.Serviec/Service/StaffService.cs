@@ -41,7 +41,7 @@ namespace SupFAmof.Service.Service
 
             if (checkStaff != null)
             {
-                throw new ErrorResponse(404, (int)StaffErrorEnum.STAFF_EXSIST,
+                throw new ErrorResponse(400, (int)StaffErrorEnum.STAFF_EXSIST,
                                     StaffErrorEnum.STAFF_EXSIST.GetDisplayName());
             }
             var staff = _mapper.Map<CreateStaffRequest, staff>(request);

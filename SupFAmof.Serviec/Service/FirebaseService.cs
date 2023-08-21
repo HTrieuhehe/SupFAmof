@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.Service.Service
 {
@@ -21,7 +22,7 @@ namespace SupFAmof.Service.Service
             {
                 return new GetUser()
                 {
-                    Id = -1
+                    Id = (int)SystemAuthorize.NotAuthorize
                 };
             }
             var tokenS = handler.ReadToken(accessToken) as JwtSecurityToken;

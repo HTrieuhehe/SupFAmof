@@ -94,8 +94,8 @@ namespace SupFAmof.Service.Service
             {
                 if (request.TrainingTypeId == null || request.TrainingTypeId == "")
                 {
-                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICAT_TYPE,
-                                        TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICAT_TYPE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE,
+                                        TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
                 var tranningCertificate = _unitOfWork.Repository<TranningCertificate>()
@@ -145,8 +145,8 @@ namespace SupFAmof.Service.Service
 
                 if (request.TrainingTypeId == null || request.TrainingTypeId == "")
                 {
-                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICAT_TYPE,
-                                        TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICAT_TYPE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE,
+                                        TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
                 var updateTrainingCertificate = _mapper.Map<UpdateTrainingCertificateRequest, TranningCertificate>(request, tranningCertificate);

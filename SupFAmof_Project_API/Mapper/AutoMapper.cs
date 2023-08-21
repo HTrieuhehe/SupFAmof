@@ -91,6 +91,11 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateTrainingCertificateRequest, TranningCertificate>();
             CreateMap<UpdateTrainingCertificateRequest, TranningCertificate>();
             #endregion
+
+            #region Admission Account Certificate
+            CreateMap<AccountCertificate, AccountCertificateResponse>().ReverseMap();
+            CreateMap<CreateAccountCertificateRequest, AccountCertificate>();
+            #endregion
         }
     }
 }

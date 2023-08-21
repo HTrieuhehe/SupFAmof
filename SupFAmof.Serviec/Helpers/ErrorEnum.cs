@@ -117,16 +117,31 @@ namespace SupFAmof.Service.Helpers
 
         public enum TrainingCertificateErrorEnum
         {
-            //404
+            //400
             [Display(Name = "Training Certificate existed!")]
             TRAINING_CERTIFICATE_EXISTED = 4001,
 
-            //404
+            //400
             [Display(Name = "Training Certificate Type invalid!")]
-            INVALID_TRAINING_CERTIFICAT_TYPE = 4001,
+            INVALID_TRAINING_CERTIFICATE_TYPE = 4002,
 
             //404
             [Display(Name = "Training Certificate not found!")]
+            NOT_FOUND_ID = 4041,
+        }
+
+        public enum AccountCertificateErrorEnum
+        {
+            //404
+            [Display(Name = "Account Certificate existed!")]
+            ACCOUNT_CERTIFICATE_EXISTED = 4001,
+
+            //404
+            [Display(Name = "Create Person invalid!")]
+            INVALID_CREATE_PERSON = 4002,
+
+            //404
+            [Display(Name = "Account Certificate not found!")]
             NOT_FOUND_ID = 4041,
         }
     }

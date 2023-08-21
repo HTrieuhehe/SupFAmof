@@ -220,7 +220,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id)
+        public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id,bool approve)
         {
             try
             {
@@ -231,34 +231,56 @@ namespace SupFAmof.Service.Service
                         (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                         PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
-                var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.AccountId == FindRequest.AccountId
-                                                                                && x.PostRegistrationDetails.First().PostId == FindRequest.PostRegistrationDetails.First().PostId);
-                var CheckMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
-                if(CheckMatching.Contains(matchingEntity))
+                switch (approve)
                 {
-                    matchingEntity.SchoolBusOption = FindRequest.SchoolBusOption;
-                    matchingEntity.PostRegistrationDetails.First().PositionId = FindRequest.PostRegistrationDetails.First().PositionId;
-                    if (CompareDateTime(matchingEntity.CreateAt, FindRequest.CreateAt, TimeSpan.FromHours(2)))
-                    {
-                        matchingEntity.UpdateAt = DateTime.Now;
-                        await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity,matchingEntity.Id);
-                        await _unitOfWork.CommitAsync();
+                    case true:
+                        var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.AccountId == FindRequest.AccountId
+                                                                                        && x.PostRegistrationDetails.First().PostId == FindRequest.PostRegistrationDetails.First().PostId);
+                        var CheckMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
 
-                    }
-                 
+                        if (CheckMatching.Contains(matchingEntity))
+                        {
+                            matchingEntity.SchoolBusOption = FindRequest.SchoolBusOption;
+                            matchingEntity.PostRegistrationDetails.First().PositionId = FindRequest.PostRegistrationDetails.First().PositionId;
+
+                            if (CompareDateTime(matchingEntity.CreateAt, FindRequest.CreateAt, TimeSpan.FromHours(2)))
+                            {
+                                matchingEntity.UpdateAt = DateTime.Now;
+                                await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
+                                await _unitOfWork.CommitAsync();
+                            }
+                        }
+                        return new BaseResponseViewModel<PostRegistrationResponse>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Message = "Success",
+                                Success = true,
+                                ErrorCode = 0
+                            },
+                            Data = _mapper.Map<PostRegistrationResponse>(matchingEntity)
+                        };
+
+                    case false:
+                        FindRequest.Status = (int)PostRegistrationStatusEnum.Reject;
+                        await _unitOfWork.Repository<PostRegistration>().UpdateDetached(FindRequest);
+                        await _unitOfWork.CommitAsync();
+                        return new BaseResponseViewModel<PostRegistrationResponse>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Message = "Success",
+                                Success = true,
+                                ErrorCode = 0
+                            },
+                            Data = _mapper.Map<PostRegistrationResponse>(FindRequest)
+                        };
+                    default:
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
                 }
-                return new BaseResponseViewModel<PostRegistrationResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<PostRegistrationResponse>(matchingEntity)
-                };
+                    
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }

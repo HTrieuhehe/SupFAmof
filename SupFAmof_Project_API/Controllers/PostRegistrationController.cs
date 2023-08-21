@@ -142,15 +142,18 @@ namespace SupFAmof.API.Controllers
         /// <summary>
         /// Approve Request Update for Post Registration
         /// </summary>
+        /// <remarks>
+        /// true 
+        /// </remarks>
         /// <param name="postRegistrationId"></param>
         /// <response code="200">Approved success</response>
         /// <response code="400">Failed to Update</response>
-        [HttpGet]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate(int postRegistrationId)
+        [HttpPut("review-updateRequesst/{postRegistrationId}")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate(int postRegistrationId, [FromBody] bool approve)
         {
             try
             {
-                var result =await _postRegistrationService.ApproveUpdateRequest(postRegistrationId);
+                var result =await _postRegistrationService.ApproveUpdateRequest(postRegistrationId,approve);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

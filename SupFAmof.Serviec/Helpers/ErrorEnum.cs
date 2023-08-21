@@ -106,6 +106,11 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "EXCEEDING TIME LIMIT ")]
             EXCEEDING_TIME_LIMIT = 400,
+
+            //400
+            [Display(Name = "APPROVE OR DISAPPROVE MUST BE PROVIDED")]
+            APPROVE_OR_DISAPPROVE = 400,
+
         }
 
     }

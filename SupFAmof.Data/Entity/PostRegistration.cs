@@ -8,6 +8,7 @@ namespace SupFAmof.Data.Entity
         public PostRegistration()
         {
             PostRegistrationDetails = new HashSet<PostRegistrationDetail>();
+            PostTgupdateHistories = new HashSet<PostTgupdateHistory>();
         }
 
         public int Id { get; set; }
@@ -20,5 +21,6 @@ namespace SupFAmof.Data.Entity
 
         public virtual Account Account { get; set; } = null!;
         public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
+        public virtual ICollection<PostTgupdateHistory> PostTgupdateHistories { get; set; }
     }
 }

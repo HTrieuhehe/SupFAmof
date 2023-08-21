@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SupFAmof.Data.Entity
 {
@@ -30,6 +30,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostPosition> PostPositions { get; set; } = null!;
         public virtual DbSet<PostRegistration> PostRegistrations { get; set; } = null!;
         public virtual DbSet<PostRegistrationDetail> PostRegistrationDetails { get; set; } = null!;
+        public virtual DbSet<PostTgupdateHistory> PostTgupdateHistories { get; set; } = null!;
         public virtual DbSet<PostTitle> PostTitles { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingPosition> TrainingPositions { get; set; } = null!;
@@ -306,11 +307,35 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_PostRegistrationDetail_PostRegistration");
             });
 
+            modelBuilder.Entity<PostTgupdateHistory>(entity =>
+            {
+                entity.ToTable("PostTGUpdateHistory");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.PostTgupdateHistories)
+                    .HasForeignKey(d => d.PositionId)
+                    .HasConstraintName("FK_PostTGUpdateHistory_PostPosition");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.PostTgupdateHistories)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostTGUpdateHistory_Post");
+
+                entity.HasOne(d => d.PostRegistration)
+                    .WithMany(p => p.PostTgupdateHistories)
+                    .HasForeignKey(d => d.PostRegistrationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostTGUpdateHistory_PostRegistration");
+            });
+
             modelBuilder.Entity<PostTitle>(entity =>
             {
                 entity.ToTable("PostTitle");
 
-                entity.Property(e => e.CreatAt).HasColumnType("datetime");
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.PostTitleDescription).HasMaxLength(100);
 

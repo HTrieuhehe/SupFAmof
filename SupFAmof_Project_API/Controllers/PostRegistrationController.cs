@@ -51,7 +51,6 @@ namespace SupFAmof.API.Controllers
         ///     POST /create
         ///      {
         ///       "accountId": 5,
-        ///       "registrationCode": "REGISTRATE #5",
         ///       "schoolBusOption": true,
         ///       "postRegistrationDetails": [
         ///         {
@@ -125,20 +124,7 @@ namespace SupFAmof.API.Controllers
         }
 
 
-        [HttpPost("sendUpdateRquest")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> SendUpdateRequest(int postRegistrationId,PostRegistrationUpdateBookingRequest request)
-        {
-            try
-            {
-                var result = await _postRegistrationService.UpdateRequest(postRegistrationId,request);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-
-        }
+      
         /// <summary>
         /// Approve Request Update for Post Registration
         /// </summary>

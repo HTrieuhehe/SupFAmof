@@ -105,11 +105,17 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "EXCEEDING TIME LIMIT ")]
-            EXCEEDING_TIME_LIMIT = 400,
+            EXCEEDING_TIME_LIMIT = 4002,
 
             //400
             [Display(Name = "APPROVE OR DISAPPROVE MUST BE PROVIDED")]
             APPROVE_OR_DISAPPROVE = 400,
+            //400
+            [Display(Name = "FULL SLOT")]
+            FULL_SLOT = 400,
+            //400
+            [Display(Name = "CANT REGISTER THE SAME POST")]
+            ALREADY_REGISTERED = 4001,
 
         }
 

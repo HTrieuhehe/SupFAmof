@@ -100,7 +100,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
-                var result = await _admissionAccountService.Login(data);
+                var result = await _admissionAccountService.AdmissionLogin(data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

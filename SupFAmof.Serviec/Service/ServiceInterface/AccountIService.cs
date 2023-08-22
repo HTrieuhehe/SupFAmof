@@ -17,6 +17,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccount(int accountId, UpdateAdmissionAccountRequest request);
         Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId);
         Task Logout(string fcmToken);
+        Task<BaseResponseViewModel<LoginResponse>> AdmissionLogin(ExternalAuthRequest data);
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);
     }
 }

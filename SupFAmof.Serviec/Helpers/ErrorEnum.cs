@@ -53,6 +53,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Invalid Student Id")]
             ACCOUNT_STUDENTID_INVALID = 4005,
 
+            //400
+            [Display(Name = "Invalid API")]
+            API_INVALID = 4006,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,

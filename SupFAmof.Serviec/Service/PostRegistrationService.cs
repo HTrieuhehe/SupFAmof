@@ -305,7 +305,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var FindRequest = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Id == Id);
+                var FindRequest = await _unitOfWork.Repository<PostTgupdateHistory>().GetAll().SingleOrDefaultAsync(x => x.Id == Id);
                 if (FindRequest == null)
                 {
                     throw new ErrorResponse(404,
@@ -315,19 +315,21 @@ namespace SupFAmof.Service.Service
                 switch (approve)
                 {
                     case true:
-                        var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.AccountId == FindRequest.AccountId
-                                                                                        && x.PostRegistrationDetails.First().PostId == FindRequest.PostRegistrationDetails.First().PostId);
+                        var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == FindRequest.PostRegistrationId
+                                                                                        && x.PostRegistrationDetails.First().PostId == FindRequest.PostId);
                         var CheckMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
 
                         if (CheckMatching.Contains(matchingEntity))
                         {
-                            matchingEntity.SchoolBusOption = FindRequest.SchoolBusOption;
-                            matchingEntity.PostRegistrationDetails.First().PositionId = FindRequest.PostRegistrationDetails.First().PositionId;
+                            matchingEntity.SchoolBusOption = FindRequest.BusOption;
+                            matchingEntity.PostRegistrationDetails.First().PositionId = (int)FindRequest.PositionId;
 
                             if (CompareDateTime(matchingEntity.CreateAt, FindRequest.CreateAt, TimeSpan.FromHours(2)))
                             {
                                 matchingEntity.UpdateAt = DateTime.Now;
+                                FindRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
                                 await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
+                                await _unitOfWork.Repository<PostTgupdateHistory>().UpdateDetached(FindRequest);
                                 await _unitOfWork.CommitAsync();
                             }
                         }
@@ -344,17 +346,16 @@ namespace SupFAmof.Service.Service
 
                     case false:
                         FindRequest.Status = (int)PostRegistrationStatusEnum.Reject;
-                        await _unitOfWork.Repository<PostRegistration>().UpdateDetached(FindRequest);
+                        await _unitOfWork.Repository<PostTgupdateHistory>().UpdateDetached(FindRequest);
                         await _unitOfWork.CommitAsync();
                         return new BaseResponseViewModel<PostRegistrationResponse>()
                         {
                             Status = new StatusViewModel()
                             {
-                                Message = "Success",
+                                Message = "Denied",
                                 Success = true,
                                 ErrorCode = 0
-                            },
-                            Data = _mapper.Map<PostRegistrationResponse>(FindRequest)
+                            }
                         };
                     default:
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());

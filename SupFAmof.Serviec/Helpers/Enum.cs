@@ -38,6 +38,9 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Update Request")]
             Update_Request = 5,
+
+            [Display(Name = "Approved Request")]
+            Approved_Request = 6,
         }
     }
 }

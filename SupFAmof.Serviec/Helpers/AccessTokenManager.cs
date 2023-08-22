@@ -20,20 +20,8 @@ namespace SupFAmof.Service.Helpers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.NameIdentifier, accountId.ToString()),
+                new Claim(ClaimTypes.Role, role.ToString())
             };
-
-            if (role != 0)
-            {
-                permClaims.Add(new Claim(ClaimTypes.Role, (role).ToString()));
-
-                var newtoken = new JwtSecurityToken(tokenConfig["Issuer"],
-                tokenConfig["Issuer"],
-                permClaims,
-                expires: DateTime.Now.AddDays(30),
-                signingCredentials: credentials);
-
-                return new JwtSecurityTokenHandler().WriteToken(newtoken);
-            }
 
             var token = new JwtSecurityToken(tokenConfig["Issuer"],
                 tokenConfig["Issuer"],

@@ -102,5 +102,6 @@ namespace SupFAmof.Service.Utilities
             TimeSpan? timeDifference = dateTime2 - dateTime1;
             return timeDifference <= maxTimeDifference;
         }
+
     }
 }

@@ -101,21 +101,29 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "UPDATE POST REGISTRATION FAILED")]
-            UPDATE_FAILED_POST = 400,
+            UPDATE_FAILED_POST = 4000,
 
             //400
             [Display(Name = "EXCEEDING TIME LIMIT ")]
-            EXCEEDING_TIME_LIMIT = 4002,
+            EXCEEDING_TIME_LIMIT = 4001,
 
             //400
             [Display(Name = "APPROVE OR DISAPPROVE MUST BE PROVIDED")]
-            APPROVE_OR_DISAPPROVE = 400,
+            APPROVE_OR_DISAPPROVE = 4002,
             //400
             [Display(Name = "FULL SLOT")]
-            FULL_SLOT = 400,
+            FULL_SLOT = 4003,
             //400
             [Display(Name = "CANT REGISTER THE SAME POST")]
-            ALREADY_REGISTERED = 4001,
+            ALREADY_REGISTERED = 4004,
+
+            //400
+            [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN APPROVED")]
+            ALREADY_APPROVE = 4005,
+
+            //400
+            [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN REJECTED")]
+            ALREADY_REJECT = 4006,
 
         }
 

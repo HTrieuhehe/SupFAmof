@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using ServiceStack;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace SupFAmof.Service.Utilities
 {
@@ -97,5 +97,11 @@ namespace SupFAmof.Service.Utilities
             string strRegex = @"^\d{12}$";
             return Regex.IsMatch(personId, strRegex);
         }
+        public static bool CompareDateTime(DateTime? dateTime1, DateTime? dateTime2, TimeSpan? maxTimeDifference)
+        {
+            TimeSpan? timeDifference = dateTime2 - dateTime1;
+            return timeDifference <= maxTimeDifference;
+        }
+
     }
 }

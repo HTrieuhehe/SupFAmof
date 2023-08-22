@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupFAmof.Service.Helpers
 {
@@ -41,6 +41,12 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Cancel")]
             Cancel = 4,
+
+            [Display(Name = "Update Request")]
+            Update_Request = 5,
+
+            [Display(Name = "Approved Request")]
+            Approved_Request = 6,
         }
     }
 }

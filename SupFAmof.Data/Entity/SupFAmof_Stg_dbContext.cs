@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace SupFAmof.Data.Entity
 {
@@ -182,17 +182,13 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("CheckAttendance");
 
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.CheckAttendances)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CheckAttendance_Account");
+                entity.Property(e => e.CheckInDate).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Post)
+                entity.HasOne(d => d.PostRegistration)
                     .WithMany(p => p.CheckAttendances)
-                    .HasForeignKey(d => d.PostId)
+                    .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CheckAttendance_Post");
+                    .HasConstraintName("FK_CheckAttendance_PostRegistration");
             });
 
             modelBuilder.Entity<Contract>(entity =>

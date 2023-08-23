@@ -12,7 +12,6 @@ namespace SupFAmof.Data.Entity
             AccountCertificateAccounts = new HashSet<AccountCertificate>();
             AccountCertificateCreatePeople = new HashSet<AccountCertificate>();
             AccountInformations = new HashSet<AccountInformation>();
-            CheckAttendances = new HashSet<CheckAttendance>();
             Fcmtokens = new HashSet<Fcmtoken>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
@@ -40,7 +39,6 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<AccountCertificate> AccountCertificateAccounts { get; set; }
         public virtual ICollection<AccountCertificate> AccountCertificateCreatePeople { get; set; }
         public virtual ICollection<AccountInformation> AccountInformations { get; set; }
-        public virtual ICollection<CheckAttendance> CheckAttendances { get; set; }
         public virtual ICollection<Fcmtoken> Fcmtokens { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }

@@ -128,6 +128,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN REJECTED")]
             ALREADY_REJECT = 4006,
+            //400
+            [Display(Name = "MUST SENT REGISTER 1 DAY BEFORE THE EVENT")]
+            OUTDATED_REGISTER = 4007,
 
         }
 

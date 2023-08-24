@@ -74,18 +74,28 @@ namespace SupFAmof.Service.Service
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == postRegistration.PostRegistrationDetails.First().PositionId).Count();
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == postRegistration.AccountId
                                                                             && x.PostRegistrationDetails.First().PostId == postRegistration.PostRegistrationDetails.First().PostId);
+                var postCheckDate = _unitOfWork.Repository<Post>().GetAll().SingleOrDefault(x=>x.Id == postRegistration.PostRegistrationDetails.First().PostId);
                 if (checkDuplicateForm == null)
                 {
-                    if (checkPostPostion.Amount - countAllRegistrationForm > 0)
+                    TimeSpan? difference = postCheckDate?.DateFrom - postRegistration.CreateAt;
+                    if (difference == TimeSpan.FromDays(1))
+                    {
+                        if (checkPostPostion.Amount - countAllRegistrationForm > 0)
                     {
 
                         await _unitOfWork.Repository<PostRegistration>().InsertAsync(postRegistration);
                         await _unitOfWork.CommitAsync();
+                    }else
+                        {
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
+                                                PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
+                        }
+
                     }
                     else
                     {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-                                                PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
+                                                PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
                     }
                 }
                 else

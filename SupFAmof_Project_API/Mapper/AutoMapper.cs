@@ -109,6 +109,17 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountCertificate, AccountCertificateResponse>().ReverseMap();
             CreateMap<CreateAccountCertificateRequest, AccountCertificate>();
             #endregion
+
+            #region Admission Post
+            CreateMap<Post, AdmissionPostResponse>().ReverseMap();
+            CreateMap<PostPosition, PostPositionResponse>().ReverseMap();
+            CreateMap<TrainingPosition, TrainingPositionResponse>().ReverseMap();
+
+            CreateMap<CreatePostRequest, Post>();
+            CreateMap<CreatePostPositionRequest, PostPosition>();
+            CreateMap<CreatePostTrainingPositionRequest, TrainingPosition>();
+
+            #endregion
         }
     }
 }

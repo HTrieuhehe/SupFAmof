@@ -114,6 +114,7 @@ namespace SupFAmof.API
             builder.RegisterType<PostTitleService>().As<IPostTitleService>();
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
+            builder.RegisterType<PostService>().As<IPostService>();
 
             builder.RegisterGeneric(typeof(GenericRepository<>))
             .As(typeof(IGenericRepository<>))

@@ -26,8 +26,8 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public DateTime CreateAt { get; set; }
         //public DateTime? UpdateAt { get; set; }
 
-        public List<CreatePostPositionRequest> PostPositionRequest { get; set; }
-        public List<CreatePostTrainingPositionRequest> PostTrainingPositionRequest { get; set;}
+        public ICollection<CreatePostPositionRequest> PostPositionRequest { get; set; }
+        public ICollection<CreatePostTrainingPositionRequest> PostTrainingPositionRequest { get; set;}
     }
 
     public class CreatePostPositionRequest

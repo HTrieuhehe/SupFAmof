@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -119,6 +120,8 @@ namespace SupFAmof.Service.Service
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
+                                      //.Include(x => x.PostPositions)
+                                      //.Include(x => x.TrainingPositions)
                                       .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                       .Where(x => x.AccountId == accountId)
                                       .PagingQueryable(paging.Page, paging.PageSize,

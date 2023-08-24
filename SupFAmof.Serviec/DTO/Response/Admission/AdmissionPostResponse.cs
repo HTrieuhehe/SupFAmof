@@ -27,11 +27,11 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual AccountResponse? Account { get; set; }
-        public virtual PostTitleResponse? PostTitle { get; set; }
-        public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }
+        public AccountResponse Account { get; set; }
+        public PostTitleResponse PostTitle { get; set; }
+        public ICollection<PostPositionResponse> PostPositions { get; set; }
         //public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         //public virtual ICollection<PostTgupdateHistory> PostTgupdateHistories { get; set; }
-        public virtual ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
+        public ICollection<TrainingPositionResponse> TrainingPositions { get; set; }
     }
 }

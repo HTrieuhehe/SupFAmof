@@ -26,14 +26,14 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public DateTime CreateAt { get; set; }
         //public DateTime? UpdateAt { get; set; }
 
-        public ICollection<CreatePostPositionRequest> PostPositionRequest { get; set; }
-        public ICollection<CreatePostTrainingPositionRequest> PostTrainingPositionRequest { get; set;}
+        public List<CreatePostPositionRequest>? PostPositions { get; set; }
+        public List<CreatePostTrainingPositionRequest>? TrainingPositions { get; set;}
     }
 
     public class CreatePostPositionRequest
     {
         //public int Id { get; set; }
-       // public int PostId { get; set; }
+        //public int PostId { get; set; }
         public string? Position { get; set; }
         public int Amount { get; set; }
         public double Salary { get; set; }

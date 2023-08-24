@@ -77,8 +77,7 @@ namespace SupFAmof.Service.Service
                 var postCheckDate = _unitOfWork.Repository<Post>().GetAll().SingleOrDefault(x=>x.Id == postRegistration.PostRegistrationDetails.First().PostId);
                 if (checkDuplicateForm == null)
                 {
-                    TimeSpan? difference = postCheckDate?.DateFrom - postRegistration.CreateAt;
-                    if (difference == TimeSpan.FromDays(1))
+                    if (CheckOneDayDifference(postCheckDate.DateFrom, postRegistration.CreateAt,1))
                     {
                         if (checkPostPostion.Amount - countAllRegistrationForm > 0)
                     {

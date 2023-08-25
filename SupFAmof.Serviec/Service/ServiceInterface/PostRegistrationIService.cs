@@ -8,10 +8,10 @@ using SupFAmof.Service.DTO.Response;
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
-    public interface PostRegistrationIService
+    public interface IPostRegistrationService
     {
-        Task<BaseResponseViewModel<List<PostRegistrationResponse>>> GetPostRegistrationByAccountId(int accountId);
-        Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request);
+        Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging);
+            Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request);
         Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int postRegistrationId);
         Task<BaseResponseViewModel<PostRegistrationResponse>> UpdatePostRegistration(int PostRegistrationId, PostRegistrationUpdateRequest request);
         Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id, bool approve);

@@ -1,20 +1,23 @@
 ﻿using AutoMapper;
+using Service.Commons;
 using SupFAmof.Data.Entity;
+using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Exceptions;
-using Microsoft.OpenApi.Extensions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
+using AutoMapper.QueryableExtensions;
 using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
-    public class PostRegistrationService : PostRegistrationIService
+    public class PostRegistrationService : IPostRegistrationService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -25,37 +28,28 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> GetPostRegistrationByAccountId(int accountId)
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging)
         {
-            List<PostRegistrationResponse> postRegistrationResponses = new List<PostRegistrationResponse>();
             try
             {
-                var PostRegistrations = _unitOfWork.Repository<PostRegistration>()
-                    .FindAll(x => x.AccountId == accountId)
-                    .Include(x => x.PostRegistrationDetails);
-                if (PostRegistrations.Any())
-                {
-                    postRegistrationResponses = _mapper.Map<List<PostRegistrationResponse>>(PostRegistrations);
-                }
-                else
-                {
-                    throw new ErrorResponse(404,
-                        (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                }
-                return new BaseResponseViewModel<List<PostRegistrationResponse>>
-                {
-                    Status = new StatusViewModel
-                    {
-                        Message = "Success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = postRegistrationResponses
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                  .Where(x => x.AccountId == accountId)
+                                                  .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .PagingQueryable(paging.Page, paging.PageSize,
+                                                   Constants.LimitPaging, Constants.DefaultPaging);
 
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = postRegistration.Item1
+                    },
+                    Data = postRegistration.Item2.ToList()
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -64,11 +58,10 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                request.RegistrationCode = GenerateRandomCode();
                 var postRegistration = _mapper.Map<PostRegistration>(request);
                 postRegistration.Status = (int)PostRegistrationStatusEnum.Pending;
-                string specific = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                postRegistration.CreateAt = DateTime.Parse(specific);
+                postRegistration.RegistrationCode= GenerateRandomCode();
+                postRegistration.CreateAt = DateTime.Now;
                 var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == postRegistration.PostRegistrationDetails.First().PostId &&
                                                                                                 x.Id == postRegistration.PostRegistrationDetails.First().PositionId).First();
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == postRegistration.PostRegistrationDetails.First().PositionId).Count();
@@ -164,8 +157,17 @@ namespace SupFAmof.Service.Service
                                            .GetAll()
                                            .SingleOrDefault(x => x.Id == postRegistrationId);
                 PostRegistration updateEntity = _mapper.Map<PostRegistration>(request);
-                var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == original.PostRegistrationDetails.First().PostId &&
-                                                                                               x.Id == updateEntity.PostRegistrationDetails.First().PositionId).First();
+                PostPosition checkPostPostion = new PostPosition();
+                if (request.PostRegistrationDetails != null&&request.PostRegistrationDetails.First().PositionId!=null)
+                {
+                     checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == original.PostRegistrationDetails.First().PostId &&
+                                                                                                   x.Id == updateEntity.PostRegistrationDetails.First().PositionId).First();
+                }else
+                {
+                    checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == original.PostRegistrationDetails.First().PostId &&
+                                                                                                  x.Id == original.PostRegistrationDetails.First().PositionId).First();
+
+                }
                 var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == updateEntity.PostRegistrationDetails.First().PositionId).Count();
                 if (updateEntity != null && original != null)
                 {
@@ -175,7 +177,7 @@ namespace SupFAmof.Service.Service
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
-                                original.PostRegistrationDetails.First().PositionId = updateEntity.PostRegistrationDetails.First().PositionId;
+                                original.PostRegistrationDetails.First().PositionId = checkPostPostion.Id;
                                 if (CompareDateTime(original.CreateAt, updateEntity.CreateAt, TimeSpan.FromHours(2)))
                                 {
                                     original.UpdateAt = updateEntity.CreateAt;
@@ -205,7 +207,7 @@ namespace SupFAmof.Service.Service
                                     {
                                         PostId = original.PostRegistrationDetails.First().PostId,
                                         PostRegistrationId = original.PostRegistrationDetails.First().PostRegistrationId,
-                                        PositionId = updateEntity.PostRegistrationDetails.First().PositionId,
+                                        PositionId = checkPostPostion.Id,
                                         BusOption = updateEntity.SchoolBusOption,
                                         CreateAt = updateEntity.CreateAt,
                                         Status = (int)PostRegistrationStatusEnum.Update_Request,

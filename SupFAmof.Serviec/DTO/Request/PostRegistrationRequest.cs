@@ -8,11 +8,7 @@ namespace SupFAmof.Service.DTO.Request
     {
         [Required(ErrorMessage = "Account ID is required.")]
         public int AccountId { get; set; }
-        [JsonIgnore]
-        public string? RegistrationCode { get; set; }
-        [JsonIgnore]
-        public DateTime CreateAt { get; set; }
-        [JsonIgnore]
+   
         public int Status { get; set; }
 
         [Required(ErrorMessage = "School bus option is required.")]
@@ -37,13 +33,12 @@ namespace SupFAmof.Service.DTO.Request
         public bool? SchoolBusOption { get; set; }
         [JsonIgnore]
         public DateTime? CreateAt { get; set; } = DateTime.Now;
-        public ICollection<PostRegistrationDetailUpdateRequest> PostRegistrationDetails { get; set; }
+        public ICollection<PostRegistrationDetailUpdateRequest>? PostRegistrationDetails { get; set; }
     }
 
     public class PostRegistrationDetailUpdateRequest
     {
-        [Required(ErrorMessage = "PositionId is required.")]
-        public int PositionId { get; set; }
+        public int? PositionId { get; set; }
     }
 
     public class AproveRequest

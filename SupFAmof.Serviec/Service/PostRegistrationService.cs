@@ -2,7 +2,6 @@
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Exceptions;
-using Microsoft.OpenApi.Extensions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
@@ -11,10 +10,14 @@ using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using AutoMapper.QueryableExtensions;
+using NTQ.Sdk.Core.Utilities;
+using Service.Commons;
+using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.Service
 {
-    public class PostRegistrationService : PostRegistrationIService
+    public class PostRegistrationService : IPostRegistrationService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -25,37 +28,29 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> GetPostRegistrationByAccountId(int accountId)
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId
+            (int accountId, PagingRequest paging)
         {
-            List<PostRegistrationResponse> postRegistrationResponses = new List<PostRegistrationResponse>();
             try
             {
-                var PostRegistrations = _unitOfWork.Repository<PostRegistration>()
-                    .FindAll(x => x.AccountId == accountId)
-                    .Include(x => x.PostRegistrationDetails);
-                if (PostRegistrations.Any())
-                {
-                    postRegistrationResponses = _mapper.Map<List<PostRegistrationResponse>>(PostRegistrations);
-                }
-                else
-                {
-                    throw new ErrorResponse(404,
-                        (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                }
-                return new BaseResponseViewModel<List<PostRegistrationResponse>>
-                {
-                    Status = new StatusViewModel
-                    {
-                        Message = "Success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = postRegistrationResponses
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                  .Where(x => x.AccountId == accountId)
+                                                  .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .PagingQueryable(paging.Page, paging.PageSize,
+                                                    Constants.LimitPaging, Constants.DefaultPaging);
 
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = postRegistration.Item1
+                    },
+                    Data = postRegistration.Item2.ToList()
                 };
             }
-            catch (Exception ex)
+            catch(Exception)
             {
                 throw;
             }
@@ -250,11 +245,11 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id, bool approve)
+        public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int id, bool approve)
         {
             try
             {
-                var findRequest = await _unitOfWork.Repository<PostTgupdateHistory>().GetAll().SingleOrDefaultAsync(x => x.Id == Id);
+                var findRequest = await _unitOfWork.Repository<PostTgupdateHistory>().GetAll().SingleOrDefaultAsync(x => x.Id == id);
                 if (findRequest == null)
                 {
                     throw new ErrorResponse(404,

@@ -109,9 +109,9 @@ namespace SupFAmof.Service.Utilities
             TimeSpan difference = dateFromDateOnly - createAtDateOnly;
             if(difference == TimeSpan.FromDays(day))
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
 

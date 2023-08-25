@@ -122,7 +122,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "FULL SLOT")]
             FULL_SLOT = 4003,
             //400
-            [Display(Name = "CANT REGISTER THE SAME POST")]
+            [Display(Name = "CANT REGISTER THE SAME POST OR POST THAT YOU ARE REGISTER HAS THE SAME DAY AS ANOTHER EVENT YOU REGISTER")]
             ALREADY_REGISTERED = 4004,
 
             //400

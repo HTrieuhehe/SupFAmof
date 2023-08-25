@@ -14,6 +14,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace SupFAmof.Service.Service
 {
@@ -56,6 +57,7 @@ namespace SupFAmof.Service.Service
         }
         public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
+            //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY.
             try
             {
                 var postRegistration = _mapper.Map<PostRegistration>(request);
@@ -64,11 +66,18 @@ namespace SupFAmof.Service.Service
                 postRegistration.CreateAt = DateTime.Now;
                 var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == postRegistration.PostRegistrationDetails.First().PostId &&
                                                                                                 x.Id == postRegistration.PostRegistrationDetails.First().PositionId).First();
-                var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == postRegistration.PostRegistrationDetails.First().PositionId).Count();
+                var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == postRegistration.PostRegistrationDetails.First().PositionId
+                                                                                                &&x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == postRegistration.AccountId
                                                                             && x.PostRegistrationDetails.First().PostId == postRegistration.PostRegistrationDetails.First().PostId);
+ 
                 var postCheckDate = _unitOfWork.Repository<Post>().GetAll().SingleOrDefault(x=>x.Id == postRegistration.PostRegistrationDetails.First().PostId);
-                if (checkDuplicateForm == null)
+                var existingEventDate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x =>
+                                                                  x.AccountId == postRegistration.AccountId 
+                                                                  && x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                  && x.PostRegistrationDetails.Any(d => d.Post.DateFrom.Date == postCheckDate.DateFrom.Date));
+                    
+                if (checkDuplicateForm == null&&existingEventDate==null)
                 {
                     if (CheckOneDayDifference(postCheckDate.DateFrom, postRegistration.CreateAt,1))
                     {
@@ -168,7 +177,8 @@ namespace SupFAmof.Service.Service
                                                                                                   x.Id == original.PostRegistrationDetails.First().PositionId).First();
 
                 }
-                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == updateEntity.PostRegistrationDetails.First().PositionId).Count();
+                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == original.PostRegistrationDetails.First().PositionId
+                                                                                                            && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
                 if (updateEntity != null && original != null)
                 {
                     switch ((PostRegistrationStatusEnum)original.Status)

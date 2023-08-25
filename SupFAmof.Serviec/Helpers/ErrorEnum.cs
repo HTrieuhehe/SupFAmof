@@ -57,6 +57,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Invalid API")]
             API_INVALID = 4006,
 
+            //400
+            [Display(Name = "Account cannot post")]
+            POST_PERMIT_NOT_ALLOWED = 4007,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,
@@ -166,16 +170,27 @@ namespace SupFAmof.Service.Helpers
 
         public enum AccountCertificateErrorEnum
         {
-            //404
+            //400
             [Display(Name = "Account Certificate existed!")]
             ACCOUNT_CERTIFICATE_EXISTED = 4001,
 
-            //404
+            //400
             [Display(Name = "Create Person invalid!")]
             INVALID_CREATE_PERSON = 4002,
 
-            //404
+            //400
             [Display(Name = "Account Certificate not found!")]
+            NOT_FOUND_ID = 4041,
+        }
+
+        public enum PostErrorEnum
+        {
+            //400
+            [Display(Name = "Post Invalid")]
+            INVALID_POST = 4001,
+
+            //404
+            [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,
         }
     }

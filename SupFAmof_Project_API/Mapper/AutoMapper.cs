@@ -124,6 +124,10 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreatePostTrainingPositionRequest, TrainingPosition>();
 
             #endregion
+
+            #region Post
+            CreateMap<Post, PostResponse>().ReverseMap();
+            #endregion
         }
     }
 }

@@ -184,6 +184,99 @@ namespace SupFAmof.Service.Service
 
         #region Collaborator Post Service
 
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, PostResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //check nếu tài khoảng premium mới cho coi post premium
+                else if (checkAccount.IsPremium == true)
+                {
+                    var premiumPost = _unitOfWork.Repository<Post>().GetAll()
+                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                        .DynamicFilter(filter)
+                                        .DynamicSort(filter)
+                                        .OrderByDescending(x => x.Priority)
+                                        .PagingQueryable(paging.Page, paging.PageSize,
+                                        Constants.LimitPaging, Constants.DefaultPaging);
+
+
+                    return new BaseResponsePagingViewModel<PostResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = premiumPost.Item1
+                        },
+                        Data = premiumPost.Item2.ToList()
+                    };
+                }
+                
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                        .Where(x => x.IsPremium != true)
+                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                        .DynamicFilter(filter)
+                                        .DynamicSort(filter)
+                                        .OrderByDescending(x => x.Priority)
+                                        .PagingQueryable(paging.Page, paging.PageSize,
+                                        Constants.LimitPaging, Constants.DefaultPaging);
+                
+
+                return new BaseResponsePagingViewModel<PostResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = post.Item1
+                    },
+                    Data = post.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<PostResponse>> GetPostByCode(int postCode)
+        {
+            try
+            {
+                var post = _unitOfWork.Repository<Post>().GetAll().FirstOrDefault(x => x.PostCode == postCode);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+
+                return new BaseResponseViewModel<PostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<PostResponse>(post)
+                };
+            }
+            catch (ErrorResponse ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
     }
 }

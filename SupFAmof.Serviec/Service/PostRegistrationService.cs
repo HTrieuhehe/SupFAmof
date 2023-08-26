@@ -57,7 +57,7 @@ namespace SupFAmof.Service.Service
         }
         public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
-            //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY.
+            //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY,CHECK IF USER HAS A TRAINING POSITION 
             try
             {
                 var postRegistration = _mapper.Map<PostRegistration>(request);

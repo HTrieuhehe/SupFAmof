@@ -315,6 +315,37 @@ namespace SupFAmof.Service.Service
             };
         }
 
+        public async Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().GetAll()
+                                              .Where(x => x.Id == accountId)
+                                              .FirstOrDefaultAsync();
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+                return new BaseResponseViewModel<AdmissionAccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionAccountResponse>(account)
+                };
+            }
+            catch(Exception ex )
+            {
+                throw;
+            }
+            
+        }
+
         public async Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email)
         {
             try
@@ -675,5 +706,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
     }
 }

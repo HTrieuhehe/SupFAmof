@@ -69,7 +69,16 @@ namespace SupFAmof.Service.Service
                 string[] splitEmail = userRecord.Email.Split('@');
                 var rootEmail = splitEmail[1];
 
-                if (!rootEmail.Contains("gmail.com"))
+                var admissionRole = _unitOfWork.Repository<Role>().GetAll()
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.AdmissionManager);
+
+                if (admissionRole == null)
+                {
+                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                if (!rootEmail.Contains(admissionRole.RoleEmail))
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
                                         AccountErrorEnums.API_INVALID.GetDisplayName());
@@ -462,7 +471,16 @@ namespace SupFAmof.Service.Service
                 string[] splitEmail = userRecord.Email.Split('@');
                 var rootEmail = splitEmail[1];
 
-                if (!rootEmail.Contains("fpt.edu.vn"))
+                var collabRole = _unitOfWork.Repository<Role>().GetAll()
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.AdmissionManager);
+
+                if (collabRole == null)
+                {
+                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                if (!rootEmail.Contains(collabRole.RoleEmail))
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
                                         AccountErrorEnums.API_INVALID.GetDisplayName());

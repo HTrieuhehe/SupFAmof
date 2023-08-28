@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using SupFAmof.Data.Entity;
+using SupFAmof.Data.Redis;
 
 namespace SupFAmof.Data.Repository
 {
@@ -15,11 +16,19 @@ namespace SupFAmof.Data.Repository
     {
         private static SupFAmOf_Stg_DbContext Context;
         private static DbSet<T> Table { get; set; }
+        private readonly IRedis _redisService;
 
-        public GenericRepository(SupFAmOf_Stg_DbContext context)
+        public GenericRepository(SupFAmOf_Stg_DbContext context, IRedis redisService)
         {
             Context = context;
             Table = Context.Set<T>();
+            _redisService = redisService;
+        }
+
+        private string GenerateRedisKey(Expression<Func<T, bool>> predicate)
+        {
+            // Generate a unique key for caching based on the predicate
+            return $"{typeof(T).FullName}_{predicate.ToString()}";
         }
 
         public T Find(Func<T, bool> predicate)
@@ -28,8 +37,18 @@ namespace SupFAmof.Data.Repository
         }
         public async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return
-                await Table.SingleOrDefaultAsync(predicate);
+            var redisKey = GenerateRedisKey(predicate);
+            var cachedData = _redisService.Get<T>(redisKey);
+            if (cachedData != null)
+            {
+                return cachedData;
+            }
+
+            var entity = await Table.SingleOrDefaultAsync(predicate);
+
+            _redisService.Set(redisKey, entity);
+
+            return entity;
         }
 
         public IQueryable<T> FindAll(Func<T, bool> predicate)

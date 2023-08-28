@@ -13,6 +13,10 @@ using SupFAmof.Data.MakeConnection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ServiceStack.Redis;
+using StackExchange.Redis;
+using Reso.Core.Extension;
+using SupFAmof.Data.Redis;
 
 namespace SupFAmof.API
 {
@@ -44,7 +48,9 @@ namespace SupFAmof.API
                     });
             });
 
+            services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(Configuration["Endpoint:RedisEndpoint"]));
             services.AddMemoryCache();
+            services.ConfigMemoryCacheAndRedisCache(Configuration["Endpoint:RedisEndpoint"]);
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -115,6 +121,14 @@ namespace SupFAmof.API
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
+
+            //Dependency injection for redis
+            builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();
+
+            builder.Register<IRedisClientsManager>(c =>
+            new RedisManagerPool(Configuration.GetConnectionString("RedisConnectionString")));
+
+            builder.Register(c => c.Resolve<IRedisClientsManager>().GetCacheClient());
 
             builder.RegisterGeneric(typeof(GenericRepository<>))
             .As(typeof(IGenericRepository<>))

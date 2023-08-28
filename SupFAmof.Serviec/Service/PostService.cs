@@ -120,10 +120,9 @@ namespace SupFAmof.Service.Service
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                      //.Include(x => x.PostPositions)
-                                      //.Include(x => x.TrainingPositions)
                                       .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                       .Where(x => x.AccountId == accountId)
+                                      .OrderByDescending(x => x.CreateAt)
                                       .PagingQueryable(paging.Page, paging.PageSize,
                                             Constants.LimitPaging, Constants.DefaultPaging);
 

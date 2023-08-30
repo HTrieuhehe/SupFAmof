@@ -40,8 +40,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? Address { get; set; }
         public DateTime? PersonalIdDate { get; set; }
         public string? PlaceOfIssue { get; set; }
-        public byte[]? PersonalIdFrontImg { get; set; }
-        public byte[]? PersonalIdBackImg { get; set; }
+        public string? PersonalIdFrontImg { get; set; }
+        public string? PersonalIdBackImg { get; set; }
         public string? TaxNumber { get; set; }
     }
 

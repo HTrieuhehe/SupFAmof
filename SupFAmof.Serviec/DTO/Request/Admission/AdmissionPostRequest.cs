@@ -34,7 +34,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int PostId { get; set; }
-        public string? Position { get; set; }
+        public string? PositionName { get; set; }
         public int Amount { get; set; }
         public double Salary { get; set; }
     }
@@ -43,6 +43,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int PostId { get; set; }
+        public string? PositionName { get; set; }
         public int Amount { get; set; }
         public double? Salary { get; set; }
     }

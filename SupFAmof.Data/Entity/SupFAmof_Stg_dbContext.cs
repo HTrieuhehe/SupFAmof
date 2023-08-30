@@ -258,7 +258,7 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("PostPosition");
 
-                entity.Property(e => e.Position).HasMaxLength(50);
+                entity.Property(e => e.PositionName).HasMaxLength(50);
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostPositions)
@@ -356,6 +356,8 @@ namespace SupFAmof.Data.Entity
             modelBuilder.Entity<TrainingPosition>(entity =>
             {
                 entity.ToTable("TrainingPosition");
+
+                entity.Property(e => e.PositionName).HasMaxLength(10);
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.TrainingPositions)

@@ -95,6 +95,7 @@ namespace SupFAmof.Service.Service
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
+                                    .OrderByDescending(x => x.CreateAt)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 

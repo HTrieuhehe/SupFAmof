@@ -63,7 +63,7 @@ namespace SupFAmof.Service.Service
                 post.AttendanceComplete = false;
                 post.IsActive = true;
                 post.IsEnd = false;
-                post.CreateAt = DateTime.Now;
+                post.CreateAt = DateTime.UtcNow;
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
                 await _unitOfWork.CommitAsync();

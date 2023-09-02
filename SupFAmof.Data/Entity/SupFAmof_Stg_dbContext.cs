@@ -239,6 +239,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Location).HasMaxLength(100);
 
+                entity.Property(e => e.PostCode).HasMaxLength(15);
+
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)

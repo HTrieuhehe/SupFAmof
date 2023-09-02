@@ -189,6 +189,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Post Invalid")]
             INVALID_POST = 4001,
 
+            //400
+            [Display(Name = "Create Post Date Invalid")]
+            INVALID_DATE_CREATE_POST = 4002,
+
+            //400
+            [Display(Name = "Time must be in from 3AM to 8PM or TimeTo must greater than TimeFrom")]
+            INVALID_TIME_CREATE_POST = 4003,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

@@ -81,7 +81,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpGet("getByPostCode")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> GetPostByPostCode
-        ([FromQuery] int postCode)
+        ([FromQuery] string postCode)
         {
             try
             {

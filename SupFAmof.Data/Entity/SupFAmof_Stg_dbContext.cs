@@ -45,8 +45,6 @@ namespace SupFAmof.Data.Entity
                 IConfiguration config = new ConfigurationBuilder()
                                     .SetBasePath(Directory.GetCurrentDirectory())
                                     .AddJsonFile("appsettings.json").Build();
-
-
                 string connectionString = config.GetConnectionString("SQLServerDatabase");
                 optionsBuilder.UseSqlServer(connectionString);
             }
@@ -91,6 +89,10 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.AccountNumber).HasMaxLength(50);
 
                 entity.Property(e => e.BankName).HasMaxLength(50);
+
+                entity.Property(e => e.Beneficiary).HasMaxLength(50);
+
+                entity.Property(e => e.Branch).HasMaxLength(50);
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
@@ -154,7 +156,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.IdStudent).HasMaxLength(10);
 
-                entity.Property(e => e.PersonalId).HasMaxLength(20);
+                entity.Property(e => e.IdentityNumber).HasMaxLength(20);
 
                 entity.Property(e => e.PersonalIdDate).HasColumnType("date");
 

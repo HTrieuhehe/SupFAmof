@@ -92,6 +92,8 @@ namespace SupFAmof.Service.Service
             try
             {
                 var account = _mapper.Map<AccountBanking>(request);
+
+                account.Beneficiary = account.Beneficiary.ToUpper();
                 account.IsActive= true;
                 account.CreateAt= DateTime.Now;
                 await _unitOfWork.Repository<AccountBanking>().InsertAsync(account);
@@ -126,9 +128,8 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-
-
                 account = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, account);
+                account.Beneficiary = account.Beneficiary.ToUpper();
                 account.UpdateAt = DateTime.Now;
                 await _unitOfWork.Repository<AccountBanking>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();

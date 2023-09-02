@@ -50,7 +50,26 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostRequest
     {
+        //public int Id { get; set; }
+        //public int AccountId { get; set; }
+        public int PostTitleId { get; set; }
+        //public string PostCode { get; set; }
+        public string? PostDescription { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public int? Priority { get; set; }
+        public bool IsPremium { get; set; }
+        public string? Location { get; set; }
+        //public bool AttendanceComplete { get; set; }
+        //public bool IsActive { get; set; }
+        //public bool IsEnd { get; set; }
+        //public DateTime CreateAt { get; set; }
+        //public DateTime? UpdateAt { get; set; }
 
+        public List<UpdatePostPositionRequest>? PostPositions { get; set; }
+        public List<UpdatePostTrainingPositionRequest>? TrainingPositions { get; set; }
     }
 
     public class UpdatePostPositionRequest

@@ -232,7 +232,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 var checkStuId = Ultils.CheckStudentId(request.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.PersonalId);
+                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
                 if (checkPersonalId == false)
                 {
@@ -618,7 +618,7 @@ namespace SupFAmof.Service.Service
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
                 var checkStuId = Ultils.CheckStudentId(request.UpdateAccountInformation.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.PersonalId);
+                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.IdentityNumber);
 
                 if(checkPhone == false)
                 {

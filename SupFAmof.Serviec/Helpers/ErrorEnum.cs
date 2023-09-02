@@ -69,7 +69,7 @@ namespace SupFAmof.Service.Helpers
         public enum AccountBankingErrorEnums
         {
             //400
-            [Display(Name = "Invalid Account")]
+            [Display(Name = "Invalid Account Banking")]
             ACCOUNT_INVALID = 4001,
 
             //400
@@ -80,9 +80,13 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Invalid Student Id")]
             ACCOUNT_STUDENTID_INVALID = 4003,
 
+            //400
+            [Display(Name = "Invalid Student Id")]
+            ACCOUNT_BANKING_EXISTED = 4004,
+
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 404,
+            ACCOUNTBANKING_NOT_FOUND = 404,
 
         }
 

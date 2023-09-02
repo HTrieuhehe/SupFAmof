@@ -6,6 +6,7 @@ using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.API.Controllers
 {
@@ -20,11 +21,17 @@ namespace SupFAmof.API.Controllers
             _accountBankingService = accountBankingService;
         }
 
-        [HttpGet("getById/accountBankingId")]
-        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankingById(int accountBankingId)
+        [HttpGet("getById")]
+        public async Task<ActionResult<AccountBankingResponse>> GetAccountBankingById([FromQuery] int accountBankingId)
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
                 var result = await _accountBankingService.GetAccountBankingById(accountBankingId);
                 return Ok(result);
             }
@@ -34,11 +41,17 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpGet("getAccountBanking")]
+        [HttpGet("getAll")]
         public async Task<ActionResult<AccountBankingResponse>> GetAccountBankings([FromQuery] AccountBankingResponse request, [FromQuery] PagingRequest paging)
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
                 var result = await _accountBankingService.GetAccountBankings(request, paging);
                 return Ok(result);
             }
@@ -48,12 +61,18 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpPost("createAccountBanking")]
+        [HttpPost("create")]
         public async Task<ActionResult<AccountBankingResponse>> CreateAccountBanking([FromBody] CreateAccountBankingRequest request)
         {
             try
             {
-                var result = await _accountBankingService.CreateAccountBanking(request);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
+                var result = await _accountBankingService.CreateAccountBanking(account.Id, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -62,11 +81,17 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        [HttpPut("updateAccountBanking/accountBankingId")]
+        [HttpPut("update")]
         public async Task<ActionResult<AccountBankingResponse>> UpdateAccountBanking([FromQuery] int accountBankingId, [FromBody] UpdateAccountBankingRequest request)
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
                 var result = await _accountBankingService.UpdateAccountBanking(accountBankingId, request);
                 return Ok(result);
             }

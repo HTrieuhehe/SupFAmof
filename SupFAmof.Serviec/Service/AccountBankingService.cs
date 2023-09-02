@@ -97,7 +97,7 @@ namespace SupFAmof.Service.Service
 
                 if (checkBankingInfo != null)
                 {
-                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED,
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED,
                                         AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED.GetDisplayName());
                 }
 

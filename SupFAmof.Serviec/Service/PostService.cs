@@ -34,6 +34,49 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmEndingPost(int accountId, int postId)
+        {
+            try
+            {
+                var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                post.IsEnd = true;
+                post.UpdateAt = DateTime.Now;
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(post);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
         #region Admission Post Service
 
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost

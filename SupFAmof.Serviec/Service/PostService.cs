@@ -57,13 +57,16 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.POST_PERMIT_NOT_ALLOWED.GetDisplayName());
                 }
 
+                //validate Date
+
+
                 var post = _mapper.Map<Post>(request);
 
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
                 post.IsActive = true;
                 post.IsEnd = false;
-                post.CreateAt = DateTime.UtcNow;
+                post.CreateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
                 await _unitOfWork.CommitAsync();
@@ -81,8 +84,7 @@ namespace SupFAmof.Service.Service
             }
             catch(Exception)
             {
-                throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_POST,
-                                         PostErrorEnum.INVALID_POST.GetDisplayName());
+                throw;
             }
         
         }

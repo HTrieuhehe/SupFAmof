@@ -618,7 +618,7 @@ namespace SupFAmof.Service.Service
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
                 var checkStuId = Ultils.CheckStudentId(request.UpdateAccountInformation.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.PersonalId);
+                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.IdentityNumber);
 
                 if(checkPhone == false)
                 {

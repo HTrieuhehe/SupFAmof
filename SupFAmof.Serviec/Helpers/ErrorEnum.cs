@@ -201,6 +201,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Time must be in from 3AM to 8PM or TimeTo must greater than TimeFrom")]
             INVALID_TIME_CREATE_POST = 4003,
 
+            //400
+            [Display(Name = "Post must be confirm before ended!")]
+            INVALID_ENDING_POST = 4004,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

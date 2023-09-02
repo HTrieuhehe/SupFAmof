@@ -11,6 +11,7 @@ using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -40,7 +41,6 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-
                 var checkAccount = _unitOfWork.Repository<Account>()
                                               .GetAll()
                                               .FirstOrDefault(a => a.Id == accountId);
@@ -58,10 +58,32 @@ namespace SupFAmof.Service.Service
                 }
 
                 //validate Date
+                //request DateFrom must be greater than Current time or before 12 hours before event start
+                if(request.DateFrom <= DateTime.Now)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
+                                         PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
+                }
 
+                //validate Time
+                if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                }
+
+                if (request.TimeTo.HasValue)
+                {
+                    if (request.TimeTo <= request.TimeFrom)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                    }
+                }
 
                 var post = _mapper.Map<Post>(request);
 
+                post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
                 post.IsActive = true;
@@ -123,10 +145,9 @@ namespace SupFAmof.Service.Service
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                      //.Include(x => x.PostPositions)
-                                      //.Include(x => x.TrainingPositions)
                                       .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                       .Where(x => x.AccountId == accountId)
+                                      .OrderByDescending(x => x.CreateAt)
                                       .PagingQueryable(paging.Page, paging.PageSize,
                                             Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -147,11 +168,11 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> GetPostByPostcode(int postCode)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> GetPostByPostcode(string postCode)
         {
             try
             {
-                var post = _unitOfWork.Repository<Post>().GetAll().FirstOrDefault(x => x.PostCode == postCode);
+                var post = _unitOfWork.Repository<Post>().GetAll().FirstOrDefault(x => x.PostCode.Contains(postCode));
 
                 if (post == null)
                 {

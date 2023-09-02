@@ -12,7 +12,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int PostTitleId { get; set; }
-        public int PostCode { get; set; }
+        public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }

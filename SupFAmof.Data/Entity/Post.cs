@@ -16,7 +16,7 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int PostTitleId { get; set; }
-        public int PostCode { get; set; }
+        public string PostCode { get; set; } = null!;
         public string PostDescription { get; set; } = null!;
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }

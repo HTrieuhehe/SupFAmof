@@ -149,5 +149,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Confirm Post
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("confirmPost")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmPost
+            ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.ConfirmPost(account.Id, postId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

@@ -42,8 +42,8 @@ namespace SupFAmof.Service.Service
                 var accountBanking = await _unitOfWork.Repository<AccountBanking>().GetById(id);
                 if (accountBanking == null)
                 {
-                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNT_NOT_FOUND,
-                                        AccountBankingErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
+                                        AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
                 }
                 return new BaseResponseViewModel<AccountBankingResponse>
                 {
@@ -87,15 +87,27 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(CreateAccountBankingRequest request)
+        public async Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(int accountId, CreateAccountBankingRequest request)
         {
             try
             {
+                //check banking information first
+
+                var checkBankingInfo = _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefault(x => x.AccountId == accountId); 
+
+                if (checkBankingInfo != null)
+                {
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED,
+                                        AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED.GetDisplayName());
+                }
+
                 var account = _mapper.Map<AccountBanking>(request);
 
+                account.AccountId = accountId;
                 account.Beneficiary = account.Beneficiary.ToUpper();
                 account.IsActive= true;
                 account.CreateAt= DateTime.Now;
+                
                 await _unitOfWork.Repository<AccountBanking>().InsertAsync(account);
                 await _unitOfWork.CommitAsync();
 
@@ -124,11 +136,12 @@ namespace SupFAmof.Service.Service
 
                 if (account == null)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
-                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
+                                        AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
                 }
 
                 account = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, account);
+
                 account.Beneficiary = account.Beneficiary.ToUpper();
                 account.UpdateAt = DateTime.Now;
                 await _unitOfWork.Repository<AccountBanking>().UpdateDetached(account);

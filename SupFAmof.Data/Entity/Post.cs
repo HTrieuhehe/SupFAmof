@@ -25,6 +25,7 @@ namespace SupFAmof.Data.Entity
         public int? Priority { get; set; }
         public bool IsPremium { get; set; }
         public string Location { get; set; } = null!;
+        public bool IsConfirm { get; set; }
         public bool AttendanceComplete { get; set; }
         public bool IsActive { get; set; }
         public bool IsEnd { get; set; }

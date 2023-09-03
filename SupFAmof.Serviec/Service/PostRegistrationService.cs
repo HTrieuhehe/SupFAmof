@@ -68,7 +68,7 @@ namespace SupFAmof.Service.Service
                                                                                                 x.Id == postRegistration.PostRegistrationDetails.First().PositionId).First();
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == postRegistration.PostRegistrationDetails.First().PositionId
                                                                                                 &&x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
-                var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == postRegistration.AccountId
+                var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId
                                                                             && x.PostRegistrationDetails.First().PostId == postRegistration.PostRegistrationDetails.First().PostId);
  
                 var postCheckDate = _unitOfWork.Repository<Post>().GetAll().SingleOrDefault(x=>x.Id == postRegistration.PostRegistrationDetails.First().PostId);

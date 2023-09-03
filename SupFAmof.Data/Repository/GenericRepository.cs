@@ -37,18 +37,20 @@ namespace SupFAmof.Data.Repository
         }
         public async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            var redisKey = GenerateRedisKey(predicate);
-            var cachedData = _redisService.Get<T>(redisKey);
-            if (cachedData != null)
-            {
-                return cachedData;
-            }
+            //var redisKey = GenerateRedisKey(predicate);
+            //var cachedData = _redisService.Get<T>(redisKey);
+            //if (cachedData != null)
+            //{
+            //    return cachedData;
+            //}
 
-            var entity = await Table.SingleOrDefaultAsync(predicate);
+            //var entity = await Table.SingleOrDefaultAsync(predicate);
 
-            _redisService.Set(redisKey, entity);
+            //_redisService.Set(redisKey, entity);
 
-            return entity;
+            //return entity;
+            return
+                await Table.SingleOrDefaultAsync(predicate);
         }
 
         public IQueryable<T> FindAll(Func<T, bool> predicate)

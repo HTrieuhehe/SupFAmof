@@ -8,6 +8,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface ITimezoneService
     {
-        DateTime GetCurrentTime();
+        public DateTime GetCurrentTime();
     }
 }

@@ -24,11 +24,13 @@ namespace SupFAmof.Service.Service
     {
         private IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITimezoneService _timeZone;
 
-        public PostTitleService(IMapper mapper, IUnitOfWork unitOfWork)
+        public PostTitleService(IMapper mapper, IUnitOfWork unitOfWork, ITimezoneService timeZone)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _timeZone = timeZone;
         }
 
         public async Task<BaseResponsePagingViewModel<PostTitleResponse>> GetPostTitles(PostTitleResponse filter, PagingRequest paging)
@@ -111,7 +113,7 @@ namespace SupFAmof.Service.Service
 
                 result.PostTitleType = result.PostTitleType.ToUpper();
                 result.IsActive = true;
-                result.CreateAt = DateTime.Now;
+                result.CreateAt = _timeZone.GetCurrentTime();
 
                 await _unitOfWork.Repository<PostTitle>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();

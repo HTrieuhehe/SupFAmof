@@ -27,11 +27,13 @@ namespace SupFAmof.Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimezoneService _timeZone;
 
-        public PostService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PostService(IUnitOfWork unitOfWork, IMapper mapper, ITimezoneService timeZone)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeZone = timeZone;
         }
 
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmEndingPost(int accountId, int postId)
@@ -181,7 +183,7 @@ namespace SupFAmof.Service.Service
                 post.AttendanceComplete = false;
                 post.IsActive = true;
                 post.IsEnd = false;
-                post.CreateAt = DateTime.Now;
+                post.CreateAt = _timeZone.GetCurrentTime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
                 await _unitOfWork.CommitAsync();

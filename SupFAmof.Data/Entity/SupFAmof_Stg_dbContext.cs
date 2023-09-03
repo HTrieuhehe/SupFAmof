@@ -285,7 +285,7 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.PostRegistrations)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistration_Account");
+                    .HasConstraintName("FK_PostRegistation_Account");
             });
 
             modelBuilder.Entity<PostRegistrationDetail>(entity =>
@@ -304,31 +304,31 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration");
+                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration1");
             });
 
             modelBuilder.Entity<PostTgupdateHistory>(entity =>
             {
-                entity.ToTable("PostTGUpdateHistory");
+                entity.ToTable("PostTGupdateHistory");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Position)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PositionId)
-                    .HasConstraintName("FK_PostTGUpdateHistory_PostPosition");
+                    .HasConstraintName("FK_PostTGupdateHistory_PostPosition");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTGUpdateHistory_Post");
+                    .HasConstraintName("FK_PostTGupdateHistory_Post");
 
                 entity.HasOne(d => d.PostRegistration)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTGUpdateHistory_PostRegistration");
+                    .HasConstraintName("FK_PostTGupdateHistory_PostRegistration");
             });
 
             modelBuilder.Entity<PostTitle>(entity =>
@@ -337,7 +337,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PostTitleDescription).HasMaxLength(100);
+                entity.Property(e => e.PostTitleDescription).HasMaxLength(50);
 
                 entity.Property(e => e.PostTitleType).HasMaxLength(10);
 

@@ -121,7 +121,6 @@ namespace SupFAmof.API
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
-            builder.RegisterType<TimezoneService>().As<ITimezoneService>();
 
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();

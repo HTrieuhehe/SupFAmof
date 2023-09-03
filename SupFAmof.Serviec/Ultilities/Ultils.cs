@@ -114,7 +114,11 @@ namespace SupFAmof.Service.Utilities
             return true;
         }
 
-
+        public static DateTime GetCurrentTime()
+        {
+            TimeZoneInfo hoChiMinhTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, hoChiMinhTimeZone);
+        }
 
     }
 }

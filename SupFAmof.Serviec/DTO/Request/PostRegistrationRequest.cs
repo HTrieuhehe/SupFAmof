@@ -32,7 +32,7 @@ namespace SupFAmof.Service.DTO.Request
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
         public bool? SchoolBusOption { get; set; }
         [JsonIgnore]
-        public DateTime? CreateAt { get; set; } = DateTime.Now;
+        public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentTime();
         public ICollection<PostRegistrationDetailUpdateRequest>? PostRegistrationDetails { get; set; }
     }
 

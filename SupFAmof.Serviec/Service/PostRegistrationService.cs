@@ -63,7 +63,7 @@ namespace SupFAmof.Service.Service
                 var postRegistration = _mapper.Map<PostRegistration>(request);
                 postRegistration.Status = (int)PostRegistrationStatusEnum.Pending;
                 postRegistration.RegistrationCode= GenerateRandomCode();
-                postRegistration.CreateAt = DateTime.Now;
+                postRegistration.CreateAt = GetCurrentTime();
                 var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == postRegistration.PostRegistrationDetails.First().PostId &&
                                                                                                 x.Id == postRegistration.PostRegistrationDetails.First().PositionId).First();
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == postRegistration.PostRegistrationDetails.First().PositionId
@@ -188,18 +188,10 @@ namespace SupFAmof.Service.Service
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
                                 original.PostRegistrationDetails.First().PositionId = checkPostPostion.Id;
-                                if (CompareDateTime(original.CreateAt, updateEntity.CreateAt, TimeSpan.FromHours(2)))
-                                {
                                     original.UpdateAt = updateEntity.CreateAt;
                                     await _unitOfWork.Repository<PostRegistration>().UpdateDetached(original);
                                     await _unitOfWork.CommitAsync();
-                                }
-                                else
-                                {
-                                    throw new ErrorResponse(400,
-                                        (int)PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT,
-                                        PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT.GetDisplayName());
-                                }
+                                
                             }
                             else
                             {
@@ -211,8 +203,7 @@ namespace SupFAmof.Service.Service
                         case PostRegistrationStatusEnum.Confirm:
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
-                                if (CompareDateTime(original.CreateAt, updateEntity.CreateAt, TimeSpan.FromHours(2)))
-                                {
+                               
                                     PostTgupdateHistory postTgupdate = new PostTgupdateHistory
                                     {
                                         PostId = original.PostRegistrationDetails.First().PostId,
@@ -225,13 +216,7 @@ namespace SupFAmof.Service.Service
                                     };
                                     await _unitOfWork.Repository<PostTgupdateHistory>().InsertAsync(postTgupdate);
                                     await _unitOfWork.CommitAsync();
-                                }
-                                else
-                                {
-                                    throw new ErrorResponse(400,
-                       (int)PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT,
-                       PostRegistrationErrorEnum.EXCEEDING_TIME_LIMIT.GetDisplayName());
-                                }
+                           
                             }
                             else
                             {
@@ -316,15 +301,11 @@ namespace SupFAmof.Service.Service
                             {
                                 matchingEntity.SchoolBusOption = findRequest.BusOption;
                                 matchingEntity.PostRegistrationDetails.First().PositionId = (int)findRequest.PositionId;
-
-                                if (CompareDateTime(matchingEntity.CreateAt, findRequest.CreateAt, TimeSpan.FromHours(2)))
-                                {
-                                    matchingEntity.UpdateAt = DateTime.Now;
+                                    matchingEntity.UpdateAt = GetCurrentTime();
                                     findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostTgupdateHistory>().UpdateDetached(findRequest);
                                     await _unitOfWork.CommitAsync();
-                                }
                             }
                             else
                             {

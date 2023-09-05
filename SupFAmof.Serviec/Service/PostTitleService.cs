@@ -148,8 +148,8 @@ namespace SupFAmof.Service.Service
 
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.INVALID_POST_TITLE_TYPE,
-                                        PostTitleErrorEnum.INVALID_POST_TITLE_TYPE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var updatePostTitle = _mapper.Map<UpdatePostTitleRequest, PostTitle>(request, postTitle);

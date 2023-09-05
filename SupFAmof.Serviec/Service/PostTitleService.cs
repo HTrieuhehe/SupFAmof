@@ -24,6 +24,7 @@ namespace SupFAmof.Service.Service
     public class PostTitleService : IPostTitleService
     {
         private IMapper _mapper;
+
         private readonly IUnitOfWork _unitOfWork;
 
         public PostTitleService(IMapper mapper, IUnitOfWork unitOfWork)

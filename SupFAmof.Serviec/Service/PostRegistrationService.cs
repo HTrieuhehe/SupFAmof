@@ -1,20 +1,18 @@
 ﻿using AutoMapper;
+using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
 
 namespace SupFAmof.Service.Service
 {
@@ -54,6 +52,33 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging)
+        {
+            try
+            {
+                var list = _unitOfWork.Repository<PostRegistration>()
+                                                      .GetAll()
+                                                      .Where(pr => pr.PostRegistrationDetails.First().Post.AccountId == admissionAccountId)
+                                                      .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                      .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
+            catch(Exception) {
+                throw;
+            }
+           
         }
         public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
@@ -235,7 +260,7 @@ namespace SupFAmof.Service.Service
                         Status = new StatusViewModel()
                         {
 
-                            Message = "Success",
+                            Message = "Send Request for Admisson",
                             Success = true,
                             ErrorCode = 0
 

@@ -158,6 +158,12 @@ namespace SupFAmof.Service.Service
                                          PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
                 }
 
+                else if(request.DateTo.HasValue && request.DateTo < request.DateFrom)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATETIME_CREATE_POST,
+                                         PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
+                }    
+
                 //validate Time
                 if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
                 {

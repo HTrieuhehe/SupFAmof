@@ -198,8 +198,12 @@ namespace SupFAmof.Service.Helpers
             INVALID_DATE_CREATE_POST = 4002,
 
             //400
+            [Display(Name = "Date To must equal or greater than Date From")]
+            INVALID_DATETIME_CREATE_POST = 4003,
+
+            //400
             [Display(Name = "Time must be in from 3AM to 8PM or TimeTo must greater than TimeFrom")]
-            INVALID_TIME_CREATE_POST = 4003,
+            INVALID_TIME_CREATE_POST = 4004,
 
             //400
             [Display(Name = "Post must be confirm before ended!")]

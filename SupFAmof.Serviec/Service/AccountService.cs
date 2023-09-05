@@ -70,7 +70,7 @@ namespace SupFAmof.Service.Service
                 var rootEmail = splitEmail[1];
 
                 var admissionRole = _unitOfWork.Repository<Role>().GetAll()
-                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.AdmissionManager);
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Student);
 
                 if (admissionRole == null)
                 {

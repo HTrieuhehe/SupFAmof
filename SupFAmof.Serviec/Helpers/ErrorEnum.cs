@@ -149,8 +149,8 @@ namespace SupFAmof.Service.Helpers
             POST_TITLE_TYPE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Post Title Type invalid!")]
-            INVALID_POST_TITLE_TYPE = 4001,
+            [Display(Name = "Post Title Type is duplication!")]
+            POST_TITLE_TYPE_DUPLICATE = 4002,
 
             //404
             [Display(Name = "Post Title not found!")]

@@ -164,7 +164,6 @@ namespace SupFAmof.Service.Service
                                          PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
                 }    
 
-
                 //validate Time
                 if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
                 {

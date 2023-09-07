@@ -28,17 +28,17 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPosts
-        ([FromQuery] int accountId, [FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
+        ([FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
-                //{
-                //    return Unauthorized();
-                //}
-                return await _postService.GetPosts(accountId, filter, paging);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.GetPosts(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -46,24 +46,24 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        // <summary>
+        /// <summary>
         /// Get Post By Code 
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpGet("getByCode")]
-        public async Task<ActionResult<BaseResponseViewModel<PostResponse>>> GetPostByCode
-        ([FromQuery] int postCode)
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> SearchPost
+        ([FromQuery] string searchPost, [FromQuery] PagingRequest paging)
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
-                //{
-                //    return Unauthorized();
-                //}
-                return await _postService.GetPostByCode(postCode);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.GetPostByCode(searchPost, paging);
             }
             catch (ErrorResponse ex)
             {

@@ -370,28 +370,27 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostResponse>> GetPostByCode(int postCode)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostByCode(string searchPost, PagingRequest paging)
         {
             try
             {
-                var post = _unitOfWork.Repository<Post>().GetAll().FirstOrDefault(x => x.PostCode == postCode);
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                                         .Where(x => x.PostCode.Contains(searchPost) || x.PostTitle.PostTitleDescription.Contains(searchPost))
+                                                         .OrderByDescending(x => x.CreateAt)
+                                                         .OrderByDescending(x => x.Priority)
+                                                         .PagingQueryable(paging.Page, paging.PageSize,
+                                                            Constants.LimitPaging, Constants.DefaultPaging);
 
-                if (post == null)
+                return new BaseResponsePagingViewModel<PostResponse>()
                 {
-                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
-                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
-                }
-
-
-                return new BaseResponseViewModel<PostResponse>()
-                {
-                    Status = new StatusViewModel()
+                    Metadata = new PagingsMetadata()
                     {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = post.Item1
                     },
-                    Data = _mapper.Map<PostResponse>(post)
+                    Data = post.Item2.ToList()
                 };
             }
             catch (ErrorResponse ex)

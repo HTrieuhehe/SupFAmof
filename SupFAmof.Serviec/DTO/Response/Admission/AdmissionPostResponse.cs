@@ -12,7 +12,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int PostTitleId { get; set; }
-        public int PostCode { get; set; }
+        public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
@@ -27,11 +27,11 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public AccountResponse Account { get; set; }
-        public PostTitleResponse PostTitle { get; set; }
-        public ICollection<PostPositionResponse> PostPositions { get; set; }
+        public AccountResponse? Account { get; set; }
+        public PostTitleResponse? PostTitle { get; set; }
+        public ICollection<PostPositionResponse>? PostPositions { get; set; }
         //public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         //public virtual ICollection<PostTgupdateHistory> PostTgupdateHistories { get; set; }
-        public ICollection<TrainingPositionResponse> TrainingPositions { get; set; }
+        public ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
     }
 }

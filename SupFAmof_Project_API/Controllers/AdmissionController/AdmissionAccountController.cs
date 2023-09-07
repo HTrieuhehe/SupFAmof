@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using SupFAmof.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
-using SupFAmof.Service.DTO.Request.Account;
+using SupFAmof.Service.Service;
+using Microsoft.AspNetCore.Http;
+using System.Security.Principal;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.Service;
-using SupFAmof.Service.Exceptions;
-using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
-using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.DTO.Request.Account;
 using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Data.Entity;
-using System.Security.Principal;
+using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -28,19 +29,19 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Get Account By Id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getAccountById")]
-        public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
-        {
-            try
-            {
-                var result = await _admissionAccountService.GetAccountById(accountId);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
+        //[HttpGet("getAccountById")]
+        //public async Task<ActionResult<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId)
+        //{
+        //    try
+        //    {
+        //        var result = await _admissionAccountService.GetAccountAdmissionById(accountId);
+        //        return Ok(result);
+        //    }
+        //    catch (ErrorResponse ex)
+        //    {
+        //        return BadRequest(ex.Error);
+        //    }
+        //}
 
         /// <summary>
         /// Get Account By Token
@@ -71,17 +72,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         [HttpPut("update")]
-        public async Task<ActionResult<AccountResponse>> UpdateAccount([FromBody] UpdateAdmissionAccountRequest data)
+        public async Task<ActionResult<AdmissionAccountResponse>> UpdateAccount(int accountId, [FromBody] UpdateAdmissionAccountRequest data)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                {
-                    return Unauthorized();
-                }
-                var result = await _admissionAccountService.UpdateAdmissionAccount(account.Id, data);
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                //{
+                //    return Unauthorized();
+                //}
+                var result = await _admissionAccountService.UpdateAdmissionAccount(accountId, data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

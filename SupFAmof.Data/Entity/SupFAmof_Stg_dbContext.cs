@@ -45,8 +45,6 @@ namespace SupFAmof.Data.Entity
                 IConfiguration config = new ConfigurationBuilder()
                                     .SetBasePath(Directory.GetCurrentDirectory())
                                     .AddJsonFile("appsettings.json").Build();
-
-
                 string connectionString = config.GetConnectionString("SQLServerDatabase");
                 optionsBuilder.UseSqlServer(connectionString);
             }
@@ -91,6 +89,10 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.AccountNumber).HasMaxLength(50);
 
                 entity.Property(e => e.BankName).HasMaxLength(50);
+
+                entity.Property(e => e.Beneficiary).HasMaxLength(50);
+
+                entity.Property(e => e.Branch).HasMaxLength(50);
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
@@ -154,7 +156,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.IdStudent).HasMaxLength(10);
 
-                entity.Property(e => e.PersonalId).HasMaxLength(20);
+                entity.Property(e => e.IdentityNumber).HasMaxLength(20);
 
                 entity.Property(e => e.PersonalIdDate).HasColumnType("date");
 
@@ -239,6 +241,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Location).HasMaxLength(100);
 
+                entity.Property(e => e.PostCode).HasMaxLength(15);
+
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
@@ -258,7 +262,7 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("PostPosition");
 
-                entity.Property(e => e.Position).HasMaxLength(50);
+                entity.Property(e => e.PositionName).HasMaxLength(50);
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostPositions)
@@ -281,7 +285,7 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.PostRegistrations)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistration_Account");
+                    .HasConstraintName("FK_PostRegistation_Account");
             });
 
             modelBuilder.Entity<PostRegistrationDetail>(entity =>
@@ -300,31 +304,31 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration");
+                    .HasConstraintName("FK_PostRegistrationDetail_PostRegistration1");
             });
 
             modelBuilder.Entity<PostTgupdateHistory>(entity =>
             {
-                entity.ToTable("PostTGUpdateHistory");
+                entity.ToTable("PostTGupdateHistory");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Position)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PositionId)
-                    .HasConstraintName("FK_PostTGUpdateHistory_PostPosition");
+                    .HasConstraintName("FK_PostTGupdateHistory_PostPosition");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTGUpdateHistory_Post");
+                    .HasConstraintName("FK_PostTGupdateHistory_Post");
 
                 entity.HasOne(d => d.PostRegistration)
                     .WithMany(p => p.PostTgupdateHistories)
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTGUpdateHistory_PostRegistration");
+                    .HasConstraintName("FK_PostTGupdateHistory_PostRegistration");
             });
 
             modelBuilder.Entity<PostTitle>(entity =>
@@ -333,7 +337,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PostTitleDescription).HasMaxLength(100);
+                entity.Property(e => e.PostTitleDescription).HasMaxLength(50);
 
                 entity.Property(e => e.PostTitleType).HasMaxLength(10);
 
@@ -356,6 +360,8 @@ namespace SupFAmof.Data.Entity
             modelBuilder.Entity<TrainingPosition>(entity =>
             {
                 entity.ToTable("TrainingPosition");
+
+                entity.Property(e => e.PositionName).HasMaxLength(50);
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.TrainingPositions)

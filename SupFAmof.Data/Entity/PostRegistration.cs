@@ -13,8 +13,8 @@ namespace SupFAmof.Data.Entity
         }
 
         public int Id { get; set; }
-        public int AccountId { get; set; }
         public string RegistrationCode { get; set; } = null!;
+        public int AccountId { get; set; }
         public int Status { get; set; }
         public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }

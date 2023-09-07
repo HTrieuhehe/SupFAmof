@@ -9,6 +9,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
+using System.Net.NetworkInformation;
 using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.API.Controllers.AdmissionController
@@ -81,7 +82,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpGet("getByPostCode")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> GetPostByPostCode
-        ([FromQuery] int postCode)
+        ([FromQuery] string postCode)
         {
             try
             {
@@ -117,6 +118,56 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _postService.GetPostByAccountId(account.Id, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Confirm ending Post
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("confirmEndPost")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmEndingPost
+            ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.ConfirmEndingPost(account.Id, postId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Confirm Post
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("confirmPost")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmPost
+            ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.ConfirmPost(account.Id, postId);
             }
             catch (ErrorResponse ex)
             {

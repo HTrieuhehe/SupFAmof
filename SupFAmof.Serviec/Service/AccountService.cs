@@ -69,7 +69,16 @@ namespace SupFAmof.Service.Service
                 string[] splitEmail = userRecord.Email.Split('@');
                 var rootEmail = splitEmail[1];
 
-                if (!rootEmail.Contains("gmail.com"))
+                var admissionRole = _unitOfWork.Repository<Role>().GetAll()
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.AdmissionManager);
+
+                if (admissionRole == null)
+                {
+                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                if (!rootEmail.Contains(admissionRole.RoleEmail))
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
                                         AccountErrorEnums.API_INVALID.GetDisplayName());
@@ -223,7 +232,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 var checkStuId = Ultils.CheckStudentId(request.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.PersonalId);
+                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
                 if (checkPersonalId == false)
                 {
@@ -304,6 +313,37 @@ namespace SupFAmof.Service.Service
                 },
                 Data = _mapper.Map<AccountResponse>(account)
             };
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().GetAll()
+                                              .Where(x => x.Id == accountId)
+                                              .FirstOrDefaultAsync();
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+                return new BaseResponseViewModel<AdmissionAccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionAccountResponse>(account)
+                };
+            }
+            catch(Exception ex )
+            {
+                throw;
+            }
+            
         }
 
         public async Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email)
@@ -462,7 +502,16 @@ namespace SupFAmof.Service.Service
                 string[] splitEmail = userRecord.Email.Split('@');
                 var rootEmail = splitEmail[1];
 
-                if (!rootEmail.Contains("fpt.edu.vn"))
+                var collabRole = _unitOfWork.Repository<Role>().GetAll()
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Student);
+
+                if (collabRole == null)
+                {
+                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
+                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                }
+
+                if (!rootEmail.Contains(collabRole.RoleEmail))
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
                                         AccountErrorEnums.API_INVALID.GetDisplayName());
@@ -569,7 +618,7 @@ namespace SupFAmof.Service.Service
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
                 var checkStuId = Ultils.CheckStudentId(request.UpdateAccountInformation.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.PersonalId);
+                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.IdentityNumber);
 
                 if(checkPhone == false)
                 {
@@ -657,5 +706,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
     }
 }

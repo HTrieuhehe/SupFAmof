@@ -69,7 +69,7 @@ namespace SupFAmof.Service.Helpers
         public enum AccountBankingErrorEnums
         {
             //400
-            [Display(Name = "Invalid Account")]
+            [Display(Name = "Invalid Account Banking")]
             ACCOUNT_INVALID = 4001,
 
             //400
@@ -80,9 +80,13 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Invalid Student Id")]
             ACCOUNT_STUDENTID_INVALID = 4003,
 
+            //400
+            [Display(Name = "Invalid Student Id")]
+            ACCOUNT_BANKING_EXISTED = 4004,
+
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 404,
+            ACCOUNTBANKING_NOT_FOUND = 404,
 
         }
 
@@ -122,7 +126,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "FULL SLOT")]
             FULL_SLOT = 4003,
             //400
-            [Display(Name = "CANT REGISTER THE SAME POST")]
+            [Display(Name = "CANT REGISTER THE SAME POST OR POST THAT YOU ARE REGISTER HAS THE SAME DAY AS ANOTHER EVENT YOU REGISTER")]
             ALREADY_REGISTERED = 4004,
 
             //400
@@ -132,6 +136,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN REJECTED")]
             ALREADY_REJECT = 4006,
+            //400
+            [Display(Name = "MUST SENT REGISTER 1 DAY BEFORE THE EVENT")]
+            OUTDATED_REGISTER = 4007,
 
         }
 
@@ -142,8 +149,8 @@ namespace SupFAmof.Service.Helpers
             POST_TITLE_TYPE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Post Title Type invalid!")]
-            INVALID_POST_TITLE_TYPE = 4001,
+            [Display(Name = "Post Title Type is duplication!")]
+            POST_TITLE_TYPE_DUPLICATE = 4002,
 
             //404
             [Display(Name = "Post Title not found!")]
@@ -185,6 +192,22 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Post Invalid")]
             INVALID_POST = 4001,
+
+            //400
+            [Display(Name = "Create Post Date Invalid")]
+            INVALID_DATE_CREATE_POST = 4002,
+
+            //400
+            [Display(Name = "Date To must equal or greater than Date From")]
+            INVALID_DATETIME_CREATE_POST = 4003,
+
+            //400
+            [Display(Name = "Time must be in from 3AM to 8PM or TimeTo must greater than TimeFrom")]
+            INVALID_TIME_CREATE_POST = 4004,
+
+            //400
+            [Display(Name = "Post must be confirm before ended!")]
+            INVALID_ENDING_POST = 4004,
 
             //404
             [Display(Name = "Post Not Found")]

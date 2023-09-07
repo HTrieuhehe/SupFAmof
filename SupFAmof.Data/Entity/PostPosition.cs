@@ -12,7 +12,7 @@ namespace SupFAmof.Data.Entity
 
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string Position { get; set; } = null!;
+        public string PositionName { get; set; } = null!;
         public int Amount { get; set; }
         public double Salary { get; set; }
 

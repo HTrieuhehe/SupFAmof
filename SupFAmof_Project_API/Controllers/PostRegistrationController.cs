@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
@@ -12,9 +13,9 @@ namespace SupFAmof.API.Controllers
     [ApiController]
     public class PostRegistrationController : ControllerBase
     {
-        private readonly PostRegistrationIService _postRegistrationService;
+        private readonly IPostRegistrationService _postRegistrationService;
 
-        public PostRegistrationController(PostRegistrationIService postRegistrationService)
+        public PostRegistrationController(IPostRegistrationService postRegistrationService)
         {
             _postRegistrationService = postRegistrationService;
         }
@@ -29,11 +30,18 @@ namespace SupFAmof.API.Controllers
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
         [HttpGet("getById")]
-        public async Task<ActionResult<List<PostRegistrationResponse>>> GetPostRegistrationsByAccountId(int accountId)
+        public async Task<ActionResult<List<PostRegistrationResponse>>> GetPostRegistrationsByAccountId
+          ([FromQuery] PagingRequest paging)
         {
             try
             {
-                var result = await _postRegistrationService.GetPostRegistrationByAccountId(accountId);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -110,7 +118,7 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Update success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId,PostRegistrationUpdateRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {
@@ -125,28 +133,6 @@ namespace SupFAmof.API.Controllers
 
 
 
-        /// <summary>
-        /// Approve Request Update for Post Registration
-        /// </summary>
-        /// <remarks>
-        /// true 
-        /// </remarks>
-        /// <param name="postUpdateHistoryId"></param>
-        /// <response code="200">Approved success</response>
-        /// <response code="400">Failed to Update</response>
-        [HttpPut("review-updateRequesst/{postRegistrationId}")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate(int postUpdateHistoryId, [FromBody] AproveRequest approve)
-        {
-            try
-            {
-                var result =await _postRegistrationService.ApproveUpdateRequest(postUpdateHistoryId, approve.IsApproved);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
     }
-    
 }
+

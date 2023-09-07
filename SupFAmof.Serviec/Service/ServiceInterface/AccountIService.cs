@@ -1,8 +1,8 @@
-﻿using SupFAmof.Service.DTO.Request.Account;
-using SupFAmof.Service.DTO.Request;
+﻿using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
@@ -19,5 +19,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task Logout(string fcmToken);
         Task<BaseResponseViewModel<LoginResponse>> AdmissionLogin(ExternalAuthRequest data);
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);
+
+        Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId);
     }
 }

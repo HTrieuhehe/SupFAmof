@@ -16,7 +16,7 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int PostTitleId { get; set; }
-        public int PostCode { get; set; }
+        public string PostCode { get; set; } = null!;
         public string PostDescription { get; set; } = null!;
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
@@ -25,6 +25,7 @@ namespace SupFAmof.Data.Entity
         public int? Priority { get; set; }
         public bool IsPremium { get; set; }
         public string Location { get; set; } = null!;
+        public bool IsConfirm { get; set; }
         public bool AttendanceComplete { get; set; }
         public bool IsActive { get; set; }
         public bool IsEnd { get; set; }

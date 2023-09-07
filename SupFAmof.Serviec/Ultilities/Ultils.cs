@@ -102,6 +102,23 @@ namespace SupFAmof.Service.Utilities
             TimeSpan? timeDifference = dateTime2 - dateTime1;
             return timeDifference <= maxTimeDifference;
         }
+        public static bool CheckOneDayDifference(DateTime dateFrom, DateTime createAt, int day)
+        {
+            DateTime createAtDateOnly = createAt.Date;
+            DateTime dateFromDateOnly = dateFrom.Date;
+            TimeSpan difference = dateFromDateOnly - createAtDateOnly;
+            if(difference == TimeSpan.FromDays(day))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static DateTime GetCurrentTime()
+        {
+            TimeZoneInfo hoChiMinhTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, hoChiMinhTimeZone);
+        }
 
     }
 }

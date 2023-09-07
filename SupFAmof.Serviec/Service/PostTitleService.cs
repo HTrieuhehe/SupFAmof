@@ -11,6 +11,7 @@ using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,8 +96,8 @@ namespace SupFAmof.Service.Service
             {
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.INVALID_POST_TITLE_TYPE,
-                                        PostTitleErrorEnum.INVALID_POST_TITLE_TYPE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var postTitle = _unitOfWork.Repository<PostTitle>()
@@ -111,7 +112,7 @@ namespace SupFAmof.Service.Service
 
                 result.PostTitleType = result.PostTitleType.ToUpper();
                 result.IsActive = true;
-                result.CreateAt = DateTime.Now;
+                result.CreateAt = Ultils.GetCurrentTime();
 
                 await _unitOfWork.Repository<PostTitle>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();
@@ -147,8 +148,8 @@ namespace SupFAmof.Service.Service
 
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.INVALID_POST_TITLE_TYPE,
-                                        PostTitleErrorEnum.INVALID_POST_TITLE_TYPE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var updatePostTitle = _mapper.Map<UpdatePostTitleRequest, PostTitle>(request, postTitle);

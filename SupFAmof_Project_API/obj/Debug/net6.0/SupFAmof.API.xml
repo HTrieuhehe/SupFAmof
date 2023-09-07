@@ -1,0 +1,291 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SupFAmof.API</name>
+    </assembly>
+    <members>
+        <member name="M:SupFAmof.API.Controllers.AccountCertificateController.GetAccountCertificateById(SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get Account Certificate by Token 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.GetAccountById(System.Int32)">
+            <summary>
+            Get Account By Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.GetAccountByToken">
+            <summary>
+            Get Account By Token
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.UpdateAccount(SupFAmof.Service.DTO.Request.Account.UpdateAccountRequest)">
+            <summary>
+            Update Account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.CreateAccountInformation(SupFAmof.Service.DTO.Request.Account.CreateAccountInformationRequest)">
+            <summary>
+            Create Account Information
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.LoginGoogle(SupFAmof.Service.DTO.Request.ExternalAuthRequest)">
+            <summary>
+            Google Login
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AccountController.DisableAccount">
+            <summary>
+            Disable Account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdminController.AdminStaffController.GetStaffs(SupFAmof.Service.DTO.Response.StaffResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get List Staff    
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdminController.AdminStaffController.GetStaffById(System.Int32)">
+            <summary>
+            Get Staff By Id
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdminController.AdminStaffController.CreateAdminManager(SupFAmof.Service.DTO.Request.Staff.CreateStaffRequest)">
+            <summary>
+            Create Admin Account                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdminController.AdminStaffController.UpdateStaff(System.Int32,SupFAmof.Service.DTO.Request.Staff.UpdateStaffRequest)">
+            <summary>
+            Update Staff 
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountCertificateController.CreateAccountCertificate(SupFAmof.Service.DTO.Request.Admission.CreateAccountCertificateRequest)">
+            <summary>
+            Create Account Certificate 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountCertificateController.UpdateAccountCertificate(System.Int32,System.Int32)">
+            <summary>
+            Update Account Certificate 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountCertificateController.GetAccountCertificates(SupFAmof.Service.DTO.Response.AccountCertificateResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get Account Certificates 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountCertificateController.GetAccountCertificateById(System.Int32)">
+            <summary>
+            Get Account Certificate By Id
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountController.GetAccountByToken">
+            <summary>
+            Get Account By Token
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountController.UpdateAccount(System.Int32,SupFAmof.Service.DTO.Request.Admission.AccountRequest.UpdateAdmissionAccountRequest)">
+            <summary>
+            Update Account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountController.LoginGoogle(SupFAmof.Service.DTO.Request.ExternalAuthRequest)">
+            <summary>
+            Google Login
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionAccountController.DisableAccount">
+            <summary>
+            Disable Account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostController.CreateAccountCertificate(SupFAmof.Service.DTO.Request.Admission.CreatePostRequest)">
+            <summary>
+            Create Post 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostController.GetPosts(SupFAmof.Service.DTO.Response.Admission.AdmissionPostResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get Posts 
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostController.GetPostByPostCode(System.String)">
+            <summary>
+            Get Post by PostCode
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostController.GetPostByAccountId(SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get Post by Account Id
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostController.ConfirmEndingPost(System.Int32)">
+            <summary>
+            Confirm ending Post
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostRegistrationController.ApproveRequestUpdate(System.Int32,SupFAmof.Service.DTO.Request.AproveRequest)">
+            <summary>
+            Approve Request Update for Post Registration
+            </summary>
+            <remarks>
+            true 
+            </remarks>
+            <param name="postUpdateHistoryId"></param>
+            <response code="200">Approved success</response>
+            <response code="400">Failed to Update</response>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostTitleController.GetPostTitles(SupFAmof.Service.DTO.Response.Admission.PostTitleResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get List Post Title
+            </summary>    
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostTitleController.GetPostTitleById(System.Int32)">
+            <summary>
+            Get Post Title By Id                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostTitleController.CreatePostTitle(SupFAmof.Service.DTO.Request.Admission.CreatePostTitleRequest)">
+            <summary>
+            Create Post                       
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionPostTitleController.UpdatePostTitle(System.Int32,SupFAmof.Service.DTO.Request.Admission.UpdatePostTitleRequest)">
+            <summary>
+            Update Post                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionTrainingCertificateController.GetPostTitles(SupFAmof.Service.DTO.Response.Admission.TrainingCertificateResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get List Training Certificates
+            </summary>    
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionTrainingCertificateController.GetTrainingCertificateById(System.Int32)">
+            <summary>
+            Get Training Certificates By Id                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionTrainingCertificateController.CreateTrainingCertificate(SupFAmof.Service.DTO.Request.Admission.CreateTrainingCertificateRequest)">
+            <summary>
+            Create Post                       
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.AdmissionController.AdmissionTrainingCertificateController.UpdateTrainingCertificate(System.Int32,SupFAmof.Service.DTO.Request.Admission.UpdateTrainingCertificateRequest)">
+            <summary>
+            Update Post                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.PostRegistrationController.GetPostRegistrationsByAccountId(SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            This action method handles an HTTP GET request to retrieve a list of PostRegistrationResponse objects associated with a specific accountId.
+            </summary>
+            <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
+            <returns>
+            - 200 OK: Returns a list of PostRegistrationResponse objects associated with the specified accountId.
+            - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
+            </returns>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.PostRegistrationController.CreatePostRegistration(SupFAmof.Service.DTO.Request.PostRegistrationRequest)">
+             <summary>
+             This action method handles an HTTP POST request to create a request a PostRegistration objects.
+             </summary>
+             <param name="request">The PostRegistrationRequest create the PostRegistration objects.</param>
+             <remarks>
+             Sample request:
+            
+                 POST /create
+                  {
+                   "accountId": 5,
+                   "schoolBusOption": true,
+                   "postRegistrationDetails": [
+                     {
+                       "postId": 1,
+                        "positionId": 1
+                     }
+                   ]
+                   }
+            
+             </remarks>
+             <response code="200">Returns the newly created item</response>
+             <response code="400">Failed to create</response>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.PostRegistrationController.CancelPostRegistration(System.Int32)">
+            <summary>
+            Cancel Post Registration By Id.
+            </summary>
+            <param name="postRegistrationId">Id need to be submitted.</param>
+            <response code="200">Cancel success</response>
+            <response code="400">Failed to Cancel</response>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.PostRegistrationController.UpdatePostRegistration(System.Int32,SupFAmof.Service.DTO.Request.PostRegistrationUpdateRequest)">
+            <summary>
+            Update Post Registration By Id.
+            </summary>
+            <param name="postRegistrationId">Id need to be submitted.</param>
+            <param name="request">Update object</param>
+                {
+                "schoolBusOption": true,
+                "postRegistrationDetails": [
+                   {
+                    "positionId": 0
+                   }
+                ]
+                }
+            <response code="200">Update success</response>
+            <response code="400">Failed to Update</response>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.RoleController.GetRoles(SupFAmof.Service.DTO.Response.RoleResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get List Role
+            </summary>    
+        </member>
+        <member name="M:SupFAmof.API.Controllers.RoleController.GetRoleById(System.Int32)">
+            <summary>
+            Get Role By Id                        
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.StaffController.Login(SupFAmof.Service.DTO.Request.LoginRequest)">
+            <summary>
+            Login Admin
+            </summary>
+        </member>
+        <member name="M:SupFAmof.API.Controllers.StaffController.GetStaffs(SupFAmof.Service.DTO.Response.StaffResponse,SupFAmof.Service.DTO.Request.PagingRequest)">
+            <summary>
+            Get all staff for system admin
+            </summary>
+        </member>
+    </members>
+</doc>

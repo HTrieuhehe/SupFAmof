@@ -27,7 +27,7 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? UpdateAt { get; set; }
 
         public AccountMonthlyReport AccountMonthlyReport { get; set; }
-        public List<AccountInformationResponse>? AccountInformations { get; set; }
+        public AccountInformationResponse AccountInformation { get; set; }
     }
 
     public class AccountInformationResponse

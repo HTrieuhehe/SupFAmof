@@ -375,7 +375,9 @@ namespace SupFAmof.Service.Service
             try
             {
                 var account = await _unitOfWork.Repository<Account>().GetAll()
+                                               
                                                .Where(x => x.Id == accountId)
+                                               .Include(x => x.AccountInformation)
                                                .FirstOrDefaultAsync();
 
                 if (account == null)

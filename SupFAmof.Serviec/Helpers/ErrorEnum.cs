@@ -60,6 +60,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Account cannot post")]
             POST_PERMIT_NOT_ALLOWED = 4007,
+            
+            //400
+            [Display(Name = "Account Avatar URL cannot empty or null")]
+            ACCOUNT_AVATAR_URL_INVALID = 4008,
 
             //404
             [Display(Name = "Not Found Account")]

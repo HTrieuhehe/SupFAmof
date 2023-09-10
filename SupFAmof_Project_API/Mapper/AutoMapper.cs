@@ -33,6 +33,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateAccountRequest, Account>();
             CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();
             CreateMap<UpdateAccountRequest, Account>();
+            CreateMap<UpdateAccountAvatar, Account>();
             #endregion
             
             #region Staff

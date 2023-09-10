@@ -158,5 +158,30 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Update Account ImgUrl
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("updateAvatar")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateAccountAvatar([FromBody] UpdateAccountAvatar imgUrl)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                {
+                    return Unauthorized();
+                }
+                var result = await _accountService.UpdateAccountAvatar(account.Id, imgUrl);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

@@ -21,5 +21,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);
 
         Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId);
+        Task<BaseResponseViewModel<AccountResponse>> UpdateAccountAvatar(int accountId, UpdateAccountAvatar request);
     }
 }

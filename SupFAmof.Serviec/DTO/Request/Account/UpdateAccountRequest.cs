@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,11 @@ namespace SupFAmof.Service.DTO.Request.Account
         public string? ImgUrl { get; set; }
 
         public UpdateAccountInformationRequest? UpdateAccountInformation { get; set; }
+    }
+
+    public class UpdateAccountAvatar
+    {
+        [Required]
+        public string? ImgUrl { get; set; }
     }
 }

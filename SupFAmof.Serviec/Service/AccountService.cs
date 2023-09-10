@@ -19,6 +19,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using ServiceStack.Web;
 
 namespace SupFAmof.Service.Service
 {
@@ -658,6 +659,48 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountResponse>> UpdateAccountAvatar(int accountId, UpdateAccountAvatar request)
+        {
+            try
+            {
+                var account = _unitOfWork.Repository<Account>().Find(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if(request.ImgUrl == null || request.ImgUrl == "")
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID,
+                                        AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID.GetDisplayName());
+                }
+
+                account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);
+
+                account.UpdateAt = DateTime.Now;
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(account)
+                };
+            }
+            catch (Exception ex) 
             {
                 throw;
             }

@@ -97,38 +97,38 @@ namespace SupFAmof.Service.Service
                                                                             && x.PostRegistrationDetails.First().PostId == postRegistration.PostRegistrationDetails.First().PostId);
  
                 var postCheckDate = _unitOfWork.Repository<Post>().GetAll().SingleOrDefault(x=>x.Id == postRegistration.PostRegistrationDetails.First().PostId);
-                var existingEventDate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x =>
-                                                                  x.AccountId == postRegistration.AccountId 
-                                                                  && x.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                  && x.PostRegistrationDetails.Any(d => d.Post.DateFrom.Date == postCheckDate.DateFrom.Date));
+                //var existingEventDate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x =>
+                //                                                  x.AccountId == postRegistration.AccountId 
+                //                                                  && x.Status == (int)PostRegistrationStatusEnum.Confirm
+                //                                                  && x.PostRegistrationDetails.Any(d => d.Post.DateFrom.Date == postCheckDate.DateFrom.Date));
                     
-                if (checkDuplicateForm == null&&existingEventDate==null)
-                {
-                    if (CheckOneDayDifference(postCheckDate.DateFrom, postRegistration.CreateAt,1))
-                    {
-                        if (checkPostPostion.Amount - countAllRegistrationForm > 0)
-                    {
+                //if (checkDuplicateForm == null&&existingEventDate==null)
+                //{
+                //    if (CheckOneDayDifference(postCheckDate.DateFrom, postRegistration.CreateAt,1))
+                //    {
+                //        if (checkPostPostion.Amount - countAllRegistrationForm > 0)
+                //    {
 
-                        await _unitOfWork.Repository<PostRegistration>().InsertAsync(postRegistration);
-                        await _unitOfWork.CommitAsync();
-                    }else
-                        {
-                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-                                                PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
-                        }
+                //        await _unitOfWork.Repository<PostRegistration>().InsertAsync(postRegistration);
+                //        await _unitOfWork.CommitAsync();
+                //    }else
+                //        {
+                //            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
+                //                                PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
+                //        }
 
-                    }
-                    else
-                    {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
-                                                PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
-                    }
-                }
-                else
-                {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ALREADY_REGISTERED,
-                                                PostRegistrationErrorEnum.ALREADY_REGISTERED.GetDisplayName());
-                }
+                //    }
+                //    else
+                //    {
+                //        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
+                //                                PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
+                //    }
+                //}
+                //else
+                //{
+                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ALREADY_REGISTERED,
+                //                                PostRegistrationErrorEnum.ALREADY_REGISTERED.GetDisplayName());
+                //}
                 return new BaseResponseViewModel<PostRegistrationResponse>()
                 {
                     Status = new StatusViewModel()

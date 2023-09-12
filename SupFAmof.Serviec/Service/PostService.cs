@@ -54,13 +54,13 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                else if (post.IsConfirm != true)
+                //else if (post.IsConfirm != true)
                 {
                     throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
                                         PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
                 }    
 
-                post.IsEnd = true;
+                //post.IsEnd = true;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -103,8 +103,8 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                post.IsConfirm = true;
-                post.IsEnd = true;
+                //post.IsConfirm = true;
+                //post.IsEnd = true;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -185,8 +185,8 @@ namespace SupFAmof.Service.Service
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
-                post.IsActive = true;
-                post.IsEnd = false;
+                //post.IsActive = true;
+                //post.IsEnd = false;
                 post.CreateAt = Ultils.GetCurrentTime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);

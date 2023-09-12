@@ -11,10 +11,11 @@ namespace SupFAmof.Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly SupFAmOf_Stg_DbContext _context;
+        //private readonly SupFAmOf_Stg_DbContext _context;
+        private readonly SupFAmOf_Stg_Db_Ver_2Context _context;
         private readonly IRedis _redisService;
 
-        public UnitOfWork(SupFAmOf_Stg_DbContext context, IRedis redisService)
+        public UnitOfWork(SupFAmOf_Stg_Db_Ver_2Context context, IRedis redisService)
         {
             _context = context;
             _redisService = redisService;

@@ -14,11 +14,12 @@ namespace SupFAmof.Data.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private static SupFAmOf_Stg_DbContext Context;
+        //private static SupFAmOf_Stg_DbContext Context;
+        private static SupFAmOf_Stg_Db_Ver_2Context Context;
         private static DbSet<T> Table { get; set; }
         private readonly IRedis _redisService;
 
-        public GenericRepository(SupFAmOf_Stg_DbContext context, IRedis redisService)
+        public GenericRepository(SupFAmOf_Stg_Db_Ver_2Context context, IRedis redisService)
         {
             Context = context;
             Table = Context.Set<T>();

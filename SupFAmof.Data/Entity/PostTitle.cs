@@ -8,6 +8,7 @@ namespace SupFAmof.Data.Entity
         public PostTitle()
         {
             Contracts = new HashSet<Contract>();
+            PostTrainingCertificates = new HashSet<PostTrainingCertificate>();
             Posts = new HashSet<Post>();
         }
 
@@ -19,6 +20,7 @@ namespace SupFAmof.Data.Entity
         public DateTime? UpdateAt { get; set; }
 
         public virtual ICollection<Contract> Contracts { get; set; }
+        public virtual ICollection<PostTrainingCertificate> PostTrainingCertificates { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
     }
 }

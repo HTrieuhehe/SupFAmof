@@ -609,10 +609,9 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                Account account = _unitOfWork.Repository<Account>()
-                                         .Find(x => x.Id == accountId);
+                var account = _unitOfWork.Repository<Account>().Find(x => x.Id == accountId);
 
-                if(account == null)
+                if (account == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
@@ -620,8 +619,8 @@ namespace SupFAmof.Service.Service
 
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
-                var checkStuId = Ultils.CheckStudentId(request.UpdateAccountInformation.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.UpdateAccountInformation.IdentityNumber);
+                var checkStuId = Ultils.CheckStudentId(request.AccountInformation.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.AccountInformation.IdentityNumber);
 
                 if(checkPhone == false)
                 {
@@ -635,9 +634,9 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
                 }
 
-                if (!string.IsNullOrEmpty(request.UpdateAccountInformation.PlaceOfIssue))
+                if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
                 {
-                    request.UpdateAccountInformation.PlaceOfIssue = request.UpdateAccountInformation.PlaceOfIssue.ToUpper();
+                    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
                 }
 
                 account = _mapper.Map<UpdateAccountRequest, Account>(request, account);

@@ -14,7 +14,7 @@ namespace SupFAmof.Service.DTO.Request.Account
         public DateTime? DateOfBirth { get; set; }
         public string? ImgUrl { get; set; }
 
-        public UpdateAccountInformationRequest? UpdateAccountInformation { get; set; }
+        public UpdateAccountInformationRequest? AccountInformation { get; set; }
     }
 
     public class UpdateAccountAvatar

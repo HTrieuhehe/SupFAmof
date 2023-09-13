@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("getAccountById")]
-        public async Task<ActionResult<AccountResponse>> GetAccountById(int accountId)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> GetAccountById(int accountId)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("getAccountByToken/authorization")]
-        public async Task<ActionResult<AccountResponse>> GetAccountByToken()
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> GetAccountByToken()
         {
             try
             {
@@ -69,7 +69,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("update")]
-        public async Task<ActionResult<AccountResponse>> UpdateAccount([FromBody] UpdateAccountRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateAccount([FromBody] UpdateAccountRequest data)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpPost("createAccountInformation")]
-        public async Task<ActionResult<AccountResponse>> CreateAccountInformation([FromBody] CreateAccountInformationRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> CreateAccountInformation([FromBody] CreateAccountInformationRequest request)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace SupFAmof.API.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<ActionResult<AccountResponse>> LoginGoogle([FromBody] ExternalAuthRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> LoginGoogle([FromBody] ExternalAuthRequest data)
         {
             try
             {

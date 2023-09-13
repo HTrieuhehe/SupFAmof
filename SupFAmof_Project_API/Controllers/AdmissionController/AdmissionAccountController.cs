@@ -48,7 +48,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         [HttpGet("getAccountByToken/authorization")]
-        public async Task<ActionResult<AccountResponse>> GetAccountByToken()
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> GetAccountByToken()
         {
             try
             {
@@ -72,7 +72,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         [HttpPut("update")]
-        public async Task<ActionResult<AdmissionAccountResponse>> UpdateAccount(int accountId, [FromBody] UpdateAdmissionAccountRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> UpdateAccount(int accountId, [FromBody] UpdateAdmissionAccountRequest data)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<ActionResult<AccountResponse>> LoginGoogle([FromBody] ExternalAuthRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> LoginGoogle([FromBody] ExternalAuthRequest data)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         [HttpPut("disable")]
-        public async Task<ActionResult<AccountResponse>> DisableAccount()
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> DisableAccount()
         {
             try
             {

@@ -77,16 +77,16 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_INVALID = 4001,
 
             //400
-            [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 4002,
+            [Display(Name = "Account Banking Information Existed")]
+            ACCOUNT_BANKING_EXISTED = 4002,
 
             //400
-            [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 4003,
+            [Display(Name = "Account Number must contain only number or cannot null")]
+            ACCOUNT_BAKING_NUMBER_INVALID = 4003,
 
             //400
-            [Display(Name = "Invalid Student Id")]
-            ACCOUNT_BANKING_EXISTED = 4004,
+            [Display(Name = "Account Number cannot null")]
+            ACCOUNT_BAKING_NUMBER_NOT_NULL = 4004,
 
             //404
             [Display(Name = "Not Found Account")]

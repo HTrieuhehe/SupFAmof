@@ -14,6 +14,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingById(int id);
         Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse request, PagingRequest paging);
         Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(int accountId, CreateAccountBankingRequest request);
-        Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountBankingId, UpdateAccountBankingRequest request);
+        Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, int accountBankingId, UpdateAccountBankingRequest request);
     }
 }

@@ -506,7 +506,7 @@ namespace SupFAmof.Service.Service
                 var rootEmail = splitEmail[1];
 
                 var collabRole = _unitOfWork.Repository<Role>().GetAll()
-                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Student);
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Collaborator);
 
                 if (collabRole == null)
                 {

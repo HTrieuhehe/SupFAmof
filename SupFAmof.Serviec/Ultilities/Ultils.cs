@@ -120,5 +120,23 @@ namespace SupFAmof.Service.Utilities
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, hoChiMinhTimeZone);
         }
 
+        public static bool CheckIsOnlyNumber(string number)
+        {
+            return Regex.IsMatch(number, @"^[0-9]+$");
+        }
+
+        public static string RemoveDiacritics(string input)
+        {
+            // Chuyển đổi chuỗi thành chuỗi không dấu bằng cách sử dụng NormalizationForm.FormD
+            string normalizedString = input.Normalize(NormalizationForm.FormD);
+
+            // Tạo bộ ký tự Regex để tìm và thay thế các dấu thanh âm
+            Regex regex = new Regex(@"[\p{Mn}]");
+
+            // Thay thế các dấu thanh âm bằng chuỗi trống
+            string result = regex.Replace(normalizedString, "");
+
+            return result;
+        }
     }
 }

@@ -10,8 +10,6 @@ namespace SupFAmof.Data.Entity
         public int TrainingCertificateId { get; set; }
         public string PositionName { get; set; } = null!;
         public string? Location { get; set; }
-        public DateTime DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }

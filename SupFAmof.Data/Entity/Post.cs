@@ -18,7 +18,9 @@ namespace SupFAmof.Data.Entity
         public int PostTitleId { get; set; }
         public string PostCode { get; set; } = null!;
         public string PostDescription { get; set; } = null!;
-        public int? Priority { get; set; }
+        public int Priority { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
         public bool IsPremium { get; set; }
         public int Status { get; set; }
         public bool AttendanceComplete { get; set; }

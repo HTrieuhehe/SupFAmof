@@ -236,6 +236,10 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
+                entity.Property(e => e.DateFrom).HasColumnType("date");
+
+                entity.Property(e => e.DateTo).HasColumnType("date");
+
                 entity.Property(e => e.PostCode).HasMaxLength(15);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
@@ -256,10 +260,6 @@ namespace SupFAmof.Data.Entity
             modelBuilder.Entity<PostPosition>(entity =>
             {
                 entity.ToTable("PostPosition");
-
-                entity.Property(e => e.DateFrom).HasColumnType("date");
-
-                entity.Property(e => e.DateTo).HasColumnType("date");
 
                 entity.Property(e => e.Location).HasMaxLength(500);
 
@@ -384,10 +384,6 @@ namespace SupFAmof.Data.Entity
             modelBuilder.Entity<TrainingPosition>(entity =>
             {
                 entity.ToTable("TrainingPosition");
-
-                entity.Property(e => e.DateFrom).HasColumnType("date");
-
-                entity.Property(e => e.DateTo).HasColumnType("date");
 
                 entity.Property(e => e.Location).HasMaxLength(500);
 

@@ -31,5 +31,17 @@ namespace SupFAmof.Service.DTO.Response
         public double FinalSalary { get; set; }
 
     }
+    public class PostRgupdateHistoryResponse
+    {
+        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int PostRegistrationId { get; set; }
+        public int? PositionId { get; set; }
+        public bool? BusOption { get; set; }
+        public int Status { get; set; }
+        public DateTime CreateAt { get; set; }
+
+    }
+
 
 }

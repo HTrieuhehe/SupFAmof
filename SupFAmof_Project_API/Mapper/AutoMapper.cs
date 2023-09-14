@@ -86,6 +86,7 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
             CreateMap<PostRegistrationDetailUpdateRequest,PostRegistrationDetail>().ReverseMap();
 
+            CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
 
 
 

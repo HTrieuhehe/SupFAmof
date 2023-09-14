@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SupFAmof.Data.Entity;
+using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;

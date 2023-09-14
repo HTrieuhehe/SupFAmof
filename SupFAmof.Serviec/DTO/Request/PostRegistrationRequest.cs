@@ -8,8 +8,9 @@ namespace SupFAmof.Service.DTO.Request
     {
         [Required(ErrorMessage = "Account ID is required.")]
         public int AccountId { get; set; }
-   
-        //public int Status { get; set; }
+
+        [JsonIgnore]
+        public int Status { get; set; } = 1;
 
         [Required(ErrorMessage = "School bus option is required.")]
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
@@ -49,15 +50,6 @@ namespace SupFAmof.Service.DTO.Request
         {
             get; set;
         }
-
-
-
-
-
-
-
-
-
 
     }
 }

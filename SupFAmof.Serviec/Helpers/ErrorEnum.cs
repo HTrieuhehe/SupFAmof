@@ -144,6 +144,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "MUST SENT REGISTER 1 DAY BEFORE THE EVENT")]
             OUTDATED_REGISTER = 4007,
 
+            //400
+            [Display(Name = "School Bus option is not qualified ")]
+            NOT_QUALIFIED_SCHOOLBUS = 4008,
+            //400
+            [Display(Name = "Can not registrate cause you created this post")]
+            POST_CREATOR = 4009,
+
+
         }
 
         public enum PostTitleErrorEnum

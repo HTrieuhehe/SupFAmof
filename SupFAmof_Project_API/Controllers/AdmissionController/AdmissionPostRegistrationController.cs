@@ -25,15 +25,15 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <remarks>
         /// true 
         /// </remarks>
-        /// <param name="postUpdateHistoryId"></param>
+        /// <param name="approve"></param>
         /// <response code="200">Approved success</response>
         /// <response code="400">Failed to Update</response>
-        [HttpPut("review-updateRequesst/{postUpdateHistoryId}")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate(int postUpdateHistoryId, [FromBody] AproveRequest approve)
+        [HttpPut("review-updateRequest/")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate([FromBody] List<int> Ids, [FromQuery] AproveRequest approve)
         {
             try
             {
-                var result = await _postRegistrationService.ApproveUpdateRequest(postUpdateHistoryId, approve.IsApproved);
+                var result = await _postRegistrationService.ApproveUpdateRequest(Ids, approve.IsApproved);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -62,14 +62,38 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 }
 
                 var result = await _postRegistrationService.AdmssionPostRegistrations(account.Id, paging);
-            return Ok(result);
-            }catch(ErrorResponse ex)
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
             {
                 return BadRequest(ex.Error);
             }
 
         }
+        /// <summary>
+        /// Approve Join Request Post
+        /// </summary>
+        /// <remarks>
+        /// true 
+        /// </remarks>
+        /// <param name="approve"></param>
+        /// <response code="200">Approved success</response>
+        /// <response code="400">Failed to Update</response>
+        [HttpPut("review-joinRequest/")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApprovePostRegistrationRequest([FromBody] List<int> Ids, [FromQuery] AproveRequest approve)
+        {
+            try
+            {
+                var result = await _postRegistrationService.ApprovePostRegistrationRequest(Ids, approve.IsApproved);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
 
 
+
+            }
+        }
     }
 }

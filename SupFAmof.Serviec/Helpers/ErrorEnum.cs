@@ -151,6 +151,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Can not registrate cause you created this post")]
             POST_CREATOR = 4009,
 
+            //400
+            [Display(Name = "Cant not approve the same id twice")]
+            DUPLICATE_IDS = 4010,
+
+            //404
+            [Display(Name = "No registration need to be update")]
+            NOT_FOUND_UPDATE_REGISTRATION_REQUEST = 4011,
+
 
         }
 

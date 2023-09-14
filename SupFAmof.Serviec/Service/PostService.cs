@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -311,6 +313,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                int totalCount = 0;
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -330,6 +333,23 @@ namespace SupFAmof.Service.Service
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
+                    foreach (var register in premiumPost.Item2)
+                    {
+                        //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
+                        var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                    .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == register.Id));
+                        //register.RegisterAmount = totalPostRegist.Count();
+
+                        //lấy từng Post Registration ra
+                        //foreach (var postRegist in totalPostRegist)
+                        //{
+                        //    //lấy từng Post Registration Detail ra
+                        //    foreach (var postRegistDetail in postRegist.PostRegistrationDetails)
+                        //    {
+                                
+                        //    }
+                        //}
+                    }
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -345,13 +365,32 @@ namespace SupFAmof.Service.Service
                 
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.IsPremium != true)
+                                        .OrderByDescending (x => x.Priority)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
-                                        .OrderByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
-                
+
+                List<PostResponse> postResponseList = new();
+                foreach (var item in post.Item2)
+                {
+                    //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
+                    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                     .Include(x => x.PostRegistrationDetails)
+                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id));
+                        
+                    totalCount = totalPostRegist.Count();
+                    item.RegisterAmount = totalCount;
+                    totalCount = 0;
+
+                    foreach (var itemDetail in item.PostPositions)
+                    {
+                        
+                    }
+
+                    postResponseList.Add(item);
+                }
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
@@ -361,7 +400,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = post.Item2.ToList()
+                    Data = postResponseList.ToList()
                 };
             }
             catch (Exception ex)

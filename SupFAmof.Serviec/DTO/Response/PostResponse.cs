@@ -10,6 +10,8 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class PostResponse
     {
+        
+
         public int Id { get; set; }
         public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
@@ -22,6 +24,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? Location { get; set; }
         public DateTime CreateAt { get; set; }
 
+        private int? registerAmount;
+        public  int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
         public virtual AccountResponse? Account { get; set; }
         public virtual PostTitleResponse? PostTitle { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }

@@ -86,7 +86,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePost(int accountId, int postId)
         {
             try
             {
@@ -106,8 +106,7 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                //post.IsConfirm = true;
-                //post.IsEnd = true;
+                post.Status = (int)PostStatusEnum.Closed;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);

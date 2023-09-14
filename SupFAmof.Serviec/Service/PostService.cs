@@ -21,6 +21,7 @@ using System.Net.NetworkInformation;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -60,7 +61,7 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
                                         PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
-                }    
+                }
 
                 //post.IsEnd = true;
                 post.UpdateAt = DateTime.Now;
@@ -79,7 +80,7 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionPostResponse>(post)
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -154,17 +155,17 @@ namespace SupFAmof.Service.Service
 
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
-                if(request.DateFrom <= DateTime.Now)
+                if (request.DateFrom <= DateTime.Now)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
                                          PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
                 }
 
-                else if(request.DateTo.HasValue && request.DateTo < request.DateFrom)
+                else if (request.DateTo.HasValue && request.DateTo < request.DateFrom)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATETIME_CREATE_POST,
                                          PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
-                }    
+                }
 
                 //validate Time
                 if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
@@ -205,11 +206,11 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionPostResponse>(post)
                 };
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
-        
+
         }
 
         public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(AdmissionPostResponse filter, PagingRequest paging)
@@ -346,7 +347,7 @@ namespace SupFAmof.Service.Service
                         //    //lấy từng Post Registration Detail ra
                         //    foreach (var postRegistDetail in postRegist.PostRegistrationDetails)
                         //    {
-                                
+
                         //    }
                         //}
                     }
@@ -362,10 +363,10 @@ namespace SupFAmof.Service.Service
                         Data = premiumPost.Item2.ToList()
                     };
                 }
-                
+
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.IsPremium != true)
-                                        .OrderByDescending (x => x.Priority)
+                                        .OrderByDescending(x => x.Priority)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
@@ -378,15 +379,21 @@ namespace SupFAmof.Service.Service
                     //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
                     var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                      .Include(x => x.PostRegistrationDetails)
-                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id));
-                        
+                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+
                     totalCount = totalPostRegist.Count();
                     item.RegisterAmount = totalCount;
                     totalCount = 0;
 
                     foreach (var itemDetail in item.PostPositions)
                     {
-                        
+                        var postregistDetail = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
+                            .Include(x => x.PostRegistration)
+                            .Where(x => x.PositionId == itemDetail.Id && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
+                        if (postregistDetail.Any(x => x.PositionId == itemDetail.Id))
+                        {
+                            itemDetail.RegisterAmount = postregistDetail.Count();
+                        }
                     }
 
                     postResponseList.Add(item);

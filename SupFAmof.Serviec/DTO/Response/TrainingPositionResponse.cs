@@ -14,7 +14,8 @@ namespace SupFAmof.Service.DTO.Response
         public int Amount { get; set; }
         public double? Salary { get; set; }
 
-        public int RegisterAmount { get; set; }
+        private int? registerAmount;
+        public int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
 
     }
 }

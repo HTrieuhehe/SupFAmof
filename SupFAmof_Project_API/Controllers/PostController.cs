@@ -28,17 +28,17 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPosts
-        ([FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
+        ([FromQuery] int id, [FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _postService.GetPosts(account.Id, filter, paging);
+            //    var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            //    var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+            //    if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+            //    {
+            //        return Unauthorized();
+            //    }
+                return await _postService.GetPosts(id, filter, paging);
             }
             catch (ErrorResponse ex)
             {

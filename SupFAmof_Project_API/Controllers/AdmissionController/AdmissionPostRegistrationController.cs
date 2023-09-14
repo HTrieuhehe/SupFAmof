@@ -76,15 +76,24 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <remarks>
         /// true 
         /// </remarks>
+        /// <param name="ids"></param>
         /// <param name="approve"></param>
         /// <response code="200">Approved success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPut("review-joinRequest/")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApprovePostRegistrationRequest([FromBody] List<int> Ids, [FromQuery] AproveRequest approve)
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApprovePostRegistrationRequest([FromBody] List<int> ids, [FromQuery] AproveRequest approve)
         {
             try
             {
-                var result = await _postRegistrationService.ApprovePostRegistrationRequest(Ids, approve.IsApproved);
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+
+                var result = await _postRegistrationService.ApprovePostRegistrationRequest(ids, approve.IsApproved);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

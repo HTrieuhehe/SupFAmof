@@ -78,10 +78,11 @@ namespace SupFAmof.Service.Service
                     Data = list.Item2.ToList()
                 };
             }
-            catch(Exception) {
+            catch (Exception)
+            {
                 throw;
             }
-           
+
         }
         public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
@@ -158,7 +159,7 @@ namespace SupFAmof.Service.Service
                     //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
                     //                            PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
                     //}
-                    if(post.AccountId == postRegistration.AccountId)
+                    if (post.AccountId == postRegistration.AccountId)
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_CREATOR,
                            PostRegistrationErrorEnum.POST_CREATOR.GetDisplayName());
@@ -241,7 +242,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw ;
+                throw;
             }
         }
 
@@ -253,17 +254,18 @@ namespace SupFAmof.Service.Service
                                            .GetAll()
                                            .SingleOrDefault(x => x.Id == postRegistrationId);
                 PostRegistration updateEntity = _mapper.Map<PostRegistration>(request);
-                if(updateEntity.SchoolBusOption == null)
+                if (updateEntity.SchoolBusOption == null)
                 {
                     updateEntity.SchoolBusOption = original.SchoolBusOption;
                 }
-                if(updateEntity.PostRegistrationDetails.Count() == 0 ) {
+                if (updateEntity.PostRegistrationDetails.Count() == 0)
+                {
                     updateEntity.PostRegistrationDetails = original.PostRegistrationDetails;
                 }
                 PostPosition checkPostPostion = new PostPosition();
-               
-                    checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.PostRegistrationDetails.First().PostId &&
-                                                                                                  x.Id == updateEntity.PostRegistrationDetails.First().PositionId).First();
+
+                checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.PostRegistrationDetails.First().PostId &&
+                                                                                              x.Id == updateEntity.PostRegistrationDetails.First().PositionId).First();
 
                 var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == updateEntity.PostRegistrationDetails.First().PositionId
                                                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
@@ -581,7 +583,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0
                     },
                     Data = _mapper.Map<List<PostRegistrationResponse>>(listResponse)
-            };
+                };
             }
             catch (Exception ex)
             {
@@ -593,9 +595,9 @@ namespace SupFAmof.Service.Service
         {
             var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.PostId == rq.PostRegistrationDetails.First().PostId
                                                                                             && x.Id == rq.PostRegistrationDetails.First().PositionId);
-            if(entityMatching!=null && (entityMatching.IsBusService != rq.SchoolBusOption))
+            if (entityMatching != null && (entityMatching.IsBusService != rq.SchoolBusOption))
             {
-                    return false;
+                return false;
             }
 
             return true;
@@ -608,9 +610,9 @@ namespace SupFAmof.Service.Service
                 var updatedEntities = new List<PostRegistration>();
                 var notUpdatedEntities = new List<PostRegistration>();
                 var listPr = await _unitOfWork.Repository<PostRegistration>()
-                    .GetAll()
-                    .Where(x => postRegistrationIds.Contains(x.Id))
-                    .ToListAsync();
+                                            .GetAll()
+                                            .Where(x => postRegistrationIds.Contains(x.Id))
+                                            .ToListAsync();
 
                 if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
                 {
@@ -688,7 +690,7 @@ namespace SupFAmof.Service.Service
 
                         default:
                             throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
-                            
+
                     }
                 }
 

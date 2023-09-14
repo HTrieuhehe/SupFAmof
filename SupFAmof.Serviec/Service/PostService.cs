@@ -37,10 +37,12 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmEndingPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId)
         {
             try
             {
+                #region Account Checking 
+
                 var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
 
                 if (account == null)
@@ -48,6 +50,8 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
+
+                #endregion
 
                 var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
 
@@ -57,13 +61,22 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                //else if (post.IsConfirm != true)
+                foreach (var item in post.PostPositions)
                 {
-                    throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
-                                        PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
+                    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
+                    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                     .Include(x => x.PostRegistrationDetails)
+                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+
+                    if (totalPostRegist.Count() != item.Amount)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
+                                            PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
+                    }
                 }
 
-                //post.IsEnd = true;
+                //nếu dữ liệu trùng khớp thì tiến hành close form đăng ký
+                post.Status = (int)PostStatusEnum.Closed;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -326,6 +339,7 @@ namespace SupFAmof.Service.Service
                 else if (checkAccount.IsPremium == true)
                 {
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
+                                        .Where(x => x.Status == (int)PostStatusEnum.Opening)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
@@ -333,22 +347,30 @@ namespace SupFAmof.Service.Service
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
-                    foreach (var register in premiumPost.Item2)
+                    List<PostResponse> premiumPostResponseList = new();
+                    foreach (var item in premiumPost.Item2)
                     {
                         //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
                         var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                    .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == register.Id));
-                        //register.RegisterAmount = totalPostRegist.Count();
+                                                         .Include(x => x.PostRegistrationDetails)
+                                                         .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
-                        //lấy từng Post Registration ra
-                        //foreach (var postRegist in totalPostRegist)
-                        //{
-                        //    //lấy từng Post Registration Detail ra
-                        //    foreach (var postRegistDetail in postRegist.PostRegistrationDetails)
-                        //    {
+                        totalCount = totalPostRegist.Count();
+                        item.RegisterAmount = totalCount;
+                        totalCount = 0;
 
-                        //    }
-                        //}
+                        foreach (var itemDetail in item.PostPositions)
+                        {
+                            var postregistDetail = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
+                                .Include(x => x.PostRegistration)
+                                .Where(x => x.PositionId == itemDetail.Id && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
+                            if (postregistDetail.Any(x => x.PositionId == itemDetail.Id))
+                            {
+                                itemDetail.RegisterAmount = postregistDetail.Count();
+                            }
+                        }
+
+                        premiumPostResponseList.Add(item);
                     }
 
                     return new BaseResponsePagingViewModel<PostResponse>()
@@ -359,12 +381,12 @@ namespace SupFAmof.Service.Service
                             Size = paging.PageSize,
                             Total = premiumPost.Item1
                         },
-                        Data = premiumPost.Item2.ToList()
+                        Data = premiumPostResponseList.ToList()
                     };
                 }
 
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                        .Where(x => x.IsPremium != true)
+                                        .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
                                         .OrderByDescending(x => x.Priority)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)

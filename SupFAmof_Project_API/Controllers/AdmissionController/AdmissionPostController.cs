@@ -142,7 +142,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postService.ConfirmEndingPost(account.Id, postId);
+                return await _postService.EndPost(account.Id, postId);
             }
             catch (ErrorResponse ex)
             {

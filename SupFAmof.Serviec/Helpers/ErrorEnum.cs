@@ -218,8 +218,8 @@ namespace SupFAmof.Service.Helpers
             INVALID_TIME_CREATE_POST = 4004,
 
             //400
-            [Display(Name = "Post must be confirm before ended!")]
-            INVALID_ENDING_POST = 4004,
+            [Display(Name = "Post are missing collaborator! Cannot Ended!")]
+            INVALID_ENDING_POST = 4005,
 
             //404
             [Display(Name = "Post Not Found")]

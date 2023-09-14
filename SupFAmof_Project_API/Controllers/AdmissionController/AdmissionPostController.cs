@@ -31,7 +31,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> CreateAccountCertificate
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> CreatePost
         ([FromBody] CreatePostRequest request)
         {
             try

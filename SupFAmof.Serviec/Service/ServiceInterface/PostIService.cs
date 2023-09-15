@@ -14,12 +14,14 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         #region Admission Post IService
         Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(AdmissionPostResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<CollaboratorAccountReponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> GetPostByPostcode(string postCode);
         Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost(int accountId, CreatePostRequest request);
         Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost(int accountId, int postId, UpdatePostRequest request);
-        Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmEndingPost(int accountId, int postId);
-        Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmPost(int accountId, int postId);
+        Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePost(int accountId, int postId);
+        Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId);
+
         #endregion
 
         #region Collaborator Post IService

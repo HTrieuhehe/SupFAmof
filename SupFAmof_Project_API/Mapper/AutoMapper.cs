@@ -24,8 +24,8 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Account
-            CreateMap<Account, AccountResponse>()
-                .ReverseMap();
+            CreateMap<Account, AccountResponse>().ReverseMap();
+            CreateMap<Account, CollaboratorAccountReponse>().ReverseMap();
             CreateMap<AccountInformation, AccountResponse>().ReverseMap();
             CreateMap<AccountInformation, AccountInformationResponse>()
                 .ReverseMap();
@@ -69,7 +69,7 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
                 .ReverseMap();
-          
+
             CreateMap<PostRegistrationDetailRequest, PostRegistrationDetail>().ReverseMap();
             CreateMap<PostRegistrationRequest, PostRegistration>()
               .ForMember(dest => dest.PostRegistrationDetails, opt =>
@@ -87,11 +87,6 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRegistrationDetailUpdateRequest,PostRegistrationDetail>().ReverseMap();
 
             CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
-
-
-
-
-
 
             #endregion
 

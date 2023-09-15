@@ -31,7 +31,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> CreateAccountCertificate
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> CreatePost
         ([FromBody] CreatePostRequest request)
         {
             try
@@ -142,7 +142,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postService.ConfirmEndingPost(account.Id, postId);
+                return await _postService.EndPost(account.Id, postId);
             }
             catch (ErrorResponse ex)
             {
@@ -150,24 +150,44 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
 
+        //[HttpPut("confirmPost")]
+        //public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmPost
+        //    ([FromQuery] int postId)
+        //{
+        //    try
+        //    {
+        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //        return await _postService.(account.Id, postId);
+        //    }
+        //    catch (ErrorResponse ex)
+        //    {
+        //        return BadRequest(ex.Error);
+        //    }
+        //}
+
         /// <summary>
-        /// Confirm Post
+        /// Get Account Register in Post Position
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("confirmPost")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmPost
-            ([FromQuery] int postId)
+        [HttpGet("getAccountByPostPositionId")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollaboratorAccountReponse>>> GetAccountByPostPositionId
+            ([FromQuery] int positionId, [FromQuery] PagingRequest paging)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                {
-                    return Unauthorized();
-                }
-                return await _postService.ConfirmPost(account.Id, postId);
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                //{
+                //    return Unauthorized();
+                //}
+                return await _postService.GetAccountByPostPositionId(positionId, paging);
             }
             catch (ErrorResponse ex)
             {

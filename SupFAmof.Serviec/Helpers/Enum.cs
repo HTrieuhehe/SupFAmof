@@ -48,5 +48,20 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Approved Request")]
             Approved_Request = 6,
         }
+
+        public enum PostStatusEnum
+        {
+            [Display(Name = "Opening")]
+            Opening = 1,
+
+            [Display(Name = "Closed")]
+            Closed = 2,
+
+            [Display(Name = "Ended")]
+            Ended = 3,
+
+            [Display(Name = "Cancel")]
+            Cancel = 4,
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ServiceStack.LicenseUtils;
 
 namespace SupFAmof.Service.DTO.Request.Admission
 {
@@ -15,6 +17,8 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? PostDescription { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
         public int? Priority { get; set; }
         public bool IsPremium { get; set; }
         public string? Location { get; set; }
@@ -37,7 +41,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
         public double Salary { get; set; }
     }
 
@@ -51,7 +59,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
         public double Salary { get; set; }
     }
 

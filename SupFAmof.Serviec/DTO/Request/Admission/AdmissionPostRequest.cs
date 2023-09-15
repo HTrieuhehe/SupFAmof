@@ -15,16 +15,13 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? PostDescription { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
-        public TimeSpan TimeFrom { get; set; }
-        public TimeSpan? TimeTo { get; set; }
         public int? Priority { get; set; }
         public bool IsPremium { get; set; }
         public string? Location { get; set; }
         //public bool AttendanceComplete { get; set; }
-        //public bool IsActive { get; set; }
-        //public bool IsEnd { get; set; }
         //public DateTime CreateAt { get; set; }
         //public DateTime? UpdateAt { get; set; }
+        //public int Status { get; set; }
 
         public List<CreatePostPositionRequest>? PostPositions { get; set; }
         public List<CreatePostTrainingPositionRequest>? TrainingPositions { get; set;}
@@ -34,7 +31,12 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int PostId { get; set; }
+        public int TrainingCertificateId { get; set; }
         public string? PositionName { get; set; }
+        public string? Location { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public bool? IsBusService { get; set; }
         public int Amount { get; set; }
         public double Salary { get; set; }
     }
@@ -43,9 +45,14 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int PostId { get; set; }
+        public int TrainingCertificateId { get; set; }
         public string? PositionName { get; set; }
+        public string? Location { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public bool? IsBusService { get; set; }
         public int Amount { get; set; }
-        public double? Salary { get; set; }
+        public double Salary { get; set; }
     }
 
     public class UpdatePostRequest

@@ -34,8 +34,8 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostTitle> PostTitles { get; set; } = null!;
         public virtual DbSet<PostTrainingCertificate> PostTrainingCertificates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
         public virtual DbSet<TrainingPosition> TrainingPositions { get; set; } = null!;
-        public virtual DbSet<TranningCertificate> TranningCertificates { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<staff> staff { get; set; } = null!;
 
@@ -381,6 +381,19 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<TrainingCertificate>(entity =>
+            {
+                entity.ToTable("TrainingCertificate");
+
+                entity.Property(e => e.CertificateName).HasMaxLength(50);
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<TrainingPosition>(entity =>
             {
                 entity.ToTable("TrainingPosition");
@@ -400,19 +413,6 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.TrainingCertificateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TrainingPosition_TranningCertificate");
-            });
-
-            modelBuilder.Entity<TranningCertificate>(entity =>
-            {
-                entity.ToTable("TranningCertificate");
-
-                entity.Property(e => e.CertificateName).HasMaxLength(50);
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Transaction>(entity =>

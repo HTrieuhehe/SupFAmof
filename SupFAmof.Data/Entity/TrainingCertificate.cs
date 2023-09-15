@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SupFAmof.Data.Entity
 {
-    public partial class TranningCertificate
+    public partial class TrainingCertificate
     {
-        public TranningCertificate()
+        public TrainingCertificate()
         {
             AccountCertificates = new HashSet<AccountCertificate>();
             PostPositions = new HashSet<PostPosition>();

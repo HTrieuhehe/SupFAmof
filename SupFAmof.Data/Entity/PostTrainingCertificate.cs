@@ -10,6 +10,6 @@ namespace SupFAmof.Data.Entity
         public int TrainingCertiId { get; set; }
 
         public virtual PostTitle PostTitle { get; set; } = null!;
-        public virtual TranningCertificate TrainingCerti { get; set; } = null!;
+        public virtual TrainingCertificate TrainingCerti { get; set; } = null!;
     }
 }

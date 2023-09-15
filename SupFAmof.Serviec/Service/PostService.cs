@@ -165,6 +165,8 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.POST_PERMIT_NOT_ALLOWED.GetDisplayName());
                 }
 
+                
+
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
                 if (request.DateFrom <= DateTime.Now)
@@ -179,19 +181,59 @@ namespace SupFAmof.Service.Service
                                          PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
                 }
 
-                //validate Time
-                if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
+                foreach (var item in request.PostPositions)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
-                }
+                    //validate Certificate
+                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
 
-                if (request.TimeTo.HasValue)
-                {
-                    if (request.TimeTo <= request.TimeFrom)
+                    if (checkCerti == null)
+                    {
+                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    }
+
+                    //validate Time
+                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                    }
+
+                    if (item.TimeTo.HasValue)
+                    {
+                        if (item.TimeTo <= item.TimeFrom)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                        }
+                    }
+                }
+
+                foreach (var item in request.TrainingPositions)
+                {
+                    //validate Certificate
+                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
+
+                    if (checkCerti == null)
+                    {
+                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    }
+
+                    //validate Time
+                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                    }
+
+                    if (item.TimeTo.HasValue)
+                    {
+                        if (item.TimeTo <= item.TimeFrom)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                        }
                     }
                 }
 
@@ -200,8 +242,7 @@ namespace SupFAmof.Service.Service
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
-                //post.IsActive = true;
-                //post.IsEnd = false;
+                post.Status = (int)PostStatusEnum.Opening;
                 post.CreateAt = Ultils.GetCurrentTime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);

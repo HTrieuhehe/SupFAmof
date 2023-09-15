@@ -98,9 +98,9 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Admission Training Certificate
-            CreateMap<TranningCertificate, TrainingCertificateResponse>().ReverseMap();
-            CreateMap<CreateTrainingCertificateRequest, TranningCertificate>();
-            CreateMap<UpdateTrainingCertificateRequest, TranningCertificate>();
+            CreateMap<TrainingCertificate, TrainingCertificateResponse>().ReverseMap();
+            CreateMap<CreateTrainingCertificateRequest, TrainingCertificate>();
+            CreateMap<UpdateTrainingCertificateRequest, TrainingCertificate>();
             #endregion
 
             #region Admission Account Certificate

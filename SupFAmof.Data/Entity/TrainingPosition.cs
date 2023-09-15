@@ -17,6 +17,6 @@ namespace SupFAmof.Data.Entity
         public double Salary { get; set; }
 
         public virtual Post Post { get; set; } = null!;
-        public virtual TranningCertificate TrainingCertificate { get; set; } = null!;
+        public virtual TrainingCertificate TrainingCertificate { get; set; } = null!;
     }
 }

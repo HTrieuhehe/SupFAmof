@@ -327,7 +327,7 @@ namespace SupFAmof.Service.Service
                                             .ThenInclude(pr => pr.PostRegistrationDetails) // Nạp thông tin chi tiết đăng ký
                                                 .ThenInclude(prd => prd.Post) // Nạp thông tin Post của chi tiết đăng ký
                                                     .Where(account => account.PostRegistrations.Any(pr => pr.PostRegistrationDetails
-                                                                        .Any(prd => prd.PositionId == positionId) || pr.Status == (int)PostRegistrationStatusEnum.Pending))
+                                                                        .Any(prd => prd.PositionId == positionId) && pr.Status == (int)PostRegistrationStatusEnum.Pending))
                                                     .OrderByDescending(account => account.PostRegistrations.Max(pr => pr.CreateAt)) // Sắp xếp theo CreateAt của PostRegistration
                                                     .ProjectTo<CollaboratorAccountReponse>(_mapper.ConfigurationProvider)
                                                     .PagingQueryable(paging.Page, paging.PageSize,

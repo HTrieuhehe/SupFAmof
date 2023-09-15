@@ -43,5 +43,15 @@ namespace SupFAmof.Service.DTO.Response
 
     }
 
-
+    public class CollaboratorAccountReponse
+    {
+        public int Id { get; set; }
+        public int RoleId { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string? ImgUrl { get; set; }
+        public bool PostPermission { get; set; }
+        public bool? IsPremium { get; set; }
+    }
 }

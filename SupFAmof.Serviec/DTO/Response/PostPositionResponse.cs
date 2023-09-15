@@ -12,7 +12,12 @@ namespace SupFAmof.Service.DTO.Response
     {
         public int Id { get; set; }
         public int PostId { get; set; }
+        public int TrainingCertificateId { get; set; }
         public string? PositionName { get; set; }
+        public string? Location { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public bool? IsBusService { get; set; }
         public int Amount { get; set; }
         public double Salary { get; set; }
 

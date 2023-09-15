@@ -92,6 +92,8 @@ namespace SupFAmof.API
                     new string[] { "Bearer" }
                     }
                 });
+                // Các cài đặt Swagger khác
+                c.EnableAnnotations();
             });
             services.ConfigureAuthServices(Configuration);
             services.ConnectToConnectionString(Configuration);
@@ -147,6 +149,9 @@ namespace SupFAmof.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SupFAmof V2");
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+
+                // Cài đặt để kích hoạt nút "Copy URL"
+                //c.EnableRequestValidation();
             });
             app.UseRouting();
             app.UseAuthentication();

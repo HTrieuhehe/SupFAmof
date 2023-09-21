@@ -8,10 +8,6 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountResponse
     {
-        public AccountResponse()
-        {
-            AccountMonthlyReport = new AccountMonthlyReport();
-        }
         public int Id { get; set; }
         public int RoleId { get; set; }
         public int AccountInformationId { get; set; }
@@ -26,7 +22,6 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public AccountMonthlyReport AccountMonthlyReport { get; set; }
         public AccountInformationResponse AccountInformation { get; set; }
     }
 
@@ -45,9 +40,4 @@ namespace SupFAmof.Service.DTO.Response
         public string? TaxNumber { get; set; }
     }
 
-    public class AccountMonthlyReport
-    {
-        public int? TotalPost { get; set; }
-        public double? TotalSalary { get; set; }
-    }
 }

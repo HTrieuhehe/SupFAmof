@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response.Admission
 {
-    public class PostTitleResponse
+    public class PostCategoryResponse
     {
         public int Id { get; set; }
         public string? PostTitleDescription { get; set; }

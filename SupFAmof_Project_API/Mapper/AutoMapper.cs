@@ -91,10 +91,10 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Admission PostTitle
-            CreateMap<PostTitle, PostTitleResponse>()
+            CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();
-            CreateMap<CreatePostTitleRequest, PostTitle>();
-            CreateMap<UpdatePostTitleRequest, PostTitle>();
+            CreateMap<CreatePostCategoryRequest, PostCategory>();
+            CreateMap<UpdatePostCategoryRequest, PostCategory>();
             #endregion
 
             #region Admission Training Certificate

@@ -28,7 +28,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public DateTime? UpdateAt { get; set; }
 
         public AccountResponse? Account { get; set; }
-        public PostTitleResponse? PostTitle { get; set; }
+        public PostCategoryResponse? PostTitle { get; set; }
         public ICollection<PostPositionResponse>? PostPositions { get; set; }
         //public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         //public virtual ICollection<PostTgupdateHistory> PostTgupdateHistories { get; set; }

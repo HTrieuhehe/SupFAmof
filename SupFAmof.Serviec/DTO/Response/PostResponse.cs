@@ -27,7 +27,7 @@ namespace SupFAmof.Service.DTO.Response
         private int? registerAmount;
         public  int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
         public virtual AccountResponse? Account { get; set; }
-        public virtual PostTitleResponse? PostTitle { get; set; }
+        public virtual PostCategoryResponse? PostTitle { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }
         public virtual ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
 

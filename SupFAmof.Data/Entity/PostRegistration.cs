@@ -7,7 +7,6 @@ namespace SupFAmof.Data.Entity
     {
         public PostRegistration()
         {
-            CheckAttendances = new HashSet<CheckAttendance>();
             PostRegistrationDetails = new HashSet<PostRegistrationDetail>();
             PostRgupdateHistories = new HashSet<PostRgupdateHistory>();
         }
@@ -21,7 +20,6 @@ namespace SupFAmof.Data.Entity
         public DateTime? UpdateAt { get; set; }
 
         public virtual Account Account { get; set; } = null!;
-        public virtual ICollection<CheckAttendance> CheckAttendances { get; set; }
         public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         public virtual ICollection<PostRgupdateHistory> PostRgupdateHistories { get; set; }
     }

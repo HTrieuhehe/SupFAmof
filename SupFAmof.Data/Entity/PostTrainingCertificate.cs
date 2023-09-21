@@ -9,7 +9,7 @@ namespace SupFAmof.Data.Entity
         public int PostTitleId { get; set; }
         public int TrainingCertiId { get; set; }
 
-        public virtual PostTitle PostTitle { get; set; } = null!;
+        public virtual PostCategory PostTitle { get; set; } = null!;
         public virtual TrainingCertificate TrainingCerti { get; set; } = null!;
     }
 }

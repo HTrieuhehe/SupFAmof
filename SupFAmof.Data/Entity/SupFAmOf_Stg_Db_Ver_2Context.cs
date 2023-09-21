@@ -21,17 +21,21 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountBanking> AccountBankings { get; set; } = null!;
         public virtual DbSet<AccountBanned> AccountBanneds { get; set; } = null!;
         public virtual DbSet<AccountCertificate> AccountCertificates { get; set; } = null!;
+        public virtual DbSet<AccountContract> AccountContracts { get; set; } = null!;
         public virtual DbSet<AccountInformation> AccountInformations { get; set; } = null!;
+        public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
+        public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
         public virtual DbSet<Fcmtoken> Fcmtokens { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
+        public virtual DbSet<PostAttendee> PostAttendees { get; set; } = null!;
+        public virtual DbSet<PostCategory> PostCategories { get; set; } = null!;
         public virtual DbSet<PostPosition> PostPositions { get; set; } = null!;
         public virtual DbSet<PostRegistration> PostRegistrations { get; set; } = null!;
         public virtual DbSet<PostRegistrationDetail> PostRegistrationDetails { get; set; } = null!;
         public virtual DbSet<PostRgupdateHistory> PostRgupdateHistories { get; set; } = null!;
-        public virtual DbSet<PostTitle> PostTitles { get; set; } = null!;
         public virtual DbSet<PostTrainingCertificate> PostTrainingCertificates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
@@ -147,6 +151,27 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_AccountCertificate_TranningCertificate");
             });
 
+            modelBuilder.Entity<AccountContract>(entity =>
+            {
+                entity.ToTable("AccountContract");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.AccountContracts)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountContract_Account");
+
+                entity.HasOne(d => d.Contract)
+                    .WithMany(p => p.AccountContracts)
+                    .HasForeignKey(d => d.ContractId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountContract_Contract");
+            });
+
             modelBuilder.Entity<AccountInformation>(entity =>
             {
                 entity.ToTable("AccountInformation");
@@ -172,6 +197,25 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_AccountInformation_Account");
             });
 
+            modelBuilder.Entity<AccountReport>(entity =>
+            {
+                entity.ToTable("AccountReport");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.AccountReports)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReport_Account");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.AccountReports)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReport_Post");
+            });
+
             modelBuilder.Entity<ActionLog>(entity =>
             {
                 entity.ToTable("ActionLog");
@@ -185,13 +229,21 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("CheckAttendance");
 
-                entity.Property(e => e.CheckInDate).HasColumnType("datetime");
+                entity.Property(e => e.CheckInTime).HasColumnType("datetime");
 
-                entity.HasOne(d => d.PostRegistration)
+                entity.Property(e => e.CheckOutTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
                     .WithMany(p => p.CheckAttendances)
-                    .HasForeignKey(d => d.PostRegistrationId)
+                    .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CheckAttendance_PostRegistration");
+                    .HasConstraintName("FK_CheckAttendance_Account");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.CheckAttendances)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CheckAttendance_Post");
             });
 
             modelBuilder.Entity<Contract>(entity =>
@@ -200,15 +252,24 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.ContractDescription).HasMaxLength(225);
 
+                entity.Property(e => e.ContractName).HasMaxLength(100);
+
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+                entity.Property(e => e.SigningDate).HasColumnType("date");
 
-                entity.HasOne(d => d.PostTitle)
-                    .WithMany(p => p.Contracts)
-                    .HasForeignKey(d => d.PostTitleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Contract_PostTitle");
+                entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.UpdateAtd).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<DocumentTemplate>(entity =>
+            {
+                entity.ToTable("DocumentTemplate");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DocName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<Fcmtoken>(entity =>
@@ -250,11 +311,49 @@ namespace SupFAmof.Data.Entity
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Post_Account");
 
-                entity.HasOne(d => d.PostTitle)
+                entity.HasOne(d => d.PostCategory)
                     .WithMany(p => p.Posts)
-                    .HasForeignKey(d => d.PostTitleId)
+                    .HasForeignKey(d => d.PostCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Post_PostTitle");
+            });
+
+            modelBuilder.Entity<PostAttendee>(entity =>
+            {
+                entity.ToTable("PostAttendee");
+
+                entity.Property(e => e.ConfirmAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.PostAttendees)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostAttendee_Account");
+
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.PostAttendees)
+                    .HasForeignKey(d => d.PositionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostAttendee_PostPosition");
+
+                entity.HasOne(d => d.TrainingPosition)
+                    .WithMany(p => p.PostAttendees)
+                    .HasForeignKey(d => d.TrainingPositionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostAttendee_TrainingPosition");
+            });
+
+            modelBuilder.Entity<PostCategory>(entity =>
+            {
+                entity.ToTable("PostCategory");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.PostCategoryDescription).HasMaxLength(50);
+
+                entity.Property(e => e.PostCategoryType).HasMaxLength(10);
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<PostPosition>(entity =>
@@ -264,6 +363,11 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.Location).HasMaxLength(500);
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_PostPosition_DocumentTemplate");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostPositions)
@@ -338,19 +442,6 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_PostTGupdateHistory_PostRegistration");
             });
 
-            modelBuilder.Entity<PostTitle>(entity =>
-            {
-                entity.ToTable("PostTitle");
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.PostTitleDescription).HasMaxLength(50);
-
-                entity.Property(e => e.PostTitleType).HasMaxLength(10);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<PostTrainingCertificate>(entity =>
             {
                 entity.ToTable("PostTrainingCertificate");
@@ -401,6 +492,11 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.Location).HasMaxLength(500);
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_TrainingPosition_DocumentTemplate");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.TrainingPositions)

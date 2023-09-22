@@ -333,13 +333,11 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.Position)
                     .WithMany(p => p.PostAttendees)
                     .HasForeignKey(d => d.PositionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostAttendee_PostPosition");
 
                 entity.HasOne(d => d.TrainingPosition)
                     .WithMany(p => p.PostAttendees)
                     .HasForeignKey(d => d.TrainingPositionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostAttendee_TrainingPosition");
             });
 

@@ -26,7 +26,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         #region Collaborator Post IService
         Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, PostResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<PostResponse>> GetPostByCode(string searchPost, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging);
         #endregion
     }
 }

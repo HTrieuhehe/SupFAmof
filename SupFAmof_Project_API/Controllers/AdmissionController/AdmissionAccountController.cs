@@ -133,5 +133,32 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// logout 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpDelete("logout")]
+        public async Task<ActionResult> Logout([FromQuery] string fcmToken)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                await _admissionAccountService.Logout(fcmToken);
+                return Ok();
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+
     }
 }

@@ -65,6 +65,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Account Avatar URL cannot empty or null")]
             ACCOUNT_AVATAR_URL_INVALID = 4008,
 
+            //400
+            [Display(Name = "Account is disable")]
+            ACCOUNT_DISABLE = 4009,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,
@@ -162,18 +166,18 @@ namespace SupFAmof.Service.Helpers
 
         }
 
-        public enum PostTitleErrorEnum
+        public enum PostCategoryErrorEnum
         {
             //400
-            [Display(Name = "Post Title existed!")]
+            [Display(Name = "Post Category existed!")]
             POST_TITLE_TYPE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Post Title Type is duplication!")]
+            [Display(Name = "Post Category Type is duplication!")]
             POST_TITLE_TYPE_DUPLICATE = 4002,
 
             //404
-            [Display(Name = "Post Title not found!")]
+            [Display(Name = "Post Category not found!")]
             NOT_FOUND_ID = 4041,
         }
 

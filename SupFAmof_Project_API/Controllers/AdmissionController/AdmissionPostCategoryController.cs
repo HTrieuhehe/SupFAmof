@@ -13,11 +13,11 @@ namespace SupFAmof.API.Controllers.AdmissionController
 {
     [Route(Helpers.SettingVersionAPI.ApiAdmisionVersion)]
     [ApiController]
-    public class AdmissionPostTitleController : ControllerBase
+    public class AdmissionPostCategoryController : ControllerBase
     {
-        private readonly IPostTitleService _postTitleService;
+        private readonly IPostCategoryService _postTitleService;
 
-        public AdmissionPostTitleController(IPostTitleService postTitleService)
+        public AdmissionPostCategoryController(IPostCategoryService postTitleService)
         {
             _postTitleService = postTitleService;
         }

@@ -19,4 +19,10 @@ namespace SupFAmof.Service.DTO.Request.Account
         public bool IsActive { get; set; }
 
     }
+
+    public class CreateAccountReactivationRequest
+    {
+        public int AccountId { get; set; }
+        public string? Email { get; set; }
+    }
 }

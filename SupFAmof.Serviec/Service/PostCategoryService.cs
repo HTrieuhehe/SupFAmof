@@ -21,12 +21,12 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
-    public class PostTitleService : IPostTitleService
+    public class PostCategoryService : IPostCategoryService
     {
         private IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostTitleService(IMapper mapper, IUnitOfWork unitOfWork)
+        public PostCategoryService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -69,8 +69,8 @@ namespace SupFAmof.Service.Service
 
                 if (postTitle == null)
                 {
-                    throw new ErrorResponse(404, (int)PostTitleErrorEnum.NOT_FOUND_ID,
-                                         PostTitleErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                         PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
                 return new BaseResponseViewModel<PostCategoryResponse>()
@@ -96,8 +96,8 @@ namespace SupFAmof.Service.Service
             {
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var postTitle = _unitOfWork.Repository<PostCategory>()
@@ -105,8 +105,8 @@ namespace SupFAmof.Service.Service
 
                 if (postTitle != null)
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_EXISTED,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_EXISTED.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED.GetDisplayName());
                 }
                 var result = _mapper.Map<CreatePostCategoryRequest, PostCategory>(request);
 
@@ -142,14 +142,14 @@ namespace SupFAmof.Service.Service
 
                 if (postTitle == null)
                 {
-                    throw new ErrorResponse(404, (int)PostTitleErrorEnum.NOT_FOUND_ID,
-                                             PostTitleErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                             PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var updatePostTitle = _mapper.Map<UpdatePostCategoryRequest, PostCategory>(request, postTitle);

@@ -134,30 +134,30 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-        ///// <summary>
-        ///// Disable Account
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPut("disable")]
-        //public async Task<ActionResult<AccountResponse>> DisableAccount()
-        //{
-        //    try
-        //    {
+        /// <summary>
+        /// Disable Account
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("disable")]
+        public async Task<ActionResult<AccountResponse>> DisableAccount()
+        {
+            try
+            {
 
-        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //        var result = await _accountService.DisableAccount(account.Id);
-        //        return Ok(result);
-        //    }
-        //    catch (ErrorResponse ex)
-        //    {
-        //        return BadRequest(ex.Error);
-        //    }
-        //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _accountService.DisableAccount(account.Id);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
 
         /// <summary>
         /// Update Account ImgUrl
@@ -177,6 +177,31 @@ namespace SupFAmof.API.Controllers
                 }
                 var result = await _accountService.UpdateAccountAvatar(account.Id, imgUrl);
                 return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// logout 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("logout")]
+        public async Task<ActionResult> Logout([FromQuery] string fcmToken)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                await _accountService.Logout(fcmToken);
+                return Ok();
             }
             catch (ErrorResponse ex)
             {

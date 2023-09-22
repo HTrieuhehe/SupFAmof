@@ -29,6 +29,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountInformation, AccountResponse>().ReverseMap();
             CreateMap<AccountInformation, AccountInformationResponse>()
                 .ReverseMap();
+
+            CreateMap<AccountReactivation, AccountReactivationResponse>().ReverseMap();
+            CreateMap<CreateAccountReactivationRequest, AccountReactivation>();
            
             CreateMap<CreateAccountRequest, Account>();
             CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();
@@ -104,7 +107,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostAttendee, PostAttendeeRequest>().ReverseMap();
             #endregion
 
-            #region Admission PostTitle
+            #region Admission Post Category
             CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();
             CreateMap<CreatePostCategoryRequest, PostCategory>();

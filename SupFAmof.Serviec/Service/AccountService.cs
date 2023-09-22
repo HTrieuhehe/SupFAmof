@@ -88,7 +88,7 @@ namespace SupFAmof.Service.Service
 
                 //check exist account
                 var account = _unitOfWork.Repository<Account>().GetAll()
-                                         .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
+                                         .FirstOrDefault(x => x.Email.Contains(userRecord.Email) );
 
                 //create new Account
                 if (account == null)
@@ -130,6 +130,12 @@ namespace SupFAmof.Service.Service
                         }
                     };
                 }
+
+                else if(account.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }    
 
                 else
                 {

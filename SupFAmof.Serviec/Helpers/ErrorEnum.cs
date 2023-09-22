@@ -65,6 +65,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Account Avatar URL cannot empty or null")]
             ACCOUNT_AVATAR_URL_INVALID = 4008,
 
+            //400
+            [Display(Name = "Account is disable")]
+            ACCOUNT_DISABLE = 4009,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,

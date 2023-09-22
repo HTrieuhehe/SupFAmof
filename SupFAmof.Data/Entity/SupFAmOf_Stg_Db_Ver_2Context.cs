@@ -23,6 +23,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountCertificate> AccountCertificates { get; set; } = null!;
         public virtual DbSet<AccountContract> AccountContracts { get; set; } = null!;
         public virtual DbSet<AccountInformation> AccountInformations { get; set; } = null!;
+        public virtual DbSet<AccountReactivation> AccountReactivations { get; set; } = null!;
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
@@ -197,6 +198,21 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_AccountInformation_Account");
             });
 
+            modelBuilder.Entity<AccountReactivation>(entity =>
+            {
+                entity.ToTable("AccountReactivation");
+
+                entity.Property(e => e.DeactivateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Email).HasMaxLength(50);
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.AccountReactivations)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReactivation_Account");
+            });
+
             modelBuilder.Entity<AccountReport>(entity =>
             {
                 entity.ToTable("AccountReport");
@@ -333,13 +349,11 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.Position)
                     .WithMany(p => p.PostAttendees)
                     .HasForeignKey(d => d.PositionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostAttendee_PostPosition");
 
                 entity.HasOne(d => d.TrainingPosition)
                     .WithMany(p => p.PostAttendees)
                     .HasForeignKey(d => d.TrainingPositionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostAttendee_TrainingPosition");
             });
 

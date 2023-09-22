@@ -139,7 +139,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("logout")]
+        [HttpDelete("logout")]
         public async Task<ActionResult> Logout([FromQuery] string fcmToken)
         {
             try
@@ -158,5 +158,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+
     }
 }

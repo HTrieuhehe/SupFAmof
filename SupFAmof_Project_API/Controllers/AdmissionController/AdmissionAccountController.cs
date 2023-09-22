@@ -150,7 +150,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                await _accountService.Logout(fcmToken);
+                await _admissionAccountService.Logout(fcmToken);
                 return Ok();
             }
             catch (ErrorResponse ex)

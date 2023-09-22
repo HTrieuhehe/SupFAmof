@@ -530,6 +530,12 @@ namespace SupFAmof.Service.Service
                     };
                 }
 
+                else if (account.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 else
                 {
                     //generate token

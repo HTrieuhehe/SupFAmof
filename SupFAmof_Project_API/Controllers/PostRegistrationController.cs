@@ -92,11 +92,11 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Cancel success</response>
         /// <response code="400">Failed to Cancel</response>
         [HttpDelete("cancel")]
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int accountId,int postRegistrationId)
         {
             try
             {
-                return await _postRegistrationService.CancelPostregistration(postRegistrationId);
+                return await _postRegistrationService.CancelPostregistration(accountId ,postRegistrationId);
             }
             catch (ErrorResponse ex)
             {
@@ -119,11 +119,11 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Update success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int accountId,int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {
-                var result = await _postRegistrationService.UpdatePostRegistration(postRegistrationId, request);
+                var result = await _postRegistrationService.UpdatePostRegistration(accountId ,postRegistrationId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

@@ -95,6 +95,11 @@ namespace SupFAmof.API.Mapper
                   {
                       opt.MapFrom(src => src.PostRegistrationDetails.First().PositionId);
                   })
+                  .ForMember(dest => dest.PostId, opt =>
+                  {
+                      opt.MapFrom(src => src.PostRegistrationDetails.First().PostId);
+                  })
+
                 .ReverseMap();
             CreateMap<PostAttendee, PostAttendeeRequest>().ReverseMap();
             #endregion

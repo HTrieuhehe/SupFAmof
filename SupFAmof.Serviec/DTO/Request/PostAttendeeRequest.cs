@@ -6,6 +6,7 @@ namespace SupFAmof.Service.DTO.Request
     {
         public int AccountId { get; set; }
         public int? PositionId { get; set; }
+        public int PostId { get; set; }
         public int? TrainingPositionId { get; set; }
         public DateTime ConfirmAt { get; set; } = GetCurrentTime();
     }

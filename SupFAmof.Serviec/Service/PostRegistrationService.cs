@@ -212,13 +212,13 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int postRegistrationId)
+        public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId, int postRegistrationId)
         {
             try
             {
                 var postRegistration = _unitOfWork.Repository<PostRegistration>()
                                                 .GetAll()
-                                                .FirstOrDefault(x => x.Id == postRegistrationId);
+                                                .FirstOrDefault(x => x.Id == postRegistrationId&& x.AccountId == accountId);
 
                 if (postRegistration == null)
                 {
@@ -247,13 +247,19 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId,int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {
+
                 var original = _unitOfWork.Repository<PostRegistration>()
                                            .GetAll()
-                                           .SingleOrDefault(x => x.Id == postRegistrationId);
+                                           .SingleOrDefault(x => x.Id == postRegistrationId&&x.AccountId == accountId);
+                if(original == null)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                   PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
                 PostRegistration updateEntity = _mapper.Map<PostRegistration>(request);
                 if (updateEntity.SchoolBusOption == null)
                 {
@@ -660,7 +666,7 @@ namespace SupFAmof.Service.Service
             var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x=>x.Id == matching.PostRegistrationId);
             var attendNeedToBeUpdated= _unitOfWork.Repository<PostAttendee>()
                               .GetAll()
-                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId);
+                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.PostRegistrationDetails.First().PostId);
             if(attendNeedToBeUpdated !=null)
             {
                 attendNeedToBeUpdated.PositionId = matching.PositionId;

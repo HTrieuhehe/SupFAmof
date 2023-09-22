@@ -405,7 +405,7 @@ namespace SupFAmof.Service.Service
 
                 if (checkAccount == null)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
@@ -424,23 +424,39 @@ namespace SupFAmof.Service.Service
                     List<PostResponse> premiumPostResponseList = new();
                     foreach (var item in premiumPost.Item2)
                     {
-                        //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
-                        var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                         .Include(x => x.PostRegistrationDetails)
-                                                         .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                        //tìm kiếm các post Attendee có cùng post Id để lọc là số lượng đăng kí post này
+                        var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                                         .Where(x => x.PostId == item.Id);
 
-                        totalCount = totalPostRegist.Count();
+                        totalCount = totalPostAttendee.Count();
                         item.RegisterAmount = totalCount;
                         totalCount = 0;
 
                         foreach (var itemDetail in item.PostPositions)
                         {
-                            var postregistDetail = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
-                                .Include(x => x.PostRegistration)
-                                .Where(x => x.PositionId == itemDetail.Id && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
-                            if (postregistDetail.Any(x => x.PositionId == itemDetail.Id))
+                            //vào từng obj của attendee để count
+                            foreach (var attendeeDetail in totalPostAttendee)
                             {
-                                itemDetail.RegisterAmount = postregistDetail.Count();
+                                if (attendeeDetail.PositionId == itemDetail.Id)
+                                {
+                                    totalCount++;
+                                }
+                                itemDetail.RegisterAmount = totalCount;
+                            }
+                        }
+
+                        totalCount = 0;
+
+                        foreach (var itemDetail in item.TrainingPositions)
+                        {
+                            //vào từng obj của attendee để count
+                            foreach (var attendeeDetail in totalPostAttendee)
+                            {
+                                if (attendeeDetail.PositionId == itemDetail.Id)
+                                {
+                                    totalCount++;
+                                }
+                                itemDetail.RegisterAmount = totalCount;
                             }
                         }
 
@@ -471,23 +487,37 @@ namespace SupFAmof.Service.Service
                 List<PostResponse> postResponseList = new();
                 foreach (var item in post.Item2)
                 {
-                    //tìm kiếm các post Regist có cùng post Id để lọc là số lượng đăng kí post này
-                    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                     .Include(x => x.PostRegistrationDetails)
-                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PostId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                    //tìm kiếm các post Attendee có cùng post Id để lọc là số lượng đăng kí post này
+                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                                     .Where(x => x.PostId == item.Id);
 
-                    totalCount = totalPostRegist.Count();
+                    totalCount = totalPostAttendee.Count();
                     item.RegisterAmount = totalCount;
                     totalCount = 0;
 
                     foreach (var itemDetail in item.PostPositions)
                     {
-                        var postregistDetail = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
-                            .Include(x => x.PostRegistration)
-                            .Where(x => x.PositionId == itemDetail.Id && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
-                        if (postregistDetail.Any(x => x.PositionId == itemDetail.Id))
+                        //vào từng obj của attendee để count
+                        foreach (var attendeeDetail in totalPostAttendee)
                         {
-                            itemDetail.RegisterAmount = postregistDetail.Count();
+                            if (attendeeDetail.PositionId == itemDetail.Id)
+                            {
+                                totalCount++;
+                            }
+                            itemDetail.RegisterAmount = totalCount;
+                        }
+                    }
+                    totalCount = 0;
+                    foreach (var itemDetail in item.TrainingPositions)
+                    {
+                        //vào từng obj của attendee để count
+                        foreach (var attendeeDetail in totalPostAttendee)
+                        {
+                            if (attendeeDetail.PositionId == itemDetail.Id)
+                            {
+                                totalCount++;
+                            }
+                            itemDetail.RegisterAmount = totalCount;
                         }
                     }
 
@@ -511,13 +541,14 @@ namespace SupFAmof.Service.Service
             }
         }
 
+
         public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostByCode(string searchPost, PagingRequest paging)
         {
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                                          .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                                         .Where(x => x.PostCode.Contains(searchPost) || x.PostTitle.PostTitleDescription.Contains(searchPost))
+                                                         .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostTitleDescription.Contains(searchPost))
                                                          .OrderByDescending(x => x.CreateAt)
                                                          .OrderByDescending(x => x.Priority)
                                                          .PagingQueryable(paging.Page, paging.PageSize,

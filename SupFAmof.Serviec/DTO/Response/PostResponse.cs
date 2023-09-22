@@ -12,7 +12,7 @@ namespace SupFAmof.Service.DTO.Response
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
-        public int PostTitleId { get; set; }
+        public int PostCategoryId { get; set; }
         public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
         public int Priority { get; set; }
@@ -27,13 +27,8 @@ namespace SupFAmof.Service.DTO.Response
         private int? registerAmount;
         public  int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
         public virtual AccountResponse? Account { get; set; }
-        public virtual PostCategoryResponse? PostTitle { get; set; }
+        public virtual PostCategoryResponse? PostCategory { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }
         public virtual ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
-
-
-        //public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
-        //public virtual ICollection<PostTgupdateHistory> PostTgupdateHistories { get; set; }
-        //public virtual ICollection<TrainingPosition> TrainingPositions { get; set; }
     }
 }

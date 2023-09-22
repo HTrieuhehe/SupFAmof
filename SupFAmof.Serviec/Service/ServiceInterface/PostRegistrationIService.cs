@@ -17,7 +17,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         //Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id, bool approve);
         Task<BaseResponsePagingViewModel<PostRegistrationResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging);
         Task<BaseResponseViewModel<List<PostRegistrationResponse>>> ApproveUpdateRequest(List<int> Ids, bool approve);
-        Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(List<int> postRegistrationIds, bool approve);
+        Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId,List<int> postRegistrationIds, bool approve);
     }
 
 }

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -261,6 +262,10 @@ namespace SupFAmof.Service.Service
                 if (updateEntity.PostRegistrationDetails.Count() == 0)
                 {
                     updateEntity.PostRegistrationDetails = original.PostRegistrationDetails;
+                }else
+                {
+                    updateEntity.PostRegistrationDetails.First().PostId = original.PostRegistrationDetails.First().PostId;
+
                 }
                 PostPosition checkPostPostion = new PostPosition();
 
@@ -370,102 +375,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        //public async Task<BaseResponseViewModel<PostRegistrationResponse>> ApproveUpdateRequest(int Id, bool approve)
-        //{
-        //    try
-        //    {
-        //        var findRequest = await _unitOfWork.Repository<PostRgupdateHistory>().GetAll().SingleOrDefaultAsync(x => x.Id == Id);
-        //        if (findRequest == null)
-        //        {
-        //            throw new ErrorResponse(404,
-        //                (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-        //                PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-        //        }
-
-        //        switch (findRequest.Status)
-        //        {
-        //            case (int)PostRegistrationStatusEnum.Approved_Request:
-        //                throw new ErrorResponse(400,
-        //                    (int)PostRegistrationErrorEnum.ALREADY_APPROVE,
-        //                    PostRegistrationErrorEnum.ALREADY_APPROVE.GetDisplayName());
-
-        //            // Add more cases here if needed
-        //            case (int)PostRegistrationStatusEnum.Reject:
-        //                throw new ErrorResponse(400,
-        //                    (int)PostRegistrationErrorEnum.ALREADY_REJECT,
-        //                    PostRegistrationErrorEnum.ALREADY_REJECT.GetDisplayName());
-
-        //            default:
-        //                break;
-        //        }
-
-        //        switch (approve)
-        //        {
-        //            case true:
-        //                var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == findRequest.PostId &&
-        //                                                                                     x.Id == findRequest.PositionId).First();
-        //                var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>().GetAll().Where(x => x.PositionId == findRequest.PositionId).Count();
-        //                var matchingEntity = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == findRequest.PostRegistrationId
-        //                                                                                && x.PostRegistrationDetails.First().PostId == findRequest.PostId);
-        //                var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
-
-        //                if (checkMatching.Contains(matchingEntity))
-        //                {
-        //                    if (checkPostPostion.Amount - countAllRegistrationForm > 0)
-        //                    {
-        //                        matchingEntity.SchoolBusOption = findRequest.BusOption;
-        //                        matchingEntity.PostRegistrationDetails.First().PositionId = (int)findRequest.PositionId;
-        //                            matchingEntity.UpdateAt = GetCurrentTime();
-        //                            findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
-        //                            await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
-        //                            await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
-        //                            await _unitOfWork.CommitAsync();
-        //                    }
-        //                    else
-        //                    {
-        //                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-        //                                              PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-        //                                   PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-        //                }
-        //                return new BaseResponseViewModel<PostRegistrationResponse>()
-        //                {
-        //                    Status = new StatusViewModel()
-        //                    {
-        //                        Message = "Success",
-        //                        Success = true,
-        //                        ErrorCode = 0
-        //                    },
-        //                    Data = _mapper.Map<PostRegistrationResponse>(matchingEntity)
-        //                };
-
-        //            case false:
-        //                findRequest.Status = (int)PostRegistrationStatusEnum.Reject;
-        //                await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
-        //                await _unitOfWork.CommitAsync();
-        //                return new BaseResponseViewModel<PostRegistrationResponse>()
-        //                {
-        //                    Status = new StatusViewModel()
-        //                    {
-        //                        Message = "Denied",
-        //                        Success = true,
-        //                        ErrorCode = 0
-        //                    }
-        //                };
-        //            default:
-        //                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
         public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> ApproveUpdateRequest(List<int> Ids, bool approve)
         {
             try
@@ -546,6 +455,7 @@ namespace SupFAmof.Service.Service
                                     findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
+                                    await UpdatePostAttendeeUser(findRequest);
                                     await _unitOfWork.CommitAsync();
                                     listResponse.Add(matchingEntity);
                                 }
@@ -603,7 +513,7 @@ namespace SupFAmof.Service.Service
             return true;
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(List<int> postRegistrationIds, bool approve)
+        public async Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId, List<int> postRegistrationIds, bool approve)
         {
             try
             {
@@ -611,7 +521,7 @@ namespace SupFAmof.Service.Service
                 var notUpdatedEntities = new List<PostRegistration>();
                 var listPr = await _unitOfWork.Repository<PostRegistration>()
                                             .GetAll()
-                                            .Where(x => postRegistrationIds.Contains(x.Id))
+                                            .Where(x => postRegistrationIds.Contains(x.Id)&& x.PostRegistrationDetails.First().Post.AccountId == accountId)
                                             .ToListAsync();
 
                 if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
@@ -696,6 +606,7 @@ namespace SupFAmof.Service.Service
 
                 // Update the range of entities in your repository
                 _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
+                await AddUserToPostAttendee(listToUpdate);
                 await _unitOfWork.CommitAsync();
                 var resultMap = new Dictionary<int, List<PostRegistration>>
         {
@@ -719,6 +630,46 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+        private async Task AddUserToPostAttendee(List<PostRegistration> list)
+        {
+            if (list.Any(postRegistration => postRegistration.Status == (int)PostRegistrationStatusEnum.Reject))
+            {
+                return;
+            }
+            // Map incoming data to PostAttendeeRequest and PostAttendee
+            var listAttendeeRequest = _mapper.Map<List<PostAttendeeRequest>>(list);
+            var listAttendeeFinal = _mapper.Map<List<PostAttendee>>(listAttendeeRequest);
+
+            // Retrieve existing data from the database
+            var existingAttendees = _unitOfWork.Repository<PostAttendee>().GetAll();
+
+            // Identify duplicates by comparing based on some unique identifier (e.g., UserId)
+            var duplicateAttendees = listAttendeeFinal
+                .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId&&existingAttendee.PositionId == newAttendee.PositionId))
+                .ToList();
+            // Insert only the non-duplicate attendees
+            var nonDuplicateAttendees = listAttendeeFinal.Except(duplicateAttendees).ToList();
+            await _unitOfWork.Repository<PostAttendee>().InsertRangeAsync(nonDuplicateAttendees.AsQueryable());
+        }
+
+        private async Task UpdatePostAttendeeUser (PostRgupdateHistory matching)
+        {
+            
+            var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x=>x.Id == matching.PostRegistrationId);
+            var attendNeedToBeUpdated= _unitOfWork.Repository<PostAttendee>()
+                              .GetAll()
+                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId);
+            if(attendNeedToBeUpdated !=null)
+            {
+                attendNeedToBeUpdated.PositionId = matching.PositionId;
+                attendNeedToBeUpdated.ConfirmAt = GetCurrentTime();
+            }
+            await _unitOfWork.Repository<PostAttendee>().Update(attendNeedToBeUpdated, attendNeedToBeUpdated.Id);
+
+
+
         }
 
 

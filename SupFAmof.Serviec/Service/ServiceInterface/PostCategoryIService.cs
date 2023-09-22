@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
-    public interface IPostTitleService
+    public interface IPostCategoryService
     {
         Task<BaseResponsePagingViewModel<PostCategoryResponse>> GetPostTitles(PostCategoryResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<PostCategoryResponse>> GetPostTitleById(int postTitleId);

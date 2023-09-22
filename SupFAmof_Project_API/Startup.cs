@@ -119,7 +119,7 @@ namespace SupFAmof.API
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<StaffService>().As<IStaffService>();
             builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
-            builder.RegisterType<PostTitleService>().As<IPostTitleService>();
+            builder.RegisterType<PostCategoryService>().As<IPostCategoryService>();
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();

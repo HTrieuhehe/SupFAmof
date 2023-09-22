@@ -8,11 +8,13 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int? PositionId { get; set; }
+        public int PostId { get; set; }
         public int? TrainingPositionId { get; set; }
         public DateTime ConfirmAt { get; set; }
 
         public virtual Account Account { get; set; } = null!;
         public virtual PostPosition? Position { get; set; }
+        public virtual Post Post { get; set; } = null!;
         public virtual TrainingPosition? TrainingPosition { get; set; }
     }
 }

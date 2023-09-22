@@ -351,6 +351,12 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PositionId)
                     .HasConstraintName("FK_PostAttendee_PostPosition");
 
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.PostAttendees)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostAttendee_Post");
+
                 entity.HasOne(d => d.TrainingPosition)
                     .WithMany(p => p.PostAttendees)
                     .HasForeignKey(d => d.TrainingPositionId)

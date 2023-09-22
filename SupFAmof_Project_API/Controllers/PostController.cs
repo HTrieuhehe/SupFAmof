@@ -63,7 +63,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPostByCode(searchPost, paging);
+                return await _postService.SearchPost(searchPost, paging);
             }
             catch (ErrorResponse ex)
             {

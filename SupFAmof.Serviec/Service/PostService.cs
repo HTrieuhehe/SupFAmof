@@ -542,17 +542,17 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostByCode(string searchPost, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging)
         {
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                                         .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostTitleDescription.Contains(searchPost))
-                                                         .OrderByDescending(x => x.CreateAt)
-                                                         .OrderByDescending(x => x.Priority)
-                                                         .PagingQueryable(paging.Page, paging.PageSize,
-                                                            Constants.LimitPaging, Constants.DefaultPaging);
+                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost))
+                                        .OrderByDescending(x => x.CreateAt)
+                                        .OrderByDescending(x => x.Priority)
+                                        .PagingQueryable(paging.Page, paging.PageSize,
+                                        Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {

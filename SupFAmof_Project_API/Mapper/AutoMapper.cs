@@ -93,7 +93,7 @@ namespace SupFAmof.API.Mapper
 
             #endregion
 
-            #region Admission PostTitle
+            #region Admission Post Category
             CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();
             CreateMap<CreatePostCategoryRequest, PostCategory>();

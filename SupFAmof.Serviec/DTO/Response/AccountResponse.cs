@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SupFAmof.Data.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,4 +41,12 @@ namespace SupFAmof.Service.DTO.Response
         public string? TaxNumber { get; set; }
     }
 
+    public class AccountReactivationResponse
+    {
+        public int Id { get; set; }
+        public int AccountId { get; set; }
+        public string? Email { get; set; }
+        public int? VerifyCode { get; set; }
+        public DateTime DeactivateDate { get; set; }
+    }
 }

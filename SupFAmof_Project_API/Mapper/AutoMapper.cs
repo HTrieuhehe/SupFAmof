@@ -29,6 +29,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountInformation, AccountResponse>().ReverseMap();
             CreateMap<AccountInformation, AccountInformationResponse>()
                 .ReverseMap();
+
+            CreateMap<AccountReactivation, AccountReactivationResponse>().ReverseMap();
+            CreateMap<CreateAccountReactivationRequest, AccountReactivation>();
            
             CreateMap<CreateAccountRequest, Account>();
             CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();

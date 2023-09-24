@@ -45,7 +45,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 //check fcm token
-                if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
+                if (data.FcmToken != null && data.FcmToken.Trim().Length == 0)
                 {
                     if (!await _accountFcmtokenService.ValidToken(data.FcmToken))
                         throw new ErrorResponse(400, (int)FcmTokenErrorEnums.INVALID_TOKEN,
@@ -472,7 +472,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 //check fcm token
-                if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
+                if (data.FcmToken != null && data.FcmToken.Trim().Length == 0)
                 {
                     if (!await _accountFcmtokenService.ValidToken(data.FcmToken))
                         throw new ErrorResponse(400, (int)FcmTokenErrorEnums.INVALID_TOKEN,

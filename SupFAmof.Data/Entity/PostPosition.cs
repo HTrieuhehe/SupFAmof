@@ -16,6 +16,7 @@ namespace SupFAmof.Data.Entity
         public int TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }
         public string PositionName { get; set; } = null!;
+        public string? SchoolName { get; set; }
         public string? Location { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }

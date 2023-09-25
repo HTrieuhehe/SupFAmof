@@ -384,6 +384,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
 
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
+
                 entity.HasOne(d => d.Document)
                     .WithMany(p => p.PostPositions)
                     .HasForeignKey(d => d.DocumentId)
@@ -512,6 +514,8 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.Location).HasMaxLength(500);
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
 
                 entity.HasOne(d => d.Document)
                     .WithMany(p => p.TrainingPositions)

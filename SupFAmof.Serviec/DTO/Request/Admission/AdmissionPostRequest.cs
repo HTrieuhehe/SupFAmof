@@ -37,6 +37,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public int PostId { get; set; }
         public int TrainingCertificateId { get; set; }
         public string? PositionName { get; set; }
+        public string? SchoolName { get; set; }
         public string? Location { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
@@ -55,6 +56,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public int PostId { get; set; }
         public int TrainingCertificateId { get; set; }
         public string? PositionName { get; set; }
+        public string? SchoolName { get; set; }
         public string? Location { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }

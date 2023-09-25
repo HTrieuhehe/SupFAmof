@@ -7,6 +7,7 @@ using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
@@ -351,10 +352,118 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost
             (int accountId, int postId, UpdatePostRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var checkPost = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+
+                if (checkPost == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                var postRegistration = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
+                                                    .FirstOrDefault(x => x.PostId == postId);
+                if (postRegistration != null)
+                {
+                    // not update salary because there is a post registration in that post
+                    await UpdatePostInformation(checkPost, request, 1);
+
+                    var postAfterUpdateAvoidSalary = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+
+                    return new BaseResponseViewModel<AdmissionPostResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Salary will be keep the existence of one or more registration ",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AdmissionPostResponse>(postAfterUpdateAvoidSalary)
+                    };
+
+                }
+
+                var updatePost = await UpdatePostInformation(checkPost, request, 2);
+                var postAfterUpdate = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(postAfterUpdate)
+                };
+            }
+            catch (ErrorResponse ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdatePostInformation(Post post, UpdatePostRequest request, int status)
+        {
+            try
+            {
+                var postmapping = _mapper.Map<UpdatePostRequest, Post>(request, post);
+
+                //allow update salary
+                if (status == 2)
+                {
+                    postmapping.UpdateAt = Ultils.GetCurrentDatetime();
+                    await _unitOfWork.Repository<Post>().UpdateDetached(postmapping);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AdmissionPostResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AdmissionPostResponse>(postmapping)
+                    };
+                }
+
+                foreach (var item in postmapping.PostPositions)
+                {
+                    var checkPosition = post.PostPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                    item.Salary = checkPosition.Salary;
+                }
+
+                foreach (var item in postmapping.TrainingPositions)
+                {
+                    var checkPosition = post.PostPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                    item.Salary = checkPosition.Salary;
+                }
+
+                postmapping.UpdateAt = Ultils.GetCurrentDatetime();
+                await _unitOfWork.Repository<Post>().UpdateDetached(postmapping);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(postmapping)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseResponsePagingViewModel<CollaboratorAccountReponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging)

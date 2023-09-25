@@ -32,14 +32,14 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<AccountReactivation, AccountReactivationResponse>().ReverseMap();
             CreateMap<CreateAccountReactivationRequest, AccountReactivation>();
-           
+
             CreateMap<CreateAccountRequest, Account>();
             CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();
             CreateMap<UpdateAccountInformationRequest, AccountInformation>();
             CreateMap<UpdateAccountRequest, Account>();
             CreateMap<UpdateAccountAvatar, Account>();
             #endregion
-            
+
             #region Staff
             CreateMap<staff, StaffResponse>().ReverseMap();
             CreateMap<CreateStaffRequest, staff>()
@@ -81,17 +81,18 @@ namespace SupFAmof.API.Mapper
               })
               .ReverseMap();
 
-            CreateMap<PostRegistrationUpdateRequest,PostRegistration>()
+            CreateMap<PostRegistrationUpdateRequest, PostRegistration>()
                  .ForMember(dest => dest.PostRegistrationDetails, opt =>
                  {
                      opt.MapFrom(src => src.PostRegistrationDetails);
                  })
                 .ReverseMap();
-            CreateMap<PostRegistrationDetailUpdateRequest,PostRegistrationDetail>().ReverseMap();
+            CreateMap<PostRegistrationDetailUpdateRequest, PostRegistrationDetail>().ReverseMap();
 
             CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
 
             #endregion
+
             #region Post Attendee
             CreateMap<PostRegistration, PostAttendeeRequest>()
                   .ForMember(dest => dest.PositionId, opt =>
@@ -137,6 +138,15 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<CreatePostPositionRequest, PostPosition>();
             CreateMap<CreatePostTrainingPositionRequest, TrainingPosition>();
+
+            CreateMap<UpdatePostRequest, Post>()
+                             //.ForMember(dest => dest.TrainingPositions, opt => opt.MapFrom(src => src.TrainingPositions)) // Map TrainingPositions
+                             .ForMember(dest => dest.TrainingPositions, opt => opt.Ignore()) // Map TrainingPositions
+                             .ForMember(dest => dest.PostPositions, opt => opt.MapFrom(src => src.PostPositions)) // Ignore PostPositions mapping
+                             .ReverseMap();
+
+            CreateMap<UpdatePostPositionRequest, PostPosition>().ReverseMap();
+            CreateMap<UpdatePostTrainingPositionRequest, TrainingPosition>().ReverseMap();
 
             #endregion
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SupFAmof.Data.Entity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -91,23 +92,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostRequest
     {
-        //public int Id { get; set; }
-        //public int AccountId { get; set; }
-        public int PostTitleId { get; set; }
-        //public string PostCode { get; set; }
+        public int PostCategoryId { get; set; }
         public string? PostDescription { get; set; }
-        public DateTime DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
-        public TimeSpan TimeFrom { get; set; }
-        public TimeSpan? TimeTo { get; set; }
-        public int? Priority { get; set; }
-        public bool IsPremium { get; set; }
-        public string? Location { get; set; }
-        //public bool AttendanceComplete { get; set; }
-        //public bool IsActive { get; set; }
-        //public bool IsEnd { get; set; }
-        //public DateTime CreateAt { get; set; }
-        //public DateTime? UpdateAt { get; set; }
+        public string? PostImg { get; set; }
 
         public List<UpdatePostPositionRequest>? PostPositions { get; set; }
         public List<UpdatePostTrainingPositionRequest>? TrainingPositions { get; set; }
@@ -115,11 +102,49 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostPositionRequest
     {
+        [Required]
+        public string? PositionName { get; set; }
 
+        [Required]
+        public string? SchoolName { get; set; }
+
+        [Required]
+        public string? Location { get; set; }
+
+        [Required]
+        public string? Latitude { get; set; }
+
+        [Required]
+        public string? Longtitude { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
+        public int Amount { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
+        public double Salary { get; set; }
     }
 
     public class UpdatePostTrainingPositionRequest
     {
+        [Required]
+        public string? PositionName { get; set; }
 
+        [Required]
+        public string? SchoolName { get; set; }
+
+        [Required]
+        public string? Location { get; set; }
+
+        [Required]
+        public string? Latitude { get; set; }
+
+        [Required]
+        public string? Longtitude { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
+        public int Amount { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
+        public double Salary { get; set; }
     }
 }

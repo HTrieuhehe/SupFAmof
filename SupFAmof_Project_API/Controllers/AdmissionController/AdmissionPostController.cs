@@ -150,6 +150,31 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
 
+        /// <summary>
+        /// Update Post
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("update")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> UpdatePost
+            ([FromQuery] int postId, [FromBody] UpdatePostRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.UpdateAdmissionPost(account.Id, postId, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
         //[HttpPut("confirmPost")]
         //public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmPost
         //    ([FromQuery] int postId)

@@ -2,27 +2,28 @@
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Service.ServiceInterface;
 
-namespace SupFAmof.API.Controllers
+namespace SupFAmof.API.Controllers.AdmissionController
 {
-    [Route(Helpers.SettingVersionAPI.ApiVersion)]
+    [Route(Helpers.SettingVersionAPI.ApiAdmisionVersion)]
     [ApiController]
-    public class MailController : ControllerBase
+    public class TestMailController : ControllerBase
     {
         private readonly IMailService _mailService;
 
-        public MailController(IMailService mailService)
+        public TestMailController(IMailService mailService)
         {
             _mailService = mailService;
         }
 
-        [HttpPost]
+        [HttpPost("test-send-email")]
         public async Task<ActionResult> SendEmail(string email)
         {
             try
             {
                 await _mailService.SendVerificationEmail(email);
                 return Ok();
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex);
 

@@ -21,6 +21,7 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 using ServiceStack.Web;
 using System.Net.WebSockets;
+using System.Net.NetworkInformation;
 
 namespace SupFAmof.Service.Service
 {
@@ -602,6 +603,35 @@ namespace SupFAmof.Service.Service
             if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
             {
                 _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<AccountResponse>> SearchCollaboratorByEmail(string email, PagingRequest paging)
+        {
+            try
+            {
+
+
+
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                    .Where(x => x.Email.Contains(email) && x.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                    .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
+                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AccountResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = account.Item1
+                    },
+                    Data = account.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

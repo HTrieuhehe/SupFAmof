@@ -14,6 +14,8 @@ using SupFAmof.Data.Repository;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
 using SupFAmof.Data.MakeConnection;
+using SupFAmof.Service.DTO.Request;
+using Microsoft.Extensions.DependencyInjection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -104,7 +106,8 @@ namespace SupFAmof.API
             {
                 Credential = GoogleCredential.FromFile(pathToKey)
             });
-            #endregion 
+            #endregion
+
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -124,6 +127,9 @@ namespace SupFAmof.API
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
             builder.RegisterType<DocumentService>().As<IDocumentService>();
+            builder.RegisterType<MailService>().As<IMailService>();
+
+
 
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();

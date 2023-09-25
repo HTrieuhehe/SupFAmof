@@ -236,6 +236,10 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,
+
+            //404
+            [Display(Name = "Post Position Not Found")]
+            POSITION_NOT_FOUND = 4042,
         }
     }
 }

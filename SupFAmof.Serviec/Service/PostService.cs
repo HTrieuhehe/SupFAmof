@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
 using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
@@ -19,6 +20,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -352,15 +354,12 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost
-            (int accountId, int postId, UpdatePostRequest request)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost(int accountId, int postId, UpdatePostRequest request)
         {
             try
             {
-                var checkPost = _unitOfWork.Repository<Post>().GetAll()
-                                        .Include(x => x.PostPositions)
-                                        .Include(x => x.TrainingPositions)
-                                        .FirstOrDefault(x => x.Id == postId && x.AccountId == accountId);
+                var checkPost = _unitOfWork.Repository<Post>()
+                                        .Find(x => x.Id == postId && x.AccountId == accountId);
 
                 if (checkPost == null)
                 {
@@ -368,58 +367,60 @@ namespace SupFAmof.Service.Service
                                          PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
+                //check if anyone apply to any position
                 var postRegistration = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
                                                     .FirstOrDefault(x => x.PostId == postId);
-                if (postRegistration != null)
+                checkPost.Id = postId;
+                checkPost.AccountId = accountId;
+                checkPost.PostCategoryId = request.PostCategoryId;
+                checkPost.PostDescription = request.PostDescription;
+                checkPost.PostImg = request.PostImg;
+                checkPost.UpdateAt = Ultils.GetCurrentDatetime();
+
+                if (postRegistration == null)
                 {
-                    // not update salary because there is a post registration in that post
-                    await UpdatePostInformation(checkPost, request, 1);
-
-                    var postAfterUpdateAvoidSalary = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
-
-                    return new BaseResponseViewModel<AdmissionPostResponse>()
+                    // allow update salary because there is a post registration in that post
+                    foreach (var item in checkPost.PostPositions)
                     {
-                        Status = new StatusViewModel()
+                        var checkPosition = request.PostPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                        if (checkPosition == null)
                         {
-                            Message = "Salary will be keep the existence of one or more registration ",
-                            Success = true,
-                            ErrorCode = 0
-                        },
-                        Data = _mapper.Map<AdmissionPostResponse>(postAfterUpdateAvoidSalary)
-                    };
+                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                        }
 
-                }
+                        item.Id = item.Id;
+                        item.PositionName = checkPosition.PositionName;
+                        item.SchoolName = checkPosition.SchoolName;
+                        item.Location = checkPosition.Location;
+                        item.Latitude = checkPosition.Latitude;
+                        item.Longtitude = checkPosition.Longtitude;
+                        item.Amount = checkPosition.Amount;
+                        item.Salary = checkPosition.Salary;
+                    }
 
-                var updatePost = await UpdatePostInformation(checkPost, request, 2);
-                var postAfterUpdate = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
-                return new BaseResponseViewModel<AdmissionPostResponse>()
-                {
-                    Status = new StatusViewModel()
+                    foreach (var item in request.TrainingPositions)
                     {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<AdmissionPostResponse>(postAfterUpdate)
-                };
-            }
-            catch (ErrorResponse ex)
-            {
-                throw;
-            }
-        }
+                        var checkPosition = request.TrainingPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                        if (checkPosition == null)
+                        {
+                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                        }
 
-        private async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdatePostInformation(Post post, UpdatePostRequest request, int status)
-        {
-            try
-            {
-                var postmapping = _mapper.Map<UpdatePostRequest, Post>(request, post);
+                        item.Id = item.Id;
+                        item.PositionName = checkPosition.PositionName;
+                        item.SchoolName = checkPosition.SchoolName;
+                        item.Location = checkPosition.Location;
+                        item.Latitude = checkPosition.Latitude;
+                        item.Longtitude = checkPosition.Longtitude;
+                        item.Amount = checkPosition.Amount;
+                        item.Salary = checkPosition.Salary;
+                    }
 
-                //allow update salary
-                if (status == 2)
-                {
-                    postmapping.UpdateAt = Ultils.GetCurrentDatetime();
-                    await _unitOfWork.Repository<Post>().UpdateDetached(postmapping);
+                    await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
                     await _unitOfWork.CommitAsync();
 
                     return new BaseResponseViewModel<AdmissionPostResponse>()
@@ -430,26 +431,52 @@ namespace SupFAmof.Service.Service
                             Success = true,
                             ErrorCode = 0
                         },
-                        Data = _mapper.Map<AdmissionPostResponse>(postmapping)
+                        Data = _mapper.Map<AdmissionPostResponse>(checkPost)
                     };
                 }
 
-                foreach (var item in postmapping.PostPositions)
+                foreach (var item in checkPost.PostPositions)
                 {
-                    var checkPosition = post.PostPositions
-                                    .FirstOrDefault(x => x.Id == item.Id);
+                    var checkPosition = request.PostPositions
+                                .FirstOrDefault(x => x.Id == item.Id);
+                    if (checkPosition == null)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                    }
+
+                    item.Id = item.Id;
+                    item.PositionName = checkPosition.PositionName;
+                    item.SchoolName = checkPosition.SchoolName;
+                    item.Location = checkPosition.Location;
+                    item.Latitude = checkPosition.Latitude;
+                    item.Longtitude = checkPosition.Longtitude;
+                    item.Amount = checkPosition.Amount;
                     item.Salary = checkPosition.Salary;
                 }
 
-                foreach (var item in postmapping.TrainingPositions)
+                foreach (var item in request.TrainingPositions)
                 {
-                    var checkPosition = post.PostPositions
-                                    .FirstOrDefault(x => x.Id == item.Id);
+                    var checkPosition = request.TrainingPositions
+                                .FirstOrDefault(x => x.Id == item.Id);
+
+                    if (checkPosition == null)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                    }
+
+                    item.Id = item.Id;
+                    item.PositionName = checkPosition.PositionName;
+                    item.SchoolName = checkPosition.SchoolName;
+                    item.Location = checkPosition.Location;
+                    item.Latitude = checkPosition.Latitude;
+                    item.Longtitude = checkPosition.Longtitude;
+                    item.Amount = checkPosition.Amount;
                     item.Salary = checkPosition.Salary;
                 }
 
-                postmapping.UpdateAt = Ultils.GetCurrentDatetime();
-                await _unitOfWork.Repository<Post>().Update(postmapping, postmapping.Id);
+                await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()
@@ -460,7 +487,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AdmissionPostResponse>(postmapping)
+                    Data = _mapper.Map<AdmissionPostResponse>(checkPost)
                 };
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using SupFAmof.Data.Entity;
+﻿using Service.Commons;
+using SupFAmof.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -43,10 +44,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? SchoolName { get; set; }
 
         [Required]
-        public string? Location { get; set; }
+        public decimal? Location { get; set; }
 
         [Required]
-        public string? Latitude { get; set; }
+        public decimal? Latitude { get; set; }
 
         [Required]
         public string? Longtitude { get; set; }
@@ -76,10 +77,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? Location { get; set; }
         
         [Required]
-        public string? Latitude { get; set; }
+        public decimal? Latitude { get; set; }
         
         [Required]
-        public string? Longtitude { get; set; }
+        public decimal? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
@@ -92,8 +93,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostRequest
     {
+        [Required]
         public int PostCategoryId { get; set; }
+        [Required]
         public string? PostDescription { get; set; }
+        [Required]
         public string? PostImg { get; set; }
 
         public List<UpdatePostPositionRequest>? PostPositions { get; set; }
@@ -102,6 +106,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostPositionRequest
     {
+        [Required]
+        [Int]
+        public int Id { get; set; }
+
         [Required]
         public string? PositionName { get; set; }
 
@@ -112,10 +120,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? Location { get; set; }
 
         [Required]
-        public string? Latitude { get; set; }
+        public decimal? Latitude { get; set; }
 
         [Required]
-        public string? Longtitude { get; set; }
+        public decimal? Longtitude { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }
@@ -127,6 +135,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
     public class UpdatePostTrainingPositionRequest
     {
         [Required]
+        [Int]
+        public int Id { get; set; }
+
+        [Required]
         public string? PositionName { get; set; }
 
         [Required]
@@ -136,10 +148,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? Location { get; set; }
 
         [Required]
-        public string? Latitude { get; set; }
+        public decimal? Latitude { get; set; }
 
         [Required]
-        public string? Longtitude { get; set; }
+        public decimal? Longtitude { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }

@@ -25,8 +25,8 @@ namespace SupFAmof.Service.Service
             message.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
             message.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
             message.To.Add(MailboxAddress.Parse(email));
-            message.Subject = "Email Verification";
-            string htmlBody = System.IO.File.ReadAllText("..\\SupFAmof.Serviec\\MailTemplate\\EmailTemplate.html");
+            message.Subject = "Verification Your Account";
+            string htmlBody = System.IO.File.ReadAllText("..\\SupFAmof.Serviec\\MailTemplate\\VeryficationEmailTemplate.html");
             // Create a multipart/alternative message body to support both plain text and HTML
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = htmlBody;

@@ -237,5 +237,20 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,
         }
+
+        public enum DocumentErrorEnum
+        {
+            //400
+            [Display(Name = "Invalid Document")]
+            INVALID_DOCUMENT = 4001,
+
+            //404
+            [Display(Name = "Document not found")]
+            NOT_FOUND_DOCUMENT = 4002,
+
+            //400
+            [Display(Name = "Already disabled")]
+            ALREADY_DISABLED = 4003,
+        }
     }
 }

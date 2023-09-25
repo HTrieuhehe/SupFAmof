@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Request.Admission
 {
-    public class CreatePostTitleRequest
+    public class CreatePostCategoryRequest
     {
         //public int Id { get; set; }
         public string? PostTitleDescription { get; set; }
@@ -17,7 +17,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public DateTime? UpdateAt { get; set; }
     }
 
-    public class UpdatePostTitleRequest
+    public class UpdatePostCategoryRequest
     {
         //public int Id { get; set; }
         public string? PostTitleDescription { get; set; }

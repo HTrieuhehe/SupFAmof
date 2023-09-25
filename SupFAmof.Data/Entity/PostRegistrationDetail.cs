@@ -10,9 +10,7 @@ namespace SupFAmof.Data.Entity
         public int PostId { get; set; }
         public int PositionId { get; set; }
         public string? Note { get; set; }
-        public double? SalaryBonus { get; set; }
         public double Salary { get; set; }
-        public double FinalSalary { get; set; }
 
         public virtual Post Post { get; set; } = null!;
         public virtual PostRegistration PostRegistration { get; set; } = null!;

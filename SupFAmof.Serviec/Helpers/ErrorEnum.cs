@@ -65,6 +65,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Account Avatar URL cannot empty or null")]
             ACCOUNT_AVATAR_URL_INVALID = 4008,
 
+            //400
+            [Display(Name = "Account is disable")]
+            ACCOUNT_DISABLE = 4009,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,
@@ -77,16 +81,16 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_INVALID = 4001,
 
             //400
-            [Display(Name = "Invalid phone number")]
-            ACCOUNT_PHONE_INVALID = 4002,
+            [Display(Name = "Account Banking Information Existed")]
+            ACCOUNT_BANKING_EXISTED = 4002,
 
             //400
-            [Display(Name = "Invalid Student Id")]
-            ACCOUNT_STUDENTID_INVALID = 4003,
+            [Display(Name = "Account Number must contain only number or cannot null")]
+            ACCOUNT_BAKING_NUMBER_INVALID = 4003,
 
             //400
-            [Display(Name = "Invalid Student Id")]
-            ACCOUNT_BANKING_EXISTED = 4004,
+            [Display(Name = "Account Number cannot null")]
+            ACCOUNT_BAKING_NUMBER_NOT_NULL = 4004,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -144,20 +148,36 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "MUST SENT REGISTER 1 DAY BEFORE THE EVENT")]
             OUTDATED_REGISTER = 4007,
 
+            //400
+            [Display(Name = "School Bus option is not qualified ")]
+            NOT_QUALIFIED_SCHOOLBUS = 4008,
+            //400
+            [Display(Name = "Can not registrate cause you created this post")]
+            POST_CREATOR = 4009,
+
+            //400
+            [Display(Name = "Cant not approve the same id twice")]
+            DUPLICATE_IDS = 4010,
+
+            //404
+            [Display(Name = "No registration need to be update")]
+            NOT_FOUND_UPDATE_REGISTRATION_REQUEST = 4011,
+
+
         }
 
-        public enum PostTitleErrorEnum
+        public enum PostCategoryErrorEnum
         {
             //400
-            [Display(Name = "Post Title existed!")]
+            [Display(Name = "Post Category existed!")]
             POST_TITLE_TYPE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Post Title Type is duplication!")]
+            [Display(Name = "Post Category Type is duplication!")]
             POST_TITLE_TYPE_DUPLICATE = 4002,
 
             //404
-            [Display(Name = "Post Title not found!")]
+            [Display(Name = "Post Category not found!")]
             NOT_FOUND_ID = 4041,
         }
 
@@ -210,12 +230,31 @@ namespace SupFAmof.Service.Helpers
             INVALID_TIME_CREATE_POST = 4004,
 
             //400
-            [Display(Name = "Post must be confirm before ended!")]
-            INVALID_ENDING_POST = 4004,
+            [Display(Name = "Post are missing collaborator! Cannot Ended!")]
+            INVALID_ENDING_POST = 4005,
 
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,
+
+            //404
+            [Display(Name = "Post Position Not Found")]
+            POSITION_NOT_FOUND = 4042,
+        }
+
+        public enum DocumentErrorEnum
+        {
+            //400
+            [Display(Name = "Invalid Document")]
+            INVALID_DOCUMENT = 4001,
+
+            //404
+            [Display(Name = "Document not found")]
+            NOT_FOUND_DOCUMENT = 4002,
+
+            //400
+            [Display(Name = "Already disabled")]
+            ALREADY_DISABLED = 4003,
         }
     }
 }

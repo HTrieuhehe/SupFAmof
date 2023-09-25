@@ -1,7 +1,11 @@
 ﻿using Autofac;
 using FirebaseAdmin;
 using System.Reflection;
+using ServiceStack.Redis;
 using SupFAmof.API.Mapper;
+using StackExchange.Redis;
+using Reso.Core.Extension;
+using SupFAmof.Data.Redis;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.AppStart;
 using Google.Apis.Auth.OAuth2;
@@ -10,13 +14,11 @@ using SupFAmof.Data.Repository;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
 using SupFAmof.Data.MakeConnection;
+using SupFAmof.Service.DTO.Request;
+using Microsoft.Extensions.DependencyInjection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using ServiceStack.Redis;
-using StackExchange.Redis;
-using Reso.Core.Extension;
-using SupFAmof.Data.Redis;
 
 namespace SupFAmof.API
 {
@@ -92,6 +94,8 @@ namespace SupFAmof.API
                     new string[] { "Bearer" }
                     }
                 });
+                // Các cài đặt Swagger khác
+                c.EnableAnnotations();
             });
             services.ConfigureAuthServices(Configuration);
             services.ConnectToConnectionString(Configuration);
@@ -102,7 +106,8 @@ namespace SupFAmof.API
             {
                 Credential = GoogleCredential.FromFile(pathToKey)
             });
-            #endregion 
+            #endregion
+
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -117,10 +122,14 @@ namespace SupFAmof.API
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<StaffService>().As<IStaffService>();
             builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
-            builder.RegisterType<PostTitleService>().As<IPostTitleService>();
+            builder.RegisterType<PostCategoryService>().As<IPostCategoryService>();
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
+            builder.RegisterType<DocumentService>().As<IDocumentService>();
+            builder.RegisterType<MailService>().As<IMailService>();
+
+
 
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();
@@ -145,8 +154,11 @@ namespace SupFAmof.API
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SupFAmof V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SupFAmof V2");
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+
+                // Cài đặt để kích hoạt nút "Copy URL"
+                //c.EnableRequestValidation();
             });
             app.UseRouting();
             app.UseAuthentication();

@@ -1,0 +1,96 @@
+﻿Group Code: GFA23SE76
+
+Cách nhớ:
+
+Vĩ độ (latitude): Giá trị nằm trong khoảng -90 đến 90, lưu ý âm dương qua xích đạo. Thường được ký hiệu là phi.
+Kinh độ (longitude): Giá trị nằm trong khoảng -180 đến 180, lưu ý âm dương qua kinh tuyến gốc (prime meridian). Thường được ký hiệu là lambda.
+
+
+dotnet ef dbcontext scaffold "Server=13.212.21.234;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
+
+
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                IConfiguration config = new ConfigurationBuilder()
+                                    .SetBasePath(Directory.GetCurrentDirectory())
+                                    .AddJsonFile("appsettings.json").Build();
+                string connectionString = config.GetConnectionString("SQLServerDatabase");
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+
+            base.OnConfiguring(optionsBuilder);
+        }
+
+
+access token gmail sau login 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMmQ0OGE5OS00YWMwLTQzZTMtYjUzMi1kMTllYTAyNGQ0NmQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiSGnhur91IE5ndXnhu4VuIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIxMSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IjEiLCJleHAiOjE2OTY1MTg3NTQsImlzcyI6IlN1cEZBbW9mLkFQSSIsImF1ZCI6IlN1cEZBbW9mLkFQSSJ9.xzZpbM4UDW6FvrUQByO-Bjm_m3adBMHTESIzvEAfPBg
+
+Access Token FPT sau login
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOGRiYTg1MS1iMTQ2LTRjYzktYTI0NS0yN2Y5M2IwODBhZWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRHV5IEPhu6VjIFPDungiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNjk3MDkyMzIyLCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.0mI3gAlgiTzcoJpXnZIugsxhkxG-yVSZYz48eIND168
+
+
+Db context cần đổi sau scaffold để update được
+
+modelBuilder.Entity<PostPosition>(entity =>
+            {
+                entity.ToTable("PostPosition");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_PostPosition_DocumentTemplate");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PostPosition_Post");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .HasConstraintName("FK_PostPosition_TranningCertificate");
+            });
+
+modelBuilder.Entity<TrainingPosition>(entity =>
+            {
+                entity.ToTable("TrainingPosition");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_TrainingPosition_DocumentTemplate");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TrainingPosition_Post");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .HasConstraintName("FK_TrainingPosition_TranningCertificate");
+            });

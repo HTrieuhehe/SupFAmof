@@ -34,7 +34,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var role = _unitOfWork.Repository<TranningCertificate>().GetAll()
+                var role = _unitOfWork.Repository<TrainingCertificate>().GetAll()
                                     .ProjectTo<TrainingCertificateResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
@@ -62,7 +62,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var trainingCertificate = _unitOfWork.Repository<TranningCertificate>().GetAll()
+                var trainingCertificate = _unitOfWork.Repository<TrainingCertificate>().GetAll()
                                       .FirstOrDefault(x => x.Id == trainingCertificateId);
 
                 if (trainingCertificate == null)
@@ -98,7 +98,7 @@ namespace SupFAmof.Service.Service
                                         TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
-                var tranningCertificate = _unitOfWork.Repository<TranningCertificate>()
+                var tranningCertificate = _unitOfWork.Repository<TrainingCertificate>()
                                            .Find(x => x.TrainingTypeId.Contains(request.TrainingTypeId));
 
                 if (tranningCertificate != null)
@@ -106,12 +106,12 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED,
                                         TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED.GetDisplayName());
                 }
-                var result = _mapper.Map<CreateTrainingCertificateRequest, TranningCertificate>(request);
+                var result = _mapper.Map<CreateTrainingCertificateRequest, TrainingCertificate>(request);
 
                 result.TrainingTypeId = result.TrainingTypeId.ToUpper();
                 result.CreateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<TranningCertificate>().InsertAsync(result);
+                await _unitOfWork.Repository<TrainingCertificate>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<TrainingCertificateResponse>()
@@ -135,7 +135,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var tranningCertificate = _unitOfWork.Repository<TranningCertificate>().Find(x => x.Id == trainingCertificateId);
+                var tranningCertificate = _unitOfWork.Repository<TrainingCertificate>().Find(x => x.Id == trainingCertificateId);
 
                 if (tranningCertificate == null)
                 {
@@ -149,12 +149,12 @@ namespace SupFAmof.Service.Service
                                         TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
-                var updateTrainingCertificate = _mapper.Map<UpdateTrainingCertificateRequest, TranningCertificate>(request, tranningCertificate);
+                var updateTrainingCertificate = _mapper.Map<UpdateTrainingCertificateRequest, TrainingCertificate>(request, tranningCertificate);
 
                 updateTrainingCertificate.TrainingTypeId = updateTrainingCertificate.TrainingTypeId.ToUpper();
                 updateTrainingCertificate.UpdateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<TranningCertificate>().UpdateDetached(updateTrainingCertificate);
+                await _unitOfWork.Repository<TrainingCertificate>().UpdateDetached(updateTrainingCertificate);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<TrainingCertificateResponse>()

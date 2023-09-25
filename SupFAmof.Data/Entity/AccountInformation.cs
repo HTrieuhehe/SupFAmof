@@ -16,7 +16,7 @@ namespace SupFAmof.Data.Entity
         public string? IdStudent { get; set; }
         public string? FbUrl { get; set; }
         public string? Address { get; set; }
-        public DateTime? PersonalIdDate { get; set; }
+        public DateTime? IdentityIssueDate { get; set; }
         public string? PlaceOfIssue { get; set; }
         public string? IdentityFrontImg { get; set; }
         public string? IdentityBackImg { get; set; }

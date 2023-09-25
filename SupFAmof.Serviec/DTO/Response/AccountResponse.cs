@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SupFAmof.Data.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,6 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountResponse
     {
-        public AccountResponse()
-        {
-            AccountMonthlyReport = new AccountMonthlyReport();
-        }
         public int Id { get; set; }
         public int RoleId { get; set; }
         public int AccountInformationId { get; set; }
@@ -26,7 +23,6 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public AccountMonthlyReport AccountMonthlyReport { get; set; }
         public AccountInformationResponse AccountInformation { get; set; }
     }
 
@@ -38,16 +34,19 @@ namespace SupFAmof.Service.DTO.Response
         public string? IdStudent { get; set; }
         public string? FbUrl { get; set; }
         public string? Address { get; set; }
-        public DateTime? PersonalIdDate { get; set; }
+        public DateTime? IdentityIssueDate { get; set; }
         public string? PlaceOfIssue { get; set; }
         public string? IdentityFrontImg { get; set; }
         public string? IdentityBackImg { get; set; }
         public string? TaxNumber { get; set; }
     }
 
-    public class AccountMonthlyReport
+    public class AccountReactivationResponse
     {
-        public int? TotalPost { get; set; }
-        public double? TotalSalary { get; set; }
+        public int Id { get; set; }
+        public int AccountId { get; set; }
+        public string? Email { get; set; }
+        public int? VerifyCode { get; set; }
+        public DateTime DeactivateDate { get; set; }
     }
 }

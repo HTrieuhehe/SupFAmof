@@ -13,11 +13,11 @@ namespace SupFAmof.API.Controllers.AdmissionController
 {
     [Route(Helpers.SettingVersionAPI.ApiAdmisionVersion)]
     [ApiController]
-    public class AdmissionPostTitleController : ControllerBase
+    public class AdmissionPostCategoryController : ControllerBase
     {
-        private readonly IPostTitleService _postTitleService;
+        private readonly IPostCategoryService _postTitleService;
 
-        public AdmissionPostTitleController(IPostTitleService postTitleService)
+        public AdmissionPostCategoryController(IPostCategoryService postTitleService)
         {
             _postTitleService = postTitleService;
         }
@@ -26,8 +26,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Get List Post Title
         /// </summary>    
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<PostTitleResponse>>> GetPostTitles
-            ([FromQuery] PostTitleResponse request, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> GetPostTitles
+            ([FromQuery] PostCategoryResponse request, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Get Post Title By Id                        
         /// </summary>
         [HttpGet("getById")]
-        public async Task<ActionResult<BaseResponseViewModel<PostTitleResponse>>> GetPostTitleById
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> GetPostTitleById
             ([FromQuery] int postTitleId)
         {
             try
@@ -60,8 +60,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Create Post                       
         /// </summary>
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<PostTitleResponse>>> CreatePostTitle
-            ([FromBody] CreatePostTitleRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> CreatePostTitle
+            ([FromBody] CreatePostCategoryRequest request)
         {
             try
             {
@@ -83,8 +83,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Update Post                        
         /// </summary>
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostTitleResponse>>> UpdatePostTitle
-            ([FromQuery] int postTitleId, [FromBody] UpdatePostTitleRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> UpdatePostTitle
+            ([FromQuery] int postTitleId, [FromBody] UpdatePostCategoryRequest request)
         {
             try
             {

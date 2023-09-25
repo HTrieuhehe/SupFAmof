@@ -31,5 +31,27 @@ namespace SupFAmof.Service.DTO.Response
         public double FinalSalary { get; set; }
 
     }
+    public class PostRgupdateHistoryResponse
+    {
+        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int PostRegistrationId { get; set; }
+        public int? PositionId { get; set; }
+        public bool? BusOption { get; set; }
+        public int Status { get; set; }
+        public DateTime CreateAt { get; set; }
 
+    }
+
+    public class CollaboratorAccountReponse
+    {
+        public int Id { get; set; }
+        public int RoleId { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string? ImgUrl { get; set; }
+        public bool PostPermission { get; set; }
+        public bool? IsPremium { get; set; }
+    }
 }

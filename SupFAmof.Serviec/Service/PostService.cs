@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Index.HPRtree;
 using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
@@ -17,8 +20,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -34,10 +40,12 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmEndingPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId)
         {
             try
             {
+                #region Account Checking 
+
                 var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
 
                 if (account == null)
@@ -45,6 +53,8 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
+
+                #endregion
 
                 var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
 
@@ -54,13 +64,22 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                else if (post.IsConfirm != true)
+                foreach (var item in post.PostPositions)
                 {
-                    throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
-                                        PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
-                }    
+                    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
+                    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                     .Include(x => x.PostRegistrationDetails)
+                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
-                post.IsEnd = true;
+                    if (totalPostRegist.Count() != item.Amount)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
+                                            PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
+                    }
+                }
+
+                //nếu dữ liệu trùng khớp thì tiến hành close form đăng ký
+                post.Status = (int)PostStatusEnum.Closed;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -77,13 +96,13 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionPostResponse>(post)
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ConfirmPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePost(int accountId, int postId)
         {
             try
             {
@@ -103,8 +122,7 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                post.IsConfirm = true;
-                post.IsEnd = true;
+                post.Status = (int)PostStatusEnum.Closed;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -152,31 +170,71 @@ namespace SupFAmof.Service.Service
 
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
-                if(request.DateFrom <= DateTime.Now)
+                if (request.DateFrom <= DateTime.Now)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
                                          PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
                 }
 
-                else if(request.DateTo.HasValue && request.DateTo < request.DateFrom)
+                else if (request.DateTo.HasValue && request.DateTo < request.DateFrom)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATETIME_CREATE_POST,
                                          PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
-                }    
-
-                //validate Time
-                if (request.TimeFrom < TimeSpan.FromHours(3) || request.TimeFrom > TimeSpan.FromHours(20))
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
                 }
 
-                if (request.TimeTo.HasValue)
+                foreach (var item in request.PostPositions)
                 {
-                    if (request.TimeTo <= request.TimeFrom)
+                    //validate Certificate
+                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
+
+                    if (item.TrainingCertificateId > 0 && checkCerti == null)
+                    {
+                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    }
+
+                    //validate Time
+                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                         PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                    }
+
+                    if (item.TimeTo.HasValue)
+                    {
+                        if (item.TimeTo <= item.TimeFrom)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                        }
+                    }
+                }
+
+                foreach (var item in request.TrainingPositions)
+                {
+                    //validate Certificate
+                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
+
+                    if (item.TrainingCertificateId > 0 && checkCerti == null)
+                    {
+                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    }
+
+                    //validate Time
+                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                    }
+
+                    if (item.TimeTo.HasValue)
+                    {
+                        if (item.TimeTo <= item.TimeFrom)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                        }
                     }
                 }
 
@@ -185,8 +243,7 @@ namespace SupFAmof.Service.Service
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
-                post.IsActive = true;
-                post.IsEnd = false;
+                post.Status = (int)PostStatusEnum.Opening;
                 post.CreateAt = Ultils.GetCurrentTime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
@@ -203,11 +260,11 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionPostResponse>(post)
                 };
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
-        
+
         }
 
         public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(AdmissionPostResponse filter, PagingRequest paging)
@@ -297,10 +354,179 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost
-            (int accountId, int postId, UpdatePostRequest request)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost(int accountId, int postId, UpdatePostRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var checkPost = _unitOfWork.Repository<Post>()
+                                        .Find(x => x.Id == postId && x.AccountId == accountId);
+
+                if (checkPost == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                //check if anyone apply to any position
+                var postRegistration = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
+                                                    .FirstOrDefault(x => x.PostId == postId);
+                checkPost.Id = postId;
+                checkPost.AccountId = accountId;
+                checkPost.PostCategoryId = request.PostCategoryId;
+                checkPost.PostDescription = request.PostDescription;
+                checkPost.PostImg = request.PostImg;
+                checkPost.UpdateAt = Ultils.GetCurrentDatetime();
+
+                if (postRegistration == null)
+                {
+                    // allow update salary because there is a post registration in that post
+                    foreach (var item in checkPost.PostPositions)
+                    {
+                        var checkPosition = request.PostPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                        if (checkPosition == null)
+                        {
+                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                        }
+
+                        item.Id = item.Id;
+                        item.PositionName = checkPosition.PositionName;
+                        item.SchoolName = checkPosition.SchoolName;
+                        item.Location = checkPosition.Location;
+                        item.Latitude = checkPosition.Latitude;
+                        item.Longtitude = checkPosition.Longtitude;
+                        item.Amount = checkPosition.Amount;
+                        item.Salary = checkPosition.Salary;
+                    }
+
+                    foreach (var item in request.TrainingPositions)
+                    {
+                        var checkPosition = request.TrainingPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                        if (checkPosition == null)
+                        {
+                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                        }
+
+                        item.Id = item.Id;
+                        item.PositionName = checkPosition.PositionName;
+                        item.SchoolName = checkPosition.SchoolName;
+                        item.Location = checkPosition.Location;
+                        item.Latitude = checkPosition.Latitude;
+                        item.Longtitude = checkPosition.Longtitude;
+                        item.Amount = checkPosition.Amount;
+                        item.Salary = checkPosition.Salary;
+                    }
+
+                    await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AdmissionPostResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AdmissionPostResponse>(checkPost)
+                    };
+                }
+
+                foreach (var item in checkPost.PostPositions)
+                {
+                    var checkPosition = request.PostPositions
+                                .FirstOrDefault(x => x.Id == item.Id);
+                    if (checkPosition == null)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                    }
+
+                    item.Id = item.Id;
+                    item.PositionName = checkPosition.PositionName;
+                    item.SchoolName = checkPosition.SchoolName;
+                    item.Location = checkPosition.Location;
+                    item.Latitude = checkPosition.Latitude;
+                    item.Longtitude = checkPosition.Longtitude;
+                    item.Amount = checkPosition.Amount;
+                    item.Salary = checkPosition.Salary;
+                }
+
+                foreach (var item in request.TrainingPositions)
+                {
+                    var checkPosition = request.TrainingPositions
+                                .FirstOrDefault(x => x.Id == item.Id);
+
+                    if (checkPosition == null)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
+                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                    }
+
+                    item.Id = item.Id;
+                    item.PositionName = checkPosition.PositionName;
+                    item.SchoolName = checkPosition.SchoolName;
+                    item.Location = checkPosition.Location;
+                    item.Latitude = checkPosition.Latitude;
+                    item.Longtitude = checkPosition.Longtitude;
+                    item.Amount = checkPosition.Amount;
+                    item.Salary = checkPosition.Salary;
+                }
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(checkPost)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<CollaboratorAccountReponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging)
+        {
+            try
+            {
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                                        .Include(a => a.PostRegistrations) // Nạp danh sách PostRegistrations của mỗi Account
+                                            .ThenInclude(pr => pr.PostRegistrationDetails) // Nạp thông tin chi tiết đăng ký
+                                                .ThenInclude(prd => prd.Post) // Nạp thông tin Post của chi tiết đăng ký
+                                                    .Where(account => account.PostRegistrations.Any(pr => pr.PostRegistrationDetails
+                                                                        .Any(prd => prd.PositionId == positionId) && pr.Status == (int)PostRegistrationStatusEnum.Pending))
+                                                    .OrderByDescending(account => account.PostRegistrations.Max(pr => pr.CreateAt)) // Sắp xếp theo CreateAt của PostRegistration
+                                                    .ProjectTo<CollaboratorAccountReponse>(_mapper.ConfigurationProvider)
+                                                    .PagingQueryable(paging.Page, paging.PageSize,
+                                                    Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<CollaboratorAccountReponse>()
+                {
+
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = account.Item1
+                    },
+                    Data = account.Item2.ToList(),
+                };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion
@@ -311,11 +537,12 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                int totalCount = 0;
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
 
                 if (checkAccount == null)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
@@ -323,6 +550,7 @@ namespace SupFAmof.Service.Service
                 else if (checkAccount.IsPremium == true)
                 {
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
+                                        .Where(x => x.Status == (int)PostStatusEnum.Opening)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
@@ -330,6 +558,47 @@ namespace SupFAmof.Service.Service
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
+                    List<PostResponse> premiumPostResponseList = new();
+                    foreach (var item in premiumPost.Item2)
+                    {
+                        //tìm kiếm các post Attendee có cùng post Id để lọc là số lượng đăng kí post này
+                        var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                                         .Where(x => x.PostId == item.Id);
+
+                        totalCount = totalPostAttendee.Count();
+                        item.RegisterAmount = totalCount;
+                        totalCount = 0;
+
+                        foreach (var itemDetail in item.PostPositions)
+                        {
+                            //vào từng obj của attendee để count
+                            foreach (var attendeeDetail in totalPostAttendee)
+                            {
+                                if (attendeeDetail.PositionId == itemDetail.Id)
+                                {
+                                    totalCount++;
+                                }
+                                itemDetail.RegisterAmount = totalCount;
+                            }
+                        }
+
+                        totalCount = 0;
+
+                        foreach (var itemDetail in item.TrainingPositions)
+                        {
+                            //vào từng obj của attendee để count
+                            foreach (var attendeeDetail in totalPostAttendee)
+                            {
+                                if (attendeeDetail.PositionId == itemDetail.Id)
+                                {
+                                    totalCount++;
+                                }
+                                itemDetail.RegisterAmount = totalCount;
+                            }
+                        }
+
+                        premiumPostResponseList.Add(item);
+                    }
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -339,19 +608,58 @@ namespace SupFAmof.Service.Service
                             Size = paging.PageSize,
                             Total = premiumPost.Item1
                         },
-                        Data = premiumPost.Item2.ToList()
+                        Data = premiumPostResponseList.ToList()
                     };
                 }
-                
+
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                        .Where(x => x.IsPremium != true)
+                                        .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
+                                        .OrderByDescending(x => x.Priority)
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
-                                        .OrderByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
-                
+
+                List<PostResponse> postResponseList = new();
+                foreach (var item in post.Item2)
+                {
+                    //tìm kiếm các post Attendee có cùng post Id để lọc là số lượng đăng kí post này
+                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                                     .Where(x => x.PostId == item.Id);
+
+                    totalCount = totalPostAttendee.Count();
+                    item.RegisterAmount = totalCount;
+                    totalCount = 0;
+
+                    foreach (var itemDetail in item.PostPositions)
+                    {
+                        //vào từng obj của attendee để count
+                        foreach (var attendeeDetail in totalPostAttendee)
+                        {
+                            if (attendeeDetail.PositionId == itemDetail.Id)
+                            {
+                                totalCount++;
+                            }
+                            itemDetail.RegisterAmount = totalCount;
+                        }
+                    }
+                    totalCount = 0;
+                    foreach (var itemDetail in item.TrainingPositions)
+                    {
+                        //vào từng obj của attendee để count
+                        foreach (var attendeeDetail in totalPostAttendee)
+                        {
+                            if (attendeeDetail.PositionId == itemDetail.Id)
+                            {
+                                totalCount++;
+                            }
+                            itemDetail.RegisterAmount = totalCount;
+                        }
+                    }
+
+                    postResponseList.Add(item);
+                }
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
@@ -361,7 +669,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = post.Item2.ToList()
+                    Data = postResponseList.ToList()
                 };
             }
             catch (Exception ex)
@@ -370,17 +678,18 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostByCode(string searchPost, PagingRequest paging)
+
+        public async Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging)
         {
             try
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                                         .Where(x => x.PostCode.Contains(searchPost) || x.PostTitle.PostTitleDescription.Contains(searchPost))
-                                                         .OrderByDescending(x => x.CreateAt)
-                                                         .OrderByDescending(x => x.Priority)
-                                                         .PagingQueryable(paging.Page, paging.PageSize,
-                                                            Constants.LimitPaging, Constants.DefaultPaging);
+                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost))
+                                        .OrderByDescending(x => x.CreateAt)
+                                        .OrderByDescending(x => x.Priority)
+                                        .PagingQueryable(paging.Page, paging.PageSize,
+                                        Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {

@@ -21,29 +21,29 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
-    public class PostTitleService : IPostTitleService
+    public class PostCategoryService : IPostCategoryService
     {
         private IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostTitleService(IMapper mapper, IUnitOfWork unitOfWork)
+        public PostCategoryService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseResponsePagingViewModel<PostTitleResponse>> GetPostTitles(PostTitleResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostCategoryResponse>> GetPostTitles(PostCategoryResponse filter, PagingRequest paging)
         {
             try
             {
-                var role = _unitOfWork.Repository<PostTitle>().GetAll()
-                                    .ProjectTo<PostTitleResponse>(_mapper.ConfigurationProvider)
+                var role = _unitOfWork.Repository<PostCategory>().GetAll()
+                                    .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 
-                return new BaseResponsePagingViewModel<PostTitleResponse>()
+                return new BaseResponsePagingViewModel<PostCategoryResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -60,20 +60,20 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostTitleResponse>> GetPostTitleById(int postTitleId)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> GetPostTitleById(int postTitleId)
         {
             try
             {
-                var postTitle = _unitOfWork.Repository<PostTitle>().GetAll()
+                var postTitle = _unitOfWork.Repository<PostCategory>().GetAll()
                                       .FirstOrDefault(x => x.Id == postTitleId);
 
                 if (postTitle == null)
                 {
-                    throw new ErrorResponse(404, (int)PostTitleErrorEnum.NOT_FOUND_ID,
-                                         PostTitleErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                         PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                return new BaseResponseViewModel<PostTitleResponse>()
+                return new BaseResponseViewModel<PostCategoryResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -81,7 +81,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostTitleResponse>(postTitle)
+                    Data = _mapper.Map<PostCategoryResponse>(postTitle)
                 };
             }
             catch (ErrorResponse ex)
@@ -90,34 +90,34 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostTitleResponse>> CreatePostTitle(CreatePostTitleRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostTitle(CreatePostCategoryRequest request)
         {
             try
             {
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
-                var postTitle = _unitOfWork.Repository<PostTitle>()
-                                           .Find(x => x.PostTitleType.Contains(request.PostTitleType));
+                var postTitle = _unitOfWork.Repository<PostCategory>()
+                                           .Find(x => x.PostCategoryType.Contains(request.PostTitleType));
 
                 if (postTitle != null)
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_EXISTED,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_EXISTED.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED.GetDisplayName());
                 }
-                var result = _mapper.Map<CreatePostTitleRequest, PostTitle>(request);
+                var result = _mapper.Map<CreatePostCategoryRequest, PostCategory>(request);
 
-                result.PostTitleType = result.PostTitleType.ToUpper();
+                result.PostCategoryType = result.PostCategoryType.ToUpper();
                 result.IsActive = true;
                 result.CreateAt = Ultils.GetCurrentTime();
 
-                await _unitOfWork.Repository<PostTitle>().InsertAsync(result);
+                await _unitOfWork.Repository<PostCategory>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<PostTitleResponse>()
+                return new BaseResponseViewModel<PostCategoryResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -125,7 +125,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostTitleResponse>(result)
+                    Data = _mapper.Map<PostCategoryResponse>(result)
                 };
             }
             catch (ErrorResponse ex)
@@ -134,33 +134,33 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostTitleResponse>> UpdatePostTitle(int postTitleId, UpdatePostTitleRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostTitle(int postTitleId, UpdatePostCategoryRequest request)
         {
             try
             {
-                var postTitle = _unitOfWork.Repository<PostTitle>().Find(x => x.Id == postTitleId);
+                var postTitle = _unitOfWork.Repository<PostCategory>().Find(x => x.Id == postTitleId);
 
                 if (postTitle == null)
                 {
-                    throw new ErrorResponse(404, (int)PostTitleErrorEnum.NOT_FOUND_ID,
-                                             PostTitleErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                             PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
                 if (request.PostTitleType == null || request.PostTitleType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostTitleErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
                 }
 
-                var updatePostTitle = _mapper.Map<UpdatePostTitleRequest, PostTitle>(request, postTitle);
+                var updatePostTitle = _mapper.Map<UpdatePostCategoryRequest, PostCategory>(request, postTitle);
 
-                updatePostTitle.PostTitleType = updatePostTitle.PostTitleType.ToUpper();
+                updatePostTitle.PostCategoryType = updatePostTitle.PostCategoryType.ToUpper();
                 updatePostTitle.UpdateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<PostTitle>().UpdateDetached(updatePostTitle);
+                await _unitOfWork.Repository<PostCategory>().UpdateDetached(updatePostTitle);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<PostTitleResponse>()
+                return new BaseResponseViewModel<PostCategoryResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -168,7 +168,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostTitleResponse>(updatePostTitle)
+                    Data = _mapper.Map<PostCategoryResponse>(updatePostTitle)
                 };
             }
             catch (Exception ex)

@@ -34,7 +34,7 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
                 }
@@ -59,11 +59,11 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Student)
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPostByCode(searchPost, paging);
+                return await _postService.SearchPost(searchPost, paging);
             }
             catch (ErrorResponse ex)
             {

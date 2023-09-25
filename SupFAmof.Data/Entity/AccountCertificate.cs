@@ -15,6 +15,6 @@ namespace SupFAmof.Data.Entity
 
         public virtual Account Account { get; set; } = null!;
         public virtual Account? CreatePerson { get; set; }
-        public virtual TranningCertificate TraningCertificate { get; set; } = null!;
+        public virtual TrainingCertificate TraningCertificate { get; set; } = null!;
     }
 }

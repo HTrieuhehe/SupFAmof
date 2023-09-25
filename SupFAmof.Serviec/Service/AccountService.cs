@@ -20,6 +20,8 @@ using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 using ServiceStack.Web;
+using System.Net.WebSockets;
+using System.Net.NetworkInformation;
 
 namespace SupFAmof.Service.Service
 {
@@ -131,6 +133,12 @@ namespace SupFAmof.Service.Service
                     };
                 }
 
+                else if (account.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 else
                 {
                     //generate token
@@ -171,7 +179,7 @@ namespace SupFAmof.Service.Service
                 #region Identify role by email root
                 string[] splitEmail = account.Email.Split('@');
                 var rootEmail = splitEmail[1];
-                
+
                 //sau khi tách, lấy giá trị [1] tức là đuôi domain đằng sau dấu @
                 var roleInfo = _unitOfWork.Repository<Role>().GetAll()
                                           .FirstOrDefault(x => x.RoleEmail.Contains(rootEmail));
@@ -191,7 +199,7 @@ namespace SupFAmof.Service.Service
 
                 await _unitOfWork.Repository<Account>().InsertAsync(account);
                 await _unitOfWork.CommitAsync();
-                
+
                 return new BaseResponseViewModel<AccountResponse>()
                 {
                     Status = new StatusViewModel()
@@ -216,7 +224,7 @@ namespace SupFAmof.Service.Service
                 var account = _unitOfWork.Repository<Account>().GetAll()
                                         .FirstOrDefault(x => x.Id == accountId);
 
-                if(account == null)
+                if (account == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                                           AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
@@ -290,7 +298,7 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId)
         {
             Account account = _unitOfWork.Repository<Account>()
-                                         .Find(x => x.Id == accountId);
+                                         .Find(x => x.Id == accountId && x.IsActive == true);
 
             if (account == null)
             {
@@ -298,11 +306,40 @@ namespace SupFAmof.Service.Service
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            account.UpdateAt = DateTime.Now;
+            CreateAccountReactivationRequest accountReactivation = new CreateAccountReactivationRequest()
+            {
+                AccountId = account.Id,
+                Email = account.Email,
+            };
+
+           
+
+            var fcmToken = _unitOfWork.Repository<Fcmtoken>().Find(x => x.AccountId == accountId);
+
             account.IsActive = false;
 
+            var accountReactivationMapping = _mapper.Map<CreateAccountReactivationRequest, AccountReactivation>(accountReactivation);
+            accountReactivationMapping.DeactivateDate = Ultils.GetCurrentDatetime();
+
             await _unitOfWork.Repository<Account>().UpdateDetached(account);
+            await _unitOfWork.Repository<AccountReactivation>().InsertAsync(accountReactivationMapping);
             await _unitOfWork.CommitAsync();
+
+            if (fcmToken != null)
+            {
+                await Logout(fcmToken.Token);
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(account)
+                };
+            }
 
             return new BaseResponseViewModel<AccountResponse>()
             {
@@ -340,11 +377,11 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionAccountResponse>(account)
                 };
             }
-            catch(Exception ex )
+            catch (Exception ex)
             {
                 throw;
             }
-            
+
         }
 
         public async Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email)
@@ -376,7 +413,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var account = await _unitOfWork.Repository<Account>().GetAll()
-                                               
+
                                                .Where(x => x.Id == accountId)
                                                .Include(x => x.AccountInformation)
                                                .FirstOrDefaultAsync();
@@ -387,49 +424,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                #region Calculating Post and Salary
-
-                var postRegistrations = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                      .Include(x => x.PostRegistrationDetails)
-                                      .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                      .ToList();
-                int totalPost = 0;
-                double totalSalary = 0;
-
-                if (postRegistrations.Any())
-                {
-                    totalPost = postRegistrations.Count();
-                    foreach (var postRegistration in postRegistrations)
-                    {
-                        foreach (var detail in postRegistration.PostRegistrationDetails)
-                        {
-                            totalSalary += detail.FinalSalary;
-                        }
-                    }
-
-                    var accountResponse = _mapper.Map<AccountResponse>(account);
-
-                    accountResponse.AccountMonthlyReport.TotalPost = totalPost;
-                    accountResponse.AccountMonthlyReport.TotalSalary = totalSalary;
-
-                    #endregion
-
-                    return new BaseResponseViewModel<AccountResponse>()
-                    {
-                        Status = new StatusViewModel()
-                        {
-                            Message = "Success",
-                            Success = true,
-                            ErrorCode = 0
-                        },
-                        Data = accountResponse
-                    };
-                }
-
                 var accountResponseMapping = _mapper.Map<AccountResponse>(account);
-
-                accountResponseMapping.AccountMonthlyReport.TotalPost = totalPost;
-                accountResponseMapping.AccountMonthlyReport.TotalSalary = totalSalary;
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -506,7 +501,7 @@ namespace SupFAmof.Service.Service
                 var rootEmail = splitEmail[1];
 
                 var collabRole = _unitOfWork.Repository<Role>().GetAll()
-                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Student);
+                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Collaborator);
 
                 if (collabRole == null)
                 {
@@ -530,7 +525,7 @@ namespace SupFAmof.Service.Service
                 {
                     CreateAccountRequest newAccount = new CreateAccountRequest()
                     {
-                        Name = userRecord.DisplayName, 
+                        Name = userRecord.DisplayName,
                         Email = userRecord.Email,
                         Phone = userRecord.PhoneNumber,
                         ImgUrl = userRecord.PhotoUrl
@@ -566,6 +561,12 @@ namespace SupFAmof.Service.Service
                     };
                 }
 
+                else if (account.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 else
                 {
                     //generate token
@@ -599,10 +600,39 @@ namespace SupFAmof.Service.Service
 
         public async Task Logout(string fcmToken)
         {
-                if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
+            if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
+            {
+                _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<AccountResponse>> SearchCollaboratorByEmail(string email, PagingRequest paging)
+        {
+            try
+            {
+
+
+
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                    .Where(x => x.Email.Contains(email) && x.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                    .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
+                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AccountResponse>()
                 {
-                    _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
-                }
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = account.Item1
+                    },
+                    Data = account.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request)
@@ -617,12 +647,11 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
                 var checkStuId = Ultils.CheckStudentId(request.AccountInformation.IdStudent);
                 var checkPersonalId = Ultils.CheckPersonalId(request.AccountInformation.IdentityNumber);
 
-                if(checkPhone == false)
+                if (checkPhone == false)
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
                                         AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
@@ -640,7 +669,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
-                
+
                 account.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
@@ -657,7 +686,7 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AccountResponse>(account)
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -675,7 +704,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                else if(request.ImgUrl == null || request.ImgUrl == "")
+                else if (request.ImgUrl == null || request.ImgUrl == "")
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID,
                                         AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID.GetDisplayName());
@@ -699,7 +728,7 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AccountResponse>(account)
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw;
             }

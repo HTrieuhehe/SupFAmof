@@ -3,22 +3,22 @@ using System.Collections.Generic;
 
 namespace SupFAmof.Data.Entity
 {
-    public partial class PostTitle
+    public partial class PostCategory
     {
-        public PostTitle()
+        public PostCategory()
         {
-            Contracts = new HashSet<Contract>();
+            PostTrainingCertificates = new HashSet<PostTrainingCertificate>();
             Posts = new HashSet<Post>();
         }
 
         public int Id { get; set; }
-        public string PostTitleDescription { get; set; } = null!;
-        public string PostTitleType { get; set; } = null!;
+        public string PostCategoryDescription { get; set; } = null!;
+        public string PostCategoryType { get; set; } = null!;
         public bool IsActive { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual ICollection<Contract> Contracts { get; set; }
+        public virtual ICollection<PostTrainingCertificate> PostTrainingCertificates { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
     }
 }

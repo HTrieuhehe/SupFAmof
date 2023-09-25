@@ -10,6 +10,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         Task<BaseResponsePagingViewModel<AccountResponse>> GetAccounts(AccountResponse request, PagingRequest paging);
         Task<BaseResponseViewModel<AccountResponse>> GetAccountById(int accountId);
+        Task<BaseResponsePagingViewModel<AccountResponse>> SearchCollaboratorByEmail(string email, PagingRequest paging);
         Task<BaseResponseViewModel<AccountResponse>> GetAccountByEmail(string email);
         Task<BaseResponseViewModel<AccountResponse>> CreateAccount(CreateAccountRequest request);
         Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, CreateAccountInformationRequest request);

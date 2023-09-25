@@ -357,7 +357,10 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var checkPost = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+                var checkPost = _unitOfWork.Repository<Post>().GetAll()
+                                        .Include(x => x.PostPositions)
+                                        .Include(x => x.TrainingPositions)
+                                        .FirstOrDefault(x => x.Id == postId && x.AccountId == accountId);
 
                 if (checkPost == null)
                 {
@@ -446,7 +449,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 postmapping.UpdateAt = Ultils.GetCurrentDatetime();
-                await _unitOfWork.Repository<Post>().UpdateDetached(postmapping);
+                await _unitOfWork.Repository<Post>().Update(postmapping, postmapping.Id);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()

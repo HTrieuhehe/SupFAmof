@@ -31,82 +31,66 @@ Access Token FPT sau login
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOGRiYTg1MS1iMTQ2LTRjYzktYTI0NS0yN2Y5M2IwODBhZWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRHV5IEPhu6VjIFPDungiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNjk3MDkyMzIyLCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.0mI3gAlgiTzcoJpXnZIugsxhkxG-yVSZYz48eIND168
 
 
-{
-  "postCategoryId": 1,
-  "postDescription": "[OD Sáng Thứ 5 ngày 28/09]
-❤ Vị trí 1: Nhận đoàn và dẫn đoàn tham quan: Số lượng 17 bạn
-• Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
-• 7h00 có mặt, nhận đoàn và hướng dẫn tham quan
-❤ Vị trí 3: Trực HT : Số lượng 2 bạn
-· Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
-· 7h00 có mặt, kiểm tra vật phẩm trong Hội trường và hướng dẫn Thí sinh
-· Chạy mic, tặng quà, ... trong lúc diễn ra sự kiện.
-❤ Vị trí 6: Logistic : Số lượng 3 bạn
-• Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
-• 6h30 có mặt, kiểm tra vật phẩm
-• Phát vật phẩm cho các gian liên quan.",
-  "dateFrom": "2023-09-28",
-  "dateTo": "",
-  "priority": 1,
-  "isPremium": false,
-  "postPositions": [
-    {
-      "trainingCertificateId": 1,
-	  "documentId": 1,
-      "positionName": "❤ Vị trí 1: Nhận đoàn và dẫn đoàn tham quan",
-      "schoolName": "Đại học FPT",
-      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
-      "latitude": "10.841443643280286",
-      "longtitude": "106.81003321008147",
-      "timeFrom": "7:00:00",
-      "timeTo": "",
-      "isBusService": "false",
-      "amount": 17,
-      "salary": 300000
-    },
-	{
-	  "trainingCertificateId": null,
-      "documentId": null,
-      "positionName": "Vị trí 3: Trực HT",
-      "schoolName": "Đại học FPT",
-      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
-      "latitude": "10.841443643280286",
-      "longtitude": "106.81003321008147",
-      "timeFrom": "7:00:00",
-      "timeTo": "",
-      "isBusService": "false",
-      "amount": 17,
-      "salary": 300000
-    },
-	{
-      "trainingCertificateId": null,
-	  "documentId": null,
-      "positionName": "Vị trí 6: Logistic : Số lượng 3 bạn",
-      "schoolName": "Đại học FPT",
-      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
-      "latitude": "10.841443643280286",
-      "longtitude": "106.81003321008147",
-      "timeFrom": "7:00:00",
-      "timeTo": "",
-      "isBusService": "false",
-      "amount": 17,
-      "salary": 300000
-    }
-  ],
-  "trainingPositions": [
-    {
-      "trainingCertificateId": 1,
-      "documentId": 1,
-      "positionName": "Training nhận đoàn và dẫn đoàn tham quan",
-      "schoolName": "Đại học FPT",
-      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
-      "latitude": "10.841443643280286",
-      "longtitude": "106.81003321008147",
-      "timeFrom": "7:00:00",
-      "timeTo": "",
-      "isBusService": "false",
-      "amount": 5,
-      "salary": 0
-    }
-  ]
-}
+Db context cần đổi sau scaffold để update được
+
+modelBuilder.Entity<PostPosition>(entity =>
+            {
+                entity.ToTable("PostPosition");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_PostPosition_DocumentTemplate");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PostPosition_Post");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.PostPositions)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .HasConstraintName("FK_PostPosition_TranningCertificate");
+            });
+
+modelBuilder.Entity<TrainingPosition>(entity =>
+            {
+                entity.ToTable("TrainingPosition");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
+
+                entity.Property(e => e.PositionName).HasMaxLength(50);
+
+                entity.Property(e => e.SchoolName).HasMaxLength(100);
+
+                entity.HasOne(d => d.Document)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.DocumentId)
+                    .HasConstraintName("FK_TrainingPosition_DocumentTemplate");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TrainingPosition_Post");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.TrainingPositions)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .HasConstraintName("FK_TrainingPosition_TranningCertificate");
+            });

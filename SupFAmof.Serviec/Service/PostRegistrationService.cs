@@ -218,7 +218,7 @@ namespace SupFAmof.Service.Service
             {
                 var postRegistration = _unitOfWork.Repository<PostRegistration>()
                                                 .GetAll()
-                                                .FirstOrDefault(x => x.Id == postRegistrationId&& x.AccountId == accountId);
+                                                .FirstOrDefault(x => x.Id == postRegistrationId && x.AccountId == accountId);
 
                 if (postRegistration == null)
                 {
@@ -247,15 +247,15 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId,int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId, int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {
 
                 var original = _unitOfWork.Repository<PostRegistration>()
                                            .GetAll()
-                                           .SingleOrDefault(x => x.Id == postRegistrationId&&x.AccountId == accountId);
-                if(original == null)
+                                           .SingleOrDefault(x => x.Id == postRegistrationId && x.AccountId == accountId);
+                if (original == null)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
@@ -268,7 +268,8 @@ namespace SupFAmof.Service.Service
                 if (updateEntity.PostRegistrationDetails.Count() == 0)
                 {
                     updateEntity.PostRegistrationDetails = original.PostRegistrationDetails;
-                }else
+                }
+                else
                 {
                     updateEntity.PostRegistrationDetails.First().PostId = original.PostRegistrationDetails.First().PostId;
 
@@ -527,7 +528,7 @@ namespace SupFAmof.Service.Service
                 var notUpdatedEntities = new List<PostRegistration>();
                 var listPr = await _unitOfWork.Repository<PostRegistration>()
                                             .GetAll()
-                                            .Where(x => postRegistrationIds.Contains(x.Id)&& x.PostRegistrationDetails.First().Post.AccountId == accountId)
+                                            .Where(x => postRegistrationIds.Contains(x.Id) && x.PostRegistrationDetails.First().Post.AccountId == accountId)
                                             .ToListAsync();
 
                 if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
@@ -653,21 +654,21 @@ namespace SupFAmof.Service.Service
 
             // Identify duplicates by comparing based on some unique identifier (e.g., UserId)
             var duplicateAttendees = listAttendeeFinal
-                .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId&&existingAttendee.PositionId == newAttendee.PositionId))
+                .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId && existingAttendee.PositionId == newAttendee.PositionId))
                 .ToList();
             // Insert only the non-duplicate attendees
             var nonDuplicateAttendees = listAttendeeFinal.Except(duplicateAttendees).ToList();
             await _unitOfWork.Repository<PostAttendee>().InsertRangeAsync(nonDuplicateAttendees.AsQueryable());
         }
 
-        private async Task UpdatePostAttendeeUser (PostRgupdateHistory matching)
+        private async Task UpdatePostAttendeeUser(PostRgupdateHistory matching)
         {
-            
-            var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x=>x.Id == matching.PostRegistrationId);
-            var attendNeedToBeUpdated= _unitOfWork.Repository<PostAttendee>()
+
+            var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == matching.PostRegistrationId);
+            var attendNeedToBeUpdated = _unitOfWork.Repository<PostAttendee>()
                               .GetAll()
                               .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.PostRegistrationDetails.First().PostId);
-            if(attendNeedToBeUpdated !=null)
+            if (attendNeedToBeUpdated != null)
             {
                 attendNeedToBeUpdated.PositionId = matching.PositionId;
                 attendNeedToBeUpdated.ConfirmAt = GetCurrentTime();

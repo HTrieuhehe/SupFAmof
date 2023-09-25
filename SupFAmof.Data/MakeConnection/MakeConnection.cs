@@ -12,6 +12,7 @@ namespace SupFAmof.Data.MakeConnection
             services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(options =>
             {
                 options.UseLazyLoadingProxies();
+                options.EnableSensitiveDataLogging();
             });
             return services;
         }

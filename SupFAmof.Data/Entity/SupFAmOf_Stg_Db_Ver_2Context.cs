@@ -380,7 +380,11 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("PostPosition");
 
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
                 entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
 
@@ -400,7 +404,6 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.TrainingCertificate)
                     .WithMany(p => p.PostPositions)
                     .HasForeignKey(d => d.TrainingCertificateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostPosition_TranningCertificate");
             });
 
@@ -511,7 +514,11 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("TrainingPosition");
 
+                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+
                 entity.Property(e => e.Location).HasMaxLength(500);
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
 
                 entity.Property(e => e.PositionName).HasMaxLength(50);
 
@@ -531,7 +538,6 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.TrainingCertificate)
                     .WithMany(p => p.TrainingPositions)
                     .HasForeignKey(d => d.TrainingCertificateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TrainingPosition_TranningCertificate");
             });
 

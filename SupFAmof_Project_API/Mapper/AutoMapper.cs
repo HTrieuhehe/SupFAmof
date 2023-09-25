@@ -155,6 +155,12 @@ namespace SupFAmof.API.Mapper
             #region Post
             CreateMap<Post, PostResponse>().ReverseMap();
             #endregion
+
+            #region DocumentTemplate
+            CreateMap<AdmissionDocumentResponse,DocumentTemplate>().ReverseMap();
+            CreateMap<DocumentRequest, DocumentTemplate>().ReverseMap();
+            CreateMap<DocumentUpdateRequest,DocumentTemplate>().ReverseMap();
+            #endregion
         }
     }
 }

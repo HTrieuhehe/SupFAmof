@@ -1,7 +1,11 @@
 ﻿using Autofac;
 using FirebaseAdmin;
 using System.Reflection;
+using ServiceStack.Redis;
 using SupFAmof.API.Mapper;
+using StackExchange.Redis;
+using Reso.Core.Extension;
+using SupFAmof.Data.Redis;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.AppStart;
 using Google.Apis.Auth.OAuth2;
@@ -13,10 +17,6 @@ using SupFAmof.Data.MakeConnection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using ServiceStack.Redis;
-using StackExchange.Redis;
-using Reso.Core.Extension;
-using SupFAmof.Data.Redis;
 
 namespace SupFAmof.API
 {
@@ -123,6 +123,7 @@ namespace SupFAmof.API
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
+            builder.RegisterType<DocumentService>().As<IDocumentService>();
 
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();

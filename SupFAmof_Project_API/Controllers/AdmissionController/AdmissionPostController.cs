@@ -32,17 +32,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpPost("create")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> CreatePost
-        ([FromQuery] int accountId, [FromBody] CreatePostRequest request)
+        ([FromBody] CreatePostRequest request)
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
-                return await _postService.CreateAdmissionPost(accountId, request);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.CreateAdmissionPost(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

@@ -1,5 +1,11 @@
 ﻿Group Code: GFA23SE76
 
+Cách nhớ:
+
+Vĩ độ (latitude): Giá trị nằm trong khoảng -90 đến 90, lưu ý âm dương qua xích đạo. Thường được ký hiệu là phi.
+Kinh độ (longitude): Giá trị nằm trong khoảng -180 đến 180, lưu ý âm dương qua kinh tuyến gốc (prime meridian). Thường được ký hiệu là lambda.
+
+
 dotnet ef dbcontext scaffold "Server=13.212.21.234;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
 
 
@@ -23,3 +29,84 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMmQ0OGE5OS00YWMwLTQzZTMtYjUzMi1
 
 Access Token FPT sau login
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOGRiYTg1MS1iMTQ2LTRjYzktYTI0NS0yN2Y5M2IwODBhZWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRHV5IEPhu6VjIFPDungiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNjk3MDkyMzIyLCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.0mI3gAlgiTzcoJpXnZIugsxhkxG-yVSZYz48eIND168
+
+
+{
+  "postCategoryId": 1,
+  "postDescription": "[OD Sáng Thứ 5 ngày 28/09]
+❤ Vị trí 1: Nhận đoàn và dẫn đoàn tham quan: Số lượng 17 bạn
+• Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
+• 7h00 có mặt, nhận đoàn và hướng dẫn tham quan
+❤ Vị trí 3: Trực HT : Số lượng 2 bạn
+· Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
+· 7h00 có mặt, kiểm tra vật phẩm trong Hội trường và hướng dẫn Thí sinh
+· Chạy mic, tặng quà, ... trong lúc diễn ra sự kiện.
+❤ Vị trí 6: Logistic : Số lượng 3 bạn
+• Trang phục: Áo cam, bỏ áo vào quần, đeo thẻ sinh viên
+• 6h30 có mặt, kiểm tra vật phẩm
+• Phát vật phẩm cho các gian liên quan.",
+  "dateFrom": "2023-09-28",
+  "dateTo": "",
+  "priority": 1,
+  "isPremium": false,
+  "postPositions": [
+    {
+      "trainingCertificateId": 1,
+	  "documentId": 1,
+      "positionName": "❤ Vị trí 1: Nhận đoàn và dẫn đoàn tham quan",
+      "schoolName": "Đại học FPT",
+      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
+      "latitude": "10.841443643280286",
+      "longtitude": "106.81003321008147",
+      "timeFrom": "7:00:00",
+      "timeTo": "",
+      "isBusService": "false",
+      "amount": 17,
+      "salary": 300000
+    },
+	{
+	  "trainingCertificateId": null,
+      "documentId": null,
+      "positionName": "Vị trí 3: Trực HT",
+      "schoolName": "Đại học FPT",
+      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
+      "latitude": "10.841443643280286",
+      "longtitude": "106.81003321008147",
+      "timeFrom": "7:00:00",
+      "timeTo": "",
+      "isBusService": "false",
+      "amount": 17,
+      "salary": 300000
+    },
+	{
+      "trainingCertificateId": null,
+	  "documentId": null,
+      "positionName": "Vị trí 6: Logistic : Số lượng 3 bạn",
+      "schoolName": "Đại học FPT",
+      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
+      "latitude": "10.841443643280286",
+      "longtitude": "106.81003321008147",
+      "timeFrom": "7:00:00",
+      "timeTo": "",
+      "isBusService": "false",
+      "amount": 17,
+      "salary": 300000
+    }
+  ],
+  "trainingPositions": [
+    {
+      "trainingCertificateId": 1,
+      "documentId": 1,
+      "positionName": "Training nhận đoàn và dẫn đoàn tham quan",
+      "schoolName": "Đại học FPT",
+      "location": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh 700000, Việt Nam",
+      "latitude": "10.841443643280286",
+      "longtitude": "106.81003321008147",
+      "timeFrom": "7:00:00",
+      "timeTo": "",
+      "isBusService": "false",
+      "amount": 5,
+      "salary": 0
+    }
+  ]
+}

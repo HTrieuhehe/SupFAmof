@@ -165,8 +165,6 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.POST_PERMIT_NOT_ALLOWED.GetDisplayName());
                 }
 
-                
-
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
                 if (request.DateFrom <= DateTime.Now)
@@ -186,7 +184,7 @@ namespace SupFAmof.Service.Service
                     //validate Certificate
                     var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
 
-                    if (checkCerti == null)
+                    if (item.TrainingCertificateId > 0 && checkCerti == null)
                     {
                         throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
                                              TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
@@ -214,7 +212,7 @@ namespace SupFAmof.Service.Service
                     //validate Certificate
                     var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
 
-                    if (checkCerti == null)
+                    if (item.TrainingCertificateId > 0 && checkCerti == null)
                     {
                         throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
                                              TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());

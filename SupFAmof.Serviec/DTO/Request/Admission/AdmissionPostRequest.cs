@@ -12,20 +12,20 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int AccountId { get; set; }
-        public int PostTitleId { get; set; }
-        //public string PostCode { get; set; }
+        public int PostCategoryId { get; set; }
+        //public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
+        public string? PostImg { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "Priority must be greater or equal 0")]
+        public int Priority { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
-
-        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
-        public int? Priority { get; set; }
         public bool IsPremium { get; set; }
-        public string? Location { get; set; }
+        //public int Status { get; set; }
         //public bool AttendanceComplete { get; set; }
         //public DateTime CreateAt { get; set; }
         //public DateTime? UpdateAt { get; set; }
-        //public int Status { get; set; }
 
         public List<CreatePostPositionRequest>? PostPositions { get; set; }
         public List<CreatePostTrainingPositionRequest>? TrainingPositions { get; set;}
@@ -35,10 +35,20 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         //public int Id { get; set; }
         //public int PostId { get; set; }
-        public int TrainingCertificateId { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
         public string? PositionName { get; set; }
+        [Required]
         public string? SchoolName { get; set; }
+
+        [Required]
         public string? Location { get; set; }
+
+        [Required]
+        public string? Latitude { get; set; }
+
+        [Required]
+        public string? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
@@ -55,9 +65,20 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public int Id { get; set; }
         //public int PostId { get; set; }
         public int TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
         public string? PositionName { get; set; }
+
+        [Required]
         public string? SchoolName { get; set; }
+
+        [Required]
         public string? Location { get; set; }
+        
+        [Required]
+        public string? Latitude { get; set; }
+        
+        [Required]
+        public string? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }

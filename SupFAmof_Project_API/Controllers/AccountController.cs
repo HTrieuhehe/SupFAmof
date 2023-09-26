@@ -239,7 +239,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpGet("input-verify")]
-        public async Task<ActionResult<BaseResponseViewModel<LoginResponse>>> InputVeryfication()
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> InputVeryfication([FromQuery] int code)
         {
             try
             {
@@ -249,7 +249,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.InputVerifycationCode(account.Id, account.RoleId);
+                return await _accountService.InputVerifycationCode(account.Id, code, account.RoleId);
             }
             catch (ErrorResponse ex)
             {

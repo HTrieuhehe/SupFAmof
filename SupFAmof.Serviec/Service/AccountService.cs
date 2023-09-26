@@ -383,8 +383,6 @@ namespace SupFAmof.Service.Service
             reactivationAccount.DeactivateDate = Ultils.GetCurrentDatetime();
             reactivationAccount.VerifyCode = null;
             reactivationAccount.ExpirationDate = null;
-            reactivationAccount.LoginToken = null;
-            reactivationAccount.FcmToken = null;
 
             await _unitOfWork.Repository<Account>().UpdateDetached(account);
             await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
@@ -588,33 +586,37 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<LoginResponse>> InputVerifycationCode(int code, int roleId)
+        public async Task<BaseResponseViewModel<dynamic>> InputVerifycationCode(int accountId, int code, int roleId)
         {
             try
             {
                 var inputTime = Ultils.GetCurrentDatetime();
                 var checkCode = _unitOfWork.Repository<AccountReactivation>().GetAll()
-                                           .FirstOrDefault(x => x.VerifyCode == code && x.ExpirationDate >= inputTime);
+                                           .FirstOrDefault(x => x.VerifyCode == code && x.ExpirationDate >= inputTime && x.AccountId == accountId);
 
-                if (checkCode != null)
+                if (checkCode == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.VERIFY_CODE_INVALID,
                                     AccountErrorEnums.VERIFY_CODE_INVALID.GetDisplayName());
                 }
 
-                ExternalAuthRequest data = new ExternalAuthRequest();
+                var account = _unitOfWork.Repository<Account>().Find(x => x.Id == accountId);
 
-                data.IdToken = checkCode.LoginToken;
-                data.FcmToken = checkCode.FcmToken;
+                account.IsActive = true;
 
-                if (roleId == (int)SystemRoleEnum.AdmissionManager)
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<dynamic>()
                 {
-                    var admissionLoginResponse = await AdmissionLogin(data);
-                    return admissionLoginResponse;
-                }
-
-                var loginResponse = await Login(data);
-                return loginResponse;
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = ""
+                };
             }
             catch (Exception ex)
             {

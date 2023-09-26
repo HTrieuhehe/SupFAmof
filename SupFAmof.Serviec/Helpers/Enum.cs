@@ -63,5 +63,17 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cancel")]
             Cancel = 4,
         }
+
+        public enum EmailTypeEnum
+        {
+            [Display(Name = "VerificationMail")]
+            VerificationMail = 1,
+
+            [Display(Name = "DownloadDocumentMail")]
+            DownloadDocumentMail = 2,
+
+            [Display(Name = "BookingMail")]
+            BookingMail = 3,
+        }
     }
 }

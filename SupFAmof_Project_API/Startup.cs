@@ -37,6 +37,8 @@ namespace SupFAmof.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.Configure<MailPaths>(Configuration.GetSection("MailPaths"));
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,

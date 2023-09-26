@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.DTO.Request;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -16,11 +17,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpPost("test-send-email")]
-        public async Task<ActionResult> SendEmail(string email)
+        public async Task<ActionResult> SendEmail
+            ([FromBody] MailRequest request)
         {
             try
             {
-                await _mailService.SendVerificationEmail(email);
+                await _mailService.SendEmail(request);
                 return Ok();
             }
             catch (Exception ex)

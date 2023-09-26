@@ -5,65 +5,73 @@ using Castle.Core.Configuration;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.Extensions.Configuration;
 using SupFAmof.Service.Service.ServiceInterface;
+using Microsoft.Extensions.Options;
 
 namespace SupFAmof.Service.Service
 {
     public class MailService : ServiceInterface.IMailService
     {
+        private readonly MailSettings _mailSettings;
+        private readonly MailPaths _mailPaths;
 
-        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
-
-        public MailService(Microsoft.Extensions.Configuration.IConfiguration configuration)
+        public MailService(IOptions<MailSettings> mailSettings, IOptions<MailPaths> mailPaths)
         {
-            _configuration = configuration;
+            _mailSettings = mailSettings.Value;
+            _mailPaths = mailPaths.Value;
         }
 
-    public async Task SendVerificationEmail(string email)
+        public async Task<bool> SendEmail(MailRequest request)
         {
-            MailSettings mailSettings = GetMailSettings();
-            var message = new MimeMessage();
-            message.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
-            message.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
-            message.To.Add(MailboxAddress.Parse(email));
-            message.Subject = "Verification Your Account";
-            //string htmlBody = System.IO.File.ReadAllText("..\\SupFAmof.Serviec\\MailTemplate\\VeryficationEmailTemplate.html");
-            string htmlBody = System.IO.File.ReadAllText("/app/MailTemplate/VeryficationEmailTemplate.html");
-
-            // Create a multipart/alternative message body to support both plain text and HTML
-            var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = htmlBody;
-
-            message.Body = bodyBuilder.ToMessageBody();
-            // dùng SmtpClient của MailKit
-            using var smtp = new MailKit.Net.Smtp.SmtpClient();
-
             try
             {
-                smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
-                smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
-                await smtp.SendAsync(message);
+                var message = new MimeMessage();
+                message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
+                message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+                message.To.Add(MailboxAddress.Parse(request.Email));
+                message.Subject = request.Subject;
+
+                foreach(var path in _mailPaths.Paths)
+                {
+                    if (path.Key == request.Type)
+                    {
+                        string? htmlBody = System.IO.File.ReadAllText(path.Value);
+
+                        // Create a multipart/alternative message body to support both plain text and HTML
+                        var bodyBuilder = new BodyBuilder();
+                        bodyBuilder.HtmlBody = htmlBody;
+
+                        message.Body = bodyBuilder.ToMessageBody();
+                        // dùng SmtpClient của MailKit
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+
+                        try
+                        {
+                            smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+                            await smtp.SendAsync(message);
+                            smtp.Disconnect(true);
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
+                            System.IO.Directory.CreateDirectory("mailssave");
+                            var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
+                            await message.WriteToAsync(emailsavefile);
+                            smtp.Disconnect(true);
+                            return false;
+                        }
+                    }
+                }
+                return false;
             }
             catch (Exception ex)
             {
-                // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-                System.IO.Directory.CreateDirectory("mailssave");
-                var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
-                await message.WriteToAsync(emailsavefile);
-
-
+                throw;
             }
-
-            smtp.Disconnect(true);
-
-
         }
 
-        private MailSettings GetMailSettings()
-        {
-            var mailSettings = new MailSettings();
-        _configuration.GetSection("MailSettings").Bind(mailSettings);
-            return mailSettings;
-        }
+
     }
 }
 

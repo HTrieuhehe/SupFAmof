@@ -1,7 +1,9 @@
-﻿namespace SupFAmof.Service.Service.ServiceInterface
+﻿using SupFAmof.Service.DTO.Request;
+
+namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IMailService
     {
-        Task SendVerificationEmail(string email);
+       Task<bool> SendEmail(MailRequest request);
     }
 }

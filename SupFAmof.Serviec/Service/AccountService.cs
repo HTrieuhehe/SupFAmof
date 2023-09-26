@@ -433,7 +433,7 @@ namespace SupFAmof.Service.Service
                 int randCode = Ultils.GenerateRandom6DigitNumber();
 
                 //create 15 minute based on current time
-                var expirationDate = Ultils.GetCurrentDatetime().AddMinutes(15);
+                var expirationDate = Ultils.GetCurrentDatetime().AddMinutes(2);
 
                 var reactivationAccount = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == accountId);
 

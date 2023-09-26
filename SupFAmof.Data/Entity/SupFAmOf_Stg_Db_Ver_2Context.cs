@@ -206,6 +206,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Email).HasMaxLength(50);
 
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.AccountReactivations)
                     .HasForeignKey(d => d.AccountId)

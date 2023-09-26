@@ -2,8 +2,8 @@
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
-    public interface IMailService
+    public interface ISendMailService
     {
-       Task<bool> SendEmail(MailRequest request);
+       Task<bool> SendEmailToUser(MailRequest request);
     }
 }

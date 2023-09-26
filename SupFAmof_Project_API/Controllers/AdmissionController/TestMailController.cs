@@ -9,9 +9,9 @@ namespace SupFAmof.API.Controllers.AdmissionController
     [ApiController]
     public class TestMailController : ControllerBase
     {
-        private readonly IMailService _mailService;
+        private readonly ISendMailService _mailService;
 
-        public TestMailController(IMailService mailService)
+        public TestMailController(ISendMailService mailService)
         {
             _mailService = mailService;
         }
@@ -22,7 +22,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
-                await _mailService.SendEmail(request);
+                await _mailService.SendEmailToUser(request);
                 return Ok();
             }
             catch (Exception ex)

@@ -18,6 +18,15 @@ namespace SupFAmof.Service.Utilities
             .Select(s => s[randomCode.Next(s.Length)]).ToArray());
         }
 
+        public static int GenerateRandom6DigitNumber()
+        {
+            var random = new Random();
+            int min = 100000; // Giá trị nhỏ nhất có thể tạo (100000)
+            int max = 999999; // Giá trị lớn nhất có thể tạo (999999)
+
+            return random.Next(min, max + 1);
+        }
+
         public static byte[] GetHash(string password, string fineSugar)
         {
             //convert conbine password and config of appsetting

@@ -129,7 +129,7 @@ namespace SupFAmof.API
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
             builder.RegisterType<DocumentService>().As<IDocumentService>();
-            builder.RegisterType<MailService>().As<IMailService>();
+            builder.RegisterType<SendMailService>().As<ISendMailService>();
 
 
 

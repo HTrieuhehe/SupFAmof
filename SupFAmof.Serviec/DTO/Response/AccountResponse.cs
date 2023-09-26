@@ -43,10 +43,6 @@ namespace SupFAmof.Service.DTO.Response
 
     public class AccountReactivationResponse
     {
-        public int Id { get; set; }
-        public int AccountId { get; set; }
-        public string? Email { get; set; }
-        public int? VerifyCode { get; set; }
-        public DateTime DeactivateDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
     }
 }

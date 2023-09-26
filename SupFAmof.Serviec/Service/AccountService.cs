@@ -22,6 +22,7 @@ using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 using ServiceStack.Web;
 using System.Net.WebSockets;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 
 namespace SupFAmof.Service.Service
 {
@@ -31,14 +32,16 @@ namespace SupFAmof.Service.Service
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IFcmTokenService _accountFcmtokenService;
+        private readonly ISendMailService _sendMailService;
 
         public AccountService
-            (IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IFcmTokenService accountFcmtokenService)
+            (IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IFcmTokenService accountFcmtokenService, ISendMailService sendMailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
             _accountFcmtokenService = accountFcmtokenService;
+            _sendMailService = sendMailService;
         }
 
         public async Task<BaseResponseViewModel<LoginResponse>> AdmissionLogin(ExternalAuthRequest data)
@@ -135,8 +138,27 @@ namespace SupFAmof.Service.Service
 
                 else if (account.IsActive == false)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
-                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                    //generate token
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+
+                    //Add fcm token     
+                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
+                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+
+                    return new BaseResponseViewModel<LoginResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Account is not active",
+                            Success = false,
+                            ErrorCode = 4009
+                        },
+                        Data = new LoginResponse()
+                        {
+                            access_token = newToken,
+                            account = _mapper.Map<AccountResponse>(account)
+                        }
+                    };
                 }
 
                 else
@@ -306,23 +328,66 @@ namespace SupFAmof.Service.Service
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            CreateAccountReactivationRequest accountReactivation = new CreateAccountReactivationRequest()
-            {
-                AccountId = account.Id,
-                Email = account.Email,
-            };
-
-           
-
             var fcmToken = _unitOfWork.Repository<Fcmtoken>().Find(x => x.AccountId == accountId);
+            var reactivationAccount = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == accountId);
 
+            if (reactivationAccount == null)
+            {
+                account.IsActive = false;
+
+                //create new data
+                CreateAccountReactivationRequest accountReactivation = new CreateAccountReactivationRequest()
+                {
+                    AccountId = account.Id,
+                    Email = account.Email,
+                };
+
+                var accountReactivationMapping = _mapper.Map<CreateAccountReactivationRequest, AccountReactivation>(accountReactivation);
+                accountReactivationMapping.DeactivateDate = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.Repository<AccountReactivation>().InsertAsync(accountReactivationMapping);
+                await _unitOfWork.CommitAsync();
+
+                if (fcmToken != null)
+                {
+                    await Logout(fcmToken.Token);
+
+                    return new BaseResponseViewModel<AccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AccountResponse>(account)
+                    };
+                }
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(account)
+                };
+            }
+
+            //update data
             account.IsActive = false;
 
-            var accountReactivationMapping = _mapper.Map<CreateAccountReactivationRequest, AccountReactivation>(accountReactivation);
-            accountReactivationMapping.DeactivateDate = Ultils.GetCurrentDatetime();
+            reactivationAccount.DeactivateDate = Ultils.GetCurrentDatetime();
+            reactivationAccount.VerifyCode = null;
+            reactivationAccount.ExpirationDate = null;
+            reactivationAccount.LoginToken = null;
+            reactivationAccount.FcmToken = null;
 
             await _unitOfWork.Repository<Account>().UpdateDetached(account);
-            await _unitOfWork.Repository<AccountReactivation>().InsertAsync(accountReactivationMapping);
+            await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
             await _unitOfWork.CommitAsync();
 
             if (fcmToken != null)
@@ -351,6 +416,61 @@ namespace SupFAmof.Service.Service
                 },
                 Data = _mapper.Map<AccountResponse>(account)
             };
+        }
+
+        public async Task<BaseResponseViewModel<AccountReactivationResponse>> EnableAccount(int accountId)
+        {
+            try
+            {
+                var checkAccount = _unitOfWork.Repository<Account>().GetAll()
+                                                .FirstOrDefault(x => x.Id == accountId && x.IsActive == false && x.AccountReactivations.Any());
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE,
+                                       AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE.GetDisplayName());
+                }
+
+                //generate random 6 digit code
+                int randCode = Ultils.GenerateRandom6DigitNumber();
+
+                //create 15 minute based on current time
+                var expirationDate = Ultils.GetCurrentDatetime().AddMinutes(15);
+
+                var reactivationAccount = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == accountId);
+
+                reactivationAccount.VerifyCode = randCode;
+                reactivationAccount.ExpirationDate = expirationDate;
+
+                //create mail content
+                MailRequest content = new MailRequest()
+                {
+                    Email = reactivationAccount.Email,
+                    Subject = "Verityfication Code",
+                    Type = EmailTypeEnum.VerificationMail.GetDisplayName(),
+                    Code = randCode
+                };
+
+                await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
+                await _unitOfWork.CommitAsync();
+
+                await _sendMailService.SendEmailToUser(content);
+
+                return new BaseResponseViewModel<AccountReactivationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountReactivationResponse>(reactivationAccount)
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId)
@@ -468,6 +588,40 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<LoginResponse>> InputVerifycationCode(int code, int roleId)
+        {
+            try
+            {
+                var inputTime = Ultils.GetCurrentDatetime();
+                var checkCode = _unitOfWork.Repository<AccountReactivation>().GetAll()
+                                           .FirstOrDefault(x => x.VerifyCode == code && x.ExpirationDate >= inputTime);
+
+                if (checkCode != null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.VERIFY_CODE_INVALID,
+                                    AccountErrorEnums.VERIFY_CODE_INVALID.GetDisplayName());
+                }
+
+                ExternalAuthRequest data = new ExternalAuthRequest();
+
+                data.IdToken = checkCode.LoginToken;
+                data.FcmToken = checkCode.FcmToken;
+
+                if (roleId == (int)SystemRoleEnum.AdmissionManager)
+                {
+                    var admissionLoginResponse = await AdmissionLogin(data);
+                    return admissionLoginResponse;
+                }
+
+                var loginResponse = await Login(data);
+                return loginResponse;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data)
         {
             try
@@ -563,8 +717,47 @@ namespace SupFAmof.Service.Service
 
                 else if (account.IsActive == false)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
-                                        AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                    #region Old Code
+                    //var accountReactivation = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == account.Id);
+
+                    //if (accountReactivation != null)
+                    //{
+                    //    accountReactivation.LoginToken = data.IdToken;
+                    //    accountReactivation.FcmToken = data.FcmToken;
+
+                    //    await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(accountReactivation);
+                    //    await _unitOfWork.CommitAsync();
+
+                    //    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                    //                AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                    //}
+
+                    //throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                    //                    AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+
+                    #endregion
+
+                    //generate token
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+
+                    //Add fcm token     
+                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
+                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+
+                    return new BaseResponseViewModel<LoginResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Account is not active",
+                            Success = false,
+                            ErrorCode = 4009
+                        },
+                        Data = new LoginResponse()
+                        {
+                            access_token = newToken,
+                            account = _mapper.Map<AccountResponse>(account)
+                        }
+                    };
                 }
 
                 else

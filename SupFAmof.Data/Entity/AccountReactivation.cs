@@ -8,8 +8,6 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int AccountId { get; set; }
         public string Email { get; set; } = null!;
-        public string? LoginToken { get; set; }
-        public string? FcmToken { get; set; }
         public int? VerifyCode { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public DateTime DeactivateDate { get; set; }

@@ -14,7 +14,7 @@ COPY ["SupFAmof.Data/SupFAmof.Data.csproj", "SupFAmof.Data/"]
 COPY ["SupFAmof.Serviec/SupFAmof.Service.csproj", "SupFAmof.Serviec/"]
 
 # Copy the Repository project file
-
+COPY ["SupFAmof.Serviec/MailTemplate/VeryficationEmailTemplate.html" ,"/app/MailTemplate/VeryficationEmailTemplate.html"]
 # Copy the Client project file
 
 

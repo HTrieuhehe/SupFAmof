@@ -31,5 +31,9 @@ namespace SupFAmof.Service.DTO.Request
 
         [Required]
         public string? Type { get; set; }
+
+        public int Code { get; set; }
+
+        public string? ContestTestField { get; set; }
     }
 }

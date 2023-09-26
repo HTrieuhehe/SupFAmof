@@ -161,6 +161,10 @@ namespace SupFAmof.API.Mapper
             CreateMap<DocumentRequest, DocumentTemplate>().ReverseMap();
             CreateMap<DocumentUpdateRequest,DocumentTemplate>().ReverseMap();
             #endregion
+
+            #region Profile Reactivtion
+            CreateMap<AccountReactivation, AccountReactivationResponse>().ReverseMap();
+            #endregion
         }
     }
 }

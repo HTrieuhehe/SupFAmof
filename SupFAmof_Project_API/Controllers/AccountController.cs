@@ -208,5 +208,53 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Enable Account 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("enable-account")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountReactivationResponse>>> EnableProfile()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.EnableAccount(account.Id);
+            }
+            catch(ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Input Verification
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("input-verify")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> InputVeryfication([FromQuery] int code)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.InputVerifycationCode(account.Id, code, account.RoleId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

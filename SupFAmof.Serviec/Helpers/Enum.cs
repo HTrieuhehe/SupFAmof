@@ -75,5 +75,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "BookingMail")]
             BookingMail = 3,
         }
+
+        public enum AccountCertificateStatusEnum
+        {
+            [Display(Name = "Complete")]
+            Complete = 1,
+
+            [Display(Name = "Reject")]
+            Reject = 2,
+        }
     }
 }

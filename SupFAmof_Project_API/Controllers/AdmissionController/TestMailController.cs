@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -31,5 +31,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
             }
         }
+
+  
     }
 }

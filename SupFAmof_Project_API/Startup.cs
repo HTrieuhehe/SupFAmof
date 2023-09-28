@@ -130,6 +130,8 @@ namespace SupFAmof.API
             builder.RegisterType<PostService>().As<IPostService>();
             builder.RegisterType<DocumentService>().As<IDocumentService>();
             builder.RegisterType<SendMailService>().As<ISendMailService>();
+            builder.RegisterType<CheckInService>().As<ICheckInService>();
+
 
 
 

@@ -8,6 +8,7 @@ namespace SupFAmof.Service.Utilities
 {
     public static class Ultils
     {
+        private const decimal R = 6371.0m;
         public static string GenerateRandomCode()
         {
             var randomCode = new Random();
@@ -146,6 +147,27 @@ namespace SupFAmof.Service.Utilities
             string result = regex.Replace(normalizedString, "");
 
             return result;
+        }
+        public static decimal CalculateDistance(decimal? lat1, decimal? lng1, decimal? lat2, decimal? lng2)
+        {
+            decimal? dLat = ToRadians(lat2 - lat1);
+            decimal? dLon = ToRadians(lng2 - lng1);
+
+            // convert to radians
+            lat1 = ToRadians(lat1);
+            lat2 = ToRadians(lat2);
+
+            decimal a = (decimal)Math.Pow((double)Math.Sin((double)(dLat / 2)), 2) +
+                       (decimal)Math.Pow((double)Math.Sin((double)(dLon / 2)), 2) *
+                       (decimal)Math.Cos((double)lat1) *
+                       (decimal)Math.Cos((double)lat2);
+            decimal c = 2 * (decimal)Math.Asin((double)Math.Sqrt((double)a));
+            return R * c;
+        }
+
+        private static decimal ToRadians(decimal? degrees)
+        {
+            return (decimal)(degrees * (decimal)Math.PI / 180.0m);
         }
     }
 }

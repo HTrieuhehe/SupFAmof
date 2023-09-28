@@ -165,6 +165,10 @@ namespace SupFAmof.API.Mapper
             #region Profile Reactivtion
             CreateMap<AccountReactivation, AccountReactivationResponse>().ReverseMap();
             #endregion
+
+            #region CheckIn
+            CreateMap<CheckInRequest, CheckAttendance>().ReverseMap();
+            #endregion
         }
     }
 }

@@ -51,7 +51,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("update")]
+        [HttpPut("reject-certificate")]
         public async Task<ActionResult<BaseResponseViewModel<AccountCertificateResponse>>> UpdateAccountCertificate
         ([FromQuery] int accountId, [FromQuery] int accountCertificateId)
         {

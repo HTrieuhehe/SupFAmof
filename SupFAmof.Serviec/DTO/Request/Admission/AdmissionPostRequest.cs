@@ -44,13 +44,15 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? SchoolName { get; set; }
 
         [Required]
-        public decimal? Location { get; set; }
+        public string? Location { get; set; }
 
         [Required]
-        public decimal? Latitude { get; set; }
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
+        public string? Latitude { get; set; }
 
         [Required]
-        public string? Longtitude { get; set; }
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
+        public string? Longitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
@@ -75,12 +77,15 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         [Required]
         public string? Location { get; set; }
-        
+
         [Required]
-        public decimal? Latitude { get; set; }
-        
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
+        public string? Latitude { get; set; }
+
         [Required]
-        public decimal? Longtitude { get; set; }
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
+        public string? Longitude { get; set; }
+
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }

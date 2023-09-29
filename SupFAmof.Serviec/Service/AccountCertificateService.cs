@@ -18,6 +18,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -52,7 +53,7 @@ namespace SupFAmof.Service.Service
                 var result = _mapper.Map<CreateAccountCertificateRequest, AccountCertificate>(request);
 
                 result.CreatePersonId = createPersonId;
-                result.Status = true;
+                result.Status = (int)AccountCertificateStatusEnum.Complete;
                 result.CreateAt = DateTime.Now;
 
                 return new BaseResponseViewModel<AccountCertificateResponse>()
@@ -146,7 +147,7 @@ namespace SupFAmof.Service.Service
                                          AccountCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                accountCertificate.Status = false;
+                accountCertificate.Status = (int)AccountCertificateStatusEnum.Reject;
                 accountCertificate.UpdateAt = DateTime.Now;
 
                 return new BaseResponseViewModel<AccountCertificateResponse>()

@@ -2,20 +2,20 @@
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.Service.ServiceInterface;
-using NTQ.Sdk.Core.Filters;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.Exceptions;
 
 namespace SupFAmof.API.Controllers
 {
     [Route(Helpers.SettingVersionAPI.ApiVersion)]
     [ApiController]
-    public class CheckInController : ControllerBase
+    public class CheckAttendanceController : ControllerBase
     {
         private readonly ICheckInService _checkInService;
 
-        public CheckInController(ICheckInService checkInService)
+        public CheckAttendanceController(ICheckInService checkInService)
         {
             _checkInService = checkInService;
         }
@@ -40,17 +40,18 @@ namespace SupFAmof.API.Controllers
         ///Check out
         /// </summary>
         /// 
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromBody] CheckOutRequest request)
+        [HttpPost("check-out")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromQuery] int accountId, [FromBody] CheckOutRequest request)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _checkInService.CheckOut(account.Id, request);
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                //{
+                //    return Unauthorized();
+                //}
+                return await _checkInService.CheckOut(accountId, request);
             }
             catch(ErrorResponse ex)
             {

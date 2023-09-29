@@ -1,14 +1,8 @@
 ﻿using System;
 using AutoMapper;
 using System.Linq;
-using System.Text;
-using ServiceStack.Text;
-using Google.Api.Gax.Rest;
 using SupFAmof.Data.Entity;
-using MimeKit.Cryptography;
-using System.Threading.Tasks;
 using SupFAmof.Data.UnitOfWork;
-using System.Collections.Generic;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +12,6 @@ using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response;
-using StackExchange.Redis;
 
 namespace SupFAmof.Service.Service
 {
@@ -58,7 +51,7 @@ namespace SupFAmof.Service.Service
                 if (VerifyDateTimeCheckin(postVerification, checkin.CheckInTime))
                 {
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == check && x.PostRegistrationDetails.Any(x => x.Id == checkOut.PositionId));
+                                                .Find(x => x.AccountId == checkin.AccountId && x.PostRegistrationDetails.Any(x => x.Id == checkin.PositionId));
 
                     if (registration == null)
                     {
@@ -120,7 +113,7 @@ namespace SupFAmof.Service.Service
                     checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
 
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == checkOut.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == request.PositionId));
 
                     if (registration == null)
                     {
@@ -141,9 +134,10 @@ namespace SupFAmof.Service.Service
                     //get current Time
                     var currentTime = DateTime.Now.TimeOfDay;
                     var time = position.TimeFrom;
+                    time = time.Add(TimeSpan.FromHours(2));
 
                     //allow checkout after 2 hours
-                    if (time.Add(TimeSpan.FromHours(2)) < currentTime)
+                    if (time > currentTime)
                     {
                         throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_TIME_INVALID,
                                         AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
@@ -153,7 +147,7 @@ namespace SupFAmof.Service.Service
                     checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
 
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == checkOut.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.PositionId == checkOut.PositionId));
 
                     if (registration == null)
                     {

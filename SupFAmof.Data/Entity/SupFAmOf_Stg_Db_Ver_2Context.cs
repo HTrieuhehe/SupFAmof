@@ -435,7 +435,6 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostRegistrationDetail_Post");
 
                 entity.HasOne(d => d.PostRegistration)

@@ -47,6 +47,12 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Approved Request")]
             Approved_Request = 6,
+
+            [Display(Name = "Check-in")]
+            CheckIn = 7,
+
+            [Display(Name = "Check-out")]
+            CheckOut = 8
         }
 
         public enum PostStatusEnum

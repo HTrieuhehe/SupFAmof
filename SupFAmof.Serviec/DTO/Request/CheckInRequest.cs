@@ -18,4 +18,12 @@ namespace SupFAmof.Service.DTO.Request
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
     }
+
+    public class CheckOutRequest
+    {
+        //public int AccountId { get; set; }
+        public int PostId { get; set; }
+        public int PositionId { get; set; }
+        //public DateTime CheckOutTime { get; set; }
+    }
 }

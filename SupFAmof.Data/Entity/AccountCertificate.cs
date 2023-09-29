@@ -9,7 +9,7 @@ namespace SupFAmof.Data.Entity
         public int AccountId { get; set; }
         public int? CreatePersonId { get; set; }
         public int TraningCertificateId { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

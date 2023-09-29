@@ -8,6 +8,7 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int AccountId { get; set; }
         public int PostId { get; set; }
+        public int PositionId { get; set; }
         public DateTime CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
 

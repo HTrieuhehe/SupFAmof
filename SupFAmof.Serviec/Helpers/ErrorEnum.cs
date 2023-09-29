@@ -264,5 +264,24 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Already disabled")]
             ALREADY_DISABLED = 4003,
         }
+
+        public enum AttendanceErrorEnum
+        {
+            //400
+            [Display(Name = "Check-in fail!")]
+            CHECK_IN_FAIL = 4001,
+
+            //400
+            [Display(Name = "Account did not check in!")]
+            CHECK_OUT_FAIL = 4002,
+
+            //400
+            [Display(Name = "Check out time invalid!")]
+            CHECK_OUT_TIME_INVALID = 4003,
+
+            //400
+            [Display(Name = "Cannot check out")]
+            CAN_NOT_CHECK_OUT = 4004,
+        }
     }
 }

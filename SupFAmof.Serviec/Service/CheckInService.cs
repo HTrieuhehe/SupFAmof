@@ -26,32 +26,39 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task CheckIn(CheckInRequest checkin)
+        public async Task<BaseResponseViewModel<dynamic>> CheckIn(int accountId, CheckInRequest checkin)
         {
             try
             {
                 var checkAttendance = _mapper.Map<CheckAttendance>(checkin);
+                checkAttendance.CheckInTime = Ultils.GetCurrentDatetime();
+
                 var existingAttendance = await _unitOfWork.Repository<CheckAttendance>()
                                                           .GetAll()
                                                           .SingleOrDefaultAsync(x => x.PostId == checkin.PostId
-                                                                                 && x.AccountId == checkin.AccountId
+                                                                                 && x.AccountId == accountId
                                                                                  );
 
                 if (existingAttendance != null)
                 {
-                    throw new ErrorResponse(400, 400, "Already checked in");
+                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.ALREADY_CHECK_IN,
+                                        AttendanceErrorEnum.ALREADY_CHECK_IN.GetDisplayName());
                 }
+
                 var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == checkin.AccountId);
                 double distance = 0.04; // kilometer 
                 double userCurrentPosition = ((double)Utilities.Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
                 if (userCurrentPosition > distance)
                 {
-                    throw new ErrorResponse(400, 400, $"Distance {userCurrentPosition} is to far ");
+                    //throw new ErrorResponse(400, 400, $"Distance {userCurrentPosition} is to far ");
+
+                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
+                                        AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $":{userCurrentPosition} km");
                 }
-                if (VerifyDateTimeCheckin(postVerification, checkin.CheckInTime))
+                if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == checkin.AccountId && x.PostRegistrationDetails.Any(x => x.Id == checkin.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == checkin.PositionId));
 
                     if (registration == null)
                     {
@@ -63,6 +70,17 @@ namespace SupFAmof.Service.Service
 
                     await _unitOfWork.Repository<CheckAttendance>().InsertAsync(checkAttendance);
                     await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<dynamic>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Check Out Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = ""
+                    };
                 }
 
             }
@@ -71,7 +89,8 @@ namespace SupFAmof.Service.Service
                 throw;
             }
 
-
+            throw new ErrorResponse(400, (int)AttendanceErrorEnum.CAN_NOT_CHECK_OUT,
+                                    AttendanceErrorEnum.CAN_NOT_CHECK_OUT.GetDisplayName());
         }
 
         public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, CheckOutRequest request)
@@ -80,7 +99,7 @@ namespace SupFAmof.Service.Service
             {
                 //check Checking Existed
                 var checkOutCheck = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                            .FirstOrDefault(x => x.AccountId == accountId && x.PostId == request.PostId && request.PositionId == request.PositionId);
+                                    .FirstOrDefault(x => x.AccountId == accountId && x.PostId == request.PostId && request.PositionId == request.PositionId);
 
                 if (checkOutCheck == null)
                 {

@@ -282,6 +282,14 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cannot check out")]
             CAN_NOT_CHECK_OUT = 4004,
+
+            //400
+            [Display(Name = "Already Check in")]
+            ALREADY_CHECK_IN = 4005,
+            
+            //400
+            [Display(Name = "Distance too far")]
+            DISTANCE_TOO_FAR = 4006,
         }
     }
 }

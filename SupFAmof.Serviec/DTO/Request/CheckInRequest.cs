@@ -10,11 +10,9 @@ namespace SupFAmof.Service.DTO.Request
 {
     public class CheckInRequest
     {
-        public int AccountId { get; set; }
+        //public int AccountId { get; set; }
         public int PostId { get; set; }
         public int PositionId { get; set; }
-        [JsonIgnore]
-        public DateTime CheckInTime { get; set; } = Ultils.GetCurrentTime() ;
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
     }

@@ -21,13 +21,18 @@ namespace SupFAmof.API.Controllers
         }
 
         [HttpPost("check-in")]
-        public async Task<ActionResult> CheckIn
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckIn
       ([FromBody] CheckInRequest request)
         {
             try
             {
-                await _checkInService.CheckIn(request);
-                return Ok("Check In completed");
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _checkInService.CheckIn(account.Id, request);
             }
             catch (Exception ex)
             {
@@ -45,12 +50,12 @@ namespace SupFAmof.API.Controllers
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
                 return await _checkInService.CheckOut(accountId, request);
             }
             catch(ErrorResponse ex)

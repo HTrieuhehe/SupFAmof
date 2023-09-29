@@ -10,7 +10,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface ICheckInService
     {
-        Task CheckIn(CheckInRequest checkin);
+        Task<BaseResponseViewModel<dynamic>> CheckIn(int accountId, CheckInRequest checkin);
         Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, CheckOutRequest request);
     }
 }

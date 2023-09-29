@@ -23,7 +23,7 @@ namespace SupFAmof.API.Controllers
             try
             {
                 await _checkInService.CheckIn(request);
-                return Ok();
+                return Ok("Check In completed");
             }
             catch (Exception ex)
             {

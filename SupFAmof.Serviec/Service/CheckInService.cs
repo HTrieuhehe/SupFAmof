@@ -32,6 +32,16 @@ namespace SupFAmof.Service.Service
             try
             {
                 var checkAttendance = _mapper.Map<CheckAttendance>(checkin);
+                var existingAttendance = await _unitOfWork.Repository<CheckAttendance>()
+          .GetAll()
+          .SingleOrDefaultAsync(x => x.PostId == checkin.PostId
+                                 && x.AccountId == checkin.AccountId
+                                 );
+
+                if (existingAttendance != null)
+                {
+                    throw new ErrorResponse(400, 400, "Already checked in");
+                }
                 var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == checkin.AccountId);
                 double distance = 0.04; // kilometer 
                 double userCurrentPosition = ((double)Utilities.Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude,checkin.Latitude,checkin.Longtitude));
@@ -49,21 +59,23 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+
+
         }
         private bool VerifyDateTimeCheckin(PostAttendee postTime,DateTime checkInTime)
         {
             if (postTime.Post.DateFrom.Date != checkInTime.Date)
             {
-                return false; // Different days
+                throw new ErrorResponse(400, 400, "Cant register if you are not on the day of event");
             }
             
             // Calculate the time difference in hours between checkInTime and postTime.Position.TimeFrom
             TimeSpan timeDifference = checkInTime.TimeOfDay - postTime.Position.TimeFrom;
 
             // Check if the time difference is within a 2-hour range
-            if (timeDifference.TotalHours < -2 || timeDifference.TotalHours > 2)
+            if (timeDifference.TotalHours < -1 || timeDifference.TotalHours > 0.5)
             {
-                return false; // Outside the 2-hour range
+                throw new ErrorResponse(400, 400, "Must check in around 30 minutes when the position start");
             }
 
             return true;

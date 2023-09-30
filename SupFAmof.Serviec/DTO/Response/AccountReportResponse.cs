@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response
 {
+    public class ReportResponse
+    {
+        public double? TotalSalary { get => TotalSalary; set => TotalSalary = value; }
+        public ICollection<AccountReportResponse>? Reports { get; set; }
+    }
+
     public class AccountReportResponse
     {
         public int Id { get; set; }
@@ -15,8 +21,6 @@ namespace SupFAmof.Service.DTO.Response
         public double? Salary { get; set; }
         public DateTime? Date { get; set; }
 
-        public double? TotalSalary { get; set; }
-
-        public virtual PostResponse? Post { get; set; }
+        //public virtual PostResponse? Post { get; set; }
     }
 }

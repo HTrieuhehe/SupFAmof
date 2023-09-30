@@ -12,6 +12,7 @@ using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Request.Account;
 
 namespace SupFAmof.Service.Service
 {
@@ -142,6 +143,15 @@ namespace SupFAmof.Service.Service
 
                     registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
 
+                    CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
+                    {
+                        AccountId = accountId,
+                        PostId = position.PostId,
+                        Salary = position.Salary,
+                    };
+
+                    await CreateAccountReport(accountReport);
+
                     await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(checkOut);
                     await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
                     await _unitOfWork.CommitAsync();
@@ -175,6 +185,15 @@ namespace SupFAmof.Service.Service
                     }
 
                     registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
+
+                    CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
+                    {
+                        AccountId = accountId,
+                        PostId = position.PostId,
+                        Salary = position.Salary,
+                    };
+
+                    await CreateAccountReport(accountReport);
 
                     await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(checkOut);
                     await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
@@ -218,6 +237,34 @@ namespace SupFAmof.Service.Service
             }
 
             return true;
+        }
+
+        private async Task<BaseResponseViewModel<AccountReportResponse>> CreateAccountReport(CreateAccountReportRequest request)
+        {
+            try
+            {
+                var accountReport = _mapper.Map<CreateAccountReportRequest, AccountReport>(request);
+
+                accountReport.Date = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<AccountReport>().InsertAsync(accountReport);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountReportResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Check Out Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountReportResponse>(accountReport)
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
     }

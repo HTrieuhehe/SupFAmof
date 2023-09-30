@@ -40,6 +40,12 @@ namespace SupFAmof.API.Mapper
             CreateMap<UpdateAccountAvatar, Account>();
             #endregion
 
+            #region Account Report
+            CreateMap<AccountReport, AccountReportResponse>().ReverseMap();
+
+            CreateMap<CreateAccountReportRequest, AccountReport>();
+            #endregion
+
             #region Staff
             CreateMap<staff, StaffResponse>().ReverseMap();
             CreateMap<CreateStaffRequest, staff>()

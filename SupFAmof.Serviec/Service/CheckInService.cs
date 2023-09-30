@@ -147,6 +147,7 @@ namespace SupFAmof.Service.Service
                     {
                         AccountId = accountId,
                         PostId = position.PostId,
+                        PositionId = position.Id,
                         Salary = position.Salary,
                     };
 
@@ -190,6 +191,7 @@ namespace SupFAmof.Service.Service
                     {
                         AccountId = accountId,
                         PostId = position.PostId,
+                        PositionId = position.Id,
                         Salary = position.Salary,
                     };
 

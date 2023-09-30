@@ -226,6 +226,12 @@ namespace SupFAmof.Data.Entity
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountReport_Account");
 
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.AccountReports)
+                    .HasForeignKey(d => d.PositionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReport_PostPosition");
+
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.AccountReports)
                     .HasForeignKey(d => d.PostId)
@@ -382,7 +388,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
 
-                entity.Property(e => e.PositionName).HasMaxLength(50);
+                entity.Property(e => e.PositionName).HasMaxLength(250);
 
                 entity.Property(e => e.SchoolName).HasMaxLength(100);
 

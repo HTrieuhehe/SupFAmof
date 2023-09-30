@@ -382,7 +382,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
 
-                entity.Property(e => e.PositionName).HasMaxLength(50);
+                entity.Property(e => e.PositionName).HasMaxLength(250);
 
                 entity.Property(e => e.SchoolName).HasMaxLength(100);
 

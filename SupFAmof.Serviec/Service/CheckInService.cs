@@ -45,7 +45,7 @@ namespace SupFAmof.Service.Service
                                         AttendanceErrorEnum.ALREADY_CHECK_IN.GetDisplayName());
                 }
 
-                var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == checkin.AccountId);
+                var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId);
                 double distance = 0.04; // kilometer 
                 double userCurrentPosition = ((double)Utilities.Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
                 if (userCurrentPosition > distance)

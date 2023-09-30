@@ -38,6 +38,7 @@ namespace SupFAmof.Service.Service
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
                                                 .Where(x => x.AccountId == accountId)
+                                                .OrderByDescending(x => x.Date)
                                                 .PagingQueryable(paging.Page, paging.PageSize,
                                                                     Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -67,6 +68,7 @@ namespace SupFAmof.Service.Service
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
+                                                .OrderByDescending(x => x.Date)
                                                 .PagingQueryable(paging.Page, paging.PageSize,
                                                                     Constants.LimitPaging, Constants.DefaultPaging);
 

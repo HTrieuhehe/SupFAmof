@@ -226,6 +226,12 @@ namespace SupFAmof.Data.Entity
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountReport_Account");
 
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.AccountReports)
+                    .HasForeignKey(d => d.PositionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReport_PostPosition");
+
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.AccountReports)
                     .HasForeignKey(d => d.PostId)

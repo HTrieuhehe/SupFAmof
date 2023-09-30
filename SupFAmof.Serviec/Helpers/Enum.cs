@@ -75,11 +75,8 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "VerificationMail")]
             VerificationMail = 1,
 
-            [Display(Name = "DownloadDocumentMail")]
-            DownloadDocumentMail = 2,
-
             [Display(Name = "BookingMail")]
-            BookingMail = 3,
+            BookingMail = 2,
         }
 
         public enum AccountCertificateStatusEnum

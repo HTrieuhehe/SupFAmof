@@ -441,18 +441,17 @@ namespace SupFAmof.Service.Service
                 reactivationAccount.ExpirationDate = expirationDate;
 
                 //create mail content
-                MailRequest content = new MailRequest()
+                MailVerificationRequest content = new MailVerificationRequest()
                 {
                     Email = reactivationAccount.Email,
                     Subject = "Verityfication Code",
-                    Type = EmailTypeEnum.VerificationMail.GetDisplayName(),
                     Code = randCode
                 };
 
                 await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
                 await _unitOfWork.CommitAsync();
 
-                await _sendMailService.SendEmailToUser(content);
+                await _sendMailService.SendEmailVerification(content);
 
                 return new BaseResponseViewModel<AccountReactivationResponse>()
                 {

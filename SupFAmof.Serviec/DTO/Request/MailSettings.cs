@@ -21,7 +21,7 @@ namespace SupFAmof.Service.DTO.Request
         public Dictionary<string, string>? Paths { get; set; }
     }
 
-    public class MailRequest
+    public class MailVerificationRequest
     {
         [Required]
         public string? Email { get; set; }
@@ -29,16 +29,17 @@ namespace SupFAmof.Service.DTO.Request
         [Required]
         public string? Subject { get; set; }
 
-        [Required]
-        public string? Type { get; set; }
-
         public int Code { get; set; }
-
-        public MailBookingRequest? MailBookingRequest { get; set; }
     }
 
     public class MailBookingRequest
     {
+        [Required]
+        public string? Email { get; set; }
+
+        [Required]
+        public string? Subject { get; set; }
+
         [Required]
         public string? RegistrationCode { get; set; }
 

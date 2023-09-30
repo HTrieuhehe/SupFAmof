@@ -6,6 +6,8 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.Extensions.Configuration;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.Extensions.Options;
+using static SupFAmof.Service.Helpers.Enum;
+using NTQ.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -20,7 +22,7 @@ namespace SupFAmof.Service.Service
             _mailPaths = mailPaths.Value;
         }
 
-        public async Task<bool> SendEmailToUser(MailRequest request)
+        public async Task<bool> SendEmailBooking(MailBookingRequest request)
         {
             try
             {
@@ -30,55 +32,28 @@ namespace SupFAmof.Service.Service
                 message.To.Add(MailboxAddress.Parse(request.Email));
                 message.Subject = request.Subject;
 
-                foreach(var path in _mailPaths.Paths)
+                foreach (var path in _mailPaths.Paths)
                 {
-                    if (path.Key == request.Type.Trim())
+                    if (path.Key == EmailTypeEnum.BookingMail.GetDisplayName())
                     {
                         string? htmlBody = System.IO.File.ReadAllText(path.Value);
 
                         // Create a multipart/alternative message body to support both plain text and HTML
                         var bodyBuilder = new BodyBuilder();
 
-                        if (request.Code > 0)
-                        {
-                            bodyBuilder.HtmlBody = htmlBody.Replace("{code}", request.Code.ToString());
-
-                            message.Body = bodyBuilder.ToMessageBody();
-                            // dùng SmtpClient của MailKit
-                            using var smtp = new MailKit.Net.Smtp.SmtpClient();
-
-                            try
-                            {
-                                smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-                                smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-                                await smtp.SendAsync(message);
-                                smtp.Disconnect(true);
-                                return true;
-                            }
-                            catch (Exception ex)
-                            {
-                                // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-                                System.IO.Directory.CreateDirectory("mailssave");
-                                var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
-                                await message.WriteToAsync(emailsavefile);
-                                smtp.Disconnect(true);
-                                return false;
-                            }
-                        }
-
-                        else if(request.MailBookingRequest != null && request.Code == 0)
+                        if (request != null)
                         {
                             bodyBuilder.HtmlBody = htmlBody
-                                .Replace("{code}", request.MailBookingRequest.RegistrationCode.ToString())
-                                .Replace("{name}", request.MailBookingRequest.PostName.ToString())
-                                .Replace("{dateFrom}", request.MailBookingRequest.DateFrom.ToString())
-                                .Replace("{dateTo}", request.MailBookingRequest.DateTo.ToString())
-                                .Replace("{positionName}", request.MailBookingRequest.PositionName.ToString())
-                                .Replace("{TimeFrom}", request.MailBookingRequest.TimeFrom.ToString())
-                                .Replace("{Timeto}", request.MailBookingRequest.TimeTo.ToString())
-                                .Replace("{schoolName}", request.MailBookingRequest.SchoolName.ToString())
-                                .Replace("{location}", request.MailBookingRequest.Location.ToString())
-                                .Replace("{note}", request.MailBookingRequest.Note.ToString());
+                                .Replace("{code}", request.RegistrationCode.ToString())
+                                .Replace("{name}", request.PostName.ToString())
+                                .Replace("{dateFrom}", request.DateFrom.ToString())
+                                .Replace("{dateTo}", request.DateTo.ToString())
+                                .Replace("{positionName}", request.PositionName.ToString())
+                                .Replace("{TimeFrom}", request.TimeFrom.ToString())
+                                .Replace("{Timeto}", request.TimeTo.ToString())
+                                .Replace("{schoolName}", request.SchoolName.ToString())
+                                .Replace("{location}", request.Location.ToString())
+                                .Replace("{note}", request.Note.ToString());
 
                             message.Body = bodyBuilder.ToMessageBody();
                             // dùng SmtpClient của MailKit
@@ -112,6 +87,60 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<bool> SendEmailVerification(MailVerificationRequest request)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
+                message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+                message.To.Add(MailboxAddress.Parse(request.Email));
+                message.Subject = request.Subject;
+
+                foreach (var path in _mailPaths.Paths)
+                {
+                    if (path.Key == EmailTypeEnum.VerificationMail.GetDisplayName())
+                    {
+                        string? htmlBody = System.IO.File.ReadAllText(path.Value);
+
+                        // Create a multipart/alternative message body to support both plain text and HTML
+                        var bodyBuilder = new BodyBuilder();
+
+                        if (request.Code > 0)
+                        {
+                            bodyBuilder.HtmlBody = htmlBody.Replace("{code}", request.Code.ToString());
+
+                            message.Body = bodyBuilder.ToMessageBody();
+                            // dùng SmtpClient của MailKit
+                            using var smtp = new MailKit.Net.Smtp.SmtpClient();
+
+                            try
+                            {
+                                smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                                smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+                                await smtp.SendAsync(message);
+                                smtp.Disconnect(true);
+                                return true;
+                            }
+                            catch (Exception ex)
+                            {
+                                // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
+                                System.IO.Directory.CreateDirectory("mailssave");
+                                var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
+                                await message.WriteToAsync(emailsavefile);
+                                smtp.Disconnect(true);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }
 

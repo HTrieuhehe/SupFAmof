@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response
 {
-    public class ReportResponse
-    {
-        public double? TotalSalary { get => TotalSalary; set => TotalSalary = value; }
-        public ICollection<AccountReportResponse>? Reports { get; set; }
-    }
-
     public class AccountReportResponse
     {
         public int Id { get; set; }

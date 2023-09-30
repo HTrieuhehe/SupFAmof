@@ -40,7 +40,6 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostTrainingCertificate> PostTrainingCertificates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
-        public virtual DbSet<TrainingPosition> TrainingPositions { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<staff> staff { get; set; } = null!;
 
@@ -358,11 +357,6 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostAttendee_Post");
-
-                entity.HasOne(d => d.TrainingPosition)
-                    .WithMany(p => p.PostAttendees)
-                    .HasForeignKey(d => d.TrainingPositionId)
-                    .HasConstraintName("FK_PostAttendee_TrainingPosition");
             });
 
             modelBuilder.Entity<PostCategory>(entity =>
@@ -435,6 +429,7 @@ namespace SupFAmof.Data.Entity
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostRegistrationDetail_Post");
 
                 entity.HasOne(d => d.PostRegistration)
@@ -509,37 +504,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<TrainingPosition>(entity =>
-            {
-                entity.ToTable("TrainingPosition");
-
-                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
-
-                entity.Property(e => e.Location).HasMaxLength(500);
-
-                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
-
-                entity.Property(e => e.PositionName).HasMaxLength(50);
-
-                entity.Property(e => e.SchoolName).HasMaxLength(100);
-
-                entity.HasOne(d => d.Document)
-                    .WithMany(p => p.TrainingPositions)
-                    .HasForeignKey(d => d.DocumentId)
-                    .HasConstraintName("FK_TrainingPosition_DocumentTemplate");
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.TrainingPositions)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TrainingPosition_Post");
-
-                entity.HasOne(d => d.TrainingCertificate)
-                    .WithMany(p => p.TrainingPositions)
-                    .HasForeignKey(d => d.TrainingCertificateId)
-                    .HasConstraintName("FK_TrainingPosition_TranningCertificate");
             });
 
             modelBuilder.Entity<Transaction>(entity =>

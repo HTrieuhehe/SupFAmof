@@ -8,7 +8,6 @@ namespace SupFAmof.Data.Entity
         public DocumentTemplate()
         {
             PostPositions = new HashSet<PostPosition>();
-            TrainingPositions = new HashSet<TrainingPosition>();
         }
 
         public int Id { get; set; }
@@ -18,6 +17,5 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
 
         public virtual ICollection<PostPosition> PostPositions { get; set; }
-        public virtual ICollection<TrainingPosition> TrainingPositions { get; set; }
     }
 }

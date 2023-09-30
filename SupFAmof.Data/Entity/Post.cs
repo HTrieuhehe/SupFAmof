@@ -13,7 +13,6 @@ namespace SupFAmof.Data.Entity
             PostPositions = new HashSet<PostPosition>();
             PostRegistrationDetails = new HashSet<PostRegistrationDetail>();
             PostRgupdateHistories = new HashSet<PostRgupdateHistory>();
-            TrainingPositions = new HashSet<TrainingPosition>();
         }
 
         public int Id { get; set; }
@@ -39,6 +38,5 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<PostPosition> PostPositions { get; set; }
         public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         public virtual ICollection<PostRgupdateHistory> PostRgupdateHistories { get; set; }
-        public virtual ICollection<TrainingPosition> TrainingPositions { get; set; }
     }
 }

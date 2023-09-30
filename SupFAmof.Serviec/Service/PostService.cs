@@ -210,34 +210,6 @@ namespace SupFAmof.Service.Service
                     }
                 }
 
-                foreach (var item in request.TrainingPositions)
-                {
-                    //validate Certificate
-                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
-
-                    if (item.TrainingCertificateId > 0 && checkCerti == null)
-                    {
-                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
-                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
-                    }
-
-                    //validate Time
-                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
-                    {
-                        throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
-                    }
-
-                    if (item.TimeTo.HasValue)
-                    {
-                        if (item.TimeTo <= item.TimeFrom)
-                        {
-                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
-                                             PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
-                        }
-                    }
-                }
-
                 var post = _mapper.Map<Post>(request);
 
                 post.PostCode = Ultils.GenerateRandomCode();
@@ -400,26 +372,6 @@ namespace SupFAmof.Service.Service
                         item.Salary = checkPosition.Salary;
                     }
 
-                    foreach (var item in request.TrainingPositions)
-                    {
-                        var checkPosition = request.TrainingPositions
-                                    .FirstOrDefault(x => x.Id == item.Id);
-                        if (checkPosition == null)
-                        {
-                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
-                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
-                        }
-
-                        item.Id = item.Id;
-                        item.PositionName = checkPosition.PositionName;
-                        item.SchoolName = checkPosition.SchoolName;
-                        item.Location = checkPosition.Location;
-                        item.Latitude = checkPosition.Latitude;
-                        item.Longtitude = checkPosition.Longtitude;
-                        item.Amount = checkPosition.Amount;
-                        item.Salary = checkPosition.Salary;
-                    }
-
                     await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
                     await _unitOfWork.CommitAsync();
 
@@ -439,27 +391,6 @@ namespace SupFAmof.Service.Service
                 {
                     var checkPosition = request.PostPositions
                                 .FirstOrDefault(x => x.Id == item.Id);
-                    if (checkPosition == null)
-                    {
-                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
-                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
-                    }
-
-                    item.Id = item.Id;
-                    item.PositionName = checkPosition.PositionName;
-                    item.SchoolName = checkPosition.SchoolName;
-                    item.Location = checkPosition.Location;
-                    item.Latitude = checkPosition.Latitude;
-                    item.Longtitude = checkPosition.Longtitude;
-                    item.Amount = checkPosition.Amount;
-                    item.Salary = checkPosition.Salary;
-                }
-
-                foreach (var item in request.TrainingPositions)
-                {
-                    var checkPosition = request.TrainingPositions
-                                .FirstOrDefault(x => x.Id == item.Id);
-
                     if (checkPosition == null)
                     {
                         throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
@@ -582,21 +513,6 @@ namespace SupFAmof.Service.Service
                             }
                         }
 
-                        totalCount = 0;
-
-                        foreach (var itemDetail in item.TrainingPositions)
-                        {
-                            //vào từng obj của attendee để count
-                            foreach (var attendeeDetail in totalPostAttendee)
-                            {
-                                if (attendeeDetail.PositionId == itemDetail.Id)
-                                {
-                                    totalCount++;
-                                }
-                                itemDetail.RegisterAmount = totalCount;
-                            }
-                        }
-
                         premiumPostResponseList.Add(item);
                     }
 
@@ -644,20 +560,6 @@ namespace SupFAmof.Service.Service
                             itemDetail.RegisterAmount = totalCount;
                         }
                     }
-                    totalCount = 0;
-                    foreach (var itemDetail in item.TrainingPositions)
-                    {
-                        //vào từng obj của attendee để count
-                        foreach (var attendeeDetail in totalPostAttendee)
-                        {
-                            if (attendeeDetail.PositionId == itemDetail.Id)
-                            {
-                                totalCount++;
-                            }
-                            itemDetail.RegisterAmount = totalCount;
-                        }
-                    }
-
                     postResponseList.Add(item);
                 }
 

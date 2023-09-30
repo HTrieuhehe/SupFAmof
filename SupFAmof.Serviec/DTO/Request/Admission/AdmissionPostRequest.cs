@@ -30,7 +30,6 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public DateTime? UpdateAt { get; set; }
 
         public List<CreatePostPositionRequest>? PostPositions { get; set; }
-        public List<CreatePostTrainingPositionRequest>? TrainingPositions { get; set;}
     }
 
     public class CreatePostPositionRequest
@@ -64,37 +63,6 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public double Salary { get; set; }
     }
 
-    public class CreatePostTrainingPositionRequest
-    {
-        //public int Id { get; set; }
-        //public int PostId { get; set; }
-        public int TrainingCertificateId { get; set; }
-        public int? DocumentId { get; set; }
-        public string? PositionName { get; set; }
-
-        [Required]
-        public string? SchoolName { get; set; }
-
-        [Required]
-        public string? Location { get; set; }
-
-        [Required]
-        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
-        public string? Latitude { get; set; }
-
-        [Required]
-        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
-        public string? Longitude { get; set; }
-
-        public TimeSpan TimeFrom { get; set; }
-        public TimeSpan? TimeTo { get; set; }
-        public bool? IsBusService { get; set; }
-        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        public int Amount { get; set; }
-
-        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
-        public double Salary { get; set; }
-    }
 
     public class UpdatePostRequest
     {
@@ -106,38 +74,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? PostImg { get; set; }
 
         public List<UpdatePostPositionRequest>? PostPositions { get; set; }
-        public List<UpdatePostTrainingPositionRequest>? TrainingPositions { get; set; }
     }
 
     public class UpdatePostPositionRequest
-    {
-        [Required]
-        [Int]
-        public int Id { get; set; }
-
-        [Required]
-        public string? PositionName { get; set; }
-
-        [Required]
-        public string? SchoolName { get; set; }
-
-        [Required]
-        public string? Location { get; set; }
-
-        [Required]
-        public decimal? Latitude { get; set; }
-
-        [Required]
-        public decimal? Longtitude { get; set; }
-
-        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        public int Amount { get; set; }
-
-        [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]
-        public double Salary { get; set; }
-    }
-
-    public class UpdatePostTrainingPositionRequest
     {
         [Required]
         [Int]

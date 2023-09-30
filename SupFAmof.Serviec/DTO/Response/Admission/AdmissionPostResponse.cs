@@ -26,6 +26,5 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public AccountResponse? Account { get; set; }
         public PostCategoryResponse? PostCategory { get; set; }
         public ICollection<PostPositionResponse>? PostPositions { get; set; }
-        public ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
     }
 }

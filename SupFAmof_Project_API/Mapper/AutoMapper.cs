@@ -129,25 +129,18 @@ namespace SupFAmof.API.Mapper
             #region Admission Post
             CreateMap<Post, AdmissionPostResponse>().ReverseMap();
             CreateMap<Post, PostPositionResponse>().ReverseMap();
-            CreateMap<Post, TrainingPositionResponse>().ReverseMap();
 
             CreateMap<PostPosition, PostPositionResponse>().ReverseMap();
-            CreateMap<TrainingPosition, TrainingPositionResponse>().ReverseMap();
 
             CreateMap<CreatePostRequest, Post>();
 
             CreateMap<CreatePostPositionRequest, PostPosition>();
-            CreateMap<CreatePostTrainingPositionRequest, TrainingPosition>();
 
             CreateMap<UpdatePostRequest, Post>()
-              .ForMember(dest => dest.TrainingPositions, opt => opt.Ignore())
               .ForMember(dest => dest.PostPositions, opt => opt.MapFrom(src => src.PostPositions))
               .ReverseMap();
 
             CreateMap<UpdatePostPositionRequest, PostPosition>()
-              .ReverseMap();
-
-            CreateMap<UpdatePostTrainingPositionRequest, TrainingPosition>()
               .ReverseMap();
 
             #endregion

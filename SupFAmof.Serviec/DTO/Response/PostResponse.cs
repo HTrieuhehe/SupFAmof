@@ -29,6 +29,5 @@ namespace SupFAmof.Service.DTO.Response
         public virtual AccountResponse? Account { get; set; }
         public virtual PostCategoryResponse? PostCategory { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }
-        public virtual ICollection<TrainingPositionResponse>? TrainingPositions { get; set; }
     }
 }

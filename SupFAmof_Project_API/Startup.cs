@@ -132,6 +132,7 @@ namespace SupFAmof.API
             builder.RegisterType<SendMailService>().As<ISendMailService>();
             builder.RegisterType<CheckInService>().As<ICheckInService>();
             builder.RegisterType<AccountReportService>().As<IAccountReportService>();
+            builder.RegisterType<AccountBannedService>().As<IAccountBannedService>();
 
 
             //Dependency injection for redis

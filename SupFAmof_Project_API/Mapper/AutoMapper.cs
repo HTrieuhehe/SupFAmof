@@ -169,6 +169,12 @@ namespace SupFAmof.API.Mapper
             CreateMap<CheckInRequest, CheckAttendance>().ReverseMap();
             CreateMap<CheckOutRequest, CheckAttendance>().ReverseMap();
             #endregion
+
+            #region Account Banned
+            CreateMap<AccountBanned, AccountBannedResponse>().ReverseMap();
+            CreateMap<CreateAccountBannedRequest, AccountBanned>().ReverseMap();
+            CreateMap<UpdateAccountBannedRequest, AccountBanned>().ReverseMap();
+            #endregion
         }
     }
 }

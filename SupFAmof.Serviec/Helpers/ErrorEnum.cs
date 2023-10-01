@@ -286,10 +286,32 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Already Check in")]
             ALREADY_CHECK_IN = 4005,
-            
+
             //400
             [Display(Name = "Distance too far")]
             DISTANCE_TOO_FAR = 4006,
+        }
+
+        public enum AccountBannedErrorEnum
+        {
+            //404
+            [Display(Name = "Banned Information Not Found!")]
+            NOT_FOUND_BANNED_ACCOUNT = 4041,
+
+            //403
+            [Display(Name = "Only Admission Officer have permission to post can ban account")]
+            ADMISSION_FORBIDDEN = 4031,
+
+
+            //403
+            [Display(Name = "Account has been ban until")]
+            CREATE_BANNED_INVALID = 4001,
+
+
+            //403
+            [Display(Name = "Ending Day must equal or higher than")]
+            DAY_END_INVALID = 4002,
+
         }
     }
 }

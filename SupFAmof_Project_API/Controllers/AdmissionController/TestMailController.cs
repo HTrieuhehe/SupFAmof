@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.Service.ServiceInterface;
-using AutoMapper.Internal;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -35,7 +35,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         [HttpPost("test-send-email-booking")]
         public async Task<ActionResult> SendEmail
-                  ([FromBody] MailBookingRequest request)
+                  ([FromBody] List<MailBookingRequest> request)
         {
             try
             {

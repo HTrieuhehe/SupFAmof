@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Net;
 using ServiceStack;
 using Service.Commons;
 using ServiceStack.Script;
@@ -6,6 +7,7 @@ using SupFAmof.Data.Entity;
 using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Collections.Generic;
+using NetTopologySuite.Geometries;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
@@ -24,11 +26,13 @@ namespace SupFAmof.Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ISendMailService sendMailService;
 
-        public PostRegistrationService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PostRegistrationService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService sendMailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            this.sendMailService = sendMailService;
         }
 
         public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging)
@@ -615,6 +619,7 @@ namespace SupFAmof.Service.Service
                 _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
                 await AddUserToPostAttendee(listToUpdate);
                 await _unitOfWork.CommitAsync();
+                await sendMailService.SendEmailBooking(MailEntity(listToUpdate));
                 var resultMap = new Dictionary<int, List<PostRegistration>>
         {
             { 1, updatedEntities },
@@ -679,10 +684,33 @@ namespace SupFAmof.Service.Service
 
         }
 
+        private List<MailBookingRequest> MailEntity(List<PostRegistration> request)
+        {
+            List<MailBookingRequest> listMail = new List<MailBookingRequest>();
+            foreach (PostRegistration postRegistration in request)
+            {
+                var postPosition = _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefault(x => x.Id == postRegistration.PostRegistrationDetails.First().PositionId);
 
+                MailBookingRequest mailBookingRequest = new MailBookingRequest
+                {
+                    Email = postRegistration.Account?.Email ?? "N/A",
+                    RegistrationCode = postRegistration.RegistrationCode ?? "N/A",
+                    PostName = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.PostCategory?.PostCategoryType ?? "N/A",
+                    DateFrom = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.DateFrom.ToString() ?? "N/A",
+                    DateTo = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.DateTo?.ToString() ?? "N/A",
+                    PositionName = postPosition?.PositionName ?? "N/A",
+                    TimeFrom = postPosition?.TimeFrom.ToString() ?? "N/A",
+                    TimeTo = postPosition?.TimeTo?.ToString() ?? "N/A",
+                    SchoolName = postPosition?.SchoolName ?? "N/A",
+                    Location = postPosition?.Location ?? "N/A",
+                    Note = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Note ?? "N/A"
+                };
+
+                listMail.Add(mailBookingRequest);
+            }
+            return listMail;
+        }
 
     }
-
-
 
 }

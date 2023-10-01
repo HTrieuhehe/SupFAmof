@@ -286,10 +286,16 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Already Check in")]
             ALREADY_CHECK_IN = 4005,
-            
+
             //400
             [Display(Name = "Distance too far")]
             DISTANCE_TOO_FAR = 4006,
+        }
+        public enum MailErrorEnum
+        {
+            //400
+            [Display(Name = "Failed to send email")]
+            SEND_MAIL_FAIL = 4001,
         }
     }
 }

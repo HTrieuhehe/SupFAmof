@@ -5,6 +5,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface ISendMailService
     {
        Task<bool> SendEmailVerification(MailVerificationRequest request);
-       Task<bool> SendEmailBooking(MailBookingRequest request);
+       Task<bool> SendEmailBooking(List<MailBookingRequest> request);
     }
 }

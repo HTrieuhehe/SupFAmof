@@ -1,13 +1,14 @@
 ﻿using MimeKit;
 using MailKit;
 using MailKit.Security;
+using Org.BouncyCastle.Cms;
+using NTQ.Sdk.Core.Utilities;
 using Castle.Core.Configuration;
 using SupFAmof.Service.DTO.Request;
-using Microsoft.Extensions.Configuration;
-using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
-using NTQ.Sdk.Core.Utilities;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.Service.Service
 {
@@ -22,15 +23,18 @@ namespace SupFAmof.Service.Service
             _mailPaths = mailPaths.Value;
         }
 
-        public async Task<bool> SendEmailBooking(MailBookingRequest request)
+        public async Task<bool> SendEmailBooking(List<MailBookingRequest> request)
         {
             try
             {
                 var message = new MimeMessage();
                 message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
                 message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
-                message.To.Add(MailboxAddress.Parse(request.Email));
-                message.Subject = request.Subject;
+                message.Subject = "Booking Confirmation";
+
+                foreach (var recipient in request)
+                {
+                    message.To.Add(MailboxAddress.Parse(recipient.Email));
 
                 if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.BookingMail.GetDisplayName(), out string value))
                 {
@@ -42,16 +46,16 @@ namespace SupFAmof.Service.Service
                     if (request != null)
                     {
                         bodyBuilder.HtmlBody = htmlBody
-                            .Replace("{code}", request.RegistrationCode.ToString())
-                            .Replace("{name}", request.PostName.ToString())
-                            .Replace("{dateFrom}", request.DateFrom.ToString())
-                            .Replace("{dateTo}", request.DateTo.ToString())
-                            .Replace("{positionName}", request.PositionName.ToString())
-                            .Replace("{TimeFrom}", request.TimeFrom.ToString())
-                            .Replace("{Timeto}", request.TimeTo.ToString())
-                            .Replace("{schoolName}", request.SchoolName.ToString())
-                            .Replace("{location}", request.Location.ToString())
-                            .Replace("{note}", request.Note.ToString());
+                            .Replace("{code}", recipient.RegistrationCode.ToString())
+                            .Replace("{name}", recipient.PostName.ToString())
+                            .Replace("{dateFrom}", recipient.DateFrom.ToString())
+                            .Replace("{dateTo}", recipient.DateTo.ToString())
+                            .Replace("{positionName}", recipient.PositionName.ToString())
+                            .Replace("{TimeFrom}", recipient.TimeFrom.ToString())
+                            .Replace("{Timeto}", recipient.TimeTo.ToString())
+                            .Replace("{schoolName}", recipient.SchoolName.ToString())
+                            .Replace("{location}", recipient.Location.ToString())
+                            .Replace("{note}", recipient.Note.ToString());
 
                         message.Body = bodyBuilder.ToMessageBody();
                         // dùng SmtpClient của MailKit
@@ -63,7 +67,6 @@ namespace SupFAmof.Service.Service
                             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
                             await smtp.SendAsync(message);
                             smtp.Disconnect(true);
-                            return true;
                         }
                         catch (Exception ex)
                         {
@@ -76,7 +79,9 @@ namespace SupFAmof.Service.Service
                         }
                     }
                 }
-                return false;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -96,7 +101,7 @@ namespace SupFAmof.Service.Service
 
                 if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.VerificationMail.GetDisplayName(), out string value))
                 {
-                    string? htmlBody = System.IO.File.ReadAllText(value);
+                    string? htmlBody = await System.IO.File.ReadAllTextAsync(value);
 
                     // Create a multipart/alternative message body to support both plain text and HTML
                     var bodyBuilder = new BodyBuilder();

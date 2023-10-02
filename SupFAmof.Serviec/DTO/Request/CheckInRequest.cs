@@ -20,7 +20,7 @@ namespace SupFAmof.Service.DTO.Request
         [Range(1, int.MaxValue, ErrorMessage = "PositionId must be greater than 0.")]
         public int PositionId { get; set; }
 
-        public decimal? Longitude { get; set; }
+        public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
     }
 

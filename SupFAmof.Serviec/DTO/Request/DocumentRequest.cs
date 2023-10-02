@@ -8,11 +8,11 @@ namespace SupFAmof.Service.DTO.Request
     public class DocumentRequest
     {
         [Required(ErrorMessage = "DocName is required.")]
-        public string DocName { get; set; }
+        public string? DocName { get; set; }
 
         [Required(ErrorMessage = "DocUrl is required.")]
         [Url(ErrorMessage = "DocUrl must be a valid URL.")]
-        public string DocUrl { get; set; }
+        public string? DocUrl { get; set; }
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentTime();
 

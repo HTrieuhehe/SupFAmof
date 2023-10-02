@@ -12,30 +12,29 @@ namespace SupFAmof.Service.DTO.Request.Admission
 {
     public class CreatePostRequest
     {
-        //public int Id { get; set; }
-        //public int AccountId { get; set; }
+        [Required]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "PostCategoryId must contain only numeric characters.")]
         public int PostCategoryId { get; set; }
-        //public string? PostCode { get; set; }
+
+        [Required]
         public string? PostDescription { get; set; }
+
+
         public string? PostImg { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Priority must be greater or equal 0")]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "PostCategoryId must contain only numeric characters.")]
         public int Priority { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
         public bool IsPremium { get; set; }
-        //public int Status { get; set; }
-        //public bool AttendanceComplete { get; set; }
-        //public DateTime CreateAt { get; set; }
-        //public DateTime? UpdateAt { get; set; }
 
         public List<CreatePostPositionRequest>? PostPositions { get; set; }
     }
 
     public class CreatePostPositionRequest
     {
-        //public int Id { get; set; }
-        //public int PostId { get; set; }
+
         public int? TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }
         public string? PositionName { get; set; }

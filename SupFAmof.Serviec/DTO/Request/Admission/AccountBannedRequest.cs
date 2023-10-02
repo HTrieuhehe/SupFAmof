@@ -10,42 +10,27 @@ namespace SupFAmof.Service.DTO.Request.Admission
 {
     public class CreateAccountBannedRequest
     {
-        //public int Id { get; set; }
-
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "AccountIdBanned must be a positive integer.")]
         public int AccountIdBanned { get; set; }
 
-        //public int BannedPersonId { get; set; }
-
-       
-        //public DateTime DayStart { get; set; }
-
         [Required]
+        [DataType(DataType.DateTime, ErrorMessage = "DayEnd must be a valid DateTime.")]
         public DateTime DayEnd { get; set; }
 
         [Required]
         [MaxLength(256, ErrorMessage = "Note cannot exceed 256 characters.")]
         public string? Note { get; set; }
-
-        //public bool IsActive { get; set; }
     }
 
     public class UpdateAccountBannedRequest
     {
-        //public int Id { get; set; }
-        //[Required]
-        //[Range(1, int.MaxValue, ErrorMessage = "AccountIdBanned must be a positive integer.")]
-        //public int AccountIdBanned { get; set; }
-        //public int BannedPersonId { get; set; }
-        //public DateTime DayStart { get; set; }
-        // public DateTime DayEnd { get; set; }
-
         [Required]
         [MaxLength(256, ErrorMessage = "Note cannot exceed 256 characters.")]
         public string? Note { get; set; }
 
         [Required]
+        [Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
         public bool IsActive { get; set; }
     }
 }

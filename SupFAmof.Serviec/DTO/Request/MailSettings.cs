@@ -9,11 +9,21 @@ namespace SupFAmof.Service.DTO.Request
 {
     public class MailSettings
     {
+        [Required(ErrorMessage = "Mail is required.")]
+        [EmailAddress(ErrorMessage = "Mail must be a valid email address.")]
         public string? Mail { get; set; }
-        public string? DisplayName { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
         public string? Password { get; set; }
+
+        [Required(ErrorMessage = "Host is required.")]
         public string? Host { get; set; }
+
+        [Required(ErrorMessage = "Port is required.")]
+        [Range(1, 65535, ErrorMessage = "Port must be a valid port number.")]
         public int Port { get; set; }
+
+        public string? DisplayName { get; set; }
     }
 
     public class MailPaths
@@ -23,10 +33,11 @@ namespace SupFAmof.Service.DTO.Request
 
     public class MailVerificationRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Email must be a valid email address.")]
         public string? Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Subject is required.")]
         public string? Subject { get; set; }
 
         public int Code { get; set; }

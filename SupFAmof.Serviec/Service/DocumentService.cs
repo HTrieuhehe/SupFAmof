@@ -33,7 +33,7 @@ namespace SupFAmof.Service.Service
             var listDocument = _unitOfWork.Repository<DocumentTemplate>().GetAll()
                                           .ProjectTo<AdmissionDocumentResponse>(_mapper.ConfigurationProvider)
                                           .PagingQueryable(paging.Page, paging.PageSize,
-                                           Constants.LimitPaging, Constants.DefaultPaging); ;
+                                           Constants.LimitPaging, Constants.DefaultPaging);
             if (listDocument.Item2 == null)
             {
                 return new BaseResponsePagingViewModel<AdmissionDocumentResponse>()

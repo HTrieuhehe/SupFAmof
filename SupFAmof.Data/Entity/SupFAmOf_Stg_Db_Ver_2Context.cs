@@ -118,6 +118,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.DayStart).HasColumnType("date");
 
+                entity.Property(e => e.Note).HasMaxLength(256);
+
                 entity.HasOne(d => d.BannedPerson)
                     .WithMany(p => p.AccountBanneds)
                     .HasForeignKey(d => d.BannedPersonId)

@@ -610,6 +610,31 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> AdmissionSearchPost(int accountId, string searchPost)
+        {
+            try
+            {
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                        .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
+                                        .Where(x => x.PostCode.Contains(searchPost) && x.AccountId == accountId);
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (ErrorResponse ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
     }
 }

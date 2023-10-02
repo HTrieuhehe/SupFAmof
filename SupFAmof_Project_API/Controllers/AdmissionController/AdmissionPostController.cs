@@ -219,5 +219,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Get Post By Code 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> SearchPost
+        ([FromQuery] string searchPost, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.AdmissionSearchPost(account.Id, searchPost);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

@@ -1,9 +1,13 @@
-﻿using System;
+﻿using SupFAmof.Data.Entity;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SupFAmof.Data.Entity
+namespace SupFAmof.Service.DTO.Response.Admission
 {
-    public partial class AccountBanned
+    public class AccountBannedResponse
     {
         public int Id { get; set; }
         public int AccountIdBanned { get; set; }
@@ -13,6 +17,6 @@ namespace SupFAmof.Data.Entity
         public string? Note { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual Account BannedPerson { get; set; } = null!;
+        public virtual AccountResponse? BannedPerson { get; set; }
     }
 }

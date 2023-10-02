@@ -1,10 +1,11 @@
 ﻿using Autofac;
+using Coravel;
 using FirebaseAdmin;
 using System.Reflection;
 using ServiceStack.Redis;
-using SupFAmof.API.Mapper;
-using StackExchange.Redis;
 using Reso.Core.Extension;
+using StackExchange.Redis;
+using SupFAmof.API.Mapper;
 using SupFAmof.Data.Redis;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.AppStart;
@@ -15,7 +16,6 @@ using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
 using SupFAmof.Data.MakeConnection;
 using SupFAmof.Service.DTO.Request;
-using Microsoft.Extensions.DependencyInjection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -109,6 +109,10 @@ namespace SupFAmof.API
                 Credential = GoogleCredential.FromFile(pathToKey)
             });
             #endregion
+            #region Coravel
+            services.AddScheduler();
+            services.AddScoped<Service.Service.TaskScheduler>();
+            #endregion
 
         }
 
@@ -134,6 +138,7 @@ namespace SupFAmof.API
             builder.RegisterType<AccountReportService>().As<IAccountReportService>();
 
 
+
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();
 
@@ -150,6 +155,11 @@ namespace SupFAmof.API
         public void Configure(IApplicationBuilder app)
         {
             //app.ConfigMigration<>();
+            var provider = app.ApplicationServices;
+            provider.UseScheduler(scheduler =>
+            {
+                scheduler.Schedule<Service.Service.TaskScheduler>().EveryMinute();
+            });
             app.UseCors(MyAllowSpecificOrigins);
             app.UseExceptionHandler("/error");
             app.UseHttpsRedirection();

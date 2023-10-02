@@ -34,16 +34,16 @@ namespace SupFAmof.Service.DTO.Request.Admission
     public class UpdateAccountBannedRequest
     {
         //public int Id { get; set; }
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "AccountIdBanned must be a positive integer.")]
-        public int AccountIdBanned { get; set; }
+        //[Required]
+        //[Range(1, int.MaxValue, ErrorMessage = "AccountIdBanned must be a positive integer.")]
+        //public int AccountIdBanned { get; set; }
         //public int BannedPersonId { get; set; }
         //public DateTime DayStart { get; set; }
         // public DateTime DayEnd { get; set; }
 
         [Required]
         [MaxLength(256, ErrorMessage = "Note cannot exceed 256 characters.")]
-        public bool Note { get; set; }
+        public string? Note { get; set; }
 
         [Required]
         public bool IsActive { get; set; }

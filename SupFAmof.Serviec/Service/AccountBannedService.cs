@@ -62,7 +62,7 @@ namespace SupFAmof.Service.Service
                 var currentTime = Ultils.GetCurrentTime();
 
                 //find if there is any banned day in range
-                var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentTime && x.DayStart <= request.DayEnd)
+                var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentTime && x.DayStart <= request.DayEnd);
 
                 if (checkBanned != null)
                 {
@@ -70,6 +70,35 @@ namespace SupFAmof.Service.Service
                                                    AccountBannedErrorEnum.CREATE_BANNED_INVALID.GetDisplayName()
                                                    + $": {checkBanned.DayEnd}");
                 }
+
+                if (bannedAttempt == 0)
+                {
+                    if (request.DayEnd < currentTime.AddDays(7))
+                    {
+                        throw new ErrorResponse(400, (int)AccountBannedErrorEnum.DAY_END_INVALID,
+                                                       AccountBannedErrorEnum.DAY_END_INVALID.GetDisplayName()
+                                                       + $": {currentTime.AddDays(7)} days because the account has been banned {bannedAttempt} times");
+                    }
+
+                    var accountBannedMappingAfter = _mapper.Map<AccountBanned>(request);
+                    accountBannedMappingAfter.BannedPersonId = accountId;
+                    accountBannedMappingAfter.DayStart = currentTime;
+                    accountBannedMappingAfter.IsActive = true;
+
+                    await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMappingAfter);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AccountBannedResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AccountBannedResponse>(accountBannedMappingAfter)
+                    };
+                }    
 
                 else if (request.DayEnd < currentTime.AddDays(7 * bannedAttempt))
                 {
@@ -103,28 +132,32 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId)
+        public async Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
         {
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                                .FirstOrDefault(x => x.AccountIdBanned == accountId);
+                                                .ProjectTo<AccountBannedResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.AccountIdBanned == accountId)
+                                                .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                                                
 
-                if(accountBanned == null)
+                if(!accountBanned.Item2.Any())
                 {
-                    throw new ErrorResponse(400, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
+                    throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
                                                     AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
                 }
 
-                return new BaseResponseViewModel<AccountBannedResponse>()
+                return new BaseResponsePagingViewModel<AccountBannedResponse>()
                 {
-                    Status = new StatusViewModel()
+                    Metadata = new PagingsMetadata()
                     {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = accountBanned.Item1
                     },
-                    Data = _mapper.Map<AccountBannedResponse>(accountBanned)
+                    Data = accountBanned.Item2.ToList(),
                 };
             }
             catch(Exception ex)

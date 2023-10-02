@@ -14,6 +14,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public int BannedPersonId { get; set; }
         public DateTime DayStart { get; set; }
         public DateTime DayEnd { get; set; }
+        public string? Note { get; set; }
         public bool IsActive { get; set; }
 
         public virtual AccountResponse? BannedPerson { get; set; }

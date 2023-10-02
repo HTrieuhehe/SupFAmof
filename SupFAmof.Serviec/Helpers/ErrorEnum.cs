@@ -313,5 +313,12 @@ namespace SupFAmof.Service.Helpers
             DAY_END_INVALID = 4002,
 
         }
+
+        public enum MailErrorEnum
+        {
+            //400
+            [Display(Name = "Failed to send email")]
+            SEND_MAIL_FAIL = 4001,
+        }
     }
 }

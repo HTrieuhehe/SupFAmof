@@ -180,6 +180,12 @@ namespace SupFAmof.API.Mapper
             .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.PostRegistrationDetails.FirstOrDefault().Post))
             .ReverseMap();
             #endregion
+
+            #region Account Banned
+            CreateMap<AccountBanned, AccountBannedResponse>().ReverseMap();
+            CreateMap<CreateAccountBannedRequest, AccountBanned>().ReverseMap();
+            CreateMap<UpdateAccountBannedRequest, AccountBanned>().ReverseMap();
+            #endregion
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SupFAmof.Service.DTO.Request.Account
         [MaxLength(225, ErrorMessage = "Address cannot exceed 225 characters.")]
         public string? Address { get; set; }
 
-        [DataType(DataType.DateTime, ErrorMessage = "IdentityIssueDate must be a valid DateTime.")]
+        //[DataType(DataType.DateTime, ErrorMessage = "IdentityIssueDate must be a valid DateTime.")]
         public DateTime? IdentityIssueDate { get; set; }
 
         [MaxLength(100, ErrorMessage = "PlaceOfIssue cannot exceed 100 characters.")]

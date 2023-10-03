@@ -17,7 +17,7 @@ namespace SupFAmof.Service.DTO.Request.Account
         [MaxLength(15, ErrorMessage = "Phone cannot exceed 15 characters.")]
         public string? Phone { get; set; }
 
-        [DataType(DataType.DateTime, ErrorMessage = "DateOfBirth must be a valid DateTime.")]
+        //[DataType(DataType.DateTime, ErrorMessage = "DateOfBirth must be a valid DateTime.")]
         public DateTime? DateOfBirth { get; set; }
 
         public string? ImgUrl { get; set; }

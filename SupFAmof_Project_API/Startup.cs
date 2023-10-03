@@ -140,6 +140,7 @@ namespace SupFAmof.API
             builder.RegisterType<AccountBannedService>().As<IAccountBannedService>();
 
 
+
             //Dependency injection for redis
             builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();
 

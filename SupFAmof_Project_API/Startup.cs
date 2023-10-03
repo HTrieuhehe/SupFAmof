@@ -117,9 +117,10 @@ namespace SupFAmof.API
             // Register your own things directly with Autofac, like:
             //builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
 
-            builder.RegisterGeneric(typeof(UnitOfWork))
-                    .As(typeof(IUnitOfWork))
-                    .InstancePerLifetimeScope();
+            builder.RegisterType<UnitOfWork>()
+                            .AsSelf()
+                            .As<IUnitOfWork>()
+                            .InstancePerLifetimeScope();
 
             builder.RegisterType<RoleService>().As<IRoleService>();
             builder.RegisterType<AccountService>().As<IAccountService>();

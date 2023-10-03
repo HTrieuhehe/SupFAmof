@@ -882,7 +882,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw;
+                throw new Exception(ex.StackTrace, ex);
             }
         }
 

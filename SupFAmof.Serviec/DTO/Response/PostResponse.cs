@@ -26,6 +26,10 @@ namespace SupFAmof.Service.DTO.Response
 
         private int? registerAmount;
         public  int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
+
+        private int? totalAmountPosition;
+        public  int? TotalAmountPosition { get => totalAmountPosition; set => totalAmountPosition = value; }
+
         public virtual AccountResponse? Account { get; set; }
         public virtual PostCategoryResponse? PostCategory { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }

@@ -469,6 +469,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 int totalCount = 0;
+                int totalAmountPosition = 0;
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -498,7 +499,6 @@ namespace SupFAmof.Service.Service
 
                         totalCount = totalPostAttendee.Count();
                         item.RegisterAmount = totalCount;
-                        totalCount = 0;
 
                         foreach (var itemDetail in item.PostPositions)
                         {
@@ -511,8 +511,9 @@ namespace SupFAmof.Service.Service
                                 }
                                 itemDetail.RegisterAmount = totalCount;
                             }
+                            totalAmountPosition += itemDetail.Amount;
                         }
-
+                        item.TotalAmountPosition = totalAmountPosition;
                         premiumPostResponseList.Add(item);
                     }
 
@@ -559,7 +560,9 @@ namespace SupFAmof.Service.Service
                             }
                             itemDetail.RegisterAmount = totalCount;
                         }
+                        totalAmountPosition += itemDetail.Amount;
                     }
+                    item.TotalAmountPosition = totalAmountPosition;
                     postResponseList.Add(item);
                 }
 

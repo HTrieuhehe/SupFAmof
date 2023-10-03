@@ -18,7 +18,7 @@ namespace SupFAmof.Service.DTO.Request.Account
         public string? Phone { get; set; }
 
         //[DataType(DataType.DateTime, ErrorMessage = "DateOfBirth must be a valid DateTime.")]
-        public DateTime? DateOfBirth { get; set; }
+        //public DateTime? DateOfBirth { get; set; }
 
         public string? ImgUrl { get; set; }
 

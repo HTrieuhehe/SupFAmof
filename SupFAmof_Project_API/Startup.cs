@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SupFAmof.API
 {
@@ -55,10 +56,10 @@ namespace SupFAmof.API
             services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(Configuration["Endpoint:RedisEndpoint"]));
             services.AddMemoryCache();
             services.ConfigMemoryCacheAndRedisCache(Configuration["Endpoint:RedisEndpoint"]);
-            services.AddControllersWithViews()
-                .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            );
+            services.AddMvc(option => option.EnableEndpointRouting = false)
+               .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+               .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddControllers(options =>
             {
                 options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));

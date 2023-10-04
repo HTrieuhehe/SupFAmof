@@ -239,7 +239,7 @@ namespace SupFAmof.Service.Service
 
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(AdmissionPostResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(int accountId, AdmissionPostResponse filter, PagingRequest paging)
         {
             try
             {
@@ -248,6 +248,7 @@ namespace SupFAmof.Service.Service
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
                                     .OrderByDescending(x => x.CreateAt)
+                                    .Where(x => x.AccountId == accountId)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 

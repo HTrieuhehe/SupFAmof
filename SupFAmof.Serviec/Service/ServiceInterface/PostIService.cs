@@ -13,7 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IPostService
     {
         #region Admission Post IService
-        Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(AdmissionPostResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(int accountId, AdmissionPostResponse filter, PagingRequest paging);
         Task<BaseResponsePagingViewModel<CollaboratorAccountReponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> GetPostByPostcode(string postCode);
         Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, PagingRequest paging);

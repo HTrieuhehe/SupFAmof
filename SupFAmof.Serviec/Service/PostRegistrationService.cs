@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
-using System.Net;
 using ServiceStack;
 using Service.Commons;
-using ServiceStack.Script;
 using SupFAmof.Data.Entity;
 using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
-using System.Collections.Generic;
-using NetTopologySuite.Geometries;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -281,9 +275,9 @@ namespace SupFAmof.Service.Service
                 PostPosition checkPostPostion = new PostPosition();
 
                 checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.PostRegistrationDetails.First().PostId &&
-                                                                                              x.Id == updateEntity.PostRegistrationDetails.First().PositionId).First();
+                                                                                              x.Id == request.PositionId).First();
 
-                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == updateEntity.PostRegistrationDetails.First().PositionId
+                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == request.PositionId
                                                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
                 if (updateEntity != null && original != null)
                 {
@@ -298,7 +292,7 @@ namespace SupFAmof.Service.Service
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
-                                original.PostRegistrationDetails.First().PositionId = checkPostPostion.Id;
+                                original.PostRegistrationDetails.First().PositionId = request.PositionId;
                                 original.UpdateAt = updateEntity.CreateAt;
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(original);
                                 await _unitOfWork.CommitAsync();

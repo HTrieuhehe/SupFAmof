@@ -77,6 +77,12 @@ namespace SupFAmof.API.Controllers
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
                 var result = await _postRegistrationService.CreatePostRegistration(request);
                 return Ok(result);
             }
@@ -92,11 +98,17 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Cancel success</response>
         /// <response code="400">Failed to Cancel</response>
         [HttpDelete("cancel")]
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int accountId,int postRegistrationId)
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
         {
             try
             {
-                return await _postRegistrationService.CancelPostregistration(accountId ,postRegistrationId);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.CancelPostregistration(account.Id ,postRegistrationId);
             }
             catch (ErrorResponse ex)
             {
@@ -118,12 +130,18 @@ namespace SupFAmof.API.Controllers
         ///     }
         /// <response code="200">Update success</response>
         /// <response code="400">Failed to Update</response>
-        [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int accountId,int postRegistrationId, PostRegistrationUpdateRequest request)
+        [HttpPost("update")]
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {
-                var result = await _postRegistrationService.UpdatePostRegistration(accountId ,postRegistrationId, request);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.UpdatePostRegistration(account.Id ,postRegistrationId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

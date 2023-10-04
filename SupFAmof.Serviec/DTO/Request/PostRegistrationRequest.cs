@@ -34,12 +34,8 @@ namespace SupFAmof.Service.DTO.Request
         public bool? SchoolBusOption { get; set; }
         [JsonIgnore]
         public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentTime();
-        public ICollection<PostRegistrationDetailUpdateRequest>? PostRegistrationDetails { get; set; }
-    }
+        public int PositionId { get; set; }
 
-    public class PostRegistrationDetailUpdateRequest
-    {
-        public int? PositionId { get; set; }
     }
 
     public class AproveRequest

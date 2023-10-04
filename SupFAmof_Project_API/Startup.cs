@@ -116,12 +116,12 @@ namespace SupFAmof.API
         public void ConfigureContainer(ContainerBuilder builder)
         {
             // Register your own things directly with Autofac, like:
-            //builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
 
-            builder.RegisterType<UnitOfWork>()
-                            .AsSelf()
-                            .As<IUnitOfWork>()
-                            .InstancePerLifetimeScope();
+            //builder.RegisterType<UnitOfWork>()
+            //                .AsSelf()
+            //                .As<IUnitOfWork>()
+            //                .InstancePerLifetimeScope();
 
             builder.RegisterType<RoleService>().As<IRoleService>();
             builder.RegisterType<AccountService>().As<IAccountService>();

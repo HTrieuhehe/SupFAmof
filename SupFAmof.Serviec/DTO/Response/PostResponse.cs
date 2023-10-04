@@ -14,6 +14,7 @@ namespace SupFAmof.Service.DTO.Response
         public int AccountId { get; set; }
         public int PostCategoryId { get; set; }
         public string? PostCode { get; set; }
+        public string? PostImg { get; set; }
         public string? PostDescription { get; set; }
         public int Priority { get; set; }
         public DateTime DateFrom { get; set; }

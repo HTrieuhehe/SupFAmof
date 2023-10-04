@@ -832,7 +832,7 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request)
         {
             try
-            {
+                {
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
                 if (account == null)
@@ -866,7 +866,7 @@ namespace SupFAmof.Service.Service
 
                 account.UpdateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<Account>().Update(account, account.Id);
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountResponse>()

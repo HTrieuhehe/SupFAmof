@@ -68,8 +68,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account
         /// </summary>
         /// <returns></returns>
-        //[HttpPut("update")]
-        [HttpPatch("update")]
+        [HttpPut("update")]
         public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateAccount([FromBody] UpdateAccountRequest data)
         {
             try

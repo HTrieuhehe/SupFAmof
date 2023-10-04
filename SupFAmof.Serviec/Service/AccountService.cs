@@ -866,7 +866,7 @@ namespace SupFAmof.Service.Service
 
                 account.UpdateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.Repository<Account>().Update(account, account.Id);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountResponse>()

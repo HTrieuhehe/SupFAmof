@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using SupFAmof.Service.DTO.Request;
 using static SupFAmof.Service.Helpers.Enum;
 
-namespace SupFAmof.Service.Service
+namespace SupFAmof.Service.TaskSchedule
 {
     public class TaskScheduler : IInvocable
     {
@@ -23,7 +23,7 @@ namespace SupFAmof.Service.Service
         {
             MailVerificationRequest request = new MailVerificationRequest
             {
-                Email = "trieuhchse161563@fpt.edu.vn",
+                Email = "vuvanmanh3012@gmail.com",
                 Code = 11111,
                 Subject = " Task scheduling for every 1 minute"
             };
@@ -37,7 +37,7 @@ namespace SupFAmof.Service.Service
 
                 if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.VerificationMail.GetDisplayName(), out string value))
                 {
-                    string? htmlBody = await System.IO.File.ReadAllTextAsync(value);
+                    string? htmlBody = await File.ReadAllTextAsync(value);
 
                     // Create a multipart/alternative message body to support both plain text and HTML
                     var bodyBuilder = new BodyBuilder();
@@ -61,7 +61,7 @@ namespace SupFAmof.Service.Service
                         catch (Exception ex)
                         {
                             // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-                            System.IO.Directory.CreateDirectory("mailssave");
+                            Directory.CreateDirectory("mailssave");
                             var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
                             await message.WriteToAsync(emailsavefile);
                             smtp.Disconnect(true);

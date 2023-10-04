@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SupFAmof.Service.DTO.Request;
@@ -17,6 +18,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<PostRegistrationResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging);
         Task<BaseResponseViewModel<List<PostRegistrationResponse>>> ApproveUpdateRequest(List<int> Ids, bool approve);
         Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId,List<int> postRegistrationIds, bool approve);
+        Task<HashSet<PostHasMemberResponse>> CollabAndPostThatNotRegistered();
     }
 
 }

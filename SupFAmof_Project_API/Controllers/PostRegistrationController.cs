@@ -133,7 +133,19 @@ namespace SupFAmof.API.Controllers
         }
 
 
-
+        [HttpGet]
+        public async Task<ActionResult<HashSet<PostHasMemberResponse>>> GetAccountThatNotRegistered()
+        {
+            try
+            {
+                var result = _postRegistrationService.CollabAndPostThatNotRegistered();
+            return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }
 

@@ -711,6 +711,41 @@ namespace SupFAmof.Service.Service
             return listMail;
         }
 
+
+        public async Task<HashSet<PostHasMemberResponse>> CollabAndPostThatNotRegistered()
+        {
+            var listCollaborator = _unitOfWork.Repository<Account>().GetAll()
+                                                    .Where(x => x.Email.EndsWith("fpt.edu.vn"))
+                                                    .Select(x => x.Email)
+                                                    .ToList();
+
+            var Posts = _unitOfWork.Repository<Post>().GetAll()
+                                                    .Where(x=>x.Priority >= 3 && x.DateFrom > GetCurrentTime())
+                                                    .Include(x => x.PostAttendees).ToList();
+
+            HashSet<PostHasMemberResponse> result = new HashSet<PostHasMemberResponse>();
+            foreach (var post in Posts)
+            {
+                List<string> attendedCollaborators = post.PostAttendees.Select(x => x.Account.Email)
+                                                                    .ToList();
+                List<string> notJoinedByPost = listCollaborator.Except(attendedCollaborators).ToList();
+
+                if (notJoinedByPost.Any())
+                {
+                    
+                    PostHasMemberResponse postHasMemberResponse = new PostHasMemberResponse
+                    {
+                        Post= _mapper.Map<PostResponse>(post),
+                        MembersNotJoined = notJoinedByPost,
+                        MembersJoined = attendedCollaborators
+                    };
+                    result.Add(postHasMemberResponse);
+                }
+            }
+
+            return result;
+        }
+
     }
 
 }

@@ -111,7 +111,7 @@ namespace SupFAmof.API
             #endregion
             #region Coravel
             services.AddScheduler();
-            services.AddScoped<Service.Service.TaskScheduler>();
+            services.AddScoped<Service.TaskSchedule.TaskScheduler>();
             #endregion
 
         }
@@ -158,7 +158,7 @@ namespace SupFAmof.API
             var provider = app.ApplicationServices;
             provider.UseScheduler(scheduler =>
             {
-                scheduler.Schedule<Service.Service.TaskScheduler>().EveryMinute();
+                scheduler.Schedule<Service.TaskSchedule.TaskScheduler>().EveryMinute().Once();
             });
             app.UseCors(MyAllowSpecificOrigins);
             app.UseExceptionHandler("/error");

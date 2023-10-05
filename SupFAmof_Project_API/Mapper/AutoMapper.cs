@@ -79,14 +79,13 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
                 .ReverseMap();
 
-            CreateMap<PostRegistrationDetailRequest, PostRegistrationDetail>().ReverseMap();
+            //CreateMap<PostRegistrationRequest, PostRegistration>()
+            //  .ReverseMap();
             CreateMap<PostRegistrationRequest, PostRegistration>()
-              .ForMember(dest => dest.PostRegistrationDetails, opt =>
-              {
-                  opt.MapFrom(src => src.PostRegistrationDetails);
-              })
-              .ReverseMap();
-
+            .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(src => src.CreateAt))
+            .ForMember(dest => dest.UpdateAt, opt => opt.Ignore())
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.SchoolBusOption, opt => opt.MapFrom(src => src.SchoolBusOption)).ReverseMap();
             CreateMap<PostRegistrationUpdateRequest, PostRegistration>()
                 .ReverseMap();
 

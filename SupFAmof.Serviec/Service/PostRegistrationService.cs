@@ -83,28 +83,27 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
+        public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(int accountId ,PostRegistrationRequest request)
         {
             //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY,CHECK IF USER HAS A TRAINING POSITION 
             try
             {
                 var postRegistration = _mapper.Map<PostRegistration>(request);
-                postRegistration.Status = (int)PostRegistrationStatusEnum.Pending;
-                postRegistration.RegistrationCode = GenerateRandomCode();
-                postRegistration.CreateAt = GetCurrentTime();
-
-                var postDetails = postRegistration.PostRegistrationDetails.First();
-                var positionId = postDetails.PositionId;
-                var postId = postDetails.PostId;
+                postRegistration.AccountId = accountId;
+                postRegistration.PostRegistrationDetails.Add(new PostRegistrationDetail
+                {
+                    PositionId = request.PositionId,
+                    PostId = request.PostId,
+                });
 
                 // Fetch the relevant PostPosition and Post
                 var postPosition = _unitOfWork.Repository<PostPosition>()
                     .GetAll()
-                    .FirstOrDefault(x => x.PostId == postId && x.Id == positionId);
+                    .FirstOrDefault(x => x.Id == request.PositionId && x.PostId == request.PostId);
 
                 var post = _unitOfWork.Repository<Post>()
                     .GetAll()
-                    .FirstOrDefault(x => x.Id == postId);
+                    .FirstOrDefault(x => x.Id == request.PostId);
 
                 if (postPosition == null)
                 {
@@ -119,14 +118,14 @@ namespace SupFAmof.Service.Service
                 // Count the number of registrations for the same position
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
-                    .Count(x => x.PostRegistrationDetails.Any(d => d.PositionId == positionId) &&
+                    .Count(x => x.PostRegistrationDetails.Any(d => d.PositionId == request.PositionId) &&
                                 x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                 // Check for duplicate forms
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
                     .SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId &&
-                                                 x.PostRegistrationDetails.Any(d => d.PostId == postId));
+                                                 x.PostRegistrationDetails.Any(d => d.PostId == request.PostId));
 
                 // Check for existing registrations on the same day
                 var existingEventDate = await _unitOfWork.Repository<PostRegistration>()
@@ -138,26 +137,6 @@ namespace SupFAmof.Service.Service
 
                 if (checkDuplicateForm == null && existingEventDate == null)
                 {
-                    //if (CheckOneDayDifference(postCheckDate.DateFrom, postRegistration.CreateAt, 0) && await CheckPostPositionBus(request))
-                    //{
-                    //    if (checkPostPostion.Amount - countAllRegistrationForm > 0)
-                    //    {
-
-                    //        await _unitOfWork.Repository<PostRegistration>().InsertAsync(postRegistration);
-                    //        await _unitOfWork.CommitAsync();
-                    //    }
-                    //    else
-                    //    {
-                    //        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-                    //                            PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
-                    //    }
-
-                    //}
-                    //else
-                    //{
-                    //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
-                    //                            PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
-                    //}
                     if (post.AccountId == postRegistration.AccountId)
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_CREATOR,

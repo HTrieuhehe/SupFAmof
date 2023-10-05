@@ -83,7 +83,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.CreatePostRegistration(request);
+                var result = await _postRegistrationService.CreatePostRegistration(account.Id,request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

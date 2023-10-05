@@ -175,6 +175,17 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "No registration need to be update")]
             NOT_FOUND_UPDATE_REGISTRATION_REQUEST = 4011,
 
+            //404
+            [Display(Name = "Need certificate to register this position")]
+            NOT_FOUND_CERTIFICATE = 4012,
+
+            //400
+            [Display(Name = "This post is done")]
+             POST_OUTDATED= 4012,
+            //400
+            [Display(Name = "Postion work time is duplicated to one that you are attending")]
+            DUPLICATE_TIME_POSTION = 4013,
+
 
         }
 

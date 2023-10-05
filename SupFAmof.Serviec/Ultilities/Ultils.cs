@@ -13,7 +13,7 @@ namespace SupFAmof.Service.Utilities
         {
             var randomCode = new Random();
 
-            string chars = "0123456789zxcvbnmasdfghjklqwertyuiop";
+            string chars = "0123456789";
             int length = 10;
             return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[randomCode.Next(s.Length)]).ToArray());

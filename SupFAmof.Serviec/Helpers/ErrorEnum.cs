@@ -77,6 +77,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Verify code invalid")]
             VERIFY_CODE_INVALID = 4011,
 
+            //400
+            [Display(Name = "Cannot update multiple time! Try after 5 minutes")]
+            UPDATE_INVALUD = 4012,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,

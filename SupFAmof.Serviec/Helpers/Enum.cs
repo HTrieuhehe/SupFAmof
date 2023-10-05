@@ -68,6 +68,18 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Cancel")]
             Cancel = 4,
+
+            [Display(Name = "Deleted")]
+            Delete = 5
+        }
+
+        public enum PostPositionStatusEnum
+        {
+            [Display(Name = "Activated")]
+            Active = 1,
+
+            [Display(Name = "Deleted")]
+            Delete = 2,
         }
 
         public enum EmailTypeEnum

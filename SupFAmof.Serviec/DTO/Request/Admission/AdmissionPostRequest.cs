@@ -1,4 +1,5 @@
-﻿using Service.Commons;
+﻿using Newtonsoft.Json;
+using Service.Commons;
 using SupFAmof.Data.Entity;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
+
+        [JsonIgnore]
+        public int Status { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }

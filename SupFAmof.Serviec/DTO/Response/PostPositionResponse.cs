@@ -21,6 +21,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
+        public int Status { get; set; }
         public bool? IsBusService { get; set; }
         public int Amount { get; set; }
         public double Salary { get; set; }

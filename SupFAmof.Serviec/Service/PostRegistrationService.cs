@@ -153,6 +153,11 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                             PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                     }
+                    if (!await CheckCertificate(postRegistration))
+                    {
+                        throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                            PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
+                    }
 
                     if (postPosition.Amount - countAllRegistrationForm <= 0)
                     {
@@ -268,6 +273,11 @@ namespace SupFAmof.Service.Service
                                 throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                     PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                             }
+                            if (!await CheckCertificate(updateEntity))
+                            {
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                                    PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
+                            }
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
@@ -289,6 +299,11 @@ namespace SupFAmof.Service.Service
                             {
                                 throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                     PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
+                            }
+                            if (!await CheckCertificate(updateEntity))
+                            {
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                                    PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                             }
                             PostRgupdateHistory entityPostTgupdate = new PostRgupdateHistory();
 
@@ -684,6 +699,27 @@ namespace SupFAmof.Service.Service
             return listMail;
         }
 
+        private async Task<bool> CheckCertificate(PostRegistration request)
+        {
+            var userCertificate = _unitOfWork.Repository<AccountCertificate>()                    
+                .GetAll().Where(x=>x.AccountId == request.AccountId).Select(x=>x.TraningCertificateId).ToList() ?? new List<int>();
+            var positionCertificate = await _unitOfWork.Repository<PostPosition>()
+                                                        .FindAsync(x => x.Id == request.PostRegistrationDetails.First().PositionId);
+            if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if (userCertificate.Count() == 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if(userCertificate.Contains((int)positionCertificate.TrainingCertificateId))
+            {
+                return true;
+            }
+            return false;
+
+        }
     }
 
 }

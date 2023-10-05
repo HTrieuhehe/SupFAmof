@@ -171,6 +171,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "No registration need to be update")]
             NOT_FOUND_UPDATE_REGISTRATION_REQUEST = 4011,
 
+            //404
+            [Display(Name = "Need certificate to register this position")]
+            NOT_FOUND_CERTIFICATE = 4011,
+
 
         }
 

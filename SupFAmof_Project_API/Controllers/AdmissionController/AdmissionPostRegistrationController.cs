@@ -81,19 +81,19 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <response code="200">Approved success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPut("review-joinRequest/")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApprovePostRegistrationRequest(int accountId,[FromBody] List<int> ids, [FromQuery] AproveRequest approve)
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApprovePostRegistrationRequest([FromBody] List<int> ids, [FromQuery] AproveRequest approve)
         {
             try
             {
 
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
 
-                var result = await _postRegistrationService.ApprovePostRegistrationRequest(accountId,ids, approve.IsApproved);
+                var result = await _postRegistrationService.ApprovePostRegistrationRequest(account.Id,ids, approve.IsApproved);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

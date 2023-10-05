@@ -832,13 +832,21 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountResponse>> UpdateAccount(int accountId, UpdateAccountRequest request)
         {
             try
-                {
+            {
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
                 if (account == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                DateTime updateTimeRemain = (DateTime)account.UpdateAt;
+
+                if (account.UpdateAt == updateTimeRemain.AddMinutes(5))
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
+                                        AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
                 }
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
@@ -864,7 +872,7 @@ namespace SupFAmof.Service.Service
 
                 account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
 
-                account.UpdateAt = DateTime.Now;
+                account.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();
@@ -904,9 +912,17 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID.GetDisplayName());
                 }
 
+                DateTime updateTimeRemain = (DateTime)account.UpdateAt;
+
+                if (account.UpdateAt == updateTimeRemain.AddMinutes(5))
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
+                                        AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                }
+
                 account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);
 
-                account.UpdateAt = DateTime.Now;
+                account.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();

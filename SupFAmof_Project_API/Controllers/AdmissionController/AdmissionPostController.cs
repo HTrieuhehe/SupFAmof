@@ -206,12 +206,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await _postService.GetAccountByPostPositionId(positionId, paging);
             }
             catch (ErrorResponse ex)
@@ -233,11 +233,61 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
                 }
                 return await _postService.AdmissionSearchPost(account.Id, searchPost);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Delete Post Position 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpDelete("position/delete")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> DeletePosition
+        ([FromQuery] int positionId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.DeletePostPosition(account.Id, positionId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Delete Post 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpDelete("/delete")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> DeletePost
+        ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.DeletePost(account.Id, postId);
             }
             catch (ErrorResponse ex)
             {

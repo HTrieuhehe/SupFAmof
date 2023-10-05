@@ -22,6 +22,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePost(int accountId, int postId);
         Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId);
         Task<BaseResponseViewModel<AdmissionPostResponse>> AdmissionSearchPost(int accountId, string searchPost);
+        Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePostPosition(int accountId, int positionId);
+        Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePost(int accountId, int postId);
 
 
         #endregion

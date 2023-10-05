@@ -245,6 +245,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Post are missing collaborator! Cannot Ended!")]
             INVALID_ENDING_POST = 4005,
 
+            //400
+            [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
+            UPDATE_FAIl = 4006,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

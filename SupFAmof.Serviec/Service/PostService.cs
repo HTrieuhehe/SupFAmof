@@ -208,6 +208,7 @@ namespace SupFAmof.Service.Service
                                              PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
                         }
                     }
+                    item.Status = (int)PostPositionStatusEnum.Active;
                 }
 
                 var post = _mapper.Map<Post>(request);
@@ -461,6 +462,100 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePostPosition(int accountId, int positionId)
+        {
+            try
+            {
+                //make sure position is update status by someone who created them
+                var postPosition = await _unitOfWork.Repository<PostPosition>()
+                                    .FindAsync(x => x.Id == positionId && x.Post.AccountId == accountId && x.Post.Id == x.PostId);
+
+                if (postPosition == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                //validate to makesure there is no applied in this position
+
+                var checkApplied = await _unitOfWork.Repository<PostRegistrationDetail>().GetAll().FirstOrDefaultAsync(x => x.PositionId == positionId);
+
+                if (checkApplied != null)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIl,
+                                         PostErrorEnum.UPDATE_FAIl.GetDisplayName());
+                }
+
+                postPosition.Status = (int)PostPositionStatusEnum.Delete;
+
+                await _unitOfWork.Repository<PostPosition>().UpdateDetached(postPosition);
+                await _unitOfWork.CommitAsync();
+
+                var result = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == postPosition.PostId);
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(result)
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePost(int accountId, int postId)
+        {
+            try
+            {
+                //make sure post is update status by someone who created them
+                var post = await _unitOfWork.Repository<Post>()
+                                    .FindAsync(x => x.Id == postId && x.AccountId == accountId);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                //validate to makesure there is no applied in this position
+
+                var checkApplied = await _unitOfWork.Repository<PostRegistrationDetail>().GetAll().FirstOrDefaultAsync(x => x.PostId == postId);
+
+                if (checkApplied != null)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIl,
+                                         PostErrorEnum.UPDATE_FAIl.GetDisplayName());
+                }
+
+                post.Status = (int)PostStatusEnum.Delete;
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(post);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
         #region Collaborator Post Service
@@ -484,6 +579,7 @@ namespace SupFAmof.Service.Service
                 {
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.Status == (int)PostStatusEnum.Opening)
+                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
@@ -535,6 +631,7 @@ namespace SupFAmof.Service.Service
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
                                         .OrderByDescending(x => x.Priority)
+                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)

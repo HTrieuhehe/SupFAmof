@@ -499,8 +499,10 @@ namespace SupFAmof.Service.Service
                                                          .Where(x => x.PostId == item.Id);
 
                         totalCount = totalPostAttendee.Count();
+                        //item.RegisterAmount = 0;
                         item.RegisterAmount = totalCount;
 
+                        totalCount = 0;
                         foreach (var itemDetail in item.PostPositions)
                         {
                             //vào từng obj của attendee để count
@@ -510,8 +512,8 @@ namespace SupFAmof.Service.Service
                                 {
                                     totalCount++;
                                 }
-                                itemDetail.RegisterAmount = totalCount;
                             }
+                            itemDetail.RegisterAmount = totalCount;
                             totalAmountPosition += itemDetail.Amount;
                         }
                         item.TotalAmountPosition = totalAmountPosition;
@@ -547,6 +549,7 @@ namespace SupFAmof.Service.Service
                                                      .Where(x => x.PostId == item.Id);
 
                     totalCount = totalPostAttendee.Count();
+                    //item.RegisterAmount = 0;
                     item.RegisterAmount = totalCount;
                     totalCount = 0;
 
@@ -559,8 +562,8 @@ namespace SupFAmof.Service.Service
                             {
                                 totalCount++;
                             }
-                            itemDetail.RegisterAmount = totalCount;
                         }
+                        itemDetail.RegisterAmount = totalCount;
                         totalAmountPosition += itemDetail.Amount;
                     }
                     item.TotalAmountPosition = totalAmountPosition;

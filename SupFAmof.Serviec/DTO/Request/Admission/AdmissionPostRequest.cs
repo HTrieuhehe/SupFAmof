@@ -59,7 +59,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [JsonIgnore]
         public int Status { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
+        [Range(1, 1000, ErrorMessage = "Amount must be between 1 and 1000")]
         public int Amount { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Salary cannot be a negative number")]

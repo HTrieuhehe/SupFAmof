@@ -664,6 +664,7 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition += itemDetail.Amount;
                     }
                     item.TotalAmountPosition = totalAmountPosition;
+                    totalAmountPosition = 0;
                     postResponseList.Add(item);
                 }
 

@@ -33,12 +33,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 var result = await documentService.GetDocuments(paging);
                 return Ok(result);
             }
@@ -135,12 +135,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await documentService.SearchDocument(search, paging);
             }
             catch (ErrorResponse ex)

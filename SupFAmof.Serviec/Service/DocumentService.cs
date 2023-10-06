@@ -166,5 +166,46 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        public async Task<BaseResponsePagingViewModel<AdmissionDocumentResponse>> SearchDocument(string search, PagingRequest paging)
+        {
+            //Search by Name
+            try
+            {
+
+                if (search == null || search.Length == 0)
+                {
+                    throw new ErrorResponse(404, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
+                                        DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName());
+                }
+
+                var document = _unitOfWork.Repository<DocumentTemplate>().GetAll()
+                                    .ProjectTo<AdmissionDocumentResponse>(_mapper.ConfigurationProvider)
+                                    .Where(x => x.DocName.Contains(search))
+                                    .PagingQueryable(paging.Page, paging.PageSize,
+                                                        Constants.LimitPaging, Constants.DefaultPaging);
+
+                if (!document.Item2.Any())
+                {
+                    throw new ErrorResponse(404, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
+                                        DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName());
+                }
+
+                return new BaseResponsePagingViewModel<AdmissionDocumentResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = document.Item1
+                    },
+                    Data = document.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -275,7 +275,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpDelete("/delete")]
+        [HttpDelete("post/delete")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> DeletePost
         ([FromQuery] int postId)
         {

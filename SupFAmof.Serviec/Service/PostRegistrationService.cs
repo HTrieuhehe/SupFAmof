@@ -58,17 +58,17 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionPostsResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging)
         {
             try
             {
-                var list = _unitOfWork.Repository<PostRegistration>()
+                var list = _unitOfWork.Repository<Post>()
                                                       .GetAll()
-                                                      .Where(pr => pr.PostRegistrationDetails.First().Post.AccountId == admissionAccountId)
-                                                      .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                      .Where(pr => pr.AccountId == admissionAccountId)
+                                                      .ProjectTo<AdmissionPostsResponse>(_mapper.ConfigurationProvider)
                                                       .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
 
-                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                return new BaseResponsePagingViewModel<AdmissionPostsResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -518,9 +518,18 @@ namespace SupFAmof.Service.Service
         {
             var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.PostId == rq.PostRegistrationDetails.First().PostId
                                                                                             && x.Id == rq.PostRegistrationDetails.First().PositionId);
-            if (entityMatching != null && (entityMatching.IsBusService != rq.SchoolBusOption))
+            switch(entityMatching.IsBusService)
             {
-                return false;
+                case true:
+                    return true;
+                case false:
+                    if(rq.SchoolBusOption == false)
+                    {
+                        return true;
+                    }else
+                    {
+                        return false;
+                    }
             }
 
             return true;

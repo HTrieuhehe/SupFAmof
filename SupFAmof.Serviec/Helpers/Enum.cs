@@ -60,8 +60,8 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Opening")]
             Opening = 1,
 
-            [Display(Name = "Closed")]
-            Closed = 2,
+            [Display(Name = "Running")]
+            Running = 2,
 
             [Display(Name = "Ended")]
             Ended = 3,

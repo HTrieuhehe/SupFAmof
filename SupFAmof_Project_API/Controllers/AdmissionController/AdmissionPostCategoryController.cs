@@ -23,7 +23,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get List Post Title
+        /// Get List Post Categoryies
         /// </summary>    
         [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> GetPostCategories
@@ -40,7 +40,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get Post Title By Id                        
+        /// Get Post Category By Id                        
         /// </summary>
         [HttpGet("getById")]
         public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> GetPostCategoryById
@@ -57,7 +57,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Create Post                       
+        /// Create Post Category                      
         /// </summary>
         [HttpPost("create")]
         public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> CreatePostCategory
@@ -80,7 +80,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Update Post                        
+        /// Update Post Category                     
         /// </summary>
         [HttpPut("update")]
         public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> UpdatePostCategory
@@ -103,7 +103,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Search by Description or Type                    
+        /// Search Post Category by Description or Type                    
         /// </summary>
         [HttpGet("search")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> SearchPostCategory

@@ -10,5 +10,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionDocumentResponse>> CreateDocument(DocumentRequest request);
         Task<BaseResponseViewModel<AdmissionDocumentResponse>> UpdateDocument(int documentId, DocumentUpdateRequest request);
         Task<BaseResponseViewModel<AdmissionDocumentResponse>> DisableDocument(int documentId);
+        Task<BaseResponsePagingViewModel<AdmissionDocumentResponse>> SearchDocument(string search, PagingRequest paging);
     }
 }

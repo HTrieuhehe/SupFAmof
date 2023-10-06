@@ -44,6 +44,49 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                post.Status = (int)PostStatusEnum.Ended;
+                post.UpdateAt = DateTime.Now;
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(post);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> RunPost(int accountId, int postId)
+        {
+            try
+            {
                 #region Account Checking 
 
                 var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
@@ -78,51 +121,8 @@ namespace SupFAmof.Service.Service
                     }
                 }
 
-                //nếu dữ liệu trùng khớp thì tiến hành close form đăng ký
-                post.Status = (int)PostStatusEnum.Closed;
-                post.UpdateAt = DateTime.Now;
-
-                await _unitOfWork.Repository<Post>().UpdateDetached(post);
-                await _unitOfWork.CommitAsync();
-
-                return new BaseResponseViewModel<AdmissionPostResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<AdmissionPostResponse>(post)
-                };
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePost(int accountId, int postId)
-        {
-            try
-            {
-                var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
-
-                if (account == null)
-                {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
-                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
-                }
-
-                var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
-
-                if (post == null)
-                {
-                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
-                                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
-                }
-
-                post.Status = (int)PostStatusEnum.Closed;
+                //nếu dữ liệu trùng khớp thì tiến hành run event
+                post.Status = (int)PostStatusEnum.Ended;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);

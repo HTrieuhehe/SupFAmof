@@ -151,6 +151,31 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
+        /// Confirm running Post
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("confirmRunningPost")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmRunningPost
+            ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.RunPost(account.Id, postId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Update Post
         /// </summary>
         /// <returns></returns>
@@ -275,7 +300,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpDelete("/delete")]
+        [HttpDelete("post/delete")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> DeletePost
         ([FromQuery] int postId)
         {

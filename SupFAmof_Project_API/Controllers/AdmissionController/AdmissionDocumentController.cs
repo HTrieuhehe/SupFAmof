@@ -6,6 +6,7 @@ using SupFAmof.Service.DTO.Request;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.DTO.Response;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -117,6 +118,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 }
                 var result = await documentService.DisableDocument(documentId);
                 return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Search Document by Name
+        /// </summary>
+        /// 
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionDocumentResponse>>> SearchPostCategory
+            ([FromQuery] string search, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await documentService.SearchDocument(search, paging);
             }
             catch (ErrorResponse ex)
             {

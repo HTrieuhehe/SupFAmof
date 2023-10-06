@@ -23,15 +23,15 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get List Post Title
+        /// Get List Post Categoryies
         /// </summary>    
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> GetPostTitles
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> GetPostCategories
             ([FromQuery] PostCategoryResponse request, [FromQuery] PagingRequest paging)
         {
             try
             {
-                return await _postTitleService.GetPostTitles(request, paging);
+                return await _postTitleService.GetPostCategories(request, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -40,15 +40,15 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get Post Title By Id                        
+        /// Get Post Category By Id                        
         /// </summary>
         [HttpGet("getById")]
-        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> GetPostTitleById
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> GetPostCategoryById
             ([FromQuery] int postTitleId)
         {
             try
             {
-                return await _postTitleService.GetPostTitleById(postTitleId);
+                return await _postTitleService.GetPostCategoryById(postTitleId);
             }
             catch (ErrorResponse ex)
             {
@@ -57,10 +57,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Create Post                       
+        /// Create Post Category                      
         /// </summary>
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> CreatePostTitle
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> CreatePostCategory
             ([FromBody] CreatePostCategoryRequest request)
         {
             try
@@ -71,7 +71,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postTitleService.CreatePostTitle(request);
+                return await _postTitleService.CreatePostCategory(request);
             }
             catch (ErrorResponse ex)
             {
@@ -80,10 +80,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Update Post                        
+        /// Update Post Category                     
         /// </summary>
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> UpdatePostTitle
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> UpdatePostCategory
             ([FromQuery] int postTitleId, [FromBody] UpdatePostCategoryRequest request)
         {
             try
@@ -94,7 +94,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postTitleService.UpdatePostTitle(postTitleId, request);
+                return await _postTitleService.UpdatePostCategory(postTitleId, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Search Post Category by Description or Type                    
+        /// </summary>
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostCategoryResponse>>> SearchPostCategory
+            ([FromQuery] string search, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postTitleService.SearchPostCategory(search, paging);
             }
             catch (ErrorResponse ex)
             {

@@ -15,6 +15,7 @@ using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -32,11 +33,11 @@ namespace SupFAmof.Service.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseResponsePagingViewModel<PostCategoryResponse>> GetPostTitles(PostCategoryResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostCategoryResponse>> GetPostCategories(PostCategoryResponse filter, PagingRequest paging)
         {
             try
             {
-                var role = _unitOfWork.Repository<PostCategory>().GetAll()
+                var postCate = _unitOfWork.Repository<PostCategory>().GetAll()
                                     .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
@@ -49,9 +50,9 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = role.Item1
+                        Total = postCate.Item1
                     },
-                    Data = role.Item2.ToList()
+                    Data = postCate.Item2.ToList()
                 };
             }
             catch (Exception ex)
@@ -60,7 +61,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> GetPostTitleById(int postTitleId)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> GetPostCategoryById(int postTitleId)
         {
             try
             {
@@ -90,7 +91,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostTitle(CreatePostCategoryRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostCategory(CreatePostCategoryRequest request)
         {
             try
             {
@@ -134,7 +135,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostTitle(int postTitleId, UpdatePostCategoryRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int postTitleId, UpdatePostCategoryRequest request)
         {
             try
             {
@@ -169,6 +170,47 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0
                     },
                     Data = _mapper.Map<PostCategoryResponse>(updatePostTitle)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<PostCategoryResponse>> SearchPostCategory(string search, PagingRequest paging)
+        {
+            //Search by Description or Type
+            try
+            {
+
+                if (search == null || search.Length == 0)
+                {
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                        PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                var postCate = _unitOfWork.Repository<PostCategory>().GetAll()
+                                    .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
+                                    .Where(x => x.PostCategoryDescription.Contains(search) || x.PostCategoryType.Contains(search.ToUpper()))
+                                    .PagingQueryable(paging.Page, paging.PageSize,
+                                                        Constants.LimitPaging, Constants.DefaultPaging);
+
+                if (!postCate.Item2.Any())
+                {
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                        PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                return new BaseResponsePagingViewModel<PostCategoryResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = postCate.Item1
+                    },
+                    Data = postCate.Item2.ToList()
                 };
             }
             catch (Exception ex)

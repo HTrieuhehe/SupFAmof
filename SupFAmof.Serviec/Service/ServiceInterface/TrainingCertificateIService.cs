@@ -16,5 +16,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<TrainingCertificateResponse>> GetTrainingCertificateById(int trainingCertificateId);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(CreateTrainingCertificateRequest request);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int trainingCertificateId, UpdateTrainingCertificateRequest request);
+        Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> SearchTrainingCertificate(string search, PagingRequest paging);
     }
 }

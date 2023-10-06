@@ -21,7 +21,7 @@ namespace SupFAmof.Service.Service
 {
     public class TrainingCertificateService : ITrainingCertificateService
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
         public TrainingCertificateService(IMapper mapper, IUnitOfWork unitOfWork)
@@ -166,6 +166,47 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0
                     },
                     Data = _mapper.Map<TrainingCertificateResponse>(updateTrainingCertificate)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> SearchTrainingCertificate(string search, PagingRequest paging)
+        {
+            //Search by Name or Type
+            try
+            {
+
+                if (search == null || search.Length == 0)
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                        TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                var certificate = _unitOfWork.Repository<TrainingCertificate>().GetAll()
+                                    .ProjectTo<TrainingCertificateResponse>(_mapper.ConfigurationProvider)
+                                    .Where(x => x.CertificateName.Contains(search) || x.TrainingTypeId.Contains(search.ToUpper()))
+                                    .PagingQueryable(paging.Page, paging.PageSize,
+                                                        Constants.LimitPaging, Constants.DefaultPaging);
+
+                if (!certificate.Item2.Any())
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                        TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                return new BaseResponsePagingViewModel<TrainingCertificateResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = certificate.Item1
+                    },
+                    Data = certificate.Item2.ToList()
                 };
             }
             catch (Exception ex)

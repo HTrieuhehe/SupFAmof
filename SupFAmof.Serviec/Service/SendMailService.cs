@@ -27,24 +27,21 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var message = new MimeMessage();
-                message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
-                message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
-                message.Subject = "Booking Confirmation";
+                var messages = new List<MimeMessage>();
 
                 foreach (var recipient in request)
                 {
+                    var message = new MimeMessage();
+                    message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
+                    message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+                    message.Subject = "Booking Confirmation";
                     message.To.Add(MailboxAddress.Parse(recipient.Email));
 
-                if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.BookingMail.GetDisplayName(), out string value))
-                {
-                    string? htmlBody = System.IO.File.ReadAllText(value);
-
-                    // Create a multipart/alternative message body to support both plain text and HTML
-                    var bodyBuilder = new BodyBuilder();
-
-                    if (request != null)
+                    if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.BookingMail.GetDisplayName(), out string value))
                     {
+                        string? htmlBody = System.IO.File.ReadAllText(value);
+
+                        var bodyBuilder = new BodyBuilder();
                         bodyBuilder.HtmlBody = htmlBody
                             .Replace("{code}", recipient.RegistrationCode.ToString())
                             .Replace("{name}", recipient.PostName.ToString())
@@ -58,27 +55,33 @@ namespace SupFAmof.Service.Service
                             .Replace("{note}", recipient.Note.ToString());
 
                         message.Body = bodyBuilder.ToMessageBody();
-                        // dùng SmtpClient của MailKit
-                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
-
-                        try
-                        {
-                            smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-                            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-                            await smtp.SendAsync(message);
-                            smtp.Disconnect(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            // Gửi mail thất bại, nội dung email sẽ lưu vào thư mục mailssave
-                            System.IO.Directory.CreateDirectory("mailssave");
-                            var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
-                            await message.WriteToAsync(emailsavefile);
-                            smtp.Disconnect(true);
-                            return false;
-                        }
+                        messages.Add(message);
                     }
                 }
+
+                // Use a single SmtpClient to send all messages
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+
+                try
+                {
+                    smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+
+                    foreach (var message in messages)
+                    {
+                        await smtp.SendAsync(message);
+                    }
+
+                    smtp.Disconnect(true);
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions if sending any of the emails fails
+                    System.IO.Directory.CreateDirectory("mailssave");
+                    var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
+                    await messages.First().WriteToAsync(emailsavefile);
+                    smtp.Disconnect(true);
+                    return false;
                 }
 
                 return true;
@@ -88,6 +91,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
 
         public async Task<bool> SendEmailVerification(MailVerificationRequest request)
         {

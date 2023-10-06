@@ -54,4 +54,41 @@ namespace SupFAmof.Service.DTO.Response
         public bool PostPermission { get; set; }
         public bool? IsPremium { get; set; }
     }
+
+
+
+    public class AdmissionPostsResponse
+    {
+        public int Id { get; set; }
+
+        public string PostCategoryName { get; set; }
+        public string PostCode { get; set; } = null!;
+        public string PostDescription { get; set; } = null!;
+        public int Priority { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public string? PostImg { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+
+        public virtual ICollection<CollabRegistrationFormResponse>? CollabRequest { get; set; }
+    }
+
+    public class CollabRegistrationFormResponse
+    {
+        public int Id { get; set; }
+        public string RegistrationCode { get; set; } = null!;
+        public int Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+
+        public int AccountId { get; set; }
+        public string AccountEmail { get; set; }
+        public string  AccountName  { get; set; }
+
+        public int PositionId { get; set; }
+        public string PositionName { get; set; }
+
+    }
 }

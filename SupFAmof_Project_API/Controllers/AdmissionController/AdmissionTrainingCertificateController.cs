@@ -31,6 +31,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await _certificateService.GetTrainingCertificates(filter, paging);
             }
             catch (ErrorResponse ex)
@@ -48,6 +54,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 return await _certificateService.GetTrainingCertificateById(trainingCertificateId);
             }
             catch (ErrorResponse ex)
@@ -95,6 +107,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _certificateService.UpdateTrainingCertificate(trainingCertificateId, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Search Training Ceritificate by Name or Type
+        /// </summary>
+        /// 
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<TrainingCertificateResponse>>> SearchTrainingCertificate
+            ([FromQuery] string search, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.SearchTrainingCertificate(search, paging);
             }
             catch (ErrorResponse ex)
             {

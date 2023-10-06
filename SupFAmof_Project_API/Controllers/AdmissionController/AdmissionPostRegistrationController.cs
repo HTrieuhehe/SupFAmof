@@ -50,7 +50,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <response code="200">Get success</response>
         /// <response code="400">Failed to get</response>
         [HttpGet("get-postRegistrationbyAdmissionAccountId")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> AdmssionPostRegistrations([FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponseViewModel<List<AdmissionPostsResponse>>>> AdmssionPostRegistrations([FromQuery] PagingRequest paging)
         {
             try
             {

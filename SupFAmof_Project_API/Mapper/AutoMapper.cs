@@ -79,8 +79,24 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
                 .ReverseMap();
 
-            //CreateMap<PostRegistrationRequest, PostRegistration>()
-            //  .ReverseMap();
+            CreateMap<Post, AdmissionPostsResponse>()
+                .ForMember(dest => dest.PostCategoryName, opt=> opt.MapFrom(src=>src.PostCategory.PostCategoryType))
+                .ForMember(dest=>dest.CollabRequest , opt=>opt.MapFrom(src=>src.PostRegistrationDetails))
+                .ReverseMap();
+                
+
+            CreateMap<PostRegistrationDetail, CollabRegistrationFormResponse>()
+                .ForMember(dest=>dest.Id ,opt=>opt.MapFrom(src=>src.PostRegistrationId))
+                .ForMember(dest => dest.RegistrationCode, opt => opt.MapFrom(src => src.PostRegistration.RegistrationCode))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.PostRegistration.Status))
+                .ForMember(dest => dest.SchoolBusOption, opt => opt.MapFrom(src => src.PostRegistration.SchoolBusOption))
+                .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(src => src.PostRegistration.CreateAt))
+                .ForMember(dest => dest.UpdateAt, opt => opt.MapFrom(src => src.PostRegistration.UpdateAt))
+                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.PostRegistration.AccountId))
+                .ForMember(dest => dest.AccountName, opt => opt.MapFrom(src => src.PostRegistration.Account.Name))
+                .ForMember(dest => dest.AccountEmail, opt => opt.MapFrom(src => src.PostRegistration.Account.Email))
+                .ForMember(dest => dest.PositionName, opt => opt.MapFrom(src => src.Post.PostPositions.FirstOrDefault(x=>x.Id == src.PositionId).PositionName))
+                .ReverseMap();
             CreateMap<PostRegistrationRequest, PostRegistration>()
             .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(src => src.CreateAt))
             .ForMember(dest => dest.UpdateAt, opt => opt.Ignore())

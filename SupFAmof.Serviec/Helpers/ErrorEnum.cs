@@ -339,5 +339,12 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Failed to send email")]
             SEND_MAIL_FAIL = 4001,
         }
+
+        public enum ContractErrorEnum
+        {
+            //404
+            [Display(Name = "Contract not found")]
+            NOT_FOUND_CONTRACT = 4041,
+        }
     }
 }

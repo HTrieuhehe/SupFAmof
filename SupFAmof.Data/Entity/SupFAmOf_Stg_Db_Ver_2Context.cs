@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace SupFAmof.Data.Entity
 {
@@ -43,19 +42,14 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<staff> staff { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                IConfiguration config = new ConfigurationBuilder()
-                                    .SetBasePath(Directory.GetCurrentDirectory())
-                                    .AddJsonFile("appsettings.json").Build();
-                string connectionString = config.GetConnectionString("SQLServerDatabase");
-                optionsBuilder.UseSqlServer(connectionString);
-            }
-
-            base.OnConfiguring(optionsBuilder);
-        }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//                optionsBuilder.UseSqlServer("Server=13.212.21.234;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
+//            }
+//        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -285,7 +279,13 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
-                entity.Property(e => e.UpdateAtd).HasColumnType("datetime");
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CreatePerson)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.CreatePersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Contract_Account");
             });
 
             modelBuilder.Entity<DocumentTemplate>(entity =>

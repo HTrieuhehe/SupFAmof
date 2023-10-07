@@ -11,6 +11,7 @@ namespace SupFAmof.Data.Entity
         }
 
         public int Id { get; set; }
+        public int CreatePersonId { get; set; }
         public string ContractName { get; set; } = null!;
         public string ContractDescription { get; set; } = null!;
         public byte[] SampleFile { get; set; } = null!;
@@ -19,8 +20,9 @@ namespace SupFAmof.Data.Entity
         public double TotalSalary { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreateAt { get; set; }
-        public DateTime? UpdateAtd { get; set; }
+        public DateTime? UpdateAt { get; set; }
 
+        public virtual Account CreatePerson { get; set; } = null!;
         public virtual ICollection<AccountContract> AccountContracts { get; set; }
     }
 }

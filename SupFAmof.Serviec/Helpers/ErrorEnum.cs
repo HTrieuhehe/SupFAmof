@@ -342,6 +342,26 @@ namespace SupFAmof.Service.Helpers
 
         public enum ContractErrorEnum
         {
+            //400
+            [Display(Name = "You are not verified by Admin to allow to create contract")]
+            ACCOUNT_CREATE_CONTRACT_INVALID = 4001,
+
+            //400
+            [Display(Name = "Siging date cannot be greater than Start Date")]
+            SIGNING_DATE_INVALID_WITH_START_DATE = 4002,
+
+            //400
+            [Display(Name = "Signing date must at least 2 days greater than current date")]
+            SIGNING_DATE_INVALID_WITH_CURRENT_DATE = 4003,
+
+            //400
+            [Display(Name = "Start date cannot be less than Signing Date")]
+            START_DATE_INVALID_WITH_SIGNING_DATE = 4004,
+
+            //400
+            [Display(Name = "Start date must at least 2 days greater than current date")]
+            START_DATE_INVALID_WITH_CURRENT_DATE = 4005,
+
             //404
             [Display(Name = "Contract not found")]
             NOT_FOUND_CONTRACT = 4041,

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.DTO.Response
 {
@@ -29,6 +31,7 @@ namespace SupFAmof.Service.DTO.Response
         public double? SalaryBonus { get; set; }
         public double Salary { get; set; }
         public double FinalSalary { get; set; }
+
 
     }
     public class PostRgupdateHistoryResponse
@@ -91,4 +94,47 @@ namespace SupFAmof.Service.DTO.Response
         public string PositionName { get; set; }
 
     }
+
+
+    public class CollabRegistrationResponse
+    {
+        public string RegistrationCode { get; set; } = null!;
+        public int Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+        public virtual CollabRegistrationDetailResponse? PostRegistrationDetail { get; set; }
+    }
+    public class CollabRegistrationDetailResponse
+    {
+        public int Id { get; set; }
+        public int PostRegistrationId { get; set; }
+        public string? Note { get; set; }
+        public double Salary { get; set; }
+
+        public virtual CollabPostResponse Post { get; set; }
+        public virtual PostPositionResponse? PostPosition { get; set; }
+
+    }
+    public class CollabPostResponse
+    {
+        public int Id { get; set; }
+        public int AccountId { get; set; }
+        public int PostCategoryId { get; set; }
+        public string? PostCode { get; set; }
+        public string? PostImg { get; set; }
+        public string? PostDescription { get; set; }
+        public int Priority { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public bool IsPremium { get; set; }
+        public int Status { get; set; }
+        public bool AttendanceComplete { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; } 
+        public virtual AccountResponse? Account { get; set; }
+        public virtual PostCategoryResponse? PostCategory { get; set; }
+    }
+
+
 }

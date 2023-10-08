@@ -10,9 +10,10 @@ namespace SupFAmof.Service.DTO.Response.Admission
     public class AdmissionContractResponse
     {
         public int Id { get; set; }
-        public string ContractName { get; set; }
-        public string ContractDescription { get; set; }
-        public byte[] SampleFile { get; set; }
+        public string? ContractName { get; set; }
+        public int CreatePersonId { get; set; }
+        public string? ContractDescription { get; set; }
+        public byte[]? SampleFile { get; set; }
         public DateTime SigningDate { get; set; }
         public DateTime StartDate { get; set; }
         public double TotalSalary { get; set; }
@@ -20,6 +21,6 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual ICollection<AccountContract> AccountContracts { get; set; }
+        public virtual ICollection<AccountContract>? AccountContracts { get; set; }
     }
 }

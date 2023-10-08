@@ -12,31 +12,31 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public int Id { get; set; }
         //public int CreatePersonId { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "ContractName is required.")]
         [MaxLength(100, ErrorMessage = "ContractName cannot exceed 100 characters.")]
         public string? ContractName { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "ContractDescription is required.")]
         [MaxLength(225, ErrorMessage = "ContractDescription cannot exceed 225 characters.")]
         public string? ContractDescription { get; set; }
 
         [Required(ErrorMessage = "Sample File cannot empty")]
         public byte[]? SampleFile { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "ContractName is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid signing date format.")]
         public DateTime SigningDate { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "StartDate is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
         public DateTime StartDate { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "TotalSalary is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "TotalSalary must be a non-negative number.")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Invalid numeric format.")]
         public double TotalSalary { get; set; }
 
-        //public bool IsActive { get; set; }
+        
         //public DateTime CreateAt { get; set; }
         //public DateTime? UpdateAt { get; set; }
     }
@@ -66,6 +66,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Range(0, double.MaxValue, ErrorMessage = "TotalSalary must be a non-negative number.")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Invalid numeric format.")]
         public double TotalSalary { get; set; }
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "IsActive must be either true or false.")]
+        public bool IsActive { get; set; }
 
         //chỉ cho sửa khi chưa gởi cho bất kì ai
     }

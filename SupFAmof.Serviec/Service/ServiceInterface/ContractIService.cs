@@ -13,9 +13,10 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IContractService
     {
         Task<BaseResponsePagingViewModel<AdmissionContractResponse>> GetAdmissionContracts(int accountId, AdmissionContractResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionContractResponse>> GetAdmissionContractById(int accountId, int contractId);
         Task<BaseResponseViewModel<AdmissionContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request);
-        Task<BaseResponseViewModel<AdmissionContractResponse>> UpdateAdmissionContract(int accountId, UpdateAdmissionContractRequest request);
+        Task<BaseResponseViewModel<AdmissionContractResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request);
 
         Task<BaseResponsePagingViewModel<ContractResponse>> GetContracts(ContractResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<ContractResponse>> GetContractsById(int contractId);

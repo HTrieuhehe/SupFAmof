@@ -139,6 +139,7 @@ namespace SupFAmof.API
             builder.RegisterType<CheckInService>().As<ICheckInService>();
             builder.RegisterType<AccountReportService>().As<IAccountReportService>();
             builder.RegisterType<AccountBannedService>().As<IAccountBannedService>();
+            builder.RegisterType<ContractService>().As<IContractService>();
 
 
 

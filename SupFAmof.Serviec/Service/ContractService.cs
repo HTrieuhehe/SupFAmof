@@ -55,7 +55,7 @@ namespace SupFAmof.Service.Service
 
                 //vaidate date
                 //signing date cannot be greater than starting date and at least 2 days greater than current day
-                //start date cannot be less than signing date and at least at least 2 days greater than current day
+                //start date cannot be less than signing date
 
                 if (request.SigningDate > request.StartDate)
                 {
@@ -75,13 +75,11 @@ namespace SupFAmof.Service.Service
                                        ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE.GetDisplayName());
                 }
 
-                else if (request.StartDate < getCurrentTime.AddDays(2))
-                {
-                    throw new ErrorResponse(400, (int)ContractErrorEnum.START_DATE_INVALID_WITH_CURRENT_DATE,
-                                        ContractErrorEnum.START_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName());
-                }
-
                 var contract = _mapper.Map<CreateAdmissionContractRequest, Contract>(request);
+
+                contract.CreatePersonId = accountId;
+                contract.IsActive = true;
+                contract.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Contract>().InsertAsync(contract);
                 await _unitOfWork.CommitAsync();
@@ -104,9 +102,79 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<AdmissionContractResponse>> UpdateAdmissionContract(int accountId, UpdateAdmissionContractRequest request)
+        public async Task<BaseResponseViewModel<AdmissionContractResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request)
         {
-            throw new NotImplementedException();
+            //allow update if there is no sending email to someone
+
+            try
+            {
+                DateTime getCurrentTime = Ultils.GetCurrentTime();
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID,
+                                        ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID.GetDisplayName());
+                }
+
+                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId);
+
+                if (contract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                
+                var contractUpdate = _mapper.Map<UpdateAdmissionContractRequest, Contract>(request, contract);
+
+                //validate date
+
+                if (contractUpdate.SigningDate > contractUpdate.StartDate)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_START_DATE,
+                                        ContractErrorEnum.SIGNING_DATE_INVALID_WITH_START_DATE.GetDisplayName());
+                }
+
+                else if (contractUpdate.SigningDate < getCurrentTime.AddDays(2))
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE,
+                                        ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName());
+                }
+
+                else if (contractUpdate.StartDate < contractUpdate.SigningDate)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE,
+                                       ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE.GetDisplayName());
+                }
+
+                contract.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Contract>().UpdateDetached(contractUpdate);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionContractResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AdmissionContractResponse>(contract)
+
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseResponseViewModel<AdmissionContractResponse>> GetAdmissionContractById(int accountId, int contractId)
@@ -212,6 +280,47 @@ namespace SupFAmof.Service.Service
                     },
                     Data = _mapper.Map<ContractResponse>(contract)
 
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<AdmissionContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging)
+        {
+            //Search by Name
+            try
+            {
+
+                if (search == null || search.Length == 0)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                var contract = _unitOfWork.Repository<Contract>().GetAll()
+                                    .ProjectTo<AdmissionContractResponse>(_mapper.ConfigurationProvider)
+                                    .Where(x => x.ContractName.Contains(search) && x.CreatePersonId == accountId)
+                                    .PagingQueryable(paging.Page, paging.PageSize,
+                                                        Constants.LimitPaging, Constants.DefaultPaging);
+
+                if (!contract.Item2.Any())
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                return new BaseResponsePagingViewModel<AdmissionContractResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = contract.Item1
+                    },
+                    Data = contract.Item2.ToList()
                 };
             }
             catch (Exception ex)

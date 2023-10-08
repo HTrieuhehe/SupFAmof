@@ -14,7 +14,7 @@ namespace SupFAmof.Data.Entity
         public int CreatePersonId { get; set; }
         public string ContractName { get; set; } = null!;
         public string ContractDescription { get; set; } = null!;
-        public byte[] SampleFile { get; set; } = null!;
+        public byte[]? SampleFile { get; set; }
         public DateTime SigningDate { get; set; }
         public DateTime StartDate { get; set; }
         public double TotalSalary { get; set; }

@@ -246,6 +246,7 @@ namespace SupFAmof.Service.Service
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
+                                    .Where(x => x.Status != (int)PostStatusEnum.Delete)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
                                     .OrderByDescending(x => x.CreateAt)

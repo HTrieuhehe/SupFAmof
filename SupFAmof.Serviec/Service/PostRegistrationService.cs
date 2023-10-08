@@ -31,17 +31,20 @@ namespace SupFAmof.Service.Service
             this.sendMailService = sendMailService;
         }
 
-        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging)
         {
             try
-            {
+            { 
+
+
+                var list = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                  .Where(x => x.AccountId == accountId);
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.AccountId == accountId)
-                                                  .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
                                                   .PagingQueryable(paging.Page, paging.PageSize,
                                                    Constants.LimitPaging, Constants.DefaultPaging);
-
-                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {

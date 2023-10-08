@@ -10,7 +10,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IPostRegistrationService
     {
-        Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging);
         Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(int accountId,PostRegistrationRequest request);
         Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId,int postRegistrationId);
         Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId,int PostRegistrationId, PostRegistrationUpdateRequest request);

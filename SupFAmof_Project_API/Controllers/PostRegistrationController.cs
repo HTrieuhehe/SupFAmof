@@ -31,7 +31,7 @@ namespace SupFAmof.API.Controllers
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
         [HttpGet("getById")]
-        public async Task<ActionResult<List<PostRegistrationResponse>>> GetPostRegistrationsByAccountId
+        public async Task<ActionResult<CollabRegistrationResponse>> GetPostRegistrationsByAccountId
           ([FromQuery] PagingRequest paging)
         {
             try

@@ -14,7 +14,7 @@ namespace SupFAmof.Service.DTO.Request
         [Url(ErrorMessage = "DocUrl must be a valid URL.")]
         public string? DocUrl { get; set; }
         [JsonIgnore]
-        public DateTime CreateAt { get; set; } = GetCurrentTime();
+        public DateTime CreateAt { get; set; } = GetCurrentDatetime();
 
 
     }
@@ -24,7 +24,7 @@ namespace SupFAmof.Service.DTO.Request
 
         public string? DocUrl { get; set; }
         [JsonIgnore]
-        public DateTime CreateAt { get; set; } = GetCurrentTime();
+        public DateTime CreateAt { get; set; } = GetCurrentDatetime();
 
     }
     public class DocumentDisableRequest

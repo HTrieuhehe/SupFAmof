@@ -21,6 +21,6 @@ namespace SupFAmof.Service.DTO.Request
 
         [Required(ErrorMessage = "ConfirmAt is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "ConfirmAt must be a valid DateTime.")]
-        public DateTime ConfirmAt { get; set; } = GetCurrentTime();
+        public DateTime ConfirmAt { get; set; } = GetCurrentDatetime();
     }
 }

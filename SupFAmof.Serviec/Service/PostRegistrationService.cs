@@ -464,7 +464,7 @@ namespace SupFAmof.Service.Service
                                 {
                                     matchingEntity.SchoolBusOption = findRequest.BusOption;
                                     matchingEntity.PostRegistrationDetails.First().PositionId = (int)findRequest.PositionId;
-                                    matchingEntity.UpdateAt = GetCurrentTime();
+                                    matchingEntity.UpdateAt = GetCurrentDatetime();
                                     findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
@@ -687,7 +687,7 @@ namespace SupFAmof.Service.Service
             if (attendNeedToBeUpdated != null)
             {
                 attendNeedToBeUpdated.PositionId = matching.PositionId;
-                attendNeedToBeUpdated.ConfirmAt = GetCurrentTime();
+                attendNeedToBeUpdated.ConfirmAt = GetCurrentDatetime();
             }
             await _unitOfWork.Repository<PostAttendee>().Update(attendNeedToBeUpdated, attendNeedToBeUpdated.Id);
 

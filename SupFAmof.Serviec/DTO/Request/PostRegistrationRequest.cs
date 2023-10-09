@@ -12,7 +12,7 @@ namespace SupFAmof.Service.DTO.Request
         [JsonIgnore]
         public string RegistrationCode { get; set; } = GenerateRandomCode();
         [JsonIgnore]
-        public DateTime CreateAt { get; set; } = GetCurrentTime();
+        public DateTime CreateAt { get; set; } = GetCurrentDatetime();
 
         [Required(ErrorMessage = "School bus option is required.")]
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
@@ -33,7 +33,7 @@ namespace SupFAmof.Service.DTO.Request
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
         public bool? SchoolBusOption { get; set; }
         [JsonIgnore]
-        public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentTime();
+        public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentDatetime();
         public int PositionId { get; set; }
 
     }

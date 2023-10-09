@@ -358,6 +358,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Start date cannot be less than Signing Date")]
             START_DATE_INVALID_WITH_SIGNING_DATE = 4004,
 
+            //400
+            [Display(Name = "Cannot update contract because there are one or more account confirm your contract")]
+            UPDATE_CONTRACT_INVALID = 4005,
+
             //404
             [Display(Name = "Contract not found")]
             NOT_FOUND_CONTRACT = 4041,

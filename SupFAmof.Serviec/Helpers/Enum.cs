@@ -99,5 +99,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Reject")]
             Reject = 2,
         }
+
+        public enum AccountContractStatusEnum
+        {
+            [Display(Name = "Pending")]
+            Pending = 1,
+
+            [Display(Name = "Confirm")]
+            Confirm = 2,
+        }
     }
 }

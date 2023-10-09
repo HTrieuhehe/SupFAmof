@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -131,7 +132,16 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
-                
+                var checkSendEmailContract = await _unitOfWork.Repository<AccountContract>()
+                                                              .GetAll()
+                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id || x.Status == (int)AccountContractStatusEnum.Confirm);
+
+                if (checkSendEmailContract != null)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.UPDATE_CONTRACT_INVALID,
+                                        ContractErrorEnum.UPDATE_CONTRACT_INVALID.GetDisplayName());
+                }
+
                 var contractUpdate = _mapper.Map<UpdateAdmissionContractRequest, Contract>(request, contract);
 
                 //validate date
@@ -142,7 +152,8 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_START_DATE.GetDisplayName());
                 }
 
-                else if (contractUpdate.SigningDate < getCurrentTime.AddDays(2))
+                //at least signing date must greater than 1 day
+                else if (contractUpdate.SigningDate < getCurrentTime.AddDays(1))
                 {
                     throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE,
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName());
@@ -158,6 +169,8 @@ namespace SupFAmof.Service.Service
 
                 await _unitOfWork.Repository<Contract>().UpdateDetached(contractUpdate);
                 await _unitOfWork.CommitAsync();
+
+                //send update notification
 
                 return new BaseResponseViewModel<AdmissionContractResponse>
                 {

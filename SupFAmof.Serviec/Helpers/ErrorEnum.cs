@@ -359,8 +359,12 @@ namespace SupFAmof.Service.Helpers
             START_DATE_INVALID_WITH_SIGNING_DATE = 4004,
 
             //400
-            [Display(Name = "Cannot update contract because there are one or more account confirm your contract")]
+            [Display(Name = "Cannot update contract because there are one or more accounts confirm your contract")]
             UPDATE_CONTRACT_INVALID = 4005,
+
+            //400
+            [Display(Name = "Cannot disable contract because there are one or more accounts confirm your contract")]
+            DISABLE_CONTRACT_INVALID = 4006,
 
             //404
             [Display(Name = "Contract not found")]

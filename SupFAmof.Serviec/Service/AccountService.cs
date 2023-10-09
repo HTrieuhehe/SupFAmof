@@ -804,13 +804,12 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-
-
-
                 var account = _unitOfWork.Repository<Account>().GetAll()
-                    .Where(x => x.Email.Contains(email) && x.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                    .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
-                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                         .Where(x => x.Email.Contains(email) && x.RoleId == (int)SystemRoleEnum.Collaborator && x.IsActive == true)
+                                         .Include(x => x.AccountBanneds)
+                                         .OrderByDescending(x => x.AccountBanneds.Max(b => b.DayEnd))
+                                         .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
+                                        . PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<AccountResponse>()
                 {

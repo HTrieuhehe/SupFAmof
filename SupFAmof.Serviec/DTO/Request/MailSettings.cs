@@ -74,4 +74,25 @@ namespace SupFAmof.Service.DTO.Request
 
         public string? Note { get; set; }
     }
+
+    public class MailContractRequest
+    {
+        [Required]
+        public string? Id { get; set; }
+
+        [Required]
+        public string? Email { get; set; }
+
+        [Required]
+        public string? ContractName { get; set; }
+
+        [Required]
+        public string? SigningDate { get; set; }
+
+        [Required]
+        public string? StartDate { get; set; }
+
+        [Required]
+        public string? TotalSalary { get; set; }
+    }
 }

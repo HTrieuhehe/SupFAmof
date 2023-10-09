@@ -92,6 +92,69 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<bool> SendEmailContract(List<MailContractRequest> request)
+        {
+            try
+            {
+                var messages = new List<MimeMessage>();
+
+                foreach (var recipient in request)
+                {
+                    var message = new MimeMessage();
+                    message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
+                    message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+                    message.Subject = "Booking Confirmation";
+                    message.To.Add(MailboxAddress.Parse(recipient.Email));
+
+                    if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.BookingMail.GetDisplayName(), out string value))
+                    {
+                        string? htmlBody = System.IO.File.ReadAllText(value);
+
+                        var bodyBuilder = new BodyBuilder();
+                        bodyBuilder.HtmlBody = htmlBody
+                            .Replace("{id}", recipient.Id.ToString())
+                            .Replace("{name}", recipient.ContractName.ToString())
+                            .Replace("{signingDate}", recipient.SigningDate.ToString())
+                            .Replace("{startingDate}", recipient.StartDate.ToString())
+                            .Replace("{totalSalary}", recipient.TotalSalary.ToString());
+
+                        message.Body = bodyBuilder.ToMessageBody();
+                        messages.Add(message);
+                    }
+                }
+
+                // Use a single SmtpClient to send all messages
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+
+                try
+                {
+                    smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+
+                    foreach (var message in messages)
+                    {
+                        await smtp.SendAsync(message);
+                    }
+
+                    smtp.Disconnect(true);
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions if sending any of the emails fails
+                    System.IO.Directory.CreateDirectory("mailssave");
+                    var emailsavefile = string.Format(@"mailssave/{0}.eml", Guid.NewGuid());
+                    await messages.First().WriteToAsync(emailsavefile);
+                    smtp.Disconnect(true);
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         public async Task<bool> SendEmailVerification(MailVerificationRequest request)
         {

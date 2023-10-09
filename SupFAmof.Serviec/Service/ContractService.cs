@@ -223,7 +223,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
-                                                .Where(x => x.CreatePersonId == accountId)
+                                                .Where(x => x.CreatePersonId == accountId && x.IsActive == true)
                                                 .ProjectTo<AdmissionContractResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)

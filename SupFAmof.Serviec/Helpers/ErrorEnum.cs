@@ -181,7 +181,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "This post is done")]
-             POST_OUTDATED= 4012,
+            POST_OUTDATED = 4012,
             //400
             [Display(Name = "Postion work time is duplicated to one that you are attending")]
             DUPLICATE_TIME_POSTION = 4013,
@@ -369,6 +369,11 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Contract not found")]
             NOT_FOUND_CONTRACT = 4041,
+        }
+
+        public enum SendEmailContractErrorEnum
+        {
+            
         }
     }
 }

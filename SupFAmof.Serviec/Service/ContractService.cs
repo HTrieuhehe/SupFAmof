@@ -419,10 +419,17 @@ namespace SupFAmof.Service.Service
                 }
 
                 //saving database
-                 
+                List<MailContractRequest> emailContractList = new List<MailContractRequest>();
+
                 foreach (int collab in collaboratorAccountId)
                 {
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
+
+                    if (checkCollab == null || checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                    {
+                        //account is banned
+                        continue;
+                    }
                 }
 
                 return new BaseResponseViewModel<bool>

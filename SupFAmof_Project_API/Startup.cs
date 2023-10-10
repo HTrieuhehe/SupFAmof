@@ -5,7 +5,6 @@ using ServiceStack.Redis;
 using SupFAmof.API.Mapper;
 using StackExchange.Redis;
 using Reso.Core.Extension;
-using SupFAmof.Data.Redis;
 using SupFAmof.API.Helpers;
 using SupFAmof.API.AppStart;
 using Google.Apis.Auth.OAuth2;
@@ -142,9 +141,6 @@ namespace SupFAmof.API
             builder.RegisterType<ContractService>().As<IContractService>();
 
 
-
-            //Dependency injection for redis
-            builder.RegisterType<Redis>().As<Data.Redis.IRedis>().SingleInstance();
 
             builder.Register<IRedisClientsManager>(c =>
             new RedisManagerPool(Configuration.GetConnectionString("RedisConnectionString")));

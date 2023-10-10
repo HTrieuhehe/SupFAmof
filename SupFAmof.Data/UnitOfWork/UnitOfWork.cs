@@ -1,5 +1,4 @@
 ﻿using SupFAmof.Data.Entity;
-using SupFAmof.Data.Redis;
 using SupFAmof.Data.Repository;
 using System;
 using System.Collections.Generic;
@@ -13,12 +12,10 @@ namespace SupFAmof.Data.UnitOfWork
     {
         //private readonly SupFAmOf_Stg_DbContext _context;
         private readonly SupFAmOf_Stg_Db_Ver_2Context _context;
-        private readonly IRedis _redisService;
 
-        public UnitOfWork(SupFAmOf_Stg_Db_Ver_2Context context, IRedis redisService)
+        public UnitOfWork(SupFAmOf_Stg_Db_Ver_2Context context)
         {
             _context = context;
-            _redisService = redisService;
         }
 
         private readonly Dictionary<Type, object> reposotories = new Dictionary<Type, object>();
@@ -28,7 +25,7 @@ namespace SupFAmof.Data.UnitOfWork
             Type type = typeof(T);
             if (!reposotories.TryGetValue(type, out object value))
             {
-                var genericRepos = new GenericRepository<T>(_context, _redisService);
+                var genericRepos = new GenericRepository<T>(_context);
                 reposotories.Add(type, genericRepos);
                 return genericRepos;
             }

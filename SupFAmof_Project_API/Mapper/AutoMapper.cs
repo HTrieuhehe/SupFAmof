@@ -205,6 +205,10 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateAccountBannedRequest, AccountBanned>().ReverseMap();
             CreateMap<UpdateAccountBannedRequest, AccountBanned>().ReverseMap();
             #endregion
+
+            #region Account Contract
+            CreateMap<CreateAccountContractRequest, AccountContract>().ReverseMap();
+            #endregion
         }
     }
 }

@@ -28,12 +28,14 @@ namespace SupFAmof.Service.Service
     public class ContractService : IContractService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ISendMailService _sendMailService;
         private readonly IMapper _mapper;
 
-        public ContractService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContractService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService mailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _sendMailService = mailService;
         }
 
         public async Task<BaseResponseViewModel<AdmissionContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request)
@@ -418,19 +420,69 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
-                //saving database
-                List<MailContractRequest> emailContractList = new List<MailContractRequest>();
-
                 foreach (int collab in collaboratorAccountId)
                 {
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
 
+                    //if account banned. status will fail
                     if (checkCollab == null || checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
                     {
                         //account is banned
+
+                        CreateAccountContractRequest accountContractNew = new CreateAccountContractRequest()
+                        {
+                            ContractId = contractId,
+                            AccountId = collab,
+                            SubmittedFile = null,
+                        };
+
+                        var mapAccountContract = _mapper.Map<AccountContract>(accountContractNew);
+
+                        mapAccountContract.Status = (int)AccountContractStatusEnum.Fail;
+                        mapAccountContract.CreateAt = Ultils.GetCurrentDatetime();
+
+                        await _unitOfWork.Repository<AccountContract>().InsertAsync(mapAccountContract);
                         continue;
                     }
+
+                    //account allow to send email
+
+                    //convert doc byte to xml and filling name and convert back to byte 
+
+                    //TODO...
+
+                    CreateAccountContractRequest accountContract = new CreateAccountContractRequest()
+                    {
+                        ContractId = contractId,
+                        AccountId = collab,
+                        SubmittedFile = null,
+                    };
+
+                    var accountContractMapping = _mapper.Map<AccountContract>(accountContract);
+
+                    accountContractMapping.Status = (int)AccountContractStatusEnum.Pending;
+                    accountContractMapping.CreateAt = Ultils.GetCurrentDatetime();
+
+                    var mailContractRequest = new MailContractRequest()
+                    {
+                        Id = contractId.ToString(),
+                        Email = checkCollab.Email.ToString(),
+                        ContractName = checkContract.ContractName.ToString(),
+                        SigningDate = checkContract.SigningDate.ToString(),
+                        StartDate = checkContract.StartDate.ToString(),
+                        TotalSalary = checkContract.TotalSalary.ToString(),
+                    };
+
+                    //send Email
+                    await _sendMailService.SendEmailContract(mailContractRequest);
+
+                    //sending Notification
+                    //TODO...
+
+                    await _unitOfWork.Repository<AccountContract>().InsertAsync(accountContractMapping);
                 }
+
+                await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<bool>
                 {
@@ -447,6 +499,13 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+    
+        private byte[] FillingDocTransfer(byte[] docByte)
+        {
+            byte[] something = null;
+
+            return something;
         }
     }
 }

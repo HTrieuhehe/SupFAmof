@@ -38,11 +38,21 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         public int? TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }
+
+        [Required(ErrorMessage = "Position Name is required")]
+        [MaxLength(20, ErrorMessage = "Position Name cannot exceed 20 characters.")]
         public string? PositionName { get; set; }
+
         [Required]
+        [MaxLength(100, ErrorMessage = "Position Description cannot exceed 100 characters.")]
+        public string? PositionDescription { get; set;}
+
+        [Required]
+        [MaxLength(100, ErrorMessage = "School Name cannot exceed 100 characters.")]
         public string? SchoolName { get; set; }
 
         [Required]
+        [MaxLength(500, ErrorMessage = "Location cannot exceed 500 characters.")]
         public string? Location { get; set; }
 
         [Required]
@@ -85,13 +95,20 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Int]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Position Name is required")]
+        [MaxLength(20, ErrorMessage = "Position Name cannot exceed 20 characters.")]
         public string? PositionName { get; set; }
 
         [Required]
+        [MaxLength(100, ErrorMessage = "Position Description cannot exceed 100 characters.")]
+        public string? PositionDescription { get; set; }
+
+        [Required]
+        [MaxLength(100, ErrorMessage = "School Name cannot exceed 100 characters.")]
         public string? SchoolName { get; set; }
 
         [Required]
+        [MaxLength(500, ErrorMessage = "Location cannot exceed 500 characters.")]
         public string? Location { get; set; }
 
         [Required]

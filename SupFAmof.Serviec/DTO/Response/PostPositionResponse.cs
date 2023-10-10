@@ -15,6 +15,7 @@ namespace SupFAmof.Service.DTO.Response
         public int? TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }
         public string? PositionName { get; set; }
+        public string? PositionDescription { get; set; }
         public string? SchoolName { get; set; }
         public string? Location { get; set; }
         public string? Latitude { get; set; }

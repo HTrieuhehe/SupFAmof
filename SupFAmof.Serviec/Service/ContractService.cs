@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NTQ.Sdk.Core.Utilities;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
+using ServiceStack.Web;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -38,7 +40,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                DateTime getCurrentTime = Ultils.GetCurrentTime();
+                DateTime getCurrentTime = Ultils.GetCurrentDatetime();
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (checkAccount == null)
@@ -108,7 +110,7 @@ namespace SupFAmof.Service.Service
 
             try
             {
-                DateTime getCurrentTime = Ultils.GetCurrentTime();
+                DateTime getCurrentTime = Ultils.GetCurrentDatetime();
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (checkAccount == null)
@@ -131,7 +133,16 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
-                
+                var checkSendEmailContract = await _unitOfWork.Repository<AccountContract>()
+                                                              .GetAll()
+                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id || x.Status == (int)AccountContractStatusEnum.Confirm);
+
+                if (checkSendEmailContract != null)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.UPDATE_CONTRACT_INVALID,
+                                        ContractErrorEnum.UPDATE_CONTRACT_INVALID.GetDisplayName());
+                }
+
                 var contractUpdate = _mapper.Map<UpdateAdmissionContractRequest, Contract>(request, contract);
 
                 //validate date
@@ -142,7 +153,8 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_START_DATE.GetDisplayName());
                 }
 
-                else if (contractUpdate.SigningDate < getCurrentTime.AddDays(2))
+                //at least signing date must greater than 1 day
+                else if (contractUpdate.SigningDate < getCurrentTime.AddDays(1))
                 {
                     throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE,
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName());
@@ -159,6 +171,8 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<Contract>().UpdateDetached(contractUpdate);
                 await _unitOfWork.CommitAsync();
 
+                //send update notification
+
                 return new BaseResponseViewModel<AdmissionContractResponse>
                 {
                     Status = new StatusViewModel
@@ -167,7 +181,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionContractResponse>(contract)
+                    Data = _mapper.Map<AdmissionContractResponse>(contractUpdate)
 
                 };
             }
@@ -210,7 +224,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
-                                                .Where(x => x.CreatePersonId == accountId)
+                                                .Where(x => x.CreatePersonId == accountId && x.IsActive == true)
                                                 .ProjectTo<AdmissionContractResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
@@ -239,6 +253,7 @@ namespace SupFAmof.Service.Service
             {
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
                                                 .ProjectTo<ContractResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.IsActive == true)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
                                                 .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
@@ -324,6 +339,104 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionContractResponse>> DisableAdmissionContract(int accountId, int contractId)
+        {
+            try
+            {
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID,
+                                        ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID.GetDisplayName());
+                }
+
+                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId);
+
+                if (contract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                var checkSendEmailContract = await _unitOfWork.Repository<AccountContract>()
+                                                              .GetAll()
+                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id || x.Status == (int)AccountContractStatusEnum.Confirm);
+
+                if (checkSendEmailContract != null)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.DISABLE_CONTRACT_INVALID,
+                                        ContractErrorEnum.DISABLE_CONTRACT_INVALID.GetDisplayName());
+                }
+
+                contract.IsActive = false;
+                contract.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Contract>().UpdateDetached(contract);
+                await _unitOfWork.CommitAsync();
+
+                //send disable notification
+
+                return new BaseResponseViewModel<AdmissionContractResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AdmissionContractResponse>(contract)
+
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId)
+        {
+            try
+            {
+                var checkContract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId && x.CreatePersonId == accountId);
+
+                if (checkContract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                //saving database
+                 
+                foreach (int collab in collaboratorAccountId)
+                {
+                    var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
+                }
+
+                return new BaseResponseViewModel<bool>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Saving success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = true
+                };
+            }
+            catch(Exception ex)
             {
                 throw;
             }

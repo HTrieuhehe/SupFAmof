@@ -59,11 +59,6 @@ namespace SupFAmof.Service.Utilities
 
         public static string ToSnakeCase(this string o) => Regex.Replace(o, @"(\w)([A-Z])", "$1-$2").ToLower();
 
-        public static DateTime GetCurrentDatetime()
-        {
-            return DateTime.UtcNow.AddHours(7);
-        }
-
         public static bool CheckVNPhone(string phoneNumber)
         {
             string strRegex = @"(^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$)";
@@ -124,7 +119,7 @@ namespace SupFAmof.Service.Utilities
             return true;
         }
 
-        public static DateTime GetCurrentTime()
+        public static DateTime GetCurrentDatetime()
         {
             TimeZoneInfo hoChiMinhTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, hoChiMinhTimeZone);

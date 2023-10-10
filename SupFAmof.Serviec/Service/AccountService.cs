@@ -804,13 +804,12 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-
-
-
                 var account = _unitOfWork.Repository<Account>().GetAll()
-                    .Where(x => x.Email.Contains(email) && x.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                    .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
-                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                         .Where(x => x.Email.Contains(email) && x.RoleId == (int)SystemRoleEnum.Collaborator && x.IsActive == true)
+                                         .Include(x => x.AccountBanneds)
+                                         .OrderByDescending(x => x.AccountBanneds.Max(b => b.DayEnd))
+                                         .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
+                                        . PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<AccountResponse>()
                 {
@@ -841,17 +840,56 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                DateTime updateTimeRemain = (DateTime)account.UpdateAt;
-
-                if (account.UpdateAt == updateTimeRemain.AddMinutes(5))
+                if (account.UpdateAt.HasValue)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
-                                        AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                    if (account.UpdateAt == account.UpdateAt.Value.AddMinutes(5))
+                    {
+                        throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
+                                            AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                    }
+
+                    var phoneCheck = Ultils.CheckVNPhone(request.Phone);
+                    var stuIdCheck = Ultils.CheckStudentId(request.AccountInformation.IdStudent);
+                    //var personalIdCheck = Ultils.CheckPersonalId(request.AccountInformation.IdentityNumber);
+
+                    if (phoneCheck == false)
+                    {
+                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
+                                            AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                    }
+
+                    if (stuIdCheck == false)
+                    {
+                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
+                                            AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                    }
+
+                    if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
+                    {
+                        request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
+                    }
+
+                    account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
+                    account.UpdateAt = Ultils.GetCurrentDatetime();
+
+                    await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AccountResponse>(account)
+                    };
                 }
 
                 var checkPhone = Ultils.CheckVNPhone(request.Phone);
                 var checkStuId = Ultils.CheckStudentId(request.AccountInformation.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.AccountInformation.IdentityNumber);
+                //var checkPersonalId = Ultils.CheckPersonalId(request.AccountInformation.IdentityNumber);
 
                 if (checkPhone == false)
                 {

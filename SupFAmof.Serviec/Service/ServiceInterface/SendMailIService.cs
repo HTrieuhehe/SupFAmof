@@ -6,5 +6,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
        Task<bool> SendEmailVerification(MailVerificationRequest request);
        Task<bool> SendEmailBooking(List<MailBookingRequest> request);
+       Task<bool> SendEmailContract(List<MailContractRequest> request);
     }
 }

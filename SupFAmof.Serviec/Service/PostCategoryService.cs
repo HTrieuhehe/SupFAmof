@@ -113,7 +113,7 @@ namespace SupFAmof.Service.Service
 
                 result.PostCategoryType = result.PostCategoryType.ToUpper();
                 result.IsActive = true;
-                result.CreateAt = Ultils.GetCurrentTime();
+                result.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<PostCategory>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();

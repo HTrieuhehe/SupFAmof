@@ -217,7 +217,7 @@ namespace SupFAmof.Service.Service
                 post.AccountId = accountId;
                 post.AttendanceComplete = false;
                 post.Status = (int)PostStatusEnum.Opening;
-                post.CreateAt = Ultils.GetCurrentTime();
+                post.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
                 await _unitOfWork.CommitAsync();

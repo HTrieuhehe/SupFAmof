@@ -59,7 +59,7 @@ namespace SupFAmof.Service.Service
                 int bannedAttempt = accountBanned.Count();
 
                 // get current Time for 
-                var currentTime = Ultils.GetCurrentTime();
+                var currentTime = Ultils.GetCurrentDatetime();
 
                 //find if there is any banned day in range
                 var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentTime && x.DayStart <= request.DayEnd);

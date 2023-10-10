@@ -40,7 +40,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                DateTime getCurrentTime = Ultils.GetCurrentTime();
+                DateTime getCurrentTime = Ultils.GetCurrentDatetime();
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (checkAccount == null)
@@ -110,7 +110,7 @@ namespace SupFAmof.Service.Service
 
             try
             {
-                DateTime getCurrentTime = Ultils.GetCurrentTime();
+                DateTime getCurrentTime = Ultils.GetCurrentDatetime();
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (checkAccount == null)
@@ -253,6 +253,7 @@ namespace SupFAmof.Service.Service
             {
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
                                                 .ProjectTo<ContractResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.IsActive == true)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
                                                 .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
@@ -400,6 +401,42 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId)
+        {
+            try
+            {
+                var checkContract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId && x.CreatePersonId == accountId);
+
+                if (checkContract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                //saving database
+                 
+                foreach (int collab in collaboratorAccountId)
+                {
+                    var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
+                }
+
+                return new BaseResponseViewModel<bool>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Saving success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = true
+                };
+            }
+            catch(Exception ex)
             {
                 throw;
             }

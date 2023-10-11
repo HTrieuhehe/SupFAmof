@@ -496,7 +496,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<ContractResponse>(contract)
+                    Data = _mapper.Map<AccountContractResponse>(contract)
 
                 };
             }

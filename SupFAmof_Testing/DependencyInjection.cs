@@ -53,7 +53,7 @@ namespace SupFAmof_Testing
                 Paths = new Dictionary<string, string>
     {
         { "VerificationMail", "/app/MailTemplate/VeryficationEmailTemplate.html" },
-        { "BookingMail", "SupFAmof.Serviec/MailTemplate/BookingEmailTemplate.html" },
+        { "BookingMail", "C:\\Users\\Admin\\OneDrive\\Desktop\\FPT SPRING 2023\\Đồ Án Kì 9\\SupFAmof\\SupFAmof.Serviec\\MailTemplate\\BookingEmailTemplate.html" },
         { "ContractMail", "/app/MailTemplate/Contract.html" }
     }
             };

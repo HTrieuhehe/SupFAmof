@@ -18,10 +18,10 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-     - name: Run tests
+    - name: Run tests
       run: |
         dotnet test
-        
+
     - name: Log in to Docker Hub
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -43,5 +43,3 @@ jobs:
           sudo docker rm my-testdeploy || true
           sudo docker pull manh222/supfamof:0.0.4
           sudo docker compose -f /home/ubuntu/my_app/docker-compose.yml up -d
-
-

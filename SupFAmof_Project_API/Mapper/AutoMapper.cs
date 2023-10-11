@@ -221,6 +221,13 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateAccountContractRequest, AccountContract>().ReverseMap();
             CreateMap<AccountContract, AccountContractResponse>().ReverseMap();
             #endregion
+
+            #region 
+
+            CreateMap<AccountReportProblem, AccountReportProblemResponse>().ReverseMap();
+            CreateMap<CreateAccountReportProblemRequest, AccountReportProblem>();
+
+            #endregion
         }
     }
 }

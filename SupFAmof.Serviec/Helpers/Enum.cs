@@ -117,5 +117,17 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Fail")]
             Fail = 4,
         }
+
+        public enum ReportProblemStatusEnum
+        {
+            [Display(Name = "Pending")]
+            Pending = 1,
+
+            [Display(Name = "Approve")]
+            Approve = 2,
+
+            [Display(Name = "Reject")]
+            Reject = 3,
+        }
     }
 }

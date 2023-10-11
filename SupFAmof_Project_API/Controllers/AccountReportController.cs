@@ -25,25 +25,25 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AccountReportResponse>>> GetAccountReports
-        ([FromQuery] AccountReportResponse filter, [FromQuery] PagingRequest paging)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _accountReportService.GetAccountReports(filter, paging);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
+        //[HttpGet("getAll")]
+        //public async Task<ActionResult<BaseResponsePagingViewModel<AccountReportResponse>>> GetAccountReports
+        //([FromQuery] AccountReportResponse filter, [FromQuery] PagingRequest paging)
+        //{
+        //    try
+        //    {
+        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //        return await _accountReportService.GetAccountReports(filter, paging);
+        //    }
+        //    catch (ErrorResponse ex)
+        //    {
+        //        return BadRequest(ex.Error);
+        //    }
+        //}
 
         /// <summary>
         /// Get Account Report by Token

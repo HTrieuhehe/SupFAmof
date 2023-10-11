@@ -24,6 +24,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountInformation> AccountInformations { get; set; } = null!;
         public virtual DbSet<AccountReactivation> AccountReactivations { get; set; } = null!;
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
+        public virtual DbSet<AccountReportProblem> AccountReportProblems { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
@@ -233,6 +234,27 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountReport_Post");
+            });
+
+            modelBuilder.Entity<AccountReportProblem>(entity =>
+            {
+                entity.ToTable("AccountReportProblem");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ProblemNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReplyDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ReplyNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReportDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.AccountReportProblems)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReportProblem_Account");
             });
 
             modelBuilder.Entity<ActionLog>(entity =>

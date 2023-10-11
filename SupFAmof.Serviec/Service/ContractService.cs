@@ -391,10 +391,6 @@ namespace SupFAmof.Service.Service
 
                     //account allow to send email
 
-                    //convert doc byte to xml and filling name and convert back to byte 
-
-                    //TODO...
-
                     CreateAccountContractRequest accountContract = new CreateAccountContractRequest()
                     {
                         ContractId = contractId,

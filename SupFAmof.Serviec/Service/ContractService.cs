@@ -248,63 +248,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-
-        public async Task<BaseResponsePagingViewModel<ContractResponse>> GetContracts(ContractResponse filter, PagingRequest paging)
-        {
-            try
-            {
-                var contract = _unitOfWork.Repository<Contract>().GetAll()
-                                                .ProjectTo<ContractResponse>(_mapper.ConfigurationProvider)
-                                                .Where(x => x.IsActive == true)
-                                                .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
-
-                return new BaseResponsePagingViewModel<ContractResponse>
-                {
-                    Metadata = new PagingsMetadata
-                    {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = contract.Item1
-                    },
-                    Data = contract.Item2.ToList(),
-                };
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public async Task<BaseResponseViewModel<ContractResponse>> GetContractsById(int contractId)
-        {
-            try
-            {
-                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId);
-                if (contract == null)
-                {
-                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
-                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
-                }
-                return new BaseResponseViewModel<ContractResponse>
-                {
-                    Status = new StatusViewModel
-                    {
-                        Message = "Success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = _mapper.Map<ContractResponse>(contract)
-
-                };
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
+        
         public async Task<BaseResponsePagingViewModel<AdmissionContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging)
         {
             //Search by Name
@@ -447,10 +391,6 @@ namespace SupFAmof.Service.Service
 
                     //account allow to send email
 
-                    //convert doc byte to xml and filling name and convert back to byte 
-
-                    //TODO...
-
                     CreateAccountContractRequest accountContract = new CreateAccountContractRequest()
                     {
                         ContractId = contractId,
@@ -507,5 +447,65 @@ namespace SupFAmof.Service.Service
 
             return something;
         }
+
+        #region Collab Contract
+        
+        public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var contract = _unitOfWork.Repository<AccountContract>().GetAll()
+                                                .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.Status == (int)AccountContractStatusEnum.Pending)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(filter)
+                                                .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AccountContractResponse>
+                {
+                    Metadata = new PagingsMetadata
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = contract.Item1
+                    },
+                    Data = contract.Item2.ToList(),
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountContractResponse>> GetContractsById(int contractId)
+        {
+            try
+            {
+                var contract = await _unitOfWork.Repository<AccountContract>().FindAsync(x => x.Id == contractId);
+                if (contract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+                return new BaseResponseViewModel<AccountContractResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AccountContractResponse>(contract)
+
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

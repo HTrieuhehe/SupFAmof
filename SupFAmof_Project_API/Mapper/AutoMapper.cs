@@ -176,9 +176,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<Contract, ContractResponse>().ReverseMap();
             CreateMap<CreateAdmissionContractRequest, Contract>().ReverseMap();
             CreateMap<UpdateAdmissionContractRequest, Contract>().ReverseMap();
-            
-            #region Contract
 
+            #region Contract
+            CreateMap<Contract, ContractResponse>().ReverseMap();
             #endregion
 
             #region Post
@@ -219,6 +219,7 @@ namespace SupFAmof.API.Mapper
 
             #region Account Contract
             CreateMap<CreateAccountContractRequest, AccountContract>().ReverseMap();
+            CreateMap<AccountContract, AccountContractResponse>().ReverseMap();
             #endregion
         }
     }

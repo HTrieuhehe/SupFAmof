@@ -20,7 +20,7 @@ jobs:
 
      - name: Run tests
       run: |
-        dotnet test # Replace this with the actual command to run your tests
+        dotnet test
         
     - name: Log in to Docker Hub
       run: |

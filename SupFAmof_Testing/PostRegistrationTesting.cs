@@ -59,5 +59,17 @@ namespace SupFAmof_Testing
             var result = _postRegistrationService.ApprovePostRegistrationRequest(accountId, ids,approve);
             Assert.NotNull(result.Result);
         }
+        [Fact, TestPriority(4)]
+        public void ApproveUpdateRequestByAdmission_Show200Status()
+        {
+            List<int> ids = new List<int>
+            {
+                20
+            };
+            bool approve = true;
+
+            var result = _postRegistrationService.ApproveUpdateRequest(ids, approve);
+            Assert.NotNull(result.Result);
+        }
     }
 }

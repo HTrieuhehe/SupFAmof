@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Linq;
 using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -9,7 +8,6 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using System.Runtime.CompilerServices;
 using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -88,7 +86,7 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        public async Task<BaseResponseViewModel<PostRegistrationResponse>> CreatePostRegistration(int accountId ,PostRegistrationRequest request)
+        public async Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId ,PostRegistrationRequest request)
         {
             //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY,CHECK IF USER HAS A TRAINING POSITION 
             try
@@ -192,7 +190,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ALREADY_REGISTERED,
                                                 PostRegistrationErrorEnum.ALREADY_REGISTERED.GetDisplayName());
                 }
-                return new BaseResponseViewModel<PostRegistrationResponse>()
+                return new BaseResponseViewModel<CollabRegistrationResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -200,7 +198,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostRegistrationResponse>(postRegistration)
+                    Data = _mapper.Map<CollabRegistrationResponse>(postRegistration)
                 };
 
             }
@@ -259,20 +257,15 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
-                PostRegistration updateEntity = _mapper.Map<PostRegistration>(request);
-                if (updateEntity.SchoolBusOption == null)
+                if (request.PositionId != null)
                 {
-                    updateEntity.SchoolBusOption = original.SchoolBusOption;
+                    original.PostRegistrationDetails.First().PositionId = request.PositionId;
                 }
-                if (updateEntity.PostRegistrationDetails.Count() == 0)
+                if (request.SchoolBusOption.HasValue)
                 {
-                    updateEntity.PostRegistrationDetails = original.PostRegistrationDetails;
+                    original.SchoolBusOption = request.SchoolBusOption;
                 }
-                else
-                {
-                    updateEntity.PostRegistrationDetails.First().PostId = original.PostRegistrationDetails.First().PostId;
-
-                }
+                PostRegistration updateEntity = original;
                 PostPosition checkPostPostion = new PostPosition();
 
                 checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.PostRegistrationDetails.First().PostId &&
@@ -329,9 +322,9 @@ namespace SupFAmof.Service.Service
 
                                 PostRgupdateHistory postTgupdate = new PostRgupdateHistory
                                 {
-                                    PostId = original.PostRegistrationDetails.First().PostId,
-                                    PostRegistrationId = original.PostRegistrationDetails.First().PostRegistrationId,
-                                    PositionId = checkPostPostion.Id,
+                                    PostId = updateEntity.PostRegistrationDetails.First().PostId,
+                                    PostRegistrationId = updateEntity.PostRegistrationDetails.First().PostRegistrationId,
+                                    PositionId = updateEntity.PostRegistrationDetails.First().PositionId,
                                     BusOption = updateEntity.SchoolBusOption,
                                     CreateAt = updateEntity.CreateAt,
                                     Status = (int)PostRegistrationStatusEnum.Update_Request,
@@ -375,7 +368,7 @@ namespace SupFAmof.Service.Service
                             ErrorCode = 0
 
                         },
-                        Data = _mapper.Map<PostRegistrationResponse>(_unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefault(x => x.Id == postRegistrationId))
+                        Data = _mapper.Map<CollabRegistrationResponse>(_unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefault(x => x.Id == postRegistrationId))
                     };
                 }
                 else

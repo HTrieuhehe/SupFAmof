@@ -78,6 +78,7 @@ namespace SupFAmof.Service.Service
             {
                 var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
                                                .Where(x => x.AccountId == accountId)
+                                               .OrderByDescending(x => x.ReportDate)
                                                .ProjectTo<AccountReportProblemResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(filter)
@@ -102,7 +103,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging)
         {
             try
             {
@@ -118,9 +119,10 @@ namespace SupFAmof.Service.Service
 
                 var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
                                                .ProjectTo<AdmissionAccountReportProblemResponse>(_mapper.ConfigurationProvider)
-                                                .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
+                                               .OrderByDescending(x => x.ReportDate)
+                                               .DynamicFilter(filter)
+                                               .DynamicSort(filter)
+                                               .PagingQueryable(paging.Page, paging.PageSize,
                                                            Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>()
@@ -144,11 +146,19 @@ namespace SupFAmof.Service.Service
         public Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> RejectReportProblem(int accountId, UpdateAdmissionAccountReportProblemRequest request)
         {
             throw new NotImplementedException();
+
+            //check account
+
+            //mapping and commit
         }
 
         public Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> ApproveReportProblem(int accountId, UpdateAdmissionAccountReportProblemRequest request)
         {
             throw new NotImplementedException();
+
+            //check account
+
+            //mapping and commit
         }
     }
 }

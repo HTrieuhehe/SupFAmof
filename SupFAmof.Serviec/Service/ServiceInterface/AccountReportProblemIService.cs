@@ -12,7 +12,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IAccountReportProblemService
     {
         Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountReportProblemResponse>> CreateAccountReportProblem(int accountId, CreateAccountReportProblemRequest request);
 
         Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> ApproveReportProblem(int accountId, UpdateAdmissionAccountReportProblemRequest request);

@@ -168,6 +168,19 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.POST_PERMIT_NOT_ALLOWED.GetDisplayName());
                 }
 
+                //check document
+                foreach (var position in request.PostPositions)
+                {
+                    var checkdocument = await _unitOfWork.Repository<DocumentTemplate>().GetAll().FirstOrDefaultAsync(x => x.Id == position.DocumentId);
+
+                    if(checkdocument == null)
+                    {
+                        throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
+                                         DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $"in Position Name: {position.PositionName}");
+                    }
+                    continue;
+                }
+
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
                 if (request.DateFrom <= DateTime.Now)
@@ -505,7 +518,7 @@ namespace SupFAmof.Service.Service
                     Data = _mapper.Map<AdmissionPostResponse>(result)
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }

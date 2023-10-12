@@ -379,5 +379,12 @@ namespace SupFAmof.Service.Helpers
         {
             
         }
+
+        public enum ReportProblemErrorEnum
+        {
+            //404
+            [Display(Name = "Your Report Application Not Found")]
+            NOT_FOUND_REPORT = 4041,
+        }
     }
 }

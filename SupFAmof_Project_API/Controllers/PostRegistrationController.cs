@@ -73,7 +73,7 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Returns the newly created item</response>
         /// <response code="400">Failed to create</response>
         [HttpPost("create")]
-        public async Task<ActionResult<PostRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
+        public async Task<ActionResult<CollabRegistrationResponse>> CreatePostRegistration(PostRegistrationRequest request)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Update success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPost("update")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<CollabRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
         {
             try
             {

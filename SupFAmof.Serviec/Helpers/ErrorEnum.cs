@@ -181,10 +181,10 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "This post is done")]
-            POST_OUTDATED = 4012,
+            POST_OUTDATED = 4013,
             //400
             [Display(Name = "Postion work time is duplicated to one that you are attending")]
-            DUPLICATE_TIME_POSTION = 4013,
+            DUPLICATE_TIME_POSTION = 4014,
 
 
         }

@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NTQ.Sdk.Core.Utilities;
+using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
@@ -69,12 +72,81 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
+                                               .Where(x => x.AccountId == accountId)
+                                               .ProjectTo<AccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(filter)
+                                                .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AccountReportProblemResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = reportProblem.Item1
+                    },
+                    Data = reportProblem.Item2.ToList(),
+                };
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                //check admission permission
+
+                var checkAdmission = _unitOfWork.Repository<Account>().Find(x => x.Id == accountId && x.RoleId == (int)SystemRoleEnum.AdmissionManager);
+
+                if (checkAdmission == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
+                                               .ProjectTo<AdmissionAccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(filter)
+                                                .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = reportProblem.Item1
+                    },
+                    Data = reportProblem.Item2.ToList(),
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> RejectReportProblem(int accountId, UpdateAdmissionAccountReportProblemRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        public Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> ApproveReportProblem(int accountId, UpdateAdmissionAccountReportProblemRequest request)
         {
             throw new NotImplementedException();
         }

@@ -240,8 +240,6 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("AccountReportProblem");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.ProblemNote).HasMaxLength(500);
 
                 entity.Property(e => e.ReplyDate).HasColumnType("datetime");

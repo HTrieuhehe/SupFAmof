@@ -12,6 +12,7 @@ using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -41,8 +42,8 @@ namespace SupFAmof.Service.Service
 
             try
             {
-                var checkCertificate = _unitOfWork.Repository<AccountCertificate>().GetAll()
-                                                  .FirstOrDefault(a => a.AccountId == request.AccountId && a.TraningCertificateId == request.TraningCertificateId);
+                var checkCertificate = await _unitOfWork.Repository<AccountCertificate>().GetAll()
+                                                  .FirstOrDefaultAsync(a => a.AccountId == request.AccountId && a.TraningCertificateId == request.TraningCertificateId);
                 
                 if (checkCertificate != null) 
                 {
@@ -54,7 +55,10 @@ namespace SupFAmof.Service.Service
 
                 result.CreatePersonId = createPersonId;
                 result.Status = (int)AccountCertificateStatusEnum.Complete;
-                result.CreateAt = DateTime.Now;
+                result.CreateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<AccountCertificate>().InsertAsync(result);
+                await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountCertificateResponse>()
                 {

@@ -1,0 +1,17 @@
+﻿using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SupFAmof.Service.Service.ServiceInterface
+{
+    public interface IAccountReportProblemService
+    {
+        Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging);
+        Task<BaseResponseViewModel<AccountReportProblemResponse>> CreateAccountReportProblem(int accountId, CreateAccountReportProblemRequest request);
+    }
+}

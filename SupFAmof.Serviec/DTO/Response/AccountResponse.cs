@@ -24,6 +24,7 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? UpdateAt { get; set; }
 
         public AccountInformationResponse AccountInformation { get; set; }
+        public AccountCertificateResponse AccountCertificate { get; set; }
     }
 
     public class AccountInformationResponse

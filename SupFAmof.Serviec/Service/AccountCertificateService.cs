@@ -113,6 +113,7 @@ namespace SupFAmof.Service.Service
             {
                 var accountCerti = _unitOfWork.Repository<AccountCertificate>().GetAll()
                                     .ProjectTo<AccountCertificateResponse>(_mapper.ConfigurationProvider)
+                                    .OrderByDescending(x => x.CreateAt)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
                                     .PagingQueryable(paging.Page, paging.PageSize,
@@ -179,6 +180,7 @@ namespace SupFAmof.Service.Service
                 var accountCerti = _unitOfWork.Repository<AccountCertificate>().GetAll()
                                     .Where(a => a.AccountId == accountId)
                                     .ProjectTo<AccountCertificateResponse>(_mapper.ConfigurationProvider)
+                                    .OrderByDescending(x => x.CreateAt)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 

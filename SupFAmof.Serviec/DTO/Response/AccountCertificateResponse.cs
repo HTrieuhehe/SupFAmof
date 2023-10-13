@@ -16,7 +16,7 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? UpdateAt { get; set; }
 
         public virtual AccountResponse? CreatePerson { get; set; }
-        public virtual AccountResponse? Account { get; set; }
+        //public virtual AccountResponse? Account { get; set; }
         public virtual TrainingCertificateResponse? TraningCertificate { get; set; }
 
     }

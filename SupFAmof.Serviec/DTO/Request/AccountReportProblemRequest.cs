@@ -21,4 +21,19 @@ namespace SupFAmof.Service.DTO.Request
         //public string? ReplyNote { get; set; }
         //public int Status { get; set; }
     }
+
+    public class UpdateAdmissionAccountReportProblemRequest
+    {
+        //public int Id { get; set; }
+        //public int AccountId { get; set; }
+        //public DateTime ReportDate { get; set; }
+        //public DateTime? ReplyDate { get; set; }
+
+        [Required(ErrorMessage = "Reply Note is required.")]
+        [MaxLength(500, ErrorMessage = "Reply Note cannot exceed 500 characters.")]
+        public string? ReplyNote { get; set; }
+
+        //public string? ProblemNote { get; set; }
+        //public int Status { get; set; }
+    }
 }

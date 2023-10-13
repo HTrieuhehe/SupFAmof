@@ -172,10 +172,21 @@ namespace SupFAmof.API.Mapper
 
             #endregion
 
+            #region Admission Contract
+
             CreateMap<Contract, AdmissionContractResponse>().ReverseMap();
             CreateMap<Contract, ContractResponse>().ReverseMap();
             CreateMap<CreateAdmissionContractRequest, Contract>().ReverseMap();
             CreateMap<UpdateAdmissionContractRequest, Contract>().ReverseMap();
+
+            #endregion
+
+            #region Admission Account Report Problem
+
+            CreateMap<AccountReportProblem, AdmissionAccountReportProblemResponse>().ReverseMap();
+            CreateMap<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>().ReverseMap();
+
+            #endregion
 
             #region Contract
             CreateMap<Contract, ContractResponse>().ReverseMap();
@@ -199,6 +210,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<CheckInRequest, CheckAttendance>().ReverseMap();
             CreateMap<CheckOutRequest, CheckAttendance>().ReverseMap();
             #endregion
+
             #region Mail
                 CreateMap<PostRegistration, PostAttendee>()
             .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId))

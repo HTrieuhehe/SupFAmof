@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NTQ.Sdk.Core.Utilities;
+using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
@@ -69,14 +72,167 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
+                                               .Where(x => x.AccountId == accountId)
+                                               .OrderByDescending(x => x.ReportDate)
+                                               .ProjectTo<AccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(filter)
+                                                .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AccountReportProblemResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = reportProblem.Item1
+                    },
+                    Data = reportProblem.Item2.ToList(),
+                };
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
-        public Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAdmissionAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //check admission permission
+
+                var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
+                                               .ProjectTo<AdmissionAccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                                               .OrderByDescending(x => x.ReportDate)
+                                               .DynamicFilter(filter)
+                                               .DynamicSort(filter)
+                                               .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = reportProblem.Item1
+                    },
+                    Data = reportProblem.Item2.ToList(),
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> RejectReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        {
+            try
+            {
+                var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var report = await _unitOfWork.Repository<AccountReportProblem>().FindAsync(r => r.Id == reportId);
+
+                if (report == null)
+                {
+                    throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
+                                        ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
+                }
+
+                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
+
+                replyReport.ReplyDate = Ultils.GetCurrentDatetime();
+                replyReport.Status = (int)ReportProblemStatusEnum.Approve;
+
+                await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionAccountReportProblemResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AdmissionAccountReportProblemResponse>(report)
+
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> ApproveReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        {
+            try
+            {
+                var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var report = await _unitOfWork.Repository<AccountReportProblem>().FindAsync(r => r.Id == reportId);
+
+                if (report == null)
+                {
+                    throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
+                                        ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
+                }
+
+                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
+
+                replyReport.ReplyDate = Ultils.GetCurrentDatetime();
+                replyReport.Status = (int)ReportProblemStatusEnum.Reject;
+
+                await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionAccountReportProblemResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AdmissionAccountReportProblemResponse>(report)
+
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_INVALID = 4001,
 
             //400
-            [Display(Name = "Invalid ACcount Personal ID")]
+            [Display(Name = "Invalid Account Personal ID")]
             ACCOUNT_INVALID_PERSONAL_ID = 4002,
 
             //400
@@ -80,6 +80,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cannot update multiple time! Try after 5 minutes")]
             UPDATE_INVALUD = 4012,
+
+            //400
+            [Display(Name = "You did not have permission to use this function")]
+            PERMISSION_NOT_ALLOW = 4013,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -374,6 +378,13 @@ namespace SupFAmof.Service.Helpers
         public enum SendEmailContractErrorEnum
         {
             
+        }
+
+        public enum ReportProblemErrorEnum
+        {
+            //404
+            [Display(Name = "Your Report Application Not Found")]
+            NOT_FOUND_REPORT = 4041,
         }
     }
 }

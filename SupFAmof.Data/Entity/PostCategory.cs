@@ -7,7 +7,6 @@ namespace SupFAmof.Data.Entity
     {
         public PostCategory()
         {
-            PostTrainingCertificates = new HashSet<PostTrainingCertificate>();
             Posts = new HashSet<Post>();
         }
 
@@ -18,7 +17,6 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual ICollection<PostTrainingCertificate> PostTrainingCertificates { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
     }
 }

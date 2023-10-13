@@ -35,7 +35,7 @@ namespace SupFAmof.Service.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseResponseViewModel<AccountCertificateResponse>> CreateAccountCertificate(int createPersonId, CreateAccountCertificateRequest request)
+        public async Task<BaseResponseViewModel<AccountCertificateResponse>> CreateAccountCertificate(int certificateIssuerId, CreateAccountCertificateRequest request)
         {
             // Mỗi collab account có 1 và chỉ 1 certi/loại. Có thể có certi A, B, C
             // nhưng không được có > 1 certi cùng loại 
@@ -43,7 +43,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var checkCertificate = await _unitOfWork.Repository<AccountCertificate>().GetAll()
-                                                  .FirstOrDefaultAsync(a => a.AccountId == request.AccountId && a.TraningCertificateId == request.TraningCertificateId);
+                                                  .FirstOrDefaultAsync(a => a.AccountId == request.AccountId && a.TrainingCertificateId == request.TraningCertificateId);
                 
                 if (checkCertificate != null) 
                 {
@@ -53,7 +53,7 @@ namespace SupFAmof.Service.Service
 
                 var result = _mapper.Map<CreateAccountCertificateRequest, AccountCertificate>(request);
 
-                result.CreatePersonId = createPersonId;
+                result.CertificateIssuerId = certificateIssuerId;
                 result.Status = (int)AccountCertificateStatusEnum.Complete;
                 result.CreateAt = Ultils.GetCurrentDatetime();
 
@@ -135,7 +135,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountCertificateResponse>> UpdateAccountCertificate(int accountId, int traningCertificateId, int createPersonId)
+        public async Task<BaseResponseViewModel<AccountCertificateResponse>> UpdateAccountCertificate(int accountId, int traningCertificateId, int certificateIssuerId)
         {
             // chỉ có người tạo certi cho account mới có quyền update status
             // Mỗi collab account có 1 và chỉ 1 certi/loại. Có thể có certi A, B, C
@@ -143,7 +143,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountCertificate = _unitOfWork.Repository<AccountCertificate>().GetAll()
-                                                  .FirstOrDefault(a => a.AccountId == accountId && a.TraningCertificateId == traningCertificateId && a.CreatePersonId == createPersonId);
+                                                  .FirstOrDefault(a => a.AccountId == accountId && a.TrainingCertificateId == traningCertificateId && a.CertificateIssuerId == certificateIssuerId);
 
                 if (accountCertificate == null)
                 {

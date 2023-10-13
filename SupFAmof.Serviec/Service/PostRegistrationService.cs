@@ -721,7 +721,7 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckCertificate(PostRegistration request)
         {
             var userCertificate = _unitOfWork.Repository<AccountCertificate>()                    
-                .GetAll().Where(x=>x.AccountId == request.AccountId).Select(x=>x.TraningCertificateId).ToList() ?? new List<int>();
+                .GetAll().Where(x=>x.AccountId == request.AccountId).Select(x=>x.TrainingCertificateId).ToList() ?? new List<int>();
             var positionCertificate = await _unitOfWork.Repository<PostPosition>()
                                                         .FindAsync(x => x.Id == request.PostRegistrationDetails.First().PositionId);
             if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)

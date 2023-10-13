@@ -9,7 +9,6 @@ namespace SupFAmof.Data.Entity
         {
             AccountCertificates = new HashSet<AccountCertificate>();
             PostPositions = new HashSet<PostPosition>();
-            PostTrainingCertificates = new HashSet<PostTrainingCertificate>();
         }
 
         public int Id { get; set; }
@@ -20,6 +19,5 @@ namespace SupFAmof.Data.Entity
 
         public virtual ICollection<AccountCertificate> AccountCertificates { get; set; }
         public virtual ICollection<PostPosition> PostPositions { get; set; }
-        public virtual ICollection<PostTrainingCertificate> PostTrainingCertificates { get; set; }
     }
 }

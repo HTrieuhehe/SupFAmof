@@ -37,7 +37,6 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostRegistration> PostRegistrations { get; set; } = null!;
         public virtual DbSet<PostRegistrationDetail> PostRegistrationDetails { get; set; } = null!;
         public virtual DbSet<PostRgupdateHistory> PostRgupdateHistories { get; set; } = null!;
-        public virtual DbSet<PostTrainingCertificate> PostTrainingCertificates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
@@ -136,14 +135,14 @@ namespace SupFAmof.Data.Entity
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountCertificate_Account");
 
-                entity.HasOne(d => d.CreatePerson)
-                    .WithMany(p => p.AccountCertificateCreatePeople)
-                    .HasForeignKey(d => d.CreatePersonId)
+                entity.HasOne(d => d.CertificateIssuer)
+                    .WithMany(p => p.AccountCertificateCertificateIssuers)
+                    .HasForeignKey(d => d.CertificateIssuerId)
                     .HasConstraintName("FK_AccountCertificate_Account1");
 
-                entity.HasOne(d => d.TraningCertificate)
+                entity.HasOne(d => d.TrainingCertificate)
                     .WithMany(p => p.AccountCertificates)
-                    .HasForeignKey(d => d.TraningCertificateId)
+                    .HasForeignKey(d => d.TrainingCertificateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AccountCertificate_TranningCertificate");
             });
@@ -491,23 +490,6 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PostTGupdateHistory_PostRegistration");
-            });
-
-            modelBuilder.Entity<PostTrainingCertificate>(entity =>
-            {
-                entity.ToTable("PostTrainingCertificate");
-
-                entity.HasOne(d => d.PostTitle)
-                    .WithMany(p => p.PostTrainingCertificates)
-                    .HasForeignKey(d => d.PostTitleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTrainingCertificate_PostTitle");
-
-                entity.HasOne(d => d.TrainingCerti)
-                    .WithMany(p => p.PostTrainingCertificates)
-                    .HasForeignKey(d => d.TrainingCertiId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PostTrainingCertificate_TranningCertificate");
             });
 
             modelBuilder.Entity<Role>(entity =>

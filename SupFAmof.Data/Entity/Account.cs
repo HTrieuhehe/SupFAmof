@@ -10,7 +10,7 @@ namespace SupFAmof.Data.Entity
             AccountBankings = new HashSet<AccountBanking>();
             AccountBanneds = new HashSet<AccountBanned>();
             AccountCertificateAccounts = new HashSet<AccountCertificate>();
-            AccountCertificateCreatePeople = new HashSet<AccountCertificate>();
+            AccountCertificateCertificateIssuers = new HashSet<AccountCertificate>();
             AccountContracts = new HashSet<AccountContract>();
             AccountInformations = new HashSet<AccountInformation>();
             AccountReactivations = new HashSet<AccountReactivation>();
@@ -44,7 +44,7 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<AccountBanking> AccountBankings { get; set; }
         public virtual ICollection<AccountBanned> AccountBanneds { get; set; }
         public virtual ICollection<AccountCertificate> AccountCertificateAccounts { get; set; }
-        public virtual ICollection<AccountCertificate> AccountCertificateCreatePeople { get; set; }
+        public virtual ICollection<AccountCertificate> AccountCertificateCertificateIssuers { get; set; }
         public virtual ICollection<AccountContract> AccountContracts { get; set; }
         public virtual ICollection<AccountInformation> AccountInformations { get; set; }
         public virtual ICollection<AccountReactivation> AccountReactivations { get; set; }

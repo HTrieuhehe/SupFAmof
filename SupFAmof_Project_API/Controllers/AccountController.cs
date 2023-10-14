@@ -164,7 +164,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("updateAvatar")]
+        [HttpPatch("updateAvatar")]
         public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateAccountAvatar([FromBody] UpdateAccountAvatar imgUrl)
         {
             try

@@ -936,7 +936,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = _unitOfWork.Repository<Account>().Find(x => x.Id == accountId);
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
                 if (account == null)
                 {
@@ -950,12 +950,33 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID.GetDisplayName());
                 }
 
-                DateTime updateTimeRemain = (DateTime)account.UpdateAt;
+                //DateTime updateTimeRemain = (DateTime)account.UpdateAt;
 
-                if (account.UpdateAt == updateTimeRemain.AddMinutes(5))
+                if (account.UpdateAt.HasValue)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
-                                        AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                    if (account.UpdateAt == account.UpdateAt.Value.AddMinutes(5))
+                    {
+                        throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
+                                            AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                    }
+
+                    account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);
+
+                    account.UpdateAt = Ultils.GetCurrentDatetime();
+
+                    await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AccountResponse>(account)
+                    };
                 }
 
                 account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);

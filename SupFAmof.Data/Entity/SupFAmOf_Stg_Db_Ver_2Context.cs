@@ -31,6 +31,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
         public virtual DbSet<Fcmtoken> Fcmtokens { get; set; } = null!;
+        public virtual DbSet<NotificationHistory> NotificationHistories { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
         public virtual DbSet<PostAttendee> PostAttendees { get; set; } = null!;
         public virtual DbSet<PostCategory> PostCategories { get; set; } = null!;
@@ -348,6 +349,23 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.Fcmtokens)
                     .HasForeignKey(d => d.StaffId)
                     .HasConstraintName("FK_AccessToken_Staff");
+            });
+
+            modelBuilder.Entity<NotificationHistory>(entity =>
+            {
+                entity.ToTable("NotificationHistory");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Text).HasMaxLength(500);
+
+                entity.Property(e => e.Title).HasMaxLength(100);
+
+                entity.HasOne(d => d.Recipient)
+                    .WithMany(p => p.NotificationHistories)
+                    .HasForeignKey(d => d.RecipientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NotificationHistory_Account");
             });
 
             modelBuilder.Entity<Post>(entity =>

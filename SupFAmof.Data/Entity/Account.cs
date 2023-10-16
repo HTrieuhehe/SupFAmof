@@ -19,6 +19,7 @@ namespace SupFAmof.Data.Entity
             CheckAttendances = new HashSet<CheckAttendance>();
             Contracts = new HashSet<Contract>();
             Fcmtokens = new HashSet<Fcmtoken>();
+            NotificationHistories = new HashSet<NotificationHistory>();
             PostAttendees = new HashSet<PostAttendee>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
@@ -53,6 +54,7 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<CheckAttendance> CheckAttendances { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
         public virtual ICollection<Fcmtoken> Fcmtokens { get; set; }
+        public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }
         public virtual ICollection<PostAttendee> PostAttendees { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }

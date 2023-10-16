@@ -129,5 +129,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Reject")]
             Reject = 3,
         }
+
+        public enum NotificationStatusEnum
+        {
+            [Display(Name = "Sent")]
+            Sent = 1,
+
+            [Display(Name = "Failed")]
+            Failed = 2,
+        }    
     }
 }

@@ -140,6 +140,7 @@ namespace SupFAmof.API
             builder.RegisterType<AccountBannedService>().As<IAccountBannedService>();
             builder.RegisterType<ContractService>().As<IContractService>();
             builder.RegisterType<AccountReportProblemService>().As<IAccountReportProblemService>();
+            builder.RegisterType<NotificationHistoryService>().As<INotificationService>();
 
 
 

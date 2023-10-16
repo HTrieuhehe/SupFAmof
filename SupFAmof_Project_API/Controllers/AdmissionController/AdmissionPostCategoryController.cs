@@ -17,9 +17,9 @@ namespace SupFAmof.API.Controllers.AdmissionController
     {
         private readonly IPostCategoryService _postTitleService;
 
-        public AdmissionPostCategoryController(IPostCategoryService postTitleService)
+        public AdmissionPostCategoryController(IPostCategoryService postCategoryService)
         {
-            _postTitleService = postTitleService;
+            _postTitleService = postCategoryService;
         }
 
         /// <summary>

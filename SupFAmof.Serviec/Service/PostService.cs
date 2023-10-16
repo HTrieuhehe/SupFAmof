@@ -597,7 +597,8 @@ namespace SupFAmof.Service.Service
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
-                                        .OrderByDescending(x => x.Priority)
+                                        .OrderByDescending(x => x.CreateAt)
+                                        .ThenByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -649,6 +650,8 @@ namespace SupFAmof.Service.Service
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
+                                        .OrderByDescending(x => x.CreateAt)
+                                        .ThenByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 

@@ -13,6 +13,6 @@ namespace SupFAmof.Data.Entity
         public DateTime? UpdateAt { get; set; }
 
         public virtual Account? Account { get; set; }
-        public virtual staff? Staff { get; set; }
+        public virtual Admin? Staff { get; set; }
     }
 }

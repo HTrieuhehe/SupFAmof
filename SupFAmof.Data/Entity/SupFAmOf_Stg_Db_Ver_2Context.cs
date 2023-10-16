@@ -26,6 +26,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<AccountReportProblem> AccountReportProblems { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
+        public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
@@ -40,7 +41,6 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
-        public virtual DbSet<staff> staff { get; set; } = null!;
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //        {
@@ -261,6 +261,21 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.ActionLog1).HasColumnName("ActionLog");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.ToTable("Admin");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(100);
+
+                entity.Property(e => e.Password).HasMaxLength(256);
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Username).HasMaxLength(100);
             });
 
             modelBuilder.Entity<CheckAttendance>(entity =>
@@ -531,21 +546,6 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Account");
-            });
-
-            modelBuilder.Entity<staff>(entity =>
-            {
-                entity.ToTable("Staff");
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name).HasMaxLength(100);
-
-                entity.Property(e => e.Password).HasMaxLength(256);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Username).HasMaxLength(100);
             });
 
             OnModelCreatingPartial(modelBuilder);

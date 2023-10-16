@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SupFAmof.Data.Entity
 {
-    public partial class staff
+    public partial class Admin
     {
-        public staff()
+        public Admin()
         {
             Fcmtokens = new HashSet<Fcmtoken>();
         }

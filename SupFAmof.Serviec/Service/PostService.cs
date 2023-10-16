@@ -60,6 +60,16 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
+                //validate nếu post chưa xong thì không được end
+                if (post.DateFrom > Ultils.GetCurrentDatetime() 
+                    || post.DateTo > Ultils.GetCurrentDatetime() 
+                    || post.PostPositions.Any(x => x.TimeFrom >= Ultils.GetCurrentDatetime().TimeOfDay 
+                                                || x.TimeTo > Ultils.GetCurrentDatetime().TimeOfDay))
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_END_POST,
+                                        PostErrorEnum.INVALID_END_POST.GetDisplayName());
+                }
+
                 post.Status = (int)PostStatusEnum.Ended;
                 post.UpdateAt = DateTime.Now;
 
@@ -116,8 +126,8 @@ namespace SupFAmof.Service.Service
 
                     if (totalPostRegist.Count() != item.Amount)
                     {
-                        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_ENDING_POST,
-                                            PostErrorEnum.INVALID_ENDING_POST.GetDisplayName());
+                        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_RUN_POST,
+                                            PostErrorEnum.INVALID_RUN_POST.GetDisplayName());
                     }
                 }
 

@@ -258,7 +258,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "Post are missing collaborator! Cannot Ended!")]
-            INVALID_ENDING_POST = 4005,
+            INVALID_RUN_POST = 4005,
 
             //400
             [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
@@ -271,6 +271,10 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Post Position Not Found")]
             POSITION_NOT_FOUND = 4042,
+
+            //404
+            [Display(Name = "Post Position Not Found")]
+            INVALID_END_POST = 4043,
         }
 
         public enum DocumentErrorEnum

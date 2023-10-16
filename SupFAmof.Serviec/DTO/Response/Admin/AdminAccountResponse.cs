@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SupFAmof.Service.DTO.Response
+namespace SupFAmof.Service.DTO.Response.Admin
 {
-    public class StaffResponse
+    public class AdminAccountResponse
     {
         public int Id { get; set; }
         public string? Name { get; set; }

@@ -28,10 +28,10 @@ namespace SupFAmof.Service.Utilities
             return random.Next(min, max + 1);
         }
 
-        public static byte[] GetHash(string password, string fineSugar)
+        public static byte[] GetHash(string password, string supFAmOf)
         {
             //convert conbine password and config of appsetting
-            byte[] byteCode = Encoding.Unicode.GetBytes(string.Concat(password, fineSugar));
+            byte[] byteCode = Encoding.Unicode.GetBytes(string.Concat(password, supFAmOf));
 
             SHA256Managed hashCode = new SHA256Managed();
             byte[] pass = hashCode.ComputeHash(byteCode);

@@ -14,10 +14,11 @@ using Service.Commons;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using SupFAmof.Service.DTO.Response.Admin;
 
 namespace SupFAmof.Service.Service
 {
-    public class StaffService : IStaffService
+    public class AdminAccountService : IAdminAccountService
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +26,7 @@ namespace SupFAmof.Service.Service
         private readonly IFcmTokenService _fcmTokenService;
         private readonly string _supFAmof;
 
-        public StaffService(IMapper mapper, IUnitOfWork unitOfWork, IConfiguration configuration, IFcmTokenService fcmTokenService)
+        public AdminAccountService(IMapper mapper, IUnitOfWork unitOfWork, IConfiguration configuration, IFcmTokenService fcmTokenService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -34,28 +35,28 @@ namespace SupFAmof.Service.Service
             _supFAmof = _configuration["supfamof2023"];
         }
 
-        public async Task<BaseResponseViewModel<StaffResponse>> CreateAdminManager(CreateStaffRequest request)
+        public async Task<BaseResponseViewModel<AdminAccountResponse>> CreateAdminManager(CreateAdminAccountRequest request)
         {
-            var checkStaff = _unitOfWork.Repository<staff>()
+            var checkAdmin = _unitOfWork.Repository<Admin>()
                                         .Find(x => x.Username.Contains(request.Username));
 
-            if (checkStaff != null)
+            if (checkAdmin != null)
             {
-                throw new ErrorResponse(400, (int)StaffErrorEnum.STAFF_EXSIST,
-                                    StaffErrorEnum.STAFF_EXSIST.GetDisplayName());
+                throw new ErrorResponse(400, (int)AdminAccountErrorEnum.ADMIN_EXSIST,
+                                    AdminAccountErrorEnum.ADMIN_EXSIST.GetDisplayName());
             }
-            var staff = _mapper.Map<CreateStaffRequest, staff>(request);
+            var admin = _mapper.Map<CreateAdminAccountRequest, Admin>(request);
 
             //convert from string to byte
-            staff.Password = null;
-            staff.Password = Ultils.GetHash(request.Password, _supFAmof);
-            staff.IsAvailable = true;
-            staff.CreateAt = DateTime.Now;
+            admin.Password = null;
+            admin.Password = Ultils.GetHash(request.Password, _supFAmof);
+            admin.IsAvailable = true;
+            admin.CreateAt = DateTime.Now;
 
-            await _unitOfWork.Repository<staff>().InsertAsync(staff);
+            await _unitOfWork.Repository<Admin>().InsertAsync(admin);
             await _unitOfWork.CommitAsync();
 
-            return new BaseResponseViewModel<StaffResponse>()
+            return new BaseResponseViewModel<AdminAccountResponse>()
             {
                 Status = new StatusViewModel()
                 {
@@ -63,20 +64,20 @@ namespace SupFAmof.Service.Service
                     Success = true,
                     ErrorCode = 0
                 },
-                Data = _mapper.Map<StaffResponse>(staff)
+                Data = _mapper.Map<AdminAccountResponse>(admin)
             };
         }
 
-        public async Task<BaseResponseViewModel<StaffResponse>> GetStaffById(int staffId)
+        public async Task<BaseResponseViewModel<AdminAccountResponse>> GetAdminById(int adminId)
         {
-            var staff = _unitOfWork.Repository<staff>().GetAll()
-                                   .FirstOrDefault(x => x.Id == staffId);
-            if (staff == null)
+            var admin = _unitOfWork.Repository<Admin>().GetAll()
+                                   .FirstOrDefault(x => x.Id == adminId);
+            if (admin == null)
             {
-                throw new ErrorResponse(404, (int)StaffErrorEnum.NOT_FOUND_ID,
-                                    StaffErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                throw new ErrorResponse(404, (int)AdminAccountErrorEnum.NOT_FOUND_ID,
+                                    AdminAccountErrorEnum.NOT_FOUND_ID.GetDisplayName());
             }
-            return new BaseResponseViewModel<StaffResponse>()
+            return new BaseResponseViewModel<AdminAccountResponse>()
             {
                 Status = new StatusViewModel()
                 {
@@ -84,19 +85,19 @@ namespace SupFAmof.Service.Service
                     Success = true,
                     ErrorCode = 0
                 },
-                Data = _mapper.Map<StaffResponse>(staff)
+                Data = _mapper.Map<AdminAccountResponse>(admin)
             };
         }
 
-        public async Task<BaseResponsePagingViewModel<StaffResponse>> GetStaffs(StaffResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdminAccountResponse>> GetAdmins(AdminAccountResponse filter, PagingRequest paging)
         {
-            var staff = _unitOfWork.Repository<staff>().GetAll()
-                                   .ProjectTo<StaffResponse>(_mapper.ConfigurationProvider)
+            var staff = _unitOfWork.Repository<Admin>().GetAll()
+                                   .ProjectTo<AdminAccountResponse>(_mapper.ConfigurationProvider)
                                    .DynamicFilter(filter)
                                    .DynamicSort(filter)
                                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging,
                                     Constants.DefaultPaging);
-            return new BaseResponsePagingViewModel<StaffResponse>()
+            return new BaseResponsePagingViewModel<AdminAccountResponse>()
             {
                 Metadata = new PagingsMetadata()
                 {
@@ -110,30 +111,23 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<dynamic>> Login(LoginRequest request)
         {
-            var staff = _unitOfWork.Repository<staff>().GetAll()
+            var staff = _unitOfWork.Repository<Admin>().GetAll()
                                    .Where(x => x.Username.Equals(request.Username) && x.IsAvailable == true)
                                    .FirstOrDefault();
 
             //convert Login Password and check with database
             if (staff == null || !Ultils.CompareHash(request.Password, staff.Password, _supFAmof))
             {
-                return new BaseResponseViewModel<dynamic>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Success = false,
-                        Message = StaffErrorEnum.LOGIN_FAIL.GetDisplayName(),
-                        ErrorCode = (int)StaffErrorEnum.LOGIN_FAIL
-                    }
-                };
+                throw new ErrorResponse(400, (int)AdminAccountErrorEnum.LOGIN_FAIL,
+                                    AdminAccountErrorEnum.LOGIN_FAIL.GetDisplayName());
             }
 
             //Login success
             //continue
-            if (request.FcmToken != null && request.FcmToken.Trim().Length > 0)
-                _fcmTokenService.AddStaffFcmToken(request.FcmToken, staff.Id);
+            //if (request.FcmToken != null && request.FcmToken.Trim().Length > 0)
+            //    _fcmTokenService.AddStaffFcmToken(request.FcmToken, staff.Id);
 
-            var token = AccessTokenManager.GenerateJwtToken(staff.Name, 0, staff.Id, _configuration);
+            var token = AccessTokenManager.GenerateJwtToken(staff.Name, (int)SystemRoleEnum.SystemAdmin , staff.Id, _configuration);
             return new BaseResponseViewModel<dynamic>()
             {
                 Status = new StatusViewModel()
@@ -152,28 +146,28 @@ namespace SupFAmof.Service.Service
             };
         }
 
-        public async Task<BaseResponseViewModel<StaffResponse>> UpdateStaff(int staffId, UpdateStaffRequest request)
+        public async Task<BaseResponseViewModel<AdminAccountResponse>> UpdateAdmin(int adminId, UpdateAdminAccountRequest request)
         {
-            var staff = _unitOfWork.Repository<staff>().Find(x => x.Id == staffId);
-            if (staff == null)
+            var admin = _unitOfWork.Repository<Admin>().Find(x => x.Id == adminId);
+            if (admin == null)
             {
-                throw new ErrorResponse(404, (int)StaffErrorEnum.NOT_FOUND_ID,
-                                    StaffErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                throw new ErrorResponse(404, (int)AdminAccountErrorEnum.NOT_FOUND_ID,
+                                    AdminAccountErrorEnum.NOT_FOUND_ID.GetDisplayName());
             }
 
-            var staffMappingResult = _mapper.Map<UpdateStaffRequest, staff>(request, staff);
+            var adminMappingResult = _mapper.Map<UpdateAdminAccountRequest, Admin>(request, admin);
 
             //nếu password mới được đưa vào thì phải chuyển lại thành byte với nhưng thông tin được cung cấp kèm theo
             if(request.Password != null)
             {
-                staff.Password = null;
-                staff.Password = Ultils.GetHash(request.Password, _supFAmof);
+                admin.Password = null;
+                admin.Password = Ultils.GetHash(request.Password, _supFAmof);
 
-                staffMappingResult.UpdateAt = DateTime.Now;
-                await _unitOfWork.Repository<staff>()
-                                .UpdateDetached(staffMappingResult);
+                adminMappingResult.UpdateAt = DateTime.Now;
+                await _unitOfWork.Repository<Admin>()
+                                .UpdateDetached(adminMappingResult);
                 await _unitOfWork.CommitAsync();
-                return new BaseResponseViewModel<StaffResponse>()
+                return new BaseResponseViewModel<AdminAccountResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -181,15 +175,15 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<StaffResponse>(staffMappingResult)
+                    Data = _mapper.Map<AdminAccountResponse>(adminMappingResult)
                 };
             }
 
-            staffMappingResult.UpdateAt = DateTime.Now;
-            await _unitOfWork.Repository<staff>()
-                            .UpdateDetached(staffMappingResult);
+            adminMappingResult.UpdateAt = DateTime.Now;
+            await _unitOfWork.Repository<Admin>()
+                            .UpdateDetached(adminMappingResult);
             await _unitOfWork.CommitAsync();
-            return new BaseResponseViewModel<StaffResponse>()
+            return new BaseResponseViewModel<AdminAccountResponse>()
             {
                 Status = new StatusViewModel()
                 {
@@ -197,7 +191,7 @@ namespace SupFAmof.Service.Service
                     Success = true,
                     ErrorCode = 0
                 },
-                Data = _mapper.Map<StaffResponse>(staffMappingResult)
+                Data = _mapper.Map<AdminAccountResponse>(adminMappingResult)
             };
         }
     }

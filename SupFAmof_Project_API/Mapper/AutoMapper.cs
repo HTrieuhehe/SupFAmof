@@ -10,6 +10,7 @@ using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.DTO.Response.Admin;
 
 namespace SupFAmof.API.Mapper
 {
@@ -46,11 +47,11 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateAccountReportRequest, AccountReport>();
             #endregion
 
-            #region Staff
-            CreateMap<staff, StaffResponse>().ReverseMap();
-            CreateMap<CreateStaffRequest, staff>()
+            #region Admin Account
+            CreateMap<Admin, AdminAccountResponse>().ReverseMap();
+            CreateMap<CreateAdminAccountRequest, Admin>()
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
-            CreateMap<UpdateStaffRequest, staff>()
+            CreateMap<UpdateAdminAccountRequest, Admin>()
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)));
             #endregion
 

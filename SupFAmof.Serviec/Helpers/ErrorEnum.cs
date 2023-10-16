@@ -114,7 +114,7 @@ namespace SupFAmof.Service.Helpers
 
         }
 
-        public enum StaffErrorEnum
+        public enum AdminAccountErrorEnum
         {
             //404
             [Display(Name = "Staff ID not found!")]
@@ -122,7 +122,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "This staff already exsist!")]
-            STAFF_EXSIST = 4001,
+            ADMIN_EXSIST = 4001,
 
             //400
             [Display(Name = "Username or password is not correct")]

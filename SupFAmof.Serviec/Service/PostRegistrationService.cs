@@ -33,12 +33,11 @@ namespace SupFAmof.Service.Service
         {
             try
             { 
-
-
-                var list = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                  .Where(x => x.AccountId == accountId);
+                //var list = _unitOfWork.Repository<PostRegistration>().GetAll()
+                //                                  .Where(x => x.AccountId == accountId);
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.AccountId == accountId)
+                                                  .OrderByDescending(x => x.CreateAt)
                                                   .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
                                                   .PagingQueryable(paging.Page, paging.PageSize,
                                                    Constants.LimitPaging, Constants.DefaultPaging);

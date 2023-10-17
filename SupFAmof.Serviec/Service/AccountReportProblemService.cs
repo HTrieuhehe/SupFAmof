@@ -1,21 +1,21 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
-using Service.Commons;
-using SupFAmof.Data.Entity;
-using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.DTO.Request;
-using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Response.Admission;
-using SupFAmof.Service.Exceptions;
-using SupFAmof.Service.Service.ServiceInterface;
-using SupFAmof.Service.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using AutoMapper;
 using System.Linq;
 using System.Text;
+using Service.Commons;
+using SupFAmof.Data.Entity;
+using NTQ.Sdk.Core.Utilities;
 using System.Threading.Tasks;
+using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Utilities;
+using System.Collections.Generic;
+using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using AutoMapper.QueryableExtensions;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -111,7 +111,7 @@ namespace SupFAmof.Service.Service
 
                 var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
-                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                if (checkAdmission == null )
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
@@ -149,7 +149,7 @@ namespace SupFAmof.Service.Service
             {
                 var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
-                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                if (checkAdmission == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
@@ -162,11 +162,27 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
                                         ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
+                switch (report.Status)
+                {
+                    case (int)ReportProblemStatusEnum.Approve:
+                        throw new ErrorResponse(400,
+                            (int)ReportProblemErrorEnum.ALREADY_APPROVE,
+                            ReportProblemErrorEnum.ALREADY_APPROVE.GetDisplayName());
+
+                    // Add more cases here if needed
+                    case (int)ReportProblemStatusEnum.Reject:
+                        throw new ErrorResponse(400,
+                            (int)ReportProblemErrorEnum.ALREADY_REJECT,
+                            ReportProblemErrorEnum.ALREADY_REJECT.GetDisplayName());
+
+                    default:
+                        break;
+                }
 
                 var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
-                replyReport.Status = (int)ReportProblemStatusEnum.Approve;
+                replyReport.Status = (int)ReportProblemStatusEnum.Reject;
 
                 await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
                 await _unitOfWork.CommitAsync();
@@ -195,7 +211,7 @@ namespace SupFAmof.Service.Service
             {
                 var checkAdmission = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
-                if (checkAdmission == null || checkAdmission.RoleId == (int)SystemRoleEnum.AdmissionManager)
+                if (checkAdmission == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
@@ -208,11 +224,27 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
                                         ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
+                switch (report.Status)
+                {
+                    case (int)ReportProblemStatusEnum.Approve:
+                        throw new ErrorResponse(400,
+                            (int)ReportProblemErrorEnum.ALREADY_APPROVE,
+                            ReportProblemErrorEnum.ALREADY_APPROVE.GetDisplayName());
+
+                    // Add more cases here if needed
+                    case (int)ReportProblemStatusEnum.Reject:
+                        throw new ErrorResponse(400,
+                            (int)ReportProblemErrorEnum.ALREADY_REJECT,
+                            ReportProblemErrorEnum.ALREADY_REJECT.GetDisplayName());
+
+                    default:
+                        break;
+                }
 
                 var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
-                replyReport.Status = (int)ReportProblemStatusEnum.Reject;
+                replyReport.Status = (int)ReportProblemStatusEnum.Approve;
 
                 await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
                 await _unitOfWork.CommitAsync();

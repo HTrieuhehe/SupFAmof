@@ -389,6 +389,12 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Your Report Application Not Found")]
             NOT_FOUND_REPORT = 4041,
+            //400
+            [Display(Name = "Report aplication is already approved")]
+            ALREADY_APPROVE = 4042,
+            //404
+            [Display(Name = "Report aplication is already rejected")]
+            ALREADY_REJECT = 4043,
         }
     }
 }

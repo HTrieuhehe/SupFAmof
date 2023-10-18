@@ -83,7 +83,7 @@ namespace SupFAmof.Service.Service
                     var accountBannedMappingAfter = _mapper.Map<AccountBanned>(request);
                     accountBannedMappingAfter.BannedPersonId = accountId;
                     accountBannedMappingAfter.DayStart = currentTime;
-                    accountBannedMappingAfter.IsActive = true;
+                    //accountBannedMappingAfter.IsActive = true;
 
                     await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMappingAfter);
                     await _unitOfWork.CommitAsync();
@@ -110,7 +110,7 @@ namespace SupFAmof.Service.Service
                 var accountBannedMapping = _mapper.Map<AccountBanned>(request);
                 accountBannedMapping.BannedPersonId = accountId;
                 accountBannedMapping.DayStart = currentTime;
-                accountBannedMapping.IsActive = true;
+                //accountBannedMapping.IsActive = true;
 
                 await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMapping);
                 await _unitOfWork.CommitAsync();
@@ -132,32 +132,32 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
+        public async Task<BaseResponseViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
         {
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                                .ProjectTo<AccountBannedResponse>(_mapper.ConfigurationProvider)
-                                                .Where(x => x.AccountIdBanned == accountId)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                           Constants.LimitPaging, Constants.DefaultPaging);
-                                                
+                                                .Where(x => x.AccountIdBanned == accountId);
 
-                if(!accountBanned.Item2.Any())
+                var currentDateTime = Ultils.GetCurrentDatetime();
+
+                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                if (maxDayEnd < currentDateTime)
                 {
                     throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
-                                                    AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
+                                                   AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
                 }
-
-                return new BaseResponsePagingViewModel<AccountBannedResponse>()
+                                                
+                return new BaseResponseViewModel<AccountBannedResponse>()
                 {
-                    Metadata = new PagingsMetadata()
+                    Status = new StatusViewModel()
                     {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = accountBanned.Item1
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
                     },
-                    Data = accountBanned.Item2.ToList(),
+                    Data = _mapper.Map<AccountBannedResponse>(accountBanned)
                 };
             }
             catch(Exception ex)

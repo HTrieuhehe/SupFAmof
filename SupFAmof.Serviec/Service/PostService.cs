@@ -719,7 +719,10 @@ namespace SupFAmof.Service.Service
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost))
+                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost) 
+                                                                                    || x.PostDescription.Contains(searchPost)
+                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(searchPost))
+                                                                                    || x.PostPositions.Any(x => x.Location.Contains(searchPost)))
                                         .OrderByDescending(x => x.CreateAt)
                                         .OrderByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,

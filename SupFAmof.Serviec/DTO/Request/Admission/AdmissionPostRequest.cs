@@ -40,7 +40,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public int? DocumentId { get; set; }
 
         [Required(ErrorMessage = "Position Name is required")]
-        [MaxLength(20, ErrorMessage = "Position Name cannot exceed 20 characters.")]
+        [MaxLength(30, ErrorMessage = "Position Name cannot exceed 30 characters.")]
         public string? PositionName { get; set; }
 
         [Required]

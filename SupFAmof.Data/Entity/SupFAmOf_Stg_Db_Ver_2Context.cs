@@ -444,7 +444,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.PositionDescription).HasMaxLength(100);
 
-                entity.Property(e => e.PositionName).HasMaxLength(20);
+                entity.Property(e => e.PositionName).HasMaxLength(30);
 
                 entity.Property(e => e.SchoolName).HasMaxLength(100);
 

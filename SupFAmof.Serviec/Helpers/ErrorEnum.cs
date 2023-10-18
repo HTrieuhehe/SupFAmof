@@ -66,11 +66,11 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_AVATAR_URL_INVALID = 4008,
 
             //400
-            [Display(Name = "Account is disable")]
+            [Display(Name = "Account has already disable")]
             ACCOUNT_DISABLE = 4009,
 
             //400
-            [Display(Name = "Account is disable")]
+            [Display(Name = "Account is not disable")]
             ACCOUNT_DOES_NOT_DISABLE = 4010,
 
             //400

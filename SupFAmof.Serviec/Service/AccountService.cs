@@ -320,9 +320,15 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId)
         {
             Account account = _unitOfWork.Repository<Account>()
-                                         .Find(x => x.Id == accountId && x.IsActive == true);
+                                         .Find(x => x.Id == accountId);
 
-            if (account == null)
+            if (account.IsActive == false)
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                    AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+            }
+
+            else if (account == null)
             {
                 throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());

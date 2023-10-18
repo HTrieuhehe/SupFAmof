@@ -427,13 +427,19 @@ namespace SupFAmof.Service.Service
             try
             {
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll()
-                                                .FirstOrDefault(x => x.Id == accountId && x.IsActive == false && x.AccountReactivations.Any());
+                                                .FirstOrDefault(x => x.Id == accountId && x.AccountReactivations.Any());
 
                 if (checkAccount == null)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE,
-                                       AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE.GetDisplayName());
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                       AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
+
+                else if (checkAccount.IsActive == true)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE,
+                                      AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE.GetDisplayName());
+                }    
 
                 //generate random 6 digit code
                 int randCode = Ultils.GenerateRandom6DigitNumber();

@@ -70,7 +70,7 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_DISABLE = 4009,
 
             //400
-            [Display(Name = "Account is not disable")]
+            [Display(Name = "Account has already enable")]
             ACCOUNT_DOES_NOT_DISABLE = 4010,
 
             //400

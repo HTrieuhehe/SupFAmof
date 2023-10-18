@@ -542,7 +542,6 @@ namespace SupFAmof.Service.Service
             try
             {
                 var account = await _unitOfWork.Repository<Account>().GetAll()
-
                                                .Where(x => x.Id == accountId)
                                                .Include(x => x.AccountInformation)
                                                .FirstOrDefaultAsync();
@@ -553,7 +552,39 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+                //check banned and update Status
+
+                var accountBanned =  _unitOfWork.Repository<AccountBanned>().GetAll().Where(a => a.AccountIdBanned == accountId);
+
+                if (!accountBanned.Any())
+                {
+                    throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
+                                                   AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
+                }
+
+                var currentDateTime = Ultils.GetCurrentDatetime();
+
+                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                if (maxDayEnd < currentDateTime)
+                {
+                    var accountMapping = _mapper.Map<AccountResponse>(account);
+                    accountMapping.IsBanned = false;
+
+                    return new BaseResponseViewModel<AccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = accountMapping
+                    };
+                }
+
                 var accountResponseMapping = _mapper.Map<AccountResponse>(account);
+                accountResponseMapping.IsBanned = true;
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {

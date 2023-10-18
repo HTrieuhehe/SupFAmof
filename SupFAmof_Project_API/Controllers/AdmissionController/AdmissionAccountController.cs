@@ -58,7 +58,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.GetAccountById(account.Id);
+                var result = await _admissionAccountService.GetAccountAdmissionById(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -76,12 +76,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
                 var result = await _admissionAccountService.UpdateAdmissionAccount(accountId, data);
                 return Ok(result);
             }

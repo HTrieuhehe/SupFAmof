@@ -20,11 +20,12 @@ namespace SupFAmof.Service.DTO.Response
         public bool PostPermission { get; set; }
         public bool? IsPremium { get; set; }
         public bool IsActive { get; set; }
+        public bool IsBanned { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public AccountInformationResponse AccountInformation { get; set; }
-        public virtual ICollection<AccountCertificateResponse> AccountCertificateAccounts { get; set; }
+        //public virtual ICollection<AccountCertificateResponse> AccountCertificateAccounts { get; set; }
     }
 
     public class AccountInformationResponse

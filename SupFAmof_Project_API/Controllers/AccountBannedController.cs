@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AccountBannedResponse>>> GetAccountBannedByToken
+        public async Task<ActionResult<BaseResponseViewModel<AccountBannedResponse>>> GetAccountBannedByToken
             (PagingRequest paging)
         {
             try

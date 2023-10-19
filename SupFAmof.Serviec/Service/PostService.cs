@@ -183,7 +183,12 @@ namespace SupFAmof.Service.Service
                 {
                     var checkdocument = await _unitOfWork.Repository<DocumentTemplate>().GetAll().FirstOrDefaultAsync(x => x.Id == position.DocumentId);
 
-                    if(checkdocument == null)
+                    if (position.DocumentId == null)
+                    {
+                        continue;
+                    }
+
+                    else if(checkdocument == null)
                     {
                         throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
                                          DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $"in Position Name: {position.PositionName}");

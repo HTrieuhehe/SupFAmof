@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using System;

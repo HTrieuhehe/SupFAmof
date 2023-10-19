@@ -427,7 +427,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll()
-                                                .FirstOrDefault(x => x.Id == accountId && x.AccountReactivations.Any());
+                                                .FirstOrDefault(x => x.Id == accountId);
 
                 if (checkAccount == null)
                 {

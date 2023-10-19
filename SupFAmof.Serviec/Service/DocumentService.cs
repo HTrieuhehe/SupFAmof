@@ -2,7 +2,6 @@
 using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
@@ -14,6 +13,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using SupFAmof.Service.Utilities;
 
 namespace SupFAmof.Service.Service
 {

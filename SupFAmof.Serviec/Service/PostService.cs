@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
-using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -580,7 +579,7 @@ namespace SupFAmof.Service.Service
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
                                         .OrderByDescending(x => x.CreateAt)
-                                        .ThenByDescending(x => x.Priority)
+                                        .OrderByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -627,13 +626,12 @@ namespace SupFAmof.Service.Service
 
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
-                                        .OrderByDescending(x => x.Priority)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(filter)
                                         .OrderByDescending(x => x.CreateAt)
-                                        .ThenByDescending(x => x.Priority)
+                                        .OrderByDescending(x => x.Priority)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Service.Commons;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using System.Threading.Tasks;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;

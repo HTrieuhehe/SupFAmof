@@ -3,7 +3,6 @@ using System.Data;
 using Service.Commons;
 using FirebaseAdmin.Auth;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Utilities;

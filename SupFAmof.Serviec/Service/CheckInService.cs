@@ -8,7 +8,6 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response;

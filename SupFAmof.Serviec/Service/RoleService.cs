@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
 using Pipelines.Sockets.Unofficial.Arenas;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -10,6 +9,7 @@ using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service

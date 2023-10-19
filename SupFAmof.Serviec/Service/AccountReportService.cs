@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using StackExchange.Redis;
 using SupFAmof.Data.Entity;
@@ -9,6 +8,7 @@ using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

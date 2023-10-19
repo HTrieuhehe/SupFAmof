@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using NTQ.Sdk.Core.Utilities;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
 using ServiceStack.Web;

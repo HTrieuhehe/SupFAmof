@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using SupFAmof.Data.Entity;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Exceptions;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Service.Utilities;
 using AutoMapper.QueryableExtensions;
 using Service.Commons;

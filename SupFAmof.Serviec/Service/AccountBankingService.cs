@@ -5,7 +5,6 @@ using System.Text;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Security.Principal;
 using System.Collections.Generic;

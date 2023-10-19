@@ -553,23 +553,13 @@ namespace SupFAmof.Service.Service
                 }
 
                 //check banned and update Status
+                var checkAccountBanned = await CheckAccountBanned(accountId);
 
-                var accountBanned =  _unitOfWork.Repository<AccountBanned>().GetAll().Where(a => a.AccountIdBanned == accountId);
-
-                if (!accountBanned.Any())
+                if (!checkAccountBanned)
                 {
-                    throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
-                                                   AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
-                }
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd < currentDateTime)
-                {
+                    //not banned 
                     var accountMapping = _mapper.Map<AccountResponse>(account);
-                    accountMapping.IsBanned = false;
+                    accountMapping.IsBanned = checkAccountBanned;
 
                     return new BaseResponseViewModel<AccountResponse>()
                     {
@@ -584,7 +574,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 var accountResponseMapping = _mapper.Map<AccountResponse>(account);
-                accountResponseMapping.IsBanned = true;
+                accountResponseMapping.IsBanned = checkAccountBanned;
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -788,6 +778,34 @@ namespace SupFAmof.Service.Service
                     if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
                         _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
 
+                    //check banned and update Status
+                    var checkAccountBanned = await CheckAccountBanned(account.Id);
+
+                    if (!checkAccountBanned)
+                    {
+                        //not banned 
+                        var accountMapping = _mapper.Map<AccountResponse>(account);
+                        accountMapping.IsBanned = checkAccountBanned;
+
+                        return new BaseResponseViewModel<LoginResponse>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Message = "Account is not active",
+                                Success = false,
+                                ErrorCode = 4009
+                            },
+                            Data = new LoginResponse()
+                            {
+                                access_token = newToken,
+                                account = accountMapping
+                            }
+                        };
+                    }
+
+                    var accountResponseMapping = _mapper.Map<AccountResponse>(account);
+                    accountResponseMapping.IsBanned = checkAccountBanned;
+
                     return new BaseResponseViewModel<LoginResponse>()
                     {
                         Status = new StatusViewModel()
@@ -799,7 +817,7 @@ namespace SupFAmof.Service.Service
                         Data = new LoginResponse()
                         {
                             access_token = newToken,
-                            account = _mapper.Map<AccountResponse>(account)
+                            account = accountResponseMapping
                         }
                     };
                 }
@@ -813,6 +831,35 @@ namespace SupFAmof.Service.Service
                     if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
                         _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
 
+                    //check banned and update Status
+                    var checkAccountBanned = await CheckAccountBanned(account.Id);
+
+                    if (!checkAccountBanned)
+                    {
+                        //not banned 
+                        var accountBannedMapping = _mapper.Map<AccountResponse>(account);
+                        accountBannedMapping.IsBanned = checkAccountBanned;
+
+                        return new BaseResponseViewModel<LoginResponse>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Message = "Success",
+                                Success = true,
+                                ErrorCode = 0
+                            },
+                            Data = new LoginResponse()
+                            {
+                                access_token = newToken,
+                                account = accountBannedMapping
+                            }
+                        };
+                    }
+
+                    //not banned 
+                    var accountSuccessMapping = _mapper.Map<AccountResponse>(account);
+                    accountSuccessMapping.IsBanned = checkAccountBanned;
+
                     return new BaseResponseViewModel<LoginResponse>()
                     {
                         Status = new StatusViewModel()
@@ -824,7 +871,7 @@ namespace SupFAmof.Service.Service
                         Data = new LoginResponse()
                         {
                             access_token = newToken,
-                            account = _mapper.Map<AccountResponse>(account)
+                            account = accountSuccessMapping
                         }
                     };
                 }
@@ -1092,5 +1139,33 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        private async Task<bool> CheckAccountBanned(int accountId)
+        {
+            try
+            {
+                //check banned and update Status
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(a => a.AccountIdBanned == accountId);
+
+                if (!accountBanned.Any())
+                {
+                    return false;
+                }
+
+                var currentDateTime = Ultils.GetCurrentDatetime();
+
+                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                if (maxDayEnd < currentDateTime)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

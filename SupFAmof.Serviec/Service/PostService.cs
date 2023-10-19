@@ -453,39 +453,6 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<CollaboratorAccountReponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging)
-        {
-            try
-            {
-                var account = _unitOfWork.Repository<Account>().GetAll()
-                                        .Include(a => a.PostRegistrations) // Nạp danh sách PostRegistrations của mỗi Account
-                                            .ThenInclude(pr => pr.PostRegistrationDetails) // Nạp thông tin chi tiết đăng ký
-                                                .ThenInclude(prd => prd.Post) // Nạp thông tin Post của chi tiết đăng ký
-                                                    .Where(account => account.PostRegistrations.Any(pr => pr.PostRegistrationDetails
-                                                                        .Any(prd => prd.PositionId == positionId) && pr.Status == (int)PostRegistrationStatusEnum.Pending))
-                                                    .OrderByDescending(account => account.PostRegistrations.Max(pr => pr.CreateAt)) // Sắp xếp theo CreateAt của PostRegistration
-                                                    .ProjectTo<CollaboratorAccountReponse>(_mapper.ConfigurationProvider)
-                                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                                    Constants.LimitPaging, Constants.DefaultPaging);
-
-                return new BaseResponsePagingViewModel<CollaboratorAccountReponse>()
-                {
-
-                    Metadata = new PagingsMetadata()
-                    {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = account.Item1
-                    },
-                    Data = account.Item2.ToList(),
-                };
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePostPosition(int accountId, int positionId)
         {
             try

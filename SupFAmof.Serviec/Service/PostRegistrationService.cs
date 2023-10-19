@@ -571,7 +571,7 @@ namespace SupFAmof.Service.Service
                             continue;
 
                         default:
-                            break;
+                            break;  
                     }
 
                     switch (approve)
@@ -788,6 +788,35 @@ namespace SupFAmof.Service.Service
             return (start1 < end2 && end1 > start2);
         }
 
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging)
+        {
+            try
+            {
+                var account = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                         .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                         .Where(x => x.PostRegistrationDetails.Any(x => x.PositionId == positionId) && x.Status == (int)PostRegistrationStatusEnum.Pending)
+                                         .OrderByDescending(x => x.CreateAt) // Sắp xếp theo CreateAt của PostRegistration
+                                         .PagingQueryable(paging.Page, paging.PageSize,
+                                              Constants.LimitPaging, Constants.DefaultPaging);
+
+
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = account.Item1
+                    },
+                    Data = account.Item2.ToList(),
+                };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 }

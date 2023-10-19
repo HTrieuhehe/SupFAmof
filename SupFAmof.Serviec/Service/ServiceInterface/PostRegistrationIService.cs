@@ -17,6 +17,9 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<AdmissionPostsResponse>> AdmssionPostRegistrations(int admissionAccountId, PagingRequest paging);
         Task<BaseResponseViewModel<List<PostRegistrationResponse>>> ApproveUpdateRequest(List<int> Ids, bool approve);
         Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId,List<int> postRegistrationIds, bool approve);
+
+        Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging);
+
     }
 
 }

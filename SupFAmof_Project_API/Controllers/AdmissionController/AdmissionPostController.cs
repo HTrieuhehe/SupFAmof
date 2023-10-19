@@ -221,31 +221,6 @@ namespace SupFAmof.API.Controllers.AdmissionController
         //}
 
         /// <summary>
-        /// Get Account Register in Post Position
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [HttpGet("getAccountByPostPositionId")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CollaboratorAccountReponse>>> GetAccountByPostPositionId
-            ([FromQuery] int positionId, [FromQuery] PagingRequest paging)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                {
-                    return Unauthorized();
-                }
-                return await _postService.GetAccountByPostPositionId(positionId, paging);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
-
-        /// <summary>
         /// Get Post By Code 
         /// </summary>
         /// <returns></returns>

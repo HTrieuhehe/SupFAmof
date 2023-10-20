@@ -241,6 +241,10 @@ namespace SupFAmof.Service.Utilities
                 {
                     source = source.Where($"{item.Name} = \"{((string)propertyVal).Trim()}\"");
                 }
+                else if (item.PropertyType == typeof(int))
+                {
+                    source = source.Where($"{item.Name} == @{item.Name}", propertyVal);
+                }
                 else
                 {
                     source = source.Where($"{item.Name} = @{item.Name}", propertyVal);

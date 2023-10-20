@@ -89,6 +89,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,
 
+            //500
+            [Display(Name = "Server are busy")]
+            SERVER_BUSY = 500,
+
         }
         public enum AccountBankingErrorEnums
         {

@@ -1018,7 +1018,8 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.StackTrace, ex);
+                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
             }
         }
 
@@ -1089,7 +1090,8 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw;
+                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
             }
         }
 

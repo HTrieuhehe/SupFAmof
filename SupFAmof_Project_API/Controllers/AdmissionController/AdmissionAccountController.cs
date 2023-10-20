@@ -72,7 +72,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// <returns></returns>
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> UpdateAccount(int accountId, [FromBody] UpdateAdmissionAccountRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> UpdateAccount([FromBody] UpdateAdmissionAccountRequest data)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.UpdateAdmissionAccount(accountId, data);
+                var result = await _admissionAccountService.UpdateAdmissionAccount(account.Id, data);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

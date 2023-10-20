@@ -184,8 +184,8 @@ namespace SupFAmof.API.Mapper
 
             #region Admission Account Report Problem
 
-            CreateMap<AccountReportProblem, AdmissionAccountReportProblemResponse>().ReverseMap();
-            CreateMap<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>().ReverseMap();
+            CreateMap<Complaint, AdmissionComplaintResponse>().ReverseMap();
+            CreateMap<UpdateAdmissionAccountReportProblemRequest, Complaint>().ReverseMap();
 
             #endregion
 
@@ -237,8 +237,8 @@ namespace SupFAmof.API.Mapper
 
             #region Account Report Problem
 
-            CreateMap<AccountReportProblem, AccountReportProblemResponse>().ReverseMap();
-            CreateMap<CreateAccountReportProblemRequest, AccountReportProblem>();
+            CreateMap<Complaint, CompaintResponse>().ReverseMap();
+            CreateMap<CreateAccountReportProblemRequest, Complaint>();
 
             #endregion
 

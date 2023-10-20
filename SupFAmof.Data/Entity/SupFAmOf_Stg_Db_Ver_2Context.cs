@@ -24,10 +24,10 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountInformation> AccountInformations { get; set; } = null!;
         public virtual DbSet<AccountReactivation> AccountReactivations { get; set; } = null!;
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
-        public virtual DbSet<AccountReportProblem> AccountReportProblems { get; set; } = null!;
         public virtual DbSet<ActionLog> ActionLogs { get; set; } = null!;
         public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
+        public virtual DbSet<Complaint> Complaints { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
         public virtual DbSet<Fcmtoken> Fcmtokens { get; set; } = null!;
@@ -236,25 +236,6 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_AccountReport_Post");
             });
 
-            modelBuilder.Entity<AccountReportProblem>(entity =>
-            {
-                entity.ToTable("AccountReportProblem");
-
-                entity.Property(e => e.ProblemNote).HasMaxLength(500);
-
-                entity.Property(e => e.ReplyDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReplyNote).HasMaxLength(500);
-
-                entity.Property(e => e.ReportDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountReportProblems)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AccountReportProblem_Account");
-            });
-
             modelBuilder.Entity<ActionLog>(entity =>
             {
                 entity.ToTable("ActionLog");
@@ -298,6 +279,25 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CheckAttendance_Post");
+            });
+
+            modelBuilder.Entity<Complaint>(entity =>
+            {
+                entity.ToTable("Complaint");
+
+                entity.Property(e => e.ProblemNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReplyDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ReplyNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReportDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Complaints)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReportProblem_Account");
             });
 
             modelBuilder.Entity<Contract>(entity =>

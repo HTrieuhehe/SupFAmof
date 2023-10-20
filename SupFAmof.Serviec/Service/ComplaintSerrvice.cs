@@ -20,18 +20,18 @@ using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
-    public class AccountReportProblemService : IAccountReportProblemService
+    public class ComplaintSerrvice : IComplaintService
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AccountReportProblemService(IMapper mapper, IUnitOfWork unitOfWork)
+        public ComplaintSerrvice(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseResponseViewModel<AccountReportProblemResponse>> CreateAccountReportProblem(int accountId, CreateAccountReportProblemRequest request)
+        public async Task<BaseResponseViewModel<CompaintResponse>> CreateAccountReportProblem(int accountId, CreateAccountReportProblemRequest request)
         {
             try
             {
@@ -45,16 +45,16 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var report = _mapper.Map<CreateAccountReportProblemRequest, AccountReportProblem>(request);
+                var report = _mapper.Map<CreateAccountReportProblemRequest, Complaint>(request);
 
                 report.AccountId = accountId;
                 report.ReportDate = Ultils.GetCurrentDatetime();
                 report.Status = (int)ReportProblemStatusEnum.Pending;
 
-                await _unitOfWork.Repository<AccountReportProblem>().InsertAsync(report);
+                await _unitOfWork.Repository<Complaint>().InsertAsync(report);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AccountReportProblemResponse>
+                return new BaseResponseViewModel<CompaintResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -62,7 +62,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AccountReportProblemResponse>(report)
+                    Data = _mapper.Map<CompaintResponse>(report)
 
                 };
             }
@@ -72,19 +72,19 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountReportProblemResponse>> GetAccountReportProblemsByToken(int accountId, AccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CompaintResponse>> GetAccountReportProblemsByToken(int accountId, CompaintResponse filter, PagingRequest paging)
         {
             try
             {
-                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
+                var reportProblem = _unitOfWork.Repository<Complaint>().GetAll()
                                                .Where(x => x.AccountId == accountId)
                                                .OrderByDescending(x => x.ReportDate)
-                                               .ProjectTo<AccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                                               .ProjectTo<CompaintResponse>(_mapper.ConfigurationProvider)
                                                .DynamicFilter(filter)
                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<AccountReportProblemResponse>()
+                return new BaseResponsePagingViewModel<CompaintResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -102,7 +102,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionAccountReportProblemResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionComplaintResponse filter, PagingRequest paging)
         {
             try
             {
@@ -116,14 +116,14 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var reportProblem = _unitOfWork.Repository<AccountReportProblem>().GetAll()
-                                               .ProjectTo<AdmissionAccountReportProblemResponse>(_mapper.ConfigurationProvider)
+                var reportProblem = _unitOfWork.Repository<Complaint>().GetAll()
+                                               .ProjectTo<AdmissionComplaintResponse>(_mapper.ConfigurationProvider)
                                                .OrderByDescending(x => x.ReportDate)
                                                .DynamicFilter(filter)
                                                .DynamicSort(paging.Sort, paging.Order)
                                                .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>()
+                return new BaseResponsePagingViewModel<AdmissionComplaintResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -141,7 +141,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> RejectReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var report = await _unitOfWork.Repository<AccountReportProblem>().FindAsync(r => r.Id == reportId);
+                var report = await _unitOfWork.Repository<Complaint>().FindAsync(r => r.Id == reportId);
 
                 if (report == null)
                 {
@@ -177,15 +177,15 @@ namespace SupFAmof.Service.Service
                         break;
                 }
 
-                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
+                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, Complaint>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Reject;
 
-                await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
+                await _unitOfWork.Repository<Complaint>().UpdateDetached(replyReport);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AdmissionAccountReportProblemResponse>
+                return new BaseResponseViewModel<AdmissionComplaintResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -193,7 +193,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionAccountReportProblemResponse>(report)
+                    Data = _mapper.Map<AdmissionComplaintResponse>(report)
 
                 };
             }
@@ -203,7 +203,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionAccountReportProblemResponse>> ApproveReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveReportProblem(int accountId, int reportId, UpdateAdmissionAccountReportProblemRequest request)
         {
             try
             {
@@ -215,7 +215,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var report = await _unitOfWork.Repository<AccountReportProblem>().FindAsync(r => r.Id == reportId);
+                var report = await _unitOfWork.Repository<Complaint>().FindAsync(r => r.Id == reportId);
 
                 if (report == null)
                 {
@@ -239,15 +239,15 @@ namespace SupFAmof.Service.Service
                         break;
                 }
 
-                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, AccountReportProblem>(request, report);
+                var replyReport = _mapper.Map<UpdateAdmissionAccountReportProblemRequest, Complaint>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Approve;
 
-                await _unitOfWork.Repository<AccountReportProblem>().UpdateDetached(replyReport);
+                await _unitOfWork.Repository<Complaint>().UpdateDetached(replyReport);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AdmissionAccountReportProblemResponse>
+                return new BaseResponseViewModel<AdmissionComplaintResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -255,7 +255,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionAccountReportProblemResponse>(report)
+                    Data = _mapper.Map<AdmissionComplaintResponse>(report)
 
                 };
             }

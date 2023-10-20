@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response.Admission
 {
-    public class AdmissionAccountReportProblemResponse
+    public class AdmissionComplaintResponse
     {
         public int? Id { get; set; }
         public int? AccountId { get; set; }

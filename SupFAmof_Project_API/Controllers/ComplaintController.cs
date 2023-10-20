@@ -12,13 +12,13 @@ namespace SupFAmof.API.Controllers
 {
     [Route(Helpers.SettingVersionAPI.ApiVersion)]
     [ApiController]
-    public class AccountReportProblemController : ControllerBase
+    public class ComplaintController : ControllerBase
     {
-        private readonly IAccountReportProblemService _accountReportProblemService;
+        private readonly IComplaintService _complaintService;
 
-        public AccountReportProblemController(IAccountReportProblemService accountReportProblemService)
+        public ComplaintController(IComplaintService complaintService)
         {
-            _accountReportProblemService = accountReportProblemService;
+            _complaintService = complaintService;
         }
 
         ///<summary>
@@ -26,8 +26,8 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AccountReportProblemResponse>>> GetAccountReportsByToken
-            ([FromQuery] AccountReportProblemResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<CompaintResponse>>> GetAccountReportsByToken
+            ([FromQuery] CompaintResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountReportProblemService.GetAccountReportProblemsByToken(account.Id, filter, paging);
+                return await _complaintService.GetAccountReportProblemsByToken(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -50,7 +50,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountReportProblemResponse>>> CreateAccountReport
+        public async Task<ActionResult<BaseResponseViewModel<CompaintResponse>>> CreateAccountReport
             ([FromBody] CreateAccountReportProblemRequest request)
         {
             try
@@ -61,7 +61,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountReportProblemService.CreateAccountReportProblem(account.Id, request);
+                return await _complaintService.CreateAccountReportProblem(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

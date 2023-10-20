@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SupFAmof.Data.Entity
 {
-    public partial class AccountReportProblem
+    public partial class Complaint
     {
         public int Id { get; set; }
         public int AccountId { get; set; }

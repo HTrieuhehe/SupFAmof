@@ -2,17 +2,17 @@
 using AutoMapper;
 using System.Linq;
 using SupFAmof.Data.Entity;
+using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
+using SupFAmof.Service.DTO.Response;
+using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using NTQ.Sdk.Core.Utilities;
-using SupFAmof.Service.Utilities;
-using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Request.Account;
 
 namespace SupFAmof.Service.Service
 {
@@ -33,6 +33,7 @@ namespace SupFAmof.Service.Service
             {
                 var checkAttendance = _mapper.Map<CheckAttendance>(checkin);
                 checkAttendance.CheckInTime = Ultils.GetCurrentDatetime();
+                checkAttendance.AccountId = accountId;
 
                 var existingAttendance = await _unitOfWork.Repository<CheckAttendance>()
                                                           .GetAll()
@@ -47,19 +48,29 @@ namespace SupFAmof.Service.Service
                 }
 
                 var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId);
+                if(postVerification ==null)
+                {
+                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
+                                        AttendanceErrorEnum.WRONG_INFORMATION.GetDisplayName());
+                }
+                if(postVerification.Position.Latitude == null || postVerification.Position.Longtitude == null)
+                {
+                    throw new ErrorResponse(500, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
+                                       AttendanceErrorEnum.MISSING_INFORMATION_POSITION.GetDisplayName());
+                }
                 double distance = 0.04; // kilometer 
-                double userCurrentPosition = ((double)Utilities.Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
+             
+                double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
+                
                 if (userCurrentPosition > distance)
                 {
-                    //throw new ErrorResponse(400, 400, $"Distance {userCurrentPosition} is to far ");
-
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
                                         AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $":{userCurrentPosition} km");
                 }
                 if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == checkin.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.PositionId == checkin.PositionId));
 
                     if (registration == null)
                     {
@@ -76,7 +87,7 @@ namespace SupFAmof.Service.Service
                     {
                         Status = new StatusViewModel()
                         {
-                            Message = "Check Out Success",
+                            Message = "Check In Success",
                             Success = true,
                             ErrorCode = 0
                         },

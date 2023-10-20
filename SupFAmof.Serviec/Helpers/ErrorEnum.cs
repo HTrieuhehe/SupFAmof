@@ -321,6 +321,12 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Distance too far")]
             DISTANCE_TOO_FAR = 4006,
+            //400
+            [Display(Name = "Wrong information (post or position not exist)")]
+            WRONG_INFORMATION = 4007,
+            //500
+            [Display(Name = "Position longtitude and latitude is not specified to perform checkin")]
+            MISSING_INFORMATION_POSITION = 4008,
         }
 
         public enum AccountBannedErrorEnum

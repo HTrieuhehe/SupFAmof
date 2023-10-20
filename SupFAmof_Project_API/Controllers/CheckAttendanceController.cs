@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using SupFAmof.Service.DTO.Request;
-using SupFAmof.Service.Service.ServiceInterface;
-using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service;
-using SupFAmof.Service.DTO.Response;
+using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
 {

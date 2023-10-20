@@ -2,7 +2,9 @@
 using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Utilities;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
@@ -12,8 +14,6 @@ using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
-using SupFAmof.Service.Utilities;
-using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -817,6 +817,32 @@ namespace SupFAmof.Service.Service
             {
                 throw ex;
             }
+        }
+
+        public async Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PagingRequest paging)
+        {
+            try
+            {
+                var list = _unitOfWork.Repository<PostRgupdateHistory>()
+                                                      .GetAll()
+                                                      .Where(pr => pr.PostRegistration.AccountId == accountId)
+                                                      .ProjectTo<PostRgupdateHistoryResponse>(_mapper.ConfigurationProvider)
+                                                      .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+
+                return new BaseResponsePagingViewModel<PostRgupdateHistoryResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+
+            { throw ex; }
         }
     }
 

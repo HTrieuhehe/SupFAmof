@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -37,9 +38,8 @@ namespace SupFAmof.Service.Service
                 var role = _unitOfWork.Repository<TrainingCertificate>().GetAll()
                                     .ProjectTo<TrainingCertificateResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
-                                    .DynamicSort(filter)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<TrainingCertificateResponse>()
                 {
@@ -189,8 +189,7 @@ namespace SupFAmof.Service.Service
                 var certificate = _unitOfWork.Repository<TrainingCertificate>().GetAll()
                                     .ProjectTo<TrainingCertificateResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.CertificateName.Contains(search) || x.TrainingTypeId.Contains(search.ToUpper()))
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 if (!certificate.Item2.Any())
                 {

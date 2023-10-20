@@ -49,8 +49,8 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollaboratorAccountReponse
     {
-        public int Id { get; set; }
-        public int RoleId { get; set; }
+        public int? Id { get; set; }
+        public int? RoleId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
@@ -62,16 +62,16 @@ namespace SupFAmof.Service.DTO.Response
 
     public class AdmissionPostsResponse
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         public string? PostCategoryName { get; set; }
         public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
-        public int Priority { get; set; }
-        public DateTime DateFrom { get; set; }
+        public int? Priority { get; set; }
+        public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
         public string? PostImg { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public virtual ICollection<CollabRegistrationFormResponse>? CollabRequest { get; set; }
@@ -79,27 +79,25 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollabRegistrationFormResponse
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? RegistrationCode { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public int AccountId { get; set; }
+        public int? AccountId { get; set; }
         public string? AccountEmail { get; set; }
         public string?  AccountName  { get; set; }
 
         public int? PositionId { get; set; }
         public string? PositionName { get; set; }
-
     }
-
 
     public class CollabRegistrationResponse
     {
         public string RegistrationCode { get; set; } = null!;
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
@@ -107,7 +105,7 @@ namespace SupFAmof.Service.DTO.Response
     }
     public class CollabRegistrationDetailResponse
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int PostRegistrationId { get; set; }
         public string? Note { get; set; }
         public double Salary { get; set; }
@@ -118,17 +116,17 @@ namespace SupFAmof.Service.DTO.Response
     }
     public class CollabPostResponse
     {
-        public int Id { get; set; }
-        public int AccountId { get; set; }
-        public int PostCategoryId { get; set; }
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
+        public int? PostCategoryId { get; set; }
         public string? PostCode { get; set; }
         public string? PostImg { get; set; }
         public string? PostDescription { get; set; }
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
         public bool IsPremium { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public bool AttendanceComplete { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; } 

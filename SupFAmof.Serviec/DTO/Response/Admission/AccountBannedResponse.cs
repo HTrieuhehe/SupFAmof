@@ -9,13 +9,13 @@ namespace SupFAmof.Service.DTO.Response.Admission
 {
     public class AccountBannedResponse
     {
-        public int Id { get; set; }
-        public int AccountIdBanned { get; set; }
-        public int BannedPersonId { get; set; }
-        public DateTime DayStart { get; set; }
-        public DateTime DayEnd { get; set; }
+        public int? Id { get; set; }
+        public int? AccountIdBanned { get; set; }
+        public int? BannedPersonId { get; set; }
+        public DateTime? DayStart { get; set; }
+        public DateTime? DayEnd { get; set; }
         public string? Note { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         public virtual AccountResponse? BannedPerson { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -37,11 +38,10 @@ namespace SupFAmof.Service.Service
             try
             {
                 var postCate = _unitOfWork.Repository<PostCategory>().GetAll()
-                                    .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
-                                    .DynamicFilter(filter)
-                                    .DynamicSort(filter)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                            .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
+                                            .DynamicFilter(filter)
+                                            .DynamicSort(paging.Sort, paging.Order)
+                                            .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostCategoryResponse>()
                 {
@@ -192,8 +192,7 @@ namespace SupFAmof.Service.Service
                 var postCate = _unitOfWork.Repository<PostCategory>().GetAll()
                                     .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.PostCategoryDescription.Contains(search) || x.PostCategoryType.Contains(search.ToUpper()))
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 if (!postCate.Item2.Any())
                 {

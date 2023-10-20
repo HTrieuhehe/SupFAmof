@@ -9,19 +9,19 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountResponse
     {
-        public int Id { get; set; }
-        public int RoleId { get; set; }
-        public int AccountInformationId { get; set; }
+        public int? Id { get; set; }
+        public int? RoleId { get; set; }
+        public int? AccountInformationId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? ImgUrl { get; set; }
-        public bool PostPermission { get; set; }
+        public bool? PostPermission { get; set; }
         public bool? IsPremium { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsBanned { get; set; }
-        public DateTime CreateAt { get; set; }
+        public bool? IsActive { get; set; }
+        public bool? IsBanned { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public AccountInformationResponse AccountInformation { get; set; }
@@ -30,8 +30,8 @@ namespace SupFAmof.Service.DTO.Response
 
     public class AccountInformationResponse
     {
-        public int Id { get; set; }
-        public int AccountId { get; set; }
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
         public string? IdentityNumber { get; set; }
         public string? IdStudent { get; set; }
         public string? FbUrl { get; set; }

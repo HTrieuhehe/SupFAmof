@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Service.Commons;
 using ServiceStack.Web;
@@ -114,7 +115,7 @@ namespace SupFAmof.Service.Service
                                     .ProjectTo<AccountCertificateResponse>(_mapper.ConfigurationProvider)
                                     .OrderByDescending(x => x.CreateAt)
                                     .DynamicFilter(filter)
-                                    .DynamicSort(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 

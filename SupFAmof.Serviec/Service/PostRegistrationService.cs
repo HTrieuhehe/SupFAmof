@@ -13,6 +13,7 @@ using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
 using SupFAmof.Service.Utilities;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -66,7 +67,7 @@ namespace SupFAmof.Service.Service
                                                       .GetAll()
                                                       .Where(pr => pr.AccountId == admissionAccountId)
                                                       .ProjectTo<AdmissionPostsResponse>(_mapper.ConfigurationProvider)
-                                                      .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                                      .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AdmissionPostsResponse>()
                 {

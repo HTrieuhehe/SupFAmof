@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Pipelines.Sockets.Unofficial.Arenas;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -98,9 +99,8 @@ namespace SupFAmof.Service.Service
                 var role = _unitOfWork.Repository<Role>().GetAll()
                                     .ProjectTo<RoleResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
-                                    .DynamicSort(filter)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<RoleResponse>()
                 {

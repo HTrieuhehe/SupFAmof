@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using StackExchange.Redis;
 using SupFAmof.Data.Entity;
@@ -36,11 +37,10 @@ namespace SupFAmof.Service.Service
                                                 .GetAll()
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
+                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .Where(x => x.AccountId == accountId)
                                                 .OrderByDescending(x => x.Date)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()
                 {
@@ -67,10 +67,9 @@ namespace SupFAmof.Service.Service
                                                 .GetAll()
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
+                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .OrderByDescending(x => x.Date)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()
                 {

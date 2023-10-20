@@ -14,6 +14,7 @@ using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Response.Admin;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -93,9 +94,8 @@ namespace SupFAmof.Service.Service
             var staff = _unitOfWork.Repository<Admin>().GetAll()
                                    .ProjectTo<AdminAccountResponse>(_mapper.ConfigurationProvider)
                                    .DynamicFilter(filter)
-                                   .DynamicSort(filter)
-                                   .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging,
-                                    Constants.DefaultPaging);
+                                   .DynamicSort(paging.Sort, paging.Order)
+                                   .PagingQueryable(paging.Page, paging.PageSize);
             return new BaseResponsePagingViewModel<AdminAccountResponse>()
             {
                 Metadata = new PagingsMetadata()

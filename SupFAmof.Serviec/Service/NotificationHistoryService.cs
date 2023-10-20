@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -65,8 +66,7 @@ namespace SupFAmof.Service.Service
                                                 .ProjectTo<NotificationHistoryResponse>(_mapper.ConfigurationProvider)
                                                 .Where(x => x.RecipientId == recipientId)
                                                 .OrderByDescending(x => x.CreateAt)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                Constants.LimitPaging, Constants.DefaultPaging);
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<NotificationHistoryResponse>()
                 {
@@ -92,9 +92,8 @@ namespace SupFAmof.Service.Service
                 var listNoti = _unitOfWork.Repository<NotificationHistory>().GetAll()
                                                 .ProjectTo<NotificationHistoryResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                Constants.LimitPaging, Constants.DefaultPaging);
+                                                .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<NotificationHistoryResponse>()
                 {

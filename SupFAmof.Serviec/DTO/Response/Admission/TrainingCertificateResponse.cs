@@ -8,10 +8,10 @@ namespace SupFAmof.Service.DTO.Response.Admission
 {
     public class TrainingCertificateResponse
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? TrainingTypeId { get; set; }
         public string? CertificateName { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
     }
 }

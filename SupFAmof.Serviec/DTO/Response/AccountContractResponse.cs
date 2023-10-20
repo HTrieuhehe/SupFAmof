@@ -9,12 +9,12 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountContractResponse
     {
-        public int Id { get; set; }
-        public int ContractId { get; set; }
-        public int AccountId { get; set; }
+        public int? Id { get; set; }
+        public int? ContractId { get; set; }
+        public int? AccountId { get; set; }
         public byte[]? SubmittedFile { get; set; }
-        public int Status { get; set; }
-        public DateTime CreateAt { get; set; }
+        public int? Status { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public virtual AccountResponse? Account { get; set; }

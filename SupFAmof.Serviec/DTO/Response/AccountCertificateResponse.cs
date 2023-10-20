@@ -10,9 +10,9 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountCertificateResponse
     {
-        public int Id { get; set; }
-        public int Status { get; set; }
-        public DateTime CreateAt { get; set; }
+        public int? Id { get; set; }
+        public int? Status { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public virtual AccountResponse? CertificateIssuer { get; set; }

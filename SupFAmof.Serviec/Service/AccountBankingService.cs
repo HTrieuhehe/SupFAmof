@@ -5,7 +5,6 @@ using System.Text;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Security.Principal;
 using System.Collections.Generic;
@@ -19,6 +18,7 @@ using SupFAmof.Service.DTO.Request.Account;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.Service.ServiceInterface;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -62,14 +62,14 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse request, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse filter, PagingRequest paging)
         {
             try
             {
                 var accountBankings = _unitOfWork.Repository<AccountBanking>().GetAll()
                     .ProjectTo<AccountBankingResponse>(_mapper.ConfigurationProvider)
-                    .DynamicFilter(request)
-                    .DynamicSort(request)
+                    .DynamicFilter(filter)
+                    .DynamicSort(paging.Sort, paging.Order)
                     .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
                 return new BaseResponsePagingViewModel<AccountBankingResponse>
                 {

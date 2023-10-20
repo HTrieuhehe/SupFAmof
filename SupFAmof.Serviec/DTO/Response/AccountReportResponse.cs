@@ -9,9 +9,9 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class AccountReportResponse
     {
-        public int Id { get; set; }
-        public int AccountId { get; set; }
-        public int PostId { get; set; }
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
+        public int? PostId { get; set; }
         public double? Salary { get; set; }
         public DateTime? Date { get; set; }
 

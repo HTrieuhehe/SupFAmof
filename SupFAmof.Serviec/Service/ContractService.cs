@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
-using NTQ.Sdk.Core.Utilities;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
 using ServiceStack.Web;
@@ -229,8 +229,8 @@ namespace SupFAmof.Service.Service
                                                 .Where(x => x.CreatePersonId == accountId && x.IsActive == true)
                                                 .ProjectTo<AdmissionContractResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                                .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AdmissionContractResponse>
                 {
@@ -458,8 +458,8 @@ namespace SupFAmof.Service.Service
                                                 .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
                                                 .Where(x => x.Status == (int)AccountContractStatusEnum.Pending)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                                .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountContractResponse>
                 {

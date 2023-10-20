@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
-using NTQ.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -274,13 +274,11 @@ namespace SupFAmof.Service.Service
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
-                                    .Where(x => x.Status != (int)PostStatusEnum.Delete)
-                                    .DynamicFilter(filter)
-                                    .DynamicSort(filter)
+                                    .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete)
                                     .OrderByDescending(x => x.CreateAt)
-                                    .Where(x => x.AccountId == accountId)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                    .DynamicFilter(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AdmissionPostResponse>()
                 {
@@ -552,6 +550,37 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> AdmissionSearchPost(int accountId, string searchPost, PagingRequest paging)
+        {
+            try
+            {
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                        .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
+                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost)
+                                                                                    || x.PostDescription.Contains(searchPost)
+                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(searchPost))
+                                                                                    || x.PostPositions.Any(x => x.Location.Contains(searchPost)))
+                                        .OrderByDescending(x => x.CreateAt)
+                                        .OrderByDescending(x => x.Priority)
+                                        .PagingQueryable(paging.Page, paging.PageSize);
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (ErrorResponse ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region Collaborator Post Service
@@ -561,7 +590,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 int totalCount = 0;
-                int totalAmountPosition = 0;
+                int? totalAmountPosition = 0;
                 var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -578,11 +607,8 @@ namespace SupFAmof.Service.Service
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
-                                        .DynamicSort(filter)
-                                        .OrderByDescending(x => x.CreateAt)
-                                        .ThenByDescending(x => x.Priority)
-                                        .PagingQueryable(paging.Page, paging.PageSize,
-                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                        .DynamicSort(paging.Sort, paging.Order)
+                                        .PagingQueryable(paging.Page, paging.PageSize);
 
                     List<PostResponse> premiumPostResponseList = new();
                     foreach (var item in premiumPost.Item2)
@@ -627,15 +653,13 @@ namespace SupFAmof.Service.Service
 
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
-                                        .OrderByDescending(x => x.Priority)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .DynamicFilter(filter)
-                                        .DynamicSort(filter)
                                         .OrderByDescending(x => x.CreateAt)
-                                        .ThenByDescending(x => x.Priority)
-                                        .PagingQueryable(paging.Page, paging.PageSize,
-                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                        .OrderByDescending(x => x.Priority)
+                                        .DynamicFilter(filter)
+                                        .DynamicSort(paging.Sort, paging.Order)
+                                        .PagingQueryable(paging.Page, paging.PageSize);
 
                 List<PostResponse> postResponseList = new();
                 foreach (var item in post.Item2)
@@ -697,8 +721,7 @@ namespace SupFAmof.Service.Service
                                                                                     || x.PostPositions.Any(x => x.Location.Contains(searchPost)))
                                         .OrderByDescending(x => x.CreateAt)
                                         .OrderByDescending(x => x.Priority)
-                                        .PagingQueryable(paging.Page, paging.PageSize,
-                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                        .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
@@ -717,30 +740,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> AdmissionSearchPost(int accountId, string searchPost)
-        {
-            try
-            {
-                var post = _unitOfWork.Repository<Post>().GetAll()
-                                        .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
-                                        .Where(x => x.PostCode.Contains(searchPost) && x.AccountId == accountId);
-
-                return new BaseResponseViewModel<AdmissionPostResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<AdmissionPostResponse>(post)
-                };
-            }
-            catch (ErrorResponse ex)
-            {
-                throw ex;
-            }
-        }
+        
 
         #endregion
     }

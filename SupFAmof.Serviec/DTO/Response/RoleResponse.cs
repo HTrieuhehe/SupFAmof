@@ -8,11 +8,11 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class RoleResponse
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? RoleName { get; set; }
         public string? RoleEmail { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreateAt { get; set; }
+        public bool? IsActive { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
     }
 }

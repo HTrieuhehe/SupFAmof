@@ -2,13 +2,13 @@
 using MailKit;
 using MailKit.Security;
 using Org.BouncyCastle.Cms;
-using NTQ.Sdk.Core.Utilities;
 using Castle.Core.Configuration;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 
 namespace SupFAmof.Service.Service
 {

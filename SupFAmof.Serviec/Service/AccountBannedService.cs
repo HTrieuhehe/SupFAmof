@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -173,9 +173,8 @@ namespace SupFAmof.Service.Service
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
                                                 .ProjectTo<AccountBannedResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                                                .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountBannedResponse>()
                 {

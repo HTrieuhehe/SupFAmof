@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Service.Commons;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using System.Threading.Tasks;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
@@ -17,6 +16,7 @@ using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -80,10 +80,9 @@ namespace SupFAmof.Service.Service
                                                .Where(x => x.AccountId == accountId)
                                                .OrderByDescending(x => x.ReportDate)
                                                .ProjectTo<AccountReportProblemResponse>(_mapper.ConfigurationProvider)
-                                                .DynamicFilter(filter)
-                                                .DynamicSort(filter)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                                               .DynamicFilter(filter)
+                                               .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportProblemResponse>()
                 {
@@ -121,9 +120,8 @@ namespace SupFAmof.Service.Service
                                                .ProjectTo<AdmissionAccountReportProblemResponse>(_mapper.ConfigurationProvider)
                                                .OrderByDescending(x => x.ReportDate)
                                                .DynamicFilter(filter)
-                                               .DynamicSort(filter)
-                                               .PagingQueryable(paging.Page, paging.PageSize,
-                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                                               .DynamicSort(paging.Sort, paging.Order)
+                                               .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AdmissionAccountReportProblemResponse>()
                 {

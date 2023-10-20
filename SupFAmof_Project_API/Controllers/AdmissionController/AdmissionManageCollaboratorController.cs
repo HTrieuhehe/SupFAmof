@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
-using NTQ.Sdk.Core.CustomModel;
 using Microsoft.AspNetCore.Http;
 using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;

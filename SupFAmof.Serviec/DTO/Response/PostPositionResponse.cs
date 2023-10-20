@@ -10,8 +10,13 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class PostPositionResponse
     {
-        public int Id { get; set; }
-        public int PostId { get; set; }
+        public PostPositionResponse()
+        {
+            RegisterAmount = 0;
+        }
+
+        public int? Id { get; set; }
+        public int? PostId { get; set; }
         public int? TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }
         public string? PositionName { get; set; }
@@ -22,13 +27,12 @@ namespace SupFAmof.Service.DTO.Response
         public string? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public bool? IsBusService { get; set; }
-        public int Amount { get; set; }
-        public double Salary { get; set; }
+        public int? Amount { get; set; }
+        public double? Salary { get; set; }
 
-        private int? registerAmount;
-        public int? RegisterAmount { get => registerAmount; set => registerAmount = value; }
+        public int RegisterAmount;
 
     }
 }

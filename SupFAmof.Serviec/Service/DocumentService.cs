@@ -2,7 +2,6 @@
 using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
@@ -14,6 +13,8 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using SupFAmof.Service.Utilities;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -28,7 +29,7 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<DTO.Response.BaseResponsePagingViewModel<AdmissionDocumentResponse>> GetDocuments(PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionDocumentResponse>> GetDocuments(PagingRequest paging)
         {
             var listDocument = _unitOfWork.Repository<DocumentTemplate>().GetAll()
                                           .ProjectTo<AdmissionDocumentResponse>(_mapper.ConfigurationProvider)
@@ -182,8 +183,7 @@ namespace SupFAmof.Service.Service
                 var document = _unitOfWork.Repository<DocumentTemplate>().GetAll()
                                     .ProjectTo<AdmissionDocumentResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.DocName.Contains(search))
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                                        Constants.LimitPaging, Constants.DefaultPaging);
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 if (!document.Item2.Any())
                 {

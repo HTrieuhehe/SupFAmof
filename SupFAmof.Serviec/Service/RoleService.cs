@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
+using LAK.Sdk.Core.Utilities;
 using Pipelines.Sockets.Unofficial.Arenas;
 using Service.Commons;
 using SupFAmof.Data.Entity;
@@ -10,6 +10,7 @@ using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -98,9 +99,8 @@ namespace SupFAmof.Service.Service
                 var role = _unitOfWork.Repository<Role>().GetAll()
                                     .ProjectTo<RoleResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
-                                    .DynamicSort(filter)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<RoleResponse>()
                 {

@@ -3,7 +3,6 @@ using System.Data;
 using Service.Commons;
 using FirebaseAdmin.Auth;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Utilities;
@@ -23,6 +22,7 @@ using ServiceStack.Web;
 using System.Net.WebSockets;
 using System.Net.NetworkInformation;
 using System.Security.Principal;
+using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -599,7 +599,7 @@ namespace SupFAmof.Service.Service
             {
                 var account = _unitOfWork.Repository<Account>().GetAll()
                     .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
-                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountResponse>()
                 {

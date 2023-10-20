@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using NTQ.Sdk.Core.Utilities;
+using LAK.Sdk.Core.Utilities;
 using Service.Commons;
 using StackExchange.Redis;
 using SupFAmof.Data.Entity;
@@ -9,6 +9,7 @@ using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,11 +37,10 @@ namespace SupFAmof.Service.Service
                                                 .GetAll()
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
+                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .Where(x => x.AccountId == accountId)
                                                 .OrderByDescending(x => x.Date)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()
                 {
@@ -67,10 +67,9 @@ namespace SupFAmof.Service.Service
                                                 .GetAll()
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(filter)
+                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .OrderByDescending(x => x.Date)
-                                                .PagingQueryable(paging.Page, paging.PageSize,
-                                                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()
                 {

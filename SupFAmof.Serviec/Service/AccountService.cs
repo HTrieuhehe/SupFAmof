@@ -439,7 +439,7 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE,
                                       AccountErrorEnums.ACCOUNT_DOES_NOT_DISABLE.GetDisplayName());
-                }    
+                }
 
                 //generate random 6 digit code
                 int randCode = Ultils.GenerateRandom6DigitNumber();
@@ -899,7 +899,7 @@ namespace SupFAmof.Service.Service
                                          .Include(x => x.AccountBanneds)
                                          .OrderByDescending(x => x.AccountBanneds.Max(b => b.DayEnd))
                                          .ProjectTo<AccountResponse>(_mapper.ConfigurationProvider)
-                                        . PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                        .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<AccountResponse>()
                 {
@@ -1141,6 +1141,77 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccountAvatart(int accountId, UpdateAccountAvatar request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (request.ImgUrl == null || request.ImgUrl == "")
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID,
+                                        AccountErrorEnums.ACCOUNT_AVATAR_URL_INVALID.GetDisplayName());
+                }
+
+                //DateTime updateTimeRemain = (DateTime)account.UpdateAt;
+
+                if (account.UpdateAt.HasValue)
+                {
+                    if (account.UpdateAt == account.UpdateAt.Value.AddMinutes(5))
+                    {
+                        throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
+                                            AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
+                    }
+
+                    account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);
+
+                    account.UpdateAt = Ultils.GetCurrentDatetime();
+
+                    await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AdmissionAccountResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AdmissionAccountResponse>(account)
+                    };
+                }
+
+                account = _mapper.Map<UpdateAccountAvatar, Account>(request, account);
+
+                account.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionAccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionAccountResponse>(account)
+                };
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         private async Task<bool> CheckAccountBanned(int accountId)
         {
             try
@@ -1164,7 +1235,7 @@ namespace SupFAmof.Service.Service
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }

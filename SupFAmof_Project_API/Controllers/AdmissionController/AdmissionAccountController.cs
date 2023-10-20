@@ -92,6 +92,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
+        /// Update Account Avatar
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("updateAvatar")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> UpdateAccount([FromBody] UpdateAccountAvatar data)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.UpdateAdmissionAccountAvatart(account.Id, data);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Google Login
         /// </summary>
         /// <param name="data"></param>

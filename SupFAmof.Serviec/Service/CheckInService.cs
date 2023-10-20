@@ -2,7 +2,6 @@
 using AutoMapper;
 using System.Linq;
 using SupFAmof.Data.Entity;
-using NTQ.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;

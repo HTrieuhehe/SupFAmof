@@ -237,7 +237,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postService.AdmissionSearchPost(account.Id, searchPost);
+                return await _postService.AdmissionSearchPost(account.Id, searchPost, paging);
             }
             catch (ErrorResponse ex)
             {

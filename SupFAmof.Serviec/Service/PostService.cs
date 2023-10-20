@@ -273,11 +273,10 @@ namespace SupFAmof.Service.Service
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
-                                    .Where(x => x.Status != (int)PostStatusEnum.Delete)
+                                    .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete)
+                                    .OrderByDescending(x => x.CreateAt)
                                     .DynamicFilter(filter)
                                     .DynamicSort(filter)
-                                    .OrderByDescending(x => x.CreateAt)
-                                    .Where(x => x.AccountId == accountId)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                     Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -576,10 +575,10 @@ namespace SupFAmof.Service.Service
                                         .Where(x => x.Status == (int)PostStatusEnum.Opening)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .DynamicFilter(filter)
-                                        .DynamicSort(filter)
                                         .OrderByDescending(x => x.CreateAt)
                                         .OrderByDescending(x => x.Priority)
+                                        .DynamicFilter(filter)
+                                        .DynamicSort(filter)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -628,10 +627,10 @@ namespace SupFAmof.Service.Service
                                         .Where(x => x.IsPremium != true || x.Status == (int)PostStatusEnum.Opening)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .DynamicFilter(filter)
-                                        .DynamicSort(filter)
                                         .OrderByDescending(x => x.CreateAt)
                                         .OrderByDescending(x => x.Priority)
+                                        //.DynamicFilter(filter)
+                                        //.DynamicSort(filter)
                                         .PagingQueryable(paging.Page, paging.PageSize,
                                         Constants.LimitPaging, Constants.DefaultPaging);
 

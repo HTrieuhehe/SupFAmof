@@ -167,7 +167,6 @@ namespace SupFAmof.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SupFAmof V2");
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 
-                // Cài đặt để kích hoạt nút "Copy URL"
                 //c.EnableRequestValidation();
             });
             app.UseRouting();

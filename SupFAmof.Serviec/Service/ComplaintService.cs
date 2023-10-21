@@ -20,12 +20,12 @@ using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
-    public class ComplaintSerrvice : IComplaintService
+    public class ComplaintService : IComplaintService
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ComplaintSerrvice(IMapper mapper, IUnitOfWork unitOfWork)
+        public ComplaintService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;

@@ -39,8 +39,8 @@ namespace SupFAmof.Service.DTO.Response
         public int? TotalAmountPosition;
         //public  int? TotalAmountPosition { get => totalAmountPosition ?? 0; set => totalAmountPosition = value; }
 
-        public virtual AccountResponse? Account { get; set; }
-        public virtual PostCategoryResponse? PostCategory { get; set; }
-        public virtual ICollection<PostPositionResponse>? PostPositions { get; set; }
+        public AccountResponse? Account { get; set; }
+        public PostCategoryResponse? PostCategory { get; set; }
+        public ICollection<PostPositionResponse>? PostPositions { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace SupFAmof.Service.DTO.Response
             RegisterAmount = 0;
         }
 
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public int? PostId { get; set; }
         public int? TrainingCertificateId { get; set; }
         public int? DocumentId { get; set; }

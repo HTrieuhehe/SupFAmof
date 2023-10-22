@@ -25,15 +25,16 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <remarks>
         /// true 
         /// </remarks>
+        /// <param name="list">Assign list Id to update</param>
         /// <param name="approve"></param>
         /// <response code="200">Approved success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPut("review-updateRequest/")]
-        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate([FromBody] List<int> Ids, [FromQuery] AproveRequest approve)
+        public async Task<ActionResult<BaseResponseViewModel<PostRegistrationResponse>>> ApproveRequestUpdate([FromBody] AproveUpdateIdRequest list, [FromQuery] AproveRequest approve)
         {
             try
             {
-                var result = await _postRegistrationService.ApproveUpdateRequest(Ids, approve.IsApproved);
+                var result = await _postRegistrationService.ApproveUpdateRequest(list.Ids, approve.IsApproved);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

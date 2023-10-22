@@ -48,4 +48,12 @@ namespace SupFAmof.Service.DTO.Request
         }
 
     }
+    public class AproveUpdateIdRequest
+    {
+        public List<int> Ids
+        {
+            get; set;
+        }
+
+    }
 }

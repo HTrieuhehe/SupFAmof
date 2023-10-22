@@ -272,6 +272,9 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                int? totalCount = 0;
+                int? totalAmountPosition = 0;
+
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete)
@@ -279,6 +282,38 @@ namespace SupFAmof.Service.Service
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
+
+                var postResponses = post.Item2.ToList();
+
+                foreach (var item in postResponses)
+                {
+                    // Lấy danh sách PostAttendee 
+                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                             .Where(x => x.PostId == item.Id)
+                                             .ToList();
+
+                    // Tính toán các trường cần thiết
+                    item.RegisterAmount = totalPostAttendee.Count;
+
+                    foreach (var itemDetail in item.PostPositions)
+                    {
+                        //count register amount in post attendee based on position
+                        totalCount += CountRegisterAmount(itemDetail.Id, totalPostAttendee);
+
+                        //transafer data to field in post position
+                        itemDetail.RegisterAmount = totalCount;
+
+                        //add number of amount required to total amount of a specific post
+                        totalAmountPosition += itemDetail.Amount;
+                    }
+
+                    //transfer data from position after add to field in post
+                    item.TotalAmountPosition = totalAmountPosition;
+
+                    // Reset temp variable
+                    totalCount = 0;
+                    totalAmountPosition = 0;
+                }
 
                 return new BaseResponsePagingViewModel<AdmissionPostResponse>()
                 {
@@ -288,7 +323,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = post.Item2.ToList()
+                    Data = postResponses
                 };
             }
             catch (Exception ex)
@@ -623,7 +658,6 @@ namespace SupFAmof.Service.Service
 
                         // Tính toán các trường cần thiết
                         item.RegisterAmount = totalPostPremiumAttendee.Count;
-                        totalCount = 0;
 
                         foreach (var itemDetail in item.PostPositions)
                         {
@@ -711,7 +745,6 @@ namespace SupFAmof.Service.Service
 
                     // Tính toán các trường cần thiết
                     item.RegisterAmount = totalPostAttendee.Count;
-                    totalCount = 0;
 
                     foreach (var itemDetail in item.PostPositions)
                     {
@@ -740,8 +773,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    //Data = postResponses.ToList()
-                    Data = post.Item2.ToList()
+                    Data = postResponses
                 };
             }
             catch (Exception ex)

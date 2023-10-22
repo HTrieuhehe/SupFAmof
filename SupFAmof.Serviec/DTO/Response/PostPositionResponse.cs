@@ -32,7 +32,7 @@ namespace SupFAmof.Service.DTO.Response
         public int? Amount { get; set; }
         public double? Salary { get; set; }
 
-        public int RegisterAmount;
+        public int? RegisterAmount { get; set; }
 
     }
 }

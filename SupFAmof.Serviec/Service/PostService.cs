@@ -278,7 +278,6 @@ namespace SupFAmof.Service.Service
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete)
-                                    .OrderByDescending(x => x.CreateAt)
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
@@ -323,7 +322,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = postResponses
+                    Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                 };
             }
             catch (Exception ex)
@@ -640,8 +639,6 @@ namespace SupFAmof.Service.Service
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
                                        .Where(x => x.Status == (int)PostStatusEnum.Opening)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
-                                       .OrderByDescending(x => x.CreateAt)
-                                       .OrderByDescending(x => x.Priority)
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order)
@@ -686,7 +683,7 @@ namespace SupFAmof.Service.Service
                             Size = paging.PageSize,
                             Total = premiumPost.Item1
                         },
-                        Data = postPremiumResponses.ToList()
+                        Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                     };
                 }
 
@@ -694,8 +691,6 @@ namespace SupFAmof.Service.Service
                                         .Where(x => x.IsPremium != true && x.Status == (int)PostStatusEnum.Opening)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .OrderByDescending(x => x.CreateAt)
-                                        .OrderByDescending(x => x.Priority)
                                         .DynamicFilter(filter)
                                         .DynamicSort(paging.Sort, paging.Order)
                                         .PagingQueryable(paging.Page, paging.PageSize);
@@ -773,7 +768,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = postResponses
+                    Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                 };
             }
             catch (Exception ex)

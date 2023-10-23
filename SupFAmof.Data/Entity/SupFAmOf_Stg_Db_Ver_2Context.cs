@@ -30,7 +30,7 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<Complaint> Complaints { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
-        public virtual DbSet<Fcmtoken> Fcmtokens { get; set; } = null!;
+        public virtual DbSet<ExpoPushToken> ExpoPushTokens { get; set; } = null!;
         public virtual DbSet<NotificationHistory> NotificationHistories { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
         public virtual DbSet<PostAttendee> PostAttendees { get; set; } = null!;
@@ -48,7 +48,7 @@ namespace SupFAmof.Data.Entity
 //            if (!optionsBuilder.IsConfigured)
 //            {
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                optionsBuilder.UseSqlServer("Server=13.212.21.234;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
+//                optionsBuilder.UseSqlServer("Server=3.0.33.161;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True", x => x.UseNetTopologySuite());
 //            }
 //        }
 
@@ -215,7 +215,7 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("AccountReport");
 
-                entity.Property(e => e.Date).HasColumnType("datetime");
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.AccountReports)
@@ -332,22 +332,22 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.DocName).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Fcmtoken>(entity =>
+            modelBuilder.Entity<ExpoPushToken>(entity =>
             {
-                entity.ToTable("FCMToken");
+                entity.ToTable("ExpoPushToken");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany(p => p.Fcmtokens)
+                    .WithMany(p => p.ExpoPushTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK_FCMToken_Account");
 
-                entity.HasOne(d => d.Staff)
-                    .WithMany(p => p.Fcmtokens)
-                    .HasForeignKey(d => d.StaffId)
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.ExpoPushTokens)
+                    .HasForeignKey(d => d.AdminId)
                     .HasConstraintName("FK_AccessToken_Staff");
             });
 

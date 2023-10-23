@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.Service.ServiceInterface
 {
-    public interface IFcmTokenService
+    public interface IExpoTokenService
     {
         void AddFcmToken(string fcmToken, int customerId);
 
@@ -19,5 +19,15 @@ namespace SupFAmof.Service.Service.ServiceInterface
         void SubscribeAll(int accountId);
 
         Task<bool> ValidToken(string fcmToken);
+
+
+        #region ExpoToken
+
+        void AddExpoToken(string expoToken, int accountId);
+        void AddAdminExpoToken(string expoToken, int adminId);
+        int RemoveExpoTokens(ICollection<string> expoTokens);
+        Task<bool> ValidExpoToken(string expoToken);
+
+        #endregion
     }
 }

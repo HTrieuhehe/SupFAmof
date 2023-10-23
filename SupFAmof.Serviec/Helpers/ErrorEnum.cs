@@ -13,10 +13,10 @@ namespace SupFAmof.Service.Helpers
         //400 Bad Request
         //404 Not Found
 
-        public enum FcmTokenErrorEnums
+        public enum ExpoPushTokenErrorEnum
         {
             //404
-            [Display(Name = "Invalid fcm token!")]
+            [Display(Name = "Invalid Expo token!")]
             INVALID_TOKEN = 400
         }
 
@@ -53,9 +53,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Invalid Student Id")]
             ACCOUNT_STUDENTID_INVALID = 4005,
 
-            //400
-            [Display(Name = "Invalid API")]
-            API_INVALID = 4006,
+            //403
+            [Display(Name = "You are not allow to use this API")]
+            API_INVALID = 4031,
 
             //400
             [Display(Name = "Account cannot post")]

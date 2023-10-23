@@ -43,6 +43,8 @@ namespace SupFAmof.Service.Service
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .Where(x => x.AccountId == accountId)
                                                 .OrderByDescending(x => x.CreateAt)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(paging.Sort, paging.Order)
                                                 .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()

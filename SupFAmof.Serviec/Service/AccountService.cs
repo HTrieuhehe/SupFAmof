@@ -31,7 +31,7 @@ namespace SupFAmof.Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly IExpoTokenService _accountExpotokenService;
+        private readonly IExpoTokenService _accountExpoTokenService;
         private readonly ISendMailService _sendMailService;
 
         public AccountService
@@ -40,7 +40,7 @@ namespace SupFAmof.Service.Service
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
-            _accountExpotokenService = accountExpotokenService;
+            _accountExpoTokenService = accountExpotokenService;
             _sendMailService = sendMailService;
         }
 
@@ -101,7 +101,7 @@ namespace SupFAmof.Service.Service
 
                     //Add fcm token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -126,7 +126,7 @@ namespace SupFAmof.Service.Service
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -151,7 +151,7 @@ namespace SupFAmof.Service.Service
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -317,7 +317,7 @@ namespace SupFAmof.Service.Service
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            var fcmToken = _unitOfWork.Repository<Fcmtoken>().Find(x => x.AccountId == accountId);
+            var expoToken = await _unitOfWork.Repository<ExpoPushToken>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
             var reactivationAccount = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == accountId);
 
             if (reactivationAccount == null)
@@ -338,9 +338,9 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<AccountReactivation>().InsertAsync(accountReactivationMapping);
                 await _unitOfWork.CommitAsync();
 
-                if (fcmToken != null)
+                if (expoToken != null)
                 {
-                    await Logout(fcmToken.Token);
+                    await Logout(expoToken.Token, accountId, 2);
 
                     return new BaseResponseViewModel<AccountResponse>()
                     {
@@ -377,9 +377,9 @@ namespace SupFAmof.Service.Service
             await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
             await _unitOfWork.CommitAsync();
 
-            if (fcmToken != null)
+            if (expoToken != null)
             {
-                await Logout(fcmToken.Token);
+                await Logout(expoToken.Token, accountId, 2);
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -697,7 +697,7 @@ namespace SupFAmof.Service.Service
 
                     //Add expo token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -722,7 +722,7 @@ namespace SupFAmof.Service.Service
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     //check banned and update Status
                     var checkAccountBanned = await CheckAccountBanned(account.Id);
@@ -775,7 +775,7 @@ namespace SupFAmof.Service.Service
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
-                        _accountExpotokenService.AddExpoToken(data.ExpoPushToken, account.Id);
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     //check banned and update Status
                     var checkAccountBanned = await CheckAccountBanned(account.Id);
@@ -828,11 +828,11 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task Logout(string fcmToken)
+        public async Task Logout(string expoToken, int accountId, int status)
         {
-            if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountExpotokenService.ValidToken(fcmToken))
+            if (expoToken != null && !expoToken.Trim().Equals("") && !await _accountExpoTokenService.ValidExpoToken(expoToken, accountId))
             {
-                _accountExpotokenService.RemoveFcmTokens(new List<string> { fcmToken });
+                await _accountExpoTokenService.RemoveExpoTokens(new List<string> { expoToken }, accountId, status);
             }
         }
 

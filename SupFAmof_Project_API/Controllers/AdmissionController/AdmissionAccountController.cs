@@ -164,7 +164,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpDelete("logout")]
-        public async Task<ActionResult> Logout([FromQuery] string fcmToken)
+        public async Task<ActionResult> Logout([FromQuery] string expoTpken)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                await _admissionAccountService.Logout(fcmToken);
+                await _admissionAccountService.Logout(expoTpken, account.Id, 1);
                 return Ok();
             }
             catch (ErrorResponse ex)

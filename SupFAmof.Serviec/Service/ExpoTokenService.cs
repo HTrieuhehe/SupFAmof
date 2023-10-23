@@ -220,14 +220,64 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public int RemoveExpoTokens(ICollection<string> expoTokens)
+        public async Task<int> RemoveExpoTokens(ICollection<string> expoTokens, int accountId, int status)
         {
-            throw new NotImplementedException();
+            try
+            {
+                switch (status)
+                {
+                    case 1:
+                        //remove only token (Casual Logout)
+                        var tokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.Token.Equals(expoTokens) && x.AccountId == accountId || x.AdminId == accountId);
+
+                        if (tokens == null)
+                            return 0;
+
+                        _unitOfWork.Repository<ExpoPushToken>().DeleteRange(tokens);
+                        _unitOfWork.Commit();
+
+                        return tokens.Count();
+
+                    case 2:
+                        //remove all token (When client disable there account
+                        var allTokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.AccountId == accountId || x.AdminId == accountId);
+
+                        if (allTokens == null)
+                            return 0;
+
+                        _unitOfWork.Repository<ExpoPushToken>().DeleteRange(allTokens);
+                        _unitOfWork.Commit();
+
+                        return allTokens.Count();
+
+                    default:
+                        return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
-        public Task<bool> ValidExpoToken(string expoToken)
+        public async Task<bool> ValidExpoToken(string expoToken, int accountId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var expocheck =  await _unitOfWork.Repository<ExpoPushToken>()
+                                        .FindAsync(x => x.Token.Equals(expoToken) && x.AccountId == accountId || x.AdminId == accountId);
+
+                if (expoToken == null)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         #endregion

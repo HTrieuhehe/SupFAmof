@@ -190,7 +190,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpPut("logout")]
-        public async Task<ActionResult> Logout([FromQuery] string fcmToken)
+        public async Task<ActionResult> Logout([FromQuery] string expoToken)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                await _accountService.Logout(fcmToken);
+                await _accountService.Logout(expoToken, account.Id, 1);
                 return Ok();
             }
             catch (ErrorResponse ex)

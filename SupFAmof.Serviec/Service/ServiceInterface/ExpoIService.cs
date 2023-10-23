@@ -25,8 +25,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         void AddExpoToken(string expoToken, int accountId);
         void AddAdminExpoToken(string expoToken, int adminId);
-        int RemoveExpoTokens(ICollection<string> expoTokens);
-        Task<bool> ValidExpoToken(string expoToken);
+        Task<int> RemoveExpoTokens(ICollection<string> expoToken, int accountId, int status);
+        Task<bool> ValidExpoToken(string expoToken, int accountId);
 
         #endregion
     }

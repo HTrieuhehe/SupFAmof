@@ -14,26 +14,26 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMmQ0OGE5OS00YWMwLTQzZTMtYjUzMi1
 Access Token FPT sau login
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOGRiYTg1MS1iMTQ2LTRjYzktYTI0NS0yN2Y5M2IwODBhZWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRHV5IEPhu6VjIFPDungiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNjk3MDkyMzIyLCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.0mI3gAlgiTzcoJpXnZIugsxhkxG-yVSZYz48eIND168
 
-
 {
   "postCategoryId": 1,
   "postDescription": "Test Create",
-  "postImg": "hello bitch",
+  "postImg": "https://images05.military.com/sites/default/files/media/equipment/military-vehicles/m1a2-abrams-main-battle-tank/2014/02/m1a2-abrams-battle-tank-08.jpg",
   "priority": 1,
-  "dateFrom": "2023-10-1",
+  "dateFrom": "2023-10-25",
   "dateTo": "",
   "isPremium": false,
   "postPositions": [
     {
       "trainingCertificateId": null,
       "documentId": null,
-      "positionName": "position Test",
-      "schoolName": "chỉ là test",
-      "location": "nô",
-      "latitude": "0",
-      "longitude": "0",
-      "timeFrom": "7:00:00",
-      "timeTo": "",
+      "positionName": "test report",
+      "positionDescription": "test report",
+      "schoolName": "len len",
+      "location": "nothing",
+      "latitude": "10.841444",
+      "longitude": "106.810033",
+      "timeFrom": "07:00:00",
+      "timeTo": "09:00:00",
       "isBusService": false,
       "amount": 10,
       "salary": 300000

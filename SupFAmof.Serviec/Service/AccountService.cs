@@ -31,16 +31,16 @@ namespace SupFAmof.Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly IFcmTokenService _accountFcmtokenService;
+        private readonly IExpoTokenService _accountExpoTokenService;
         private readonly ISendMailService _sendMailService;
 
         public AccountService
-            (IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IFcmTokenService accountFcmtokenService, ISendMailService sendMailService)
+            (IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IExpoTokenService accountExpotokenService, ISendMailService sendMailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
-            _accountFcmtokenService = accountFcmtokenService;
+            _accountExpoTokenService = accountExpotokenService;
             _sendMailService = sendMailService;
         }
 
@@ -48,14 +48,6 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                //check fcm token
-                if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                {
-                    if (!await _accountFcmtokenService.ValidToken(data.FcmToken))
-                        throw new ErrorResponse(400, (int)FcmTokenErrorEnums.INVALID_TOKEN,
-                                             FcmTokenErrorEnums.INVALID_TOKEN.GetDisplayName());
-                }
-
                 #region Decode Token
                 //tham chiếu đến phiên bản mặc định của lớp FirebaseAuth từ Firebase Admin SDK. FirebaseAuth cung cấp
                 //các phương thức và chức năng để quản lý và xác thực người dùng trong Firebase
@@ -72,23 +64,14 @@ namespace SupFAmof.Service.Service
 
                 #region Identify role by email root to validate
 
-                string[] splitEmail = userRecord.Email.Split('@');
-                var rootEmail = splitEmail[1];
+                var identifyRootEmail = await ValidateRootEmail(userRecord.Email, (int)SystemRoleEnum.AdmissionManager);
 
-                var admissionRole = _unitOfWork.Repository<Role>().GetAll()
-                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.AdmissionManager);
-
-                if (admissionRole == null)
+                if (!identifyRootEmail)
                 {
-                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
-                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.API_INVALID,
+                                                AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
 
-                if (!rootEmail.Contains(admissionRole.RoleEmail))
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
-                                        AccountErrorEnums.API_INVALID.GetDisplayName());
-                }
                 #endregion
 
                 //check exist account
@@ -117,8 +100,8 @@ namespace SupFAmof.Service.Service
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token 
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -142,8 +125,8 @@ namespace SupFAmof.Service.Service
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token     
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -167,8 +150,8 @@ namespace SupFAmof.Service.Service
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token     
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -334,7 +317,7 @@ namespace SupFAmof.Service.Service
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            var fcmToken = _unitOfWork.Repository<Fcmtoken>().Find(x => x.AccountId == accountId);
+            var expoToken = await _unitOfWork.Repository<ExpoPushToken>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
             var reactivationAccount = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == accountId);
 
             if (reactivationAccount == null)
@@ -355,9 +338,9 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<AccountReactivation>().InsertAsync(accountReactivationMapping);
                 await _unitOfWork.CommitAsync();
 
-                if (fcmToken != null)
+                if (expoToken != null)
                 {
-                    await Logout(fcmToken.Token);
+                    await Logout(expoToken.Token, accountId, 2);
 
                     return new BaseResponseViewModel<AccountResponse>()
                     {
@@ -394,9 +377,9 @@ namespace SupFAmof.Service.Service
             await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(reactivationAccount);
             await _unitOfWork.CommitAsync();
 
-            if (fcmToken != null)
+            if (expoToken != null)
             {
-                await Logout(fcmToken.Token);
+                await Logout(expoToken.Token, accountId, 2);
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -660,14 +643,6 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                //check fcm token
-                if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                {
-                    if (!await _accountFcmtokenService.ValidToken(data.FcmToken))
-                        throw new ErrorResponse(400, (int)FcmTokenErrorEnums.INVALID_TOKEN,
-                                             FcmTokenErrorEnums.INVALID_TOKEN.GetDisplayName());
-                }
-
                 #region Decode Token
 
                 //tham chiếu đến phiên bản mặc định của lớp FirebaseAuth từ Firebase Admin SDK. FirebaseAuth cung cấp
@@ -685,23 +660,14 @@ namespace SupFAmof.Service.Service
 
                 #region Identify role by email root to validate
 
-                string[] splitEmail = userRecord.Email.Split('@');
-                var rootEmail = splitEmail[1];
+                var identifyRootEmail = await ValidateRootEmail(userRecord.Email, (int)SystemRoleEnum.Collaborator);
 
-                var collabRole = _unitOfWork.Repository<Role>().GetAll()
-                                                  .FirstOrDefault(x => x.Id == (int)SystemRoleEnum.Collaborator);
-
-                if (collabRole == null)
+                if (!identifyRootEmail)
                 {
-                    throw new ErrorResponse(400, (int)RoleErrorEnums.ROLE_NOTE_FOUND,
-                                        RoleErrorEnums.ROLE_NOTE_FOUND.GetDisplayName());
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.API_INVALID,
+                                                AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
 
-                if (!rootEmail.Contains(collabRole.RoleEmail))
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.API_INVALID,
-                                        AccountErrorEnums.API_INVALID.GetDisplayName());
-                }
                 #endregion
 
                 //check exist account
@@ -729,9 +695,9 @@ namespace SupFAmof.Service.Service
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
-                    //Add fcm token 
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    //Add expo token 
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
                     {
@@ -751,32 +717,12 @@ namespace SupFAmof.Service.Service
 
                 else if (account.IsActive == false)
                 {
-                    #region Old Code
-                    //var accountReactivation = _unitOfWork.Repository<AccountReactivation>().Find(x => x.AccountId == account.Id);
-
-                    //if (accountReactivation != null)
-                    //{
-                    //    accountReactivation.LoginToken = data.IdToken;
-                    //    accountReactivation.FcmToken = data.FcmToken;
-
-                    //    await _unitOfWork.Repository<AccountReactivation>().UpdateDetached(accountReactivation);
-                    //    await _unitOfWork.CommitAsync();
-
-                    //    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
-                    //                AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
-                    //}
-
-                    //throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
-                    //                    AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
-
-                    #endregion
-
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token     
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     //check banned and update Status
                     var checkAccountBanned = await CheckAccountBanned(account.Id);
@@ -828,8 +774,8 @@ namespace SupFAmof.Service.Service
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
                     //Add fcm token     
-                    if (data.FcmToken != null && data.FcmToken.Trim().Length > 0)
-                        _accountFcmtokenService.AddFcmToken(data.FcmToken, account.Id);
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                        _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     //check banned and update Status
                     var checkAccountBanned = await CheckAccountBanned(account.Id);
@@ -882,11 +828,11 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task Logout(string fcmToken)
+        public async Task Logout(string expoToken, int accountId, int status)
         {
-            if (fcmToken != null && !fcmToken.Trim().Equals("") && !await _accountFcmtokenService.ValidToken(fcmToken))
+            if (expoToken != null && !expoToken.Trim().Equals("") && !await _accountExpoTokenService.ValidExpoToken(expoToken, accountId))
             {
-                _accountFcmtokenService.RemoveFcmTokens(new List<string> { fcmToken });
+                await _accountExpoTokenService.RemoveExpoTokens(new List<string> { expoToken }, accountId, status);
             }
         }
 
@@ -1236,6 +1182,27 @@ namespace SupFAmof.Service.Service
                 return true;
             }
             catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<bool> ValidateRootEmail(string email, int roleId)
+        {
+            try
+            {
+                string[] splitEmail = email.Split('@');
+                var rootEmail = splitEmail[1];
+
+                var collabRole = await _unitOfWork.Repository<Role>().FindAsync(x => x.Id == roleId);
+
+                if (collabRole == null || !rootEmail.Contains(collabRole.RoleEmail))
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch(Exception ex)
             {
                 throw;
             }

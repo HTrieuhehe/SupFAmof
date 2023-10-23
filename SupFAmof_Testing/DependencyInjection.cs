@@ -69,9 +69,9 @@ namespace SupFAmof_Testing
             builder.RegisterType<RoleService>().As<IRoleService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<AccountBankingService>().As<IAccountBankingService>();
-            builder.RegisterType<FcmTokenService>().As<IFcmTokenService>();
+            builder.RegisterType<ExpoTokenService>().As<IExpoTokenService>();
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
-            builder.RegisterType<StaffService>().As<IStaffService>();
+            builder.RegisterType<AdminAccountService>().As<IAdminAccountService>();
             builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
             builder.RegisterType<PostCategoryService>().As<IPostCategoryService>();
             builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();

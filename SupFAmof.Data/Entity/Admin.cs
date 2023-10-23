@@ -7,7 +7,7 @@ namespace SupFAmof.Data.Entity
     {
         public Admin()
         {
-            Fcmtokens = new HashSet<Fcmtoken>();
+            ExpoPushTokens = new HashSet<ExpoPushToken>();
         }
 
         public int Id { get; set; }
@@ -18,6 +18,6 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual ICollection<Fcmtoken> Fcmtokens { get; set; }
+        public virtual ICollection<ExpoPushToken> ExpoPushTokens { get; set; }
     }
 }

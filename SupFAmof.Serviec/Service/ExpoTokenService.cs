@@ -3,16 +3,17 @@ using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.Utilities;
 
 namespace SupFAmof.Service.Service
 {
-    public class FcmTokenService : IFcmTokenService
+    public class ExpoTokenService : IExpoTokenService
     {
         private readonly IFirebaseMessagingService _fmService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public FcmTokenService(IUnitOfWork unitOfWork, IMapper mapper, IFirebaseMessagingService fmService)
+        public ExpoTokenService(IUnitOfWork unitOfWork, IMapper mapper, IFirebaseMessagingService fmService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -52,7 +53,32 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw;
+                var fcm = _unitOfWork.Repository<Fcmtoken>().GetAll()
+                    .FirstOrDefault(x => x.AccountId == accountId);
+
+                if (fcm == null)
+                {
+                    _fmService.Subcribe(new List<string>() { fcmToken }, Constants.NOTIFICATION_TOPIC);
+
+                    var newtoken = new Fcmtoken()
+                    {
+                        Token = fcmToken,
+                        AccountId = accountId,
+                        CreateAt = DateTime.UtcNow
+                    };
+                    _unitOfWork.Repository<Fcmtoken>().Insert(newtoken);
+                    _unitOfWork.Commit();
+                }
+                else if (!fcm.Token.Equals(fcmToken))
+                {
+                    //_fmService.Subcribe(new List<string>() { fcmToken }, Constants.NOTIFICATION_TOPIC);
+                    fcm.Token = fcmToken;
+                    fcm.AccountId = accountId;
+                    fcm.UpdateAt = DateTime.UtcNow;
+
+                    _unitOfWork.Repository<Fcmtoken>().UpdateDetached(fcm);
+                    _unitOfWork.Commit();
+                }
             }
         }
 
@@ -155,5 +181,105 @@ namespace SupFAmof.Service.Service
         {
             return await _fmService.ValidToken(fcmToken);
         }
+
+        #region ExpoToken
+
+        public void AddAdminExpoToken(string expoToken, int adminId)
+        {
+            try
+            {
+                
+            }
+            catch(Exception ex) 
+            {
+                throw;
+            }
+        }
+
+        public void AddExpoToken(string expoToken, int accountId)
+        {
+            try
+            {
+                var expo = _unitOfWork.Repository<ExpoPushToken>().Find(x => x.AccountId == accountId && x.Token.Equals(expoToken));
+
+                if (expo == null)
+                {
+                    var newtoken = new ExpoPushToken()
+                    {
+                        Token = expoToken,
+                        AccountId = accountId,
+                        CreateAt = Ultils.GetCurrentDatetime(),
+                    };
+                    _unitOfWork.Repository<ExpoPushToken>().Insert(newtoken);
+                    _unitOfWork.Commit();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> RemoveExpoTokens(ICollection<string> expoTokens, int accountId, int status)
+        {
+            try
+            {
+                switch (status)
+                {
+                    case 1:
+                        //remove only token (Casual Logout)
+                        var tokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.Token.Equals(expoTokens) && x.AccountId == accountId || x.AdminId == accountId);
+
+                        if (tokens == null)
+                            return 0;
+
+                        _unitOfWork.Repository<ExpoPushToken>().DeleteRange(tokens);
+                        _unitOfWork.Commit();
+
+                        return tokens.Count();
+
+                    case 2:
+                        //remove all token (When client disable there account
+                        var allTokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.AccountId == accountId || x.AdminId == accountId);
+
+                        if (allTokens == null)
+                            return 0;
+
+                        _unitOfWork.Repository<ExpoPushToken>().DeleteRange(allTokens);
+                        _unitOfWork.Commit();
+
+                        return allTokens.Count();
+
+                    default:
+                        return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> ValidExpoToken(string expoToken, int accountId)
+        {
+            try
+            {
+                var expocheck =  await _unitOfWork.Repository<ExpoPushToken>()
+                                        .FindAsync(x => x.Token.Equals(expoToken) && x.AccountId == accountId || x.AdminId == accountId);
+
+                if (expoToken == null)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

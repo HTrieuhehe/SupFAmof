@@ -23,15 +23,15 @@ namespace SupFAmof.Service.Service
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-        private readonly IFcmTokenService _fcmTokenService;
+        private readonly IExpoTokenService _expoTokenService;
         private readonly string _supFAmof;
 
-        public AdminAccountService(IMapper mapper, IUnitOfWork unitOfWork, IConfiguration configuration, IFcmTokenService fcmTokenService)
+        public AdminAccountService(IMapper mapper, IUnitOfWork unitOfWork, IConfiguration configuration, IExpoTokenService expoTokenService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
-            _fcmTokenService = fcmTokenService;
+            _expoTokenService = expoTokenService;
             _supFAmof = _configuration["supfamof2023"];
         }
 

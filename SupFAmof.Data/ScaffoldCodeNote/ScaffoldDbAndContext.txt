@@ -6,7 +6,7 @@ Vĩ độ (latitude): Giá trị nằm trong khoảng -90 đến 90, lưu ý âm
 Kinh độ (longitude): Giá trị nằm trong khoảng -180 đến 180, lưu ý âm dương qua kinh tuyến gốc (prime meridian). Thường được ký hiệu là lambda.
 
 
-dotnet ef dbcontext scaffold "Server=13.212.21.234;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
+dotnet ef dbcontext scaffold "Server=3.0.33.161;Database=SupFAmOf_Stg_Db_Ver_2;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
 
 access token gmail sau login 
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMmQ0OGE5OS00YWMwLTQzZTMtYjUzMi1kMTllYTAyNGQ0NmQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiSGnhur91IE5ndXnhu4VuIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIxMSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IjEiLCJleHAiOjE2OTY1MTg3NTQsImlzcyI6IlN1cEZBbW9mLkFQSSIsImF1ZCI6IlN1cEZBbW9mLkFQSSJ9.xzZpbM4UDW6FvrUQByO-Bjm_m3adBMHTESIzvEAfPBg

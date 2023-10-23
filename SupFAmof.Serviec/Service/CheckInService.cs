@@ -257,7 +257,7 @@ namespace SupFAmof.Service.Service
             {
                 var accountReport = _mapper.Map<CreateAccountReportRequest, AccountReport>(request);
 
-                accountReport.Date = Ultils.GetCurrentDatetime();
+                accountReport.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<AccountReport>().InsertAsync(accountReport);
                 await _unitOfWork.CommitAsync();

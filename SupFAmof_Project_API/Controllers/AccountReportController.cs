@@ -70,5 +70,30 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Get PostRegistration by Account Report Id
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("getRegistrationByReportId")]
+        public async Task<ActionResult<BaseResponseViewModel<ReportPostRegistrationResponse>>> GetPostRegistrationByAccountReportId
+        ([FromQuery] int accountReportId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountReportService.GetReportRegistrationById(account.Id, accountReportId);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

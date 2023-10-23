@@ -12,6 +12,7 @@ namespace SupFAmof.Data.Entity
         public string? Note { get; set; }
         public double Salary { get; set; }
 
+        public virtual PostPosition Position { get; set; } = null!;
         public virtual Post Post { get; set; } = null!;
         public virtual PostRegistration PostRegistration { get; set; } = null!;
     }

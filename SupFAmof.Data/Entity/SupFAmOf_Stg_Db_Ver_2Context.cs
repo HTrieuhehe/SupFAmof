@@ -488,6 +488,12 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Note).HasMaxLength(256);
 
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.PostRegistrationDetails)
+                    .HasForeignKey(d => d.PositionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PostRegistrationDetail_PostPosition");
+
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.PostRegistrationDetails)
                     .HasForeignKey(d => d.PostId)

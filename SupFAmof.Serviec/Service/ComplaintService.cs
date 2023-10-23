@@ -157,21 +157,21 @@ namespace SupFAmof.Service.Service
 
                 if (report == null)
                 {
-                    throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
-                                        ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
+                    throw new ErrorResponse(404, (int)ComplaintErrorEnum.NOT_FOUND_REPORT,
+                                        ComplaintErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
                 switch (report.Status)
                 {
                     case (int)ReportProblemStatusEnum.Approve:
                         throw new ErrorResponse(400,
-                            (int)ReportProblemErrorEnum.ALREADY_APPROVE,
-                            ReportProblemErrorEnum.ALREADY_APPROVE.GetDisplayName());
+                            (int)ComplaintErrorEnum.ALREADY_APPROVE,
+                            ComplaintErrorEnum.ALREADY_APPROVE.GetDisplayName());
 
                     // Add more cases here if needed
                     case (int)ReportProblemStatusEnum.Reject:
                         throw new ErrorResponse(400,
-                            (int)ReportProblemErrorEnum.ALREADY_REJECT,
-                            ReportProblemErrorEnum.ALREADY_REJECT.GetDisplayName());
+                            (int)ComplaintErrorEnum.ALREADY_REJECT,
+                            ComplaintErrorEnum.ALREADY_REJECT.GetDisplayName());
 
                     default:
                         break;
@@ -219,21 +219,21 @@ namespace SupFAmof.Service.Service
 
                 if (report == null)
                 {
-                    throw new ErrorResponse(404, (int)ReportProblemErrorEnum.NOT_FOUND_REPORT,
-                                        ReportProblemErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
+                    throw new ErrorResponse(404, (int)ComplaintErrorEnum.NOT_FOUND_REPORT,
+                                        ComplaintErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
                 switch (report.Status)
                 {
                     case (int)ReportProblemStatusEnum.Approve:
                         throw new ErrorResponse(400,
-                            (int)ReportProblemErrorEnum.ALREADY_APPROVE,
-                            ReportProblemErrorEnum.ALREADY_APPROVE.GetDisplayName());
+                            (int)ComplaintErrorEnum.ALREADY_APPROVE,
+                            ComplaintErrorEnum.ALREADY_APPROVE.GetDisplayName());
 
                     // Add more cases here if needed
                     case (int)ReportProblemStatusEnum.Reject:
                         throw new ErrorResponse(400,
-                            (int)ReportProblemErrorEnum.ALREADY_REJECT,
-                            ReportProblemErrorEnum.ALREADY_REJECT.GetDisplayName());
+                            (int)ComplaintErrorEnum.ALREADY_REJECT,
+                            ComplaintErrorEnum.ALREADY_REJECT.GetDisplayName());
 
                     default:
                         break;

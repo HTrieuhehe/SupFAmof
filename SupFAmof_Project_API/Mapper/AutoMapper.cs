@@ -119,6 +119,14 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
 
+            CreateMap<PostRegistration, ReportPostRegistrationResponse>()
+                .ForMember(dest => dest.PostRegistrationDetails, opt =>
+                {
+                    opt.MapFrom(src => src.PostRegistrationDetails);
+                })
+              .ReverseMap();
+            CreateMap<PostRegistrationDetail, ReportPostRegistrationDetailResponse>().ReverseMap();
+
             #endregion
 
             #region Post Attendee
@@ -195,6 +203,8 @@ namespace SupFAmof.API.Mapper
 
             #region Post
             CreateMap<Post, PostResponse>().ReverseMap();
+            CreateMap<Post, ReportPostResponse>().ReverseMap();
+            CreateMap<PostPosition, ReportPostPositionResponse>().ReverseMap();
             #endregion
 
             #region DocumentTemplate

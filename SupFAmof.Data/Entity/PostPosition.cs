@@ -9,6 +9,7 @@ namespace SupFAmof.Data.Entity
         {
             AccountReports = new HashSet<AccountReport>();
             PostAttendees = new HashSet<PostAttendee>();
+            PostRegistrationDetails = new HashSet<PostRegistrationDetail>();
             PostRgupdateHistories = new HashSet<PostRgupdateHistory>();
         }
 
@@ -34,6 +35,7 @@ namespace SupFAmof.Data.Entity
         public virtual TrainingCertificate? TrainingCertificate { get; set; }
         public virtual ICollection<AccountReport> AccountReports { get; set; }
         public virtual ICollection<PostAttendee> PostAttendees { get; set; }
+        public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
         public virtual ICollection<PostRgupdateHistory> PostRgupdateHistories { get; set; }
     }
 }

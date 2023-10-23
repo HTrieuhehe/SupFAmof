@@ -39,7 +39,6 @@ namespace SupFAmof.Service.Service
             {
                 var accountReport = _unitOfWork.Repository<AccountReport>()
                                                 .GetAll()
-                                                .Include(x => x.Post)
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
                                                 .Where(x => x.AccountId == accountId)
                                                 .OrderByDescending(x => x.CreateAt)

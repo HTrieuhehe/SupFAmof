@@ -391,20 +391,27 @@ namespace SupFAmof.Service.Helpers
 
         public enum SendEmailContractErrorEnum
         {
-            
+
         }
 
-        public enum ReportProblemErrorEnum
+        public enum ComplaintErrorEnum
         {
             //404
             [Display(Name = "Your Report Application Not Found")]
             NOT_FOUND_REPORT = 4041,
             //400
-            [Display(Name = "Report aplication is already approved")]
+            [Display(Name = "Report application is already approved")]
             ALREADY_APPROVE = 4042,
             //404
-            [Display(Name = "Report aplication is already rejected")]
+            [Display(Name = "Report application is already rejected")]
             ALREADY_REJECT = 4043,
+        }
+
+        public enum AccountReportErrorEnum
+        {
+            //404
+            [Display(Name = "Not found thid Account Report")]
+            NOT_FOUND_REPORT = 4041,
         }
     }
 }

@@ -287,13 +287,13 @@ namespace SupFAmof.Service.Service
 
         #endregion
 
-        public async Task<PushTicketResponse> PushNotification(List<int> ids)
+        public async Task<PushTicketResponse> PushNotification(PushNotificationRequest request)
         {
             try
             {
                 var tokens = _unitOfWork.Repository<ExpoPushToken>()
                                            .GetAll()
-                                           .Where(x => ids.Contains((int)x.AccountId) || ids.Contains((int)x.AdminId))
+                                           .Where(x => request.Ids.Contains((int)x.AccountId) || request.Ids.Contains((int)x.AdminId))
                                            .Select(y => y.Token.Trim())
                                            .ToList();
                 List<string> tokenList = TurnToExpoPushToken(tokens);
@@ -303,7 +303,8 @@ namespace SupFAmof.Service.Service
                 {
                     PushTo = tokenList,
                     PushBadgeCount = 7,
-                    PushBody = "Test Push - Msg"
+                    PushBody = request.Body.Trim(),
+                    PushTitle = request.Title.Trim()
                 };
                 var result = await expoSDKClient.PushSendAsync(pushTicketReq);
                 if (result?.PushTicketErrors?.Count() > 0)

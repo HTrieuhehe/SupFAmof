@@ -24,18 +24,18 @@ namespace SupFAmof.API.Controllers
         /// Get Noti By Id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getNotiById")]
+        [HttpGet("getNotiByToken")]
         public async Task<ActionResult<BaseResponsePagingViewModel<NotificationHistoryResponse>>> GetNotificationByToken([FromQuery] PagingRequest paging)
         {
             try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _notificationService.GetNotificationById(account.Id, paging);
+            {   
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                //{
+                //    return Unauthorized();
+                //}
+                return await _notificationService.GetNotificationById(14, paging);
             }
             catch (ErrorResponse ex)
             {

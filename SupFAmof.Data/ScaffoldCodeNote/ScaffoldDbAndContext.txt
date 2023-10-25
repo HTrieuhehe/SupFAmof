@@ -1,5 +1,7 @@
 ﻿Group Code: GFA23SE76
 
+- confirm contract nhớ validate tgian confirm phải trước thời gian kí ít nhất là 2 hoặc 3 tiếng
+
 Cách nhớ:
 
 Vĩ độ (latitude): Giá trị nằm trong khoảng -90 đến 90, lưu ý âm dương qua xích đạo. Thường được ký hiệu là phi.

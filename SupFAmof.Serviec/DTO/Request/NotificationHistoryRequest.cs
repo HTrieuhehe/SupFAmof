@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using static SupFAmof.Service.Utilities.Ultils;
 
 namespace SupFAmof.Service.DTO.Request
 {
@@ -26,6 +28,8 @@ namespace SupFAmof.Service.DTO.Request
         [Required(ErrorMessage = "Status is required")]
         [Range(0, int.MaxValue, ErrorMessage = "RecipientId must be a non-negative number")]
         public int Status { get; set; }
-        //public DateTime CreateAt { get; set; }
+
+        [JsonIgnore]
+        public DateTime CreateAt { get; set; } = GetCurrentDatetime();
     }
 }

@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Expo.Server.Models;
 using Microsoft.AspNetCore.Mvc;
-using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Service;
-using SupFAmof.Service.DTO.Request;
+using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
 {
@@ -14,10 +16,12 @@ namespace SupFAmof.API.Controllers
     public class NotiHistoryTestController : ControllerBase
     {
         private readonly INotificationService _notificationService;
+        private readonly IExpoTokenService _expoTokenService;
 
-        public NotiHistoryTestController(INotificationService notificationService)
+        public NotiHistoryTestController(INotificationService notificationService, IExpoTokenService expoTokenService)
         {
             _notificationService = notificationService;
+            _expoTokenService = expoTokenService;
         }
 
         /// <summary>
@@ -90,5 +94,21 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        [HttpPost("push-notification")]
+        public async Task<ActionResult<BaseResponseViewModel<PushTicketResponse>>> PushNotification
+          ([FromBody] PushNotificationRequest request)
+        {
+            try
+            {
+                var result = await _expoTokenService.PushNotification(request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+
     }
 }

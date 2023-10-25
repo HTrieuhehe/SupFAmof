@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
+using System.Linq;
 using Service.Commons;
+using Expo.Server.Client;
+using Expo.Server.Models;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
+using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.Service.Service
 {
@@ -281,5 +286,51 @@ namespace SupFAmof.Service.Service
         }
 
         #endregion
+
+        public async Task<PushTicketResponse> PushNotification(PushNotificationRequest request)
+        {
+            try
+            {
+                var tokens = _unitOfWork.Repository<ExpoPushToken>()
+                                           .GetAll()
+                                           .Where(x => request.Ids.Contains((int)x.AccountId) || request.Ids.Contains((int)x.AdminId))
+                                           .Select(y => y.Token.Trim())
+                                           .ToList();
+                List<string> tokenList = TurnToExpoPushToken(tokens);
+
+                var expoSDKClient = new PushApiClient();
+                var pushTicketReq = new PushTicketRequest()
+                {
+                    PushTo = tokenList,
+                    PushBadgeCount = 7,
+                    PushBody = request.Body.Trim(),
+                    PushTitle = request.Title.Trim()
+                };
+                var result = await expoSDKClient.PushSendAsync(pushTicketReq);
+                if (result?.PushTicketErrors?.Count() > 0)
+                {
+                    foreach (var error in result.PushTicketErrors)
+                    {
+                        Console.WriteLine($"Error: {error.ErrorCode} - {error.ErrorMessage}");
+                    }
+                }
+                return result;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<string> TurnToExpoPushToken(List<string> tokens)
+        {
+            List<string> result = new List<string>();
+            foreach(var token in tokens)
+            {
+                result.Add($"ExponentPushToken[{token}]");
+            }
+            return result;
+
+        }
     }
+    
 }

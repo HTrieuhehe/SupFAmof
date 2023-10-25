@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
 using System.Text;
+using Expo.Server.Models;
 using SupFAmof.Data.Entity;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Request.Staff;
+using SupFAmof.Service.DTO.Response.Admin;
 using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
-using SupFAmof.Service.DTO.Response.Admin;
 
 namespace SupFAmof.API.Mapper
 {
@@ -256,6 +257,8 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<NotificationHistory, NotificationHistoryResponse>().ReverseMap();
             CreateMap<CreateNotificationHistoryRequest, NotificationHistory>();
+            CreateMap<PushTicketResponse, NotificationHistoryResponse>()
+                .ReverseMap();
 
             #endregion
         }

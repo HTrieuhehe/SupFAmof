@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
 using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
@@ -95,11 +96,11 @@ namespace SupFAmof.API.Controllers
         }
         [HttpPost("push-notification")]
         public async Task<ActionResult<BaseResponseViewModel<PushTicketResponse>>> PushNotification
-          ([FromBody] List<int> ids)
+          ([FromBody] PushNotificationRequest request)
         {
             try
             {
-                var result = await _expoTokenService.PushNotification(ids);
+                var result = await _expoTokenService.PushNotification(request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

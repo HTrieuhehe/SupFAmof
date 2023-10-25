@@ -32,4 +32,12 @@ namespace SupFAmof.Service.DTO.Request
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentDatetime();
     }
+
+    public class PushNotificationRequest
+    {
+        public List<int>? Ids { get; set; }
+        public string Title { get; set; }
+        public string Body { get; set; }
+
+    }
 }

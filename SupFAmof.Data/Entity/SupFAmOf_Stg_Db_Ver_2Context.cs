@@ -41,7 +41,6 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostRgupdateHistory> PostRgupdateHistories { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
-        public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //        {
@@ -555,21 +554,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<Transaction>(entity =>
-            {
-                entity.ToTable("Transaction");
-
-                entity.Property(e => e.Notes).HasMaxLength(256);
-
-                entity.Property(e => e.PaymentDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.Transactions)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Transaction_Account");
             });
 
             OnModelCreatingPartial(modelBuilder);

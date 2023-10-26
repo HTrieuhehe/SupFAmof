@@ -23,7 +23,6 @@ namespace SupFAmof.Data.Entity
             PostAttendees = new HashSet<PostAttendee>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
-            Transactions = new HashSet<Transaction>();
         }
 
         public int Id { get; set; }
@@ -58,6 +57,5 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<PostAttendee> PostAttendees { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
-        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

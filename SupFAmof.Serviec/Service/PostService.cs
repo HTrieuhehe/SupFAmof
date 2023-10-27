@@ -117,22 +117,22 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                foreach (var item in post.PostPositions)
-                {
-                    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
-                    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                     .Include(x => x.PostRegistrationDetails)
-                                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                //foreach (var item in post.PostPositions)
+                //{
+                //    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
+                //    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                //                                     .Include(x => x.PostRegistrationDetails)
+                //                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
-                    if (totalPostRegist.Count() != item.Amount)
-                    {
-                        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_RUN_POST,
-                                            PostErrorEnum.INVALID_RUN_POST.GetDisplayName());
-                    }
-                }
+                //    if (totalPostRegist.Count() != item.Amount)
+                //    {
+                //        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_RUN_POST,
+                //                            PostErrorEnum.INVALID_RUN_POST.GetDisplayName());
+                //    }
+                //}
 
                 //nếu dữ liệu trùng khớp thì tiến hành run event
-                post.Status = (int)PostStatusEnum.Ended;
+                post.Status = (int)PostStatusEnum.Opening;
                 post.UpdateAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);

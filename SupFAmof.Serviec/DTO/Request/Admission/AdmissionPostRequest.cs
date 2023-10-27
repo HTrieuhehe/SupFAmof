@@ -43,26 +43,30 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [MaxLength(30, ErrorMessage = "Position Name cannot exceed 30 characters.")]
         public string? PositionName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Position Description is requied")]
         [MaxLength(100, ErrorMessage = "Position Description cannot exceed 100 characters.")]
         public string? PositionDescription { get; set;}
 
-        [Required]
+        [Required(ErrorMessage = "SchoolName is requied")]
         [MaxLength(100, ErrorMessage = "School Name cannot exceed 100 characters.")]
         public string? SchoolName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Location is requied")]
         [MaxLength(500, ErrorMessage = "Location cannot exceed 500 characters.")]
         public string? Location { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Latitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
         public string? Latitude { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Longitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
         public string? Longitude { get; set; }
+
+        [Required(ErrorMessage = "Time From is requied")]
         public TimeSpan TimeFrom { get; set; }
+
+        [Required(ErrorMessage = "Time To is requied")]
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
 
@@ -79,11 +83,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostRequest
     {
-        [Required]
+        [Required(ErrorMessage = "PostCategoryId is requied")]
         public int PostCategoryId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Post Description is requied")]
         public string? PostDescription { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Post Img is requied")]
         public string? PostImg { get; set; }
 
         public List<UpdatePostPositionRequest>? PostPositions { get; set; }
@@ -91,15 +95,13 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
     public class UpdatePostPositionRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Id is required")]
         [Int]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Position Name is required")]
         [MaxLength(20, ErrorMessage = "Position Name cannot exceed 20 characters.")]
         public string? PositionName { get; set; }
 
-        [Required]
         [MaxLength(100, ErrorMessage = "Position Description cannot exceed 100 characters.")]
         public string? PositionDescription { get; set; }
 

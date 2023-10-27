@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Coravel;
 using FirebaseAdmin;
 using System.Reflection;
 using ServiceStack.Redis;
@@ -12,13 +13,14 @@ using Microsoft.OpenApi.Models;
 using SupFAmof.Data.Repository;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Service;
+using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Data.MakeConnection;
 using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.TaskSchedule;
 using Microsoft.Extensions.DependencyInjection;
 using SupFAmof.Service.Service.ServiceInterface;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SupFAmof.API
 {
@@ -109,7 +111,10 @@ namespace SupFAmof.API
                 Credential = GoogleCredential.FromFile(pathToKey)
             });
             #endregion
-
+            #region Coravel
+            services.AddScheduler();
+            services.AddScoped<SchedulePushNotification>();
+            #endregion
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -157,6 +162,11 @@ namespace SupFAmof.API
 
         public void Configure(IApplicationBuilder app)
         {
+            var provider = app.ApplicationServices;
+            provider.UseScheduler(scheduler =>
+            {
+                scheduler.Schedule<SchedulePushNotification>().EveryMinute().Once();
+            });
             //app.ConfigMigration<>();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseExceptionHandler("/error");

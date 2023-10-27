@@ -656,6 +656,9 @@ namespace SupFAmof.Service.Service
                         // Tính toán các trường cần thiết
                         item.RegisterAmount = totalPostPremiumAttendee.Count;
 
+                        item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                        item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
                         foreach (var itemDetail in item.PostPositions)
                         {
                             //count register amount in post attendee based on position
@@ -740,6 +743,9 @@ namespace SupFAmof.Service.Service
 
                     // Tính toán các trường cần thiết
                     item.RegisterAmount = totalPostAttendee.Count;
+
+                    item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                    item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
 
                     foreach (var itemDetail in item.PostPositions)
                     {

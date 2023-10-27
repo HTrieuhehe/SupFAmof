@@ -26,7 +26,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             _admissionComplaintService = admissionComplaintService;
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<ActionResult<Service.DTO.Response.BaseResponsePagingViewModel<AccountResponse>>> SearchCollabByEmail
             ([FromQuery] string email, [FromQuery] PagingRequest paging)
         {
@@ -39,6 +39,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 var result = await _admissionAccountService.SearchCollaboratorByEmail(email, paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// View number of active collaborator account 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("")]
+        public async Task<ActionResult<Service.DTO.Response.BaseResponsePagingViewModel<AccountResponse>>> ViewCollaborator()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.ViewCollaborator();
                 return Ok(result);
             }
             catch (ErrorResponse ex)

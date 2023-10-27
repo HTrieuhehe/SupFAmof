@@ -25,5 +25,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountReactivationResponse>> EnableAccount(int accountId);
         Task<BaseResponseViewModel<AdmissionAccountResponse>> GetAccountAdmissionById(int accountId);
         Task<BaseResponseViewModel<AccountResponse>> UpdateAccountAvatar(int accountId, UpdateAccountAvatar request);
+        Task<BaseResponseViewModel<TotalAccountResponse>> ViewCollaborator();
     }
 }

@@ -1158,6 +1158,41 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<TotalAccountResponse>> ViewCollaborator()
+        {
+            try
+            {
+                var collaborator = _unitOfWork.Repository<Account>().GetAll()
+                                              .OrderByDescending(x => x.CreateAt)
+                                              .Where(x => x.RoleId == (int)SystemRoleEnum.Collaborator && x.IsActive == true);
+
+                var newMember = collaborator.Take(10).ToList();
+
+                var collaboratorMapper = _mapper.Map<List<NewCollaboratorResponse>>(newMember);
+
+                TotalAccountResponse totalCollaborator = new TotalAccountResponse()
+                {
+                    TotalCollaborator = collaborator.Count(),
+                    NewCollaborators = collaboratorMapper
+                };
+
+                return new BaseResponseViewModel<TotalAccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = totalCollaborator,
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
         private async Task<bool> CheckAccountBanned(int accountId)
         {
             try

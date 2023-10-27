@@ -7,6 +7,17 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response
 {
+    public class TotalAccountResponse
+    {
+        public int TotalCollaborator { get; set; }
+        public virtual List<NewCollaboratorResponse>? NewCollaborators { get; set; }
+    }
+
+    public class NewCollaboratorResponse
+    {
+        public string? ImgUrl { get; set; }
+    }
+
     public class AccountResponse
     {
         public int? Id { get; set; }

@@ -29,6 +29,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
 		<PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="3.0.0" />
+		<PackageReference Include="QRCoder" Version="1.4.1" />
 		<PackageReference Include="ServiceStack.Interfaces" Version="6.8.0" />
 		<PackageReference Include="ServiceStack.Redis" Version="6.8.0" />
 		<PackageReference Include="StackExchange.Redis" Version="2.6.104" />

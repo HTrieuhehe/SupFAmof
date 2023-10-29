@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using QRCoder;
+using System.Drawing;
+using Newtonsoft.Json;
+using System.Drawing.Imaging;
+using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
-using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
@@ -58,8 +61,24 @@ namespace SupFAmof.API.Controllers
                 }
                 return await _checkInService.CheckOut(account.Id, request);
             }
-            catch(ErrorResponse ex)
+            catch (ErrorResponse ex)
             {
+                return BadRequest(ex.Error);
+            }
+        }
+        
+        
+        [HttpPost("generate-qr")]
+        public async Task<ActionResult> QrGenerate([FromBody] QrRequest request)
+        {
+            try
+            {
+                var result = await _checkInService.QrGenerate(request);
+                return File(result, "image/png");
+            }
+            catch (ErrorResponse ex)
+            {
+                // Handle exceptions if any
                 return BadRequest(ex.Error);
             }
         }

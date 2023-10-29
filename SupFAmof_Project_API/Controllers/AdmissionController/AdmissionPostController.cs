@@ -156,7 +156,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpPut("confirmRunningPost")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ConfirmRunningPost
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ClosePostRegistration
             ([FromQuery] int postId)
         {
             try
@@ -167,7 +167,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postService.RunPost(account.Id, postId);
+                return await _postService.ClosePostRegistration(account.Id, postId);
             }
             catch (ErrorResponse ex)
             {

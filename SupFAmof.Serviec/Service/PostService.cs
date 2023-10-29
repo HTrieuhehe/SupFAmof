@@ -93,7 +93,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ReOpenPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ReOpenPostRegistration(int accountId, int postId)
         {
             try
             {
@@ -169,7 +169,7 @@ namespace SupFAmof.Service.Service
             }
         }
         
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> RunPost(int accountId, int postId)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePostRegistration(int accountId, int postId)
         {
             try
             {

@@ -131,6 +131,20 @@ namespace SupFAmof.Service.Service
                 //    }
                 //}
 
+                if (post.Status != (int)PostStatusEnum.Avoid_Regist)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_RE_OPEN_POST,
+                                            PostErrorEnum.INVALID_RE_OPEN_POST.GetDisplayName());
+                }
+
+                var timeCheck = post.PostPositions.Min(p => p.TimeFrom);
+
+                if (timeCheck >= Ultils.GetCurrentDatetime().TimeOfDay || timeCheck < Ultils.GetCurrentDatetime().AddMinutes(-30).TimeOfDay)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.RE_OPEN_POST_FAIL,
+                                            PostErrorEnum.RE_OPEN_POST_FAIL.GetDisplayName());
+                }
+
                 //reopen event để cho phép apply đăng ký
                 post.Status = (int)PostStatusEnum.Opening;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
@@ -194,7 +208,7 @@ namespace SupFAmof.Service.Service
                 //}
 
                 //nếu dữ liệu trùng khớp thì tiến hành run event
-                post.Status = (int)PostStatusEnum.Running;
+                post.Status = (int)PostStatusEnum.Avoid_Regist;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);

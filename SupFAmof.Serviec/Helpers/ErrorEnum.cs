@@ -268,6 +268,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
             UPDATE_FAIl = 4006,
 
+            //400
+            [Display(Name = "Your post status ended or it has alrady opened")]
+            INVALID_RE_OPEN_POST = 4007,
+
+            //400
+            [Display(Name = "Your event is running or reach limit time of 30 minutes before running")]
+            RE_OPEN_POST_FAIL = 4008,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

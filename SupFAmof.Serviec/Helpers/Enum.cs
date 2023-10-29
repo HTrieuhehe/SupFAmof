@@ -61,7 +61,7 @@ namespace SupFAmof.Service.Helpers
             Opening = 1,
 
             [Display(Name = "Running")]
-            Running = 2,
+            Avoid_Regist = 2,
 
             [Display(Name = "Ended")]
             Ended = 3,

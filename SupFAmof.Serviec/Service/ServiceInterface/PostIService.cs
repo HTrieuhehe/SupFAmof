@@ -19,6 +19,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost(int accountId, CreatePostRequest request);
         Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost(int accountId, int postId, UpdatePostRequest request);
         Task<BaseResponseViewModel<AdmissionPostResponse>> RunPost(int accountId, int postId);
+        Task<BaseResponseViewModel<AdmissionPostResponse>> ReOpenPost(int accountId, int postId);
         Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId);
         Task<BaseResponseViewModel<AdmissionPostResponse>> AdmissionSearchPost(int accountId, string searchPost, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> DeletePostPosition(int accountId, int positionId);

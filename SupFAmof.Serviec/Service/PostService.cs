@@ -71,7 +71,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 post.Status = (int)PostStatusEnum.Ended;
-                post.UpdateAt = DateTime.Now;
+                post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
                 await _unitOfWork.CommitAsync();
@@ -93,6 +93,68 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> ReOpenPost(int accountId, int postId)
+        {
+            try
+            {
+                #region Account Checking 
+
+                var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                #endregion
+
+                var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                //foreach (var item in post.PostPositions)
+                //{
+                //    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
+                //    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
+                //                                     .Include(x => x.PostRegistrationDetails)
+                //                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+
+                //    if (totalPostRegist.Count() != item.Amount)
+                //    {
+                //        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_RUN_POST,
+                //                            PostErrorEnum.INVALID_RUN_POST.GetDisplayName());
+                //    }
+                //}
+
+                //reopen event để cho phép apply đăng ký
+                post.Status = (int)PostStatusEnum.Opening;
+                post.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(post);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> RunPost(int accountId, int postId)
         {
             try
@@ -132,8 +194,8 @@ namespace SupFAmof.Service.Service
                 //}
 
                 //nếu dữ liệu trùng khớp thì tiến hành run event
-                post.Status = (int)PostStatusEnum.Opening;
-                post.UpdateAt = DateTime.Now;
+                post.Status = (int)PostStatusEnum.Running;
+                post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
                 await _unitOfWork.CommitAsync();

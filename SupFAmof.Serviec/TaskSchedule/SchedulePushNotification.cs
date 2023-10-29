@@ -29,8 +29,8 @@ namespace SupFAmof.Service.TaskSchedule
                 PushNotificationRequest request = new PushNotificationRequest
                 {
                     Ids = dict.Keys.ToList(),
-                    Body = dict.Values.First(),
-                    Title = "Upcoming event"
+                    Body = $"Upcoming event incoming {dict.Values.First()}",
+                    Title = "Reminder"
                 };
                 await notificationService.PushNotification(request);
             }
@@ -39,14 +39,15 @@ namespace SupFAmof.Service.TaskSchedule
         private async Task<Dictionary<int,string>> GetAttendeeFromTime()
         {
             DateTime now = GetCurrentDatetime();
-            Dictionary<int,string> Attendee = new Dictionary<int, string>();
+            DateTime nextDay = now.AddDays(1);
+            Dictionary<int,string> attendee = new Dictionary<int, string>();
             var list = _unitOfWork.Repository<PostAttendee>().GetAll()
-                                    .Where(x => x.Post.DateFrom.Day.Equals(now.Day)).ToList();
+                                    .Where(x => x.Post.DateFrom.Day.Equals(nextDay.Day)).ToList();
             foreach ( var item in list )
             {
-                Attendee.Add(item.AccountId, item.Post.PostCode);
+                attendee.Add(item.AccountId, item.Post.DateFrom.Date.ToString("MM/dd/yyyy"));
             }
-            return Attendee;
+            return attendee;
         }
     }
 }

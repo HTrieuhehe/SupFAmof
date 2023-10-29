@@ -34,4 +34,14 @@ namespace SupFAmof.Service.DTO.Request
         [Range(1, int.MaxValue, ErrorMessage = "PositionId must be greater than 0.")]
         public int PositionId { get; set; }
     }
+    public class QrRequest
+    {
+        [Required(ErrorMessage = "PostId is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "PostId must be greater than 0.")]
+        public int PostId { get; set; }
+
+        [Required(ErrorMessage = "PositionId is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "PositionId must be greater than 0.")]
+        public int PositionId { get; set; }
+    }
 }

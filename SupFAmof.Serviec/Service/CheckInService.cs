@@ -1,6 +1,7 @@
-﻿using System;
+﻿using QRCoder;
 using AutoMapper;
-using System.Linq;
+using System.Drawing;
+using Newtonsoft.Json;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
@@ -9,7 +10,6 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
@@ -276,6 +276,32 @@ namespace SupFAmof.Service.Service
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+
+        public async Task<byte[]> QrGenerate(QrRequest request)
+        {
+            try
+            {
+                string data = JsonConvert.SerializeObject(request);
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                int size = 5;
+                Bitmap qrCodeImage = qrCode.GetGraphic(size);
+
+                // Convert Bitmap to byte array
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    qrCodeImage.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    byte[] imageBytes = stream.ToArray();
+
+                    return imageBytes;
+                }
+            }catch(ErrorResponse)
+            {
+                throw new ErrorResponse(500, 500, "CANNOT GENERATE QR CODE");
             }
         }
 

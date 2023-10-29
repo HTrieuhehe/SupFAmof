@@ -78,7 +78,6 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                // Handle exceptions if any
                 return BadRequest(ex.Error);
             }
         }

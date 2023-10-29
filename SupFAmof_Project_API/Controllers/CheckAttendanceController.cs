@@ -72,7 +72,7 @@ namespace SupFAmof.API.Controllers
         public async Task<ActionResult> QrGenerate([FromBody] QrRequest request)
         {
             try
-            {//create qr code and display
+            {//create qr code 
                 var result = await _checkInService.QrGenerate(request);
                 return File(result, "image/png");
             }

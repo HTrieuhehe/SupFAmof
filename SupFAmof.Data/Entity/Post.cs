@@ -26,7 +26,6 @@ namespace SupFAmof.Data.Entity
         public DateTime? DateTo { get; set; }
         public bool IsPremium { get; set; }
         public int Status { get; set; }
-        public bool AttendanceComplete { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

@@ -319,7 +319,6 @@ namespace SupFAmof.Service.Service
 
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
-                post.AttendanceComplete = false;
                 post.Status = (int)PostStatusEnum.Opening;
                 post.CreateAt = Ultils.GetCurrentDatetime();
 

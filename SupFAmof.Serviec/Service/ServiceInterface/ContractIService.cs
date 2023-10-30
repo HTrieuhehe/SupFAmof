@@ -21,6 +21,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId);
 
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<AccountContractResponse>> GetContractsById(int contractId);
+        Task<BaseResponseViewModel<AccountContractResponse>> GetContractById(int contractId);
+        Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging);
     }
 }

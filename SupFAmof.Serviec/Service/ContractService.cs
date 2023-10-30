@@ -478,7 +478,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountContractResponse>> GetContractsById(int contractId)
+        public async Task<BaseResponseViewModel<AccountContractResponse>> GetContractById(int contractId)
         {
             try
             {
@@ -498,6 +498,40 @@ namespace SupFAmof.Service.Service
                     },
                     Data = _mapper.Map<AccountContractResponse>(contract)
 
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging)
+        {
+            try
+            {
+                var contracts = _unitOfWork.Repository<AccountContract>()
+                                          .GetAll()
+                                          .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                          .Where(x => x.AccountId == accountId)
+                                          .DynamicSort(paging.Sort, paging.Order)
+                                          .PagingQueryable(paging.Page, paging.PageSize);
+
+                if (contracts.Item2 == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                return new BaseResponsePagingViewModel<AccountContractResponse>
+                {
+                    Metadata = new PagingsMetadata
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = contracts.Item1
+                    },
+                    Data = contracts.Item2.ToList(),
                 };
             }
             catch (Exception ex)

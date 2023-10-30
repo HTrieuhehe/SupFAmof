@@ -1,6 +1,5 @@
 ﻿using QRCoder;
 using AutoMapper;
-using System.Drawing;
 using Newtonsoft.Json;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -9,6 +8,7 @@ using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
+using SixLabors.ImageSharp.Formats.Png;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -47,20 +47,20 @@ namespace SupFAmof.Service.Service
                 }
 
                 var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId);
-                if(postVerification ==null)
+                if (postVerification == null)
                 {
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
                                         AttendanceErrorEnum.WRONG_INFORMATION.GetDisplayName());
                 }
-                if(postVerification.Position.Latitude == null || postVerification.Position.Longtitude == null)
+                if (postVerification.Position.Latitude == null || postVerification.Position.Longtitude == null)
                 {
                     throw new ErrorResponse(500, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
                                        AttendanceErrorEnum.MISSING_INFORMATION_POSITION.GetDisplayName());
                 }
                 double distance = 0.04; // kilometer 
-             
+
                 double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
-                
+
                 if (userCurrentPosition > distance)
                 {
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
@@ -282,29 +282,47 @@ namespace SupFAmof.Service.Service
 
         public async Task<byte[]> QrGenerate(QrRequest request)
         {
-            try
-            {
-                string data = JsonConvert.SerializeObject(request);
-                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
-                QRCode qrCode = new QRCode(qrCodeData);
-                int size = 5;
-                Bitmap qrCodeImage = qrCode.GetGraphic(size);
+            string data = JsonConvert.SerializeObject(request);
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
 
-                // Convert Bitmap to byte array
+            int originalWidth = qrCodeData.ModuleMatrix.Count;
+            int originalHeight = qrCodeData.ModuleMatrix.Count;
+
+            int scaledWidth = originalWidth * 7;
+            int scaledHeight = originalHeight * 7;
+
+            using (Image<Rgba32> qrCodeImage = new Image<Rgba32>(scaledWidth, scaledHeight))
+            {
+                // Draw scaled QR code onto ImageSharp image
+                for (int x = 0; x < scaledWidth; x++)
+                {
+                    for (int y = 0; y < scaledHeight; y++)
+                    {
+                        int originalX = x / 7;
+                        int originalY = y / 7;
+
+                        if (qrCodeData.ModuleMatrix[originalX][originalY])
+                        {
+                            qrCodeImage[x, y] = new Rgba32(0, 0, 0, 255); // Set QR code modules to black
+                        }
+                        else
+                        {
+                            qrCodeImage[x, y] = new Rgba32(255, 255, 255, 255); // Set QR code background modules to white
+                        }
+                    }
+                }
+
+                // Convert ImageSharp image to byte array
                 using (MemoryStream stream = new MemoryStream())
                 {
-                    qrCodeImage.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    byte[] imageBytes = stream.ToArray();
-
-                    return imageBytes;
+                    qrCodeImage.Save(stream, new PngEncoder());
+                    return stream.ToArray();
                 }
-            }catch(ErrorResponse)
-            {
-                throw new ErrorResponse(500, 500, "CANNOT GENERATE QR CODE");
             }
+
         }
 
     }
-
 }

@@ -309,6 +309,8 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
+                entity.Property(e => e.EndDate).HasColumnType("date");
+
                 entity.Property(e => e.SigningDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");

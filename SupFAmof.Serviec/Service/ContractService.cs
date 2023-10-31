@@ -79,6 +79,12 @@ namespace SupFAmof.Service.Service
                                        ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE.GetDisplayName());
                 }
 
+                else if (request.EndDate < request.StartDate)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE,
+                                       ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE.GetDisplayName());
+                }
+
                 var contract = _mapper.Map<CreateAdmissionContractRequest, Contract>(request);
 
                 contract.CreatePersonId = accountId;

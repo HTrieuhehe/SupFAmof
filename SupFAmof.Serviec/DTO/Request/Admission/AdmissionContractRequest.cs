@@ -12,27 +12,31 @@ namespace SupFAmof.Service.DTO.Request.Admission
         //public int Id { get; set; }
         //public int CreatePersonId { get; set; }
 
-        [Required (ErrorMessage = "ContractName is required.")]
-        [MaxLength(100, ErrorMessage = "ContractName cannot exceed 100 characters.")]
+        [Required (ErrorMessage = "Contract Name is required.")]
+        [MaxLength(100, ErrorMessage = "Contract Name cannot exceed 100 characters.")]
         public string? ContractName { get; set; }
 
-        [Required (ErrorMessage = "ContractDescription is required.")]
-        [MaxLength(225, ErrorMessage = "ContractDescription cannot exceed 225 characters.")]
+        [Required (ErrorMessage = "Contract Description is required.")]
+        [MaxLength(225, ErrorMessage = "Contract Description cannot exceed 225 characters.")]
         public string? ContractDescription { get; set; }
 
         [Required(ErrorMessage = "Sample File cannot empty")]
-        public byte[]? SampleFile { get; set; }
+        public string? SampleFile { get; set; }
 
-        [Required (ErrorMessage = "ContractName is required.")]
+        [Required (ErrorMessage = "Contract Name is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid signing date format.")]
         public DateTime SigningDate { get; set; }
 
-        [Required (ErrorMessage = "StartDate is required.")]
+        [Required (ErrorMessage = "Start Date is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
         public DateTime StartDate { get; set; }
 
-        [Required (ErrorMessage = "TotalSalary is required.")]
-        [Range(0, double.MaxValue, ErrorMessage = "TotalSalary must be a non-negative number.")]
+        [Required(ErrorMessage = "End Date is required.")]
+        [DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
+        public DateTime EndDate { get; set; }
+
+        [Required (ErrorMessage = "Total Salary is required.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Total Salary must be a non-negative number.")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Invalid numeric format.")]
         public double TotalSalary { get; set; }
 

@@ -1,9 +1,9 @@
-﻿using SupFAmof.Data.Entity;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Text;
+using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SupFAmof.Service.DTO.Response
 {

@@ -25,9 +25,13 @@ namespace SupFAmof.Service.DTO.Request
         [MaxLength(500, ErrorMessage = "Text cannot exceed 500 characters.")]
         public string? Text { get; set; }
 
-        [Required(ErrorMessage = "Status is required")]
-        [Range(0, int.MaxValue, ErrorMessage = "RecipientId must be a non-negative number")]
-        public int Status { get; set; }
+        [Required(ErrorMessage = "Notification Type is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Notification Type must be a non-negative number")]
+        public int NotificationType { get; set; }
+
+        //[Required(ErrorMessage = "Status is required")]
+        //[Range(0, int.MaxValue, ErrorMessage = "Status must be a non-negative number")]
+        //public int Status { get; set; }
 
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentDatetime();

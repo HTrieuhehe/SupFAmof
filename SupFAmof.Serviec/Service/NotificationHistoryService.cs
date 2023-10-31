@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.Service.Service
 {
@@ -36,6 +37,7 @@ namespace SupFAmof.Service.Service
             {
                 var noti = _mapper.Map<CreateNotificationHistoryRequest, NotificationHistory>(request);
 
+                noti.Status = (int)NotificationStatusEnum.Sent;
                 noti.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<NotificationHistory>().InsertAsync(noti);

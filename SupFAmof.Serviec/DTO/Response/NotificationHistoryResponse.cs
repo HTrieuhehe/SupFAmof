@@ -13,6 +13,7 @@ namespace SupFAmof.Service.DTO.Response
         public int? RecipientId { get; set; }
         public string? Title { get; set; }
         public string? Text { get; set; }
+        public int? NotificationType { get; set; }
         public int? Status { get; set; }
         public DateTime? CreateAt { get; set; }
 

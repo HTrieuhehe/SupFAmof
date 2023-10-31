@@ -9,6 +9,7 @@ namespace SupFAmof.Data.Entity
         public int RecipientId { get; set; }
         public string Title { get; set; } = null!;
         public string? Text { get; set; }
+        public int NotificationType { get; set; }
         public int Status { get; set; }
         public DateTime CreateAt { get; set; }
 

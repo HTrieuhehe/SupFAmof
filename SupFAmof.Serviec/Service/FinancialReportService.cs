@@ -1,17 +1,17 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+﻿using System.IO;
+using AutoMapper;
+using ServiceStack;
+using OfficeOpenXml;
+using System.Drawing.Text;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
+using System.Security.Principal;
+using SupFAmof.Service.Utilities;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
-using SupFAmof.Service.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupFAmof.Service.Service
 {
@@ -58,5 +58,92 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        public async Task GenerateAccountExcel(string sheetname)
+        {
+            FileInfo fileInfo = new FileInfo(Directory.GetCurrentDirectory()+ $"_{sheetname}.xlsx");
+            var list = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("fpt.edu.vn"));
+            if (!fileInfo.Exists)
+            {
+                await AccountReportGenerator(list, fileInfo);
+                Console.WriteLine($"File '{sheetname}' has been created.");
+            }
+            else
+            {
+                await AccountReportUpdate(list, fileInfo);
+                Console.WriteLine($"File '{sheetname}' already exists and has been updated.");
+            }
+
+        }
+        private async Task AccountReportGenerator(IQueryable<Account> accounts,FileInfo fileInfo)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // or LicenseContext.NonCommercial if you are using EPPlus in a non-commercial project
+
+            // The file does not exist, create a new file
+            using (ExcelPackage xlPackage = new ExcelPackage(fileInfo))
+            {
+                // Do work with the Excel package, populate the worksheet if needed
+                int row = 1;
+                ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add("Data CTV");
+                worksheet.Cells["A1"].Value = "STT";
+                worksheet.Cells["B1"].Value = "Họ tên";
+                worksheet.Cells["C1"].Value = "MSSV";
+                worksheet.Cells["D1"].Value = "CMND";
+                worksheet.Cells["E1"].Value = "MST";
+                worksheet.Cells["F1"].Value = "Người thụ hưởng";
+                worksheet.Cells["G1"].Value = "STK";
+                worksheet.Cells["H1"].Value = "NH";
+                worksheet.Cells["I1"].Value = "CN";
+                worksheet.Cells["J1"].Value = "Tổng";
+                foreach (var account in accounts)
+                {
+                    row++;
+                    worksheet.Cells[row, 1].Value = account.Id;
+                    worksheet.Cells[row, 2].Value = account.Name;
+                    worksheet.Cells[row, 3].Value = account.AccountInformation?.IdStudent;
+                    worksheet.Cells[row, 4].Value = account.AccountInformation?.IdentityNumber;
+                    worksheet.Cells[row, 5].Value = account.AccountInformation?.TaxNumber;
+                    worksheet.Cells[row, 6].Value = account.AccountBankings.First().Beneficiary;
+                    worksheet.Cells[row, 7].Value = account.AccountBankings.First().AccountNumber;
+                    worksheet.Cells[row, 8].Value = account.AccountBankings.First().BankName;
+                    worksheet.Cells[row, 9].Value = account.AccountBankings.First().Branch;
+
+
+
+                }
+                // Save the Excel package to create the new file
+                await xlPackage.SaveAsync();
+            }
+        }
+        private async Task AccountReportUpdate(IQueryable<Account> accounts, FileInfo fileInfo)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // or LicenseContext.NonCommercial if you are using EPPlus in a non-commercial project
+
+            // The file does not exist, create a new file
+            using (ExcelPackage xlPackage = new ExcelPackage(fileInfo))
+            {
+                int row = 1;
+                ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets[0]; 
+                foreach (var account in accounts)
+                {
+                    row++;
+                    worksheet.Cells[row, 1].Value = account.Id;
+                    worksheet.Cells[row, 2].Value = account.Name;
+                    worksheet.Cells[row, 3].Value = account.AccountInformation?.IdStudent;
+                    worksheet.Cells[row, 4].Value = account.AccountInformation?.IdentityNumber;
+                    worksheet.Cells[row, 5].Value = account.AccountInformation?.TaxNumber;
+                    worksheet.Cells[row, 6].Value = account.AccountBankings.First().Beneficiary;
+                    worksheet.Cells[row, 7].Value = account.AccountBankings.First().AccountNumber;
+                    worksheet.Cells[row, 8].Value = account.AccountBankings.First().BankName;
+                    worksheet.Cells[row, 9].Value = account.AccountBankings.First().Branch;
+
+
+
+                }
+                // Save the Excel package to create the new file
+                await xlPackage.SaveAsync();
+            }
+        }
+
     }
 }

@@ -67,23 +67,17 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<byte[]> GenerateAccountExcel(int accountId)
+        public async Task<byte[]> GenerateAccountExcel()
         {
             try
             {
-            var account = await _unitOfWork.Repository<Account>().FindAsync(x=>x.Id== accountId);
-                if(account.PostPermission == false)
-                {
-                    throw new Exceptions.ErrorResponse(400, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
-                }
-
             var list = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("fpt.edu.vn"));
             var data = await AccountReportGenerator(list);
                 return data;
 
             }catch(Exception ex)
             {
-                throw;
+                throw new Exceptions.ErrorResponse(500, (int)AccountReportErrorEnum.MISSING_INFORMATION, AccountReportErrorEnum.MISSING_INFORMATION.GetDisplayName());
             }
 
 
@@ -134,15 +128,10 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<CollabReportResponse>> AccountReportList(PagingRequest paging, int accountId)
+        public BaseResponsePagingViewModel<CollabReportResponse> AccountReportList(PagingRequest paging)
         {
             try
             {
-                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
-                if (!account.PostPermission)
-                {
-                    throw new Exceptions.ErrorResponse(400, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
-                }
                 var accounts = _unitOfWork.Repository<Account>().GetAll()
                                           .Where(x => x.Email.EndsWith("fpt.edu.vn"))
                                           .OrderByDescending(x => x.Id)

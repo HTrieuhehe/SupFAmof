@@ -16,21 +16,3 @@ F:\CapstoneProject\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\refint\SupFAmof.Se
 F:\CapstoneProject\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.pdb
 F:\CapstoneProject\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.genruntimeconfig.cache
 F:\CapstoneProject\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\ref\SupFAmof.Service.dll
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.csproj.AssemblyReference.cache
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.AssemblyInfoInputs.cache
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.AssemblyInfo.cs
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.csproj.CoreCompileInputs.cache
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\EFCoreSqlServerNetTopologySuite.cs
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.dll
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\refint\SupFAmof.Service.dll
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.pdb
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Service.deps.json
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Service.runtimeconfig.json
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Service.dll
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Service.pdb
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Data.dll
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\bin\Debug\net6.0\SupFAmof.Data.pdb
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.csproj.CopyComplete
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\SupFAmof.Service.genruntimeconfig.cache
-C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Serviec\obj\Debug\net6.0\ref\SupFAmof.Service.dll

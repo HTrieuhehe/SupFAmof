@@ -35,7 +35,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpGet("get-account-report")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CollabReportResponse>>> GetAccountReport([FromQuery] PagingRequest request)
+        public ActionResult<BaseResponsePagingViewModel<CollabReportResponse>> GetAccountReport([FromQuery] PagingRequest request)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _financialReportService.AccountReportList(request,account.Id);
+                var result = _financialReportService.AccountReportList(request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -65,7 +65,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _financialReportService.GenerateAccountExcel(account.Id);
+                var result = await _financialReportService.GenerateAccountExcel();
                 return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "account_report.xlsx");
             }
             catch (ErrorResponse ex)

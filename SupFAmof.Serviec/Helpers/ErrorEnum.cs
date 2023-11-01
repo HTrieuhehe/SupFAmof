@@ -424,6 +424,11 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Not found thid Account Report")]
             NOT_FOUND_REPORT = 4041,
+
+            //500
+            [Display(Name = "Does not have enough information to generate report")]
+            MISSING_INFORMATION = 4042,
+
         }
     }
 }

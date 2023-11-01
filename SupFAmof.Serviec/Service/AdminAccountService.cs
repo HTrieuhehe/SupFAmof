@@ -126,7 +126,7 @@ namespace SupFAmof.Service.Service
             //if (request.FcmToken != null && request.FcmToken.Trim().Length > 0)
             //    _fcmTokenService.AddStaffFcmToken(request.FcmToken, staff.Id);
 
-            var token = AccessTokenManager.GenerateJwtToken(staff.Name, (int)SystemRoleEnum.SystemAdmin , staff.Id, _configuration);
+            var token = AccessTokenManager.GenerateJwtToken(staff.Name, (int)SystemRoleEnum.SystemAdmin , staff.Id,  _configuration);
             return new BaseResponseViewModel<dynamic>()
             {
                 Status = new StatusViewModel()

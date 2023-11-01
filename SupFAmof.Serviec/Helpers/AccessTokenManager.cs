@@ -9,7 +9,7 @@ namespace SupFAmof.Service.Helpers
 {
     public class AccessTokenManager
     {
-        public static string GenerateJwtToken(string name, int role, int? accountId, bool postPermission, IConfiguration configuration)
+        public static string GenerateJwtToken(string name, int role, int? accountId, IConfiguration configuration)
         {
             var tokenConfig = configuration.GetSection("Token");
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenConfig["SecretKey"]));
@@ -20,7 +20,6 @@ namespace SupFAmof.Service.Helpers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.NameIdentifier, accountId.ToString()),
-                new Claim("PostPermission", postPermission.ToString(),ClaimValueTypes.Boolean),
             };
 
             var token = new JwtSecurityToken(tokenConfig["Issuer"],

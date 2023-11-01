@@ -29,10 +29,12 @@ namespace SupFAmof.Service.Service
             var claims = tokenS.Claims;
             var id = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value.ToString());
             var roleId = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value.ToString());
+            var postPermission = claims.Where(x => x.Type == "PostPermission").FirstOrDefault().Value.ToString();
             return new GetUser()
             {
                 Id = id,
                 RoleId = roleId,
+                PostPermission = postPermission,
             };
         }
 
@@ -40,6 +42,7 @@ namespace SupFAmof.Service.Service
         {
             public int Id { get; set; }
             public int RoleId { get; set; }
+            public string? PostPermission { get; set; }
         }
     }
 }

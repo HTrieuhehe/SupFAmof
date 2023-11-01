@@ -97,7 +97,7 @@ namespace SupFAmof.Service.Service
                                 .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
 
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add fcm token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
@@ -122,7 +122,7 @@ namespace SupFAmof.Service.Service
                 else if (account.IsActive == false)
                 {
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
@@ -147,7 +147,7 @@ namespace SupFAmof.Service.Service
                 else
                 {
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
@@ -693,7 +693,7 @@ namespace SupFAmof.Service.Service
                                 .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
 
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add expo token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
@@ -718,7 +718,7 @@ namespace SupFAmof.Service.Service
                 else if (account.IsActive == false)
                 {
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
@@ -771,7 +771,7 @@ namespace SupFAmof.Service.Service
                 else
                 {
                     //generate token
-                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, account.PostPermission, _configuration);
 
                     //Add fcm token     
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)

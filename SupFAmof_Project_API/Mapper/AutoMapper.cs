@@ -47,6 +47,15 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountReport, AccountReportResponse>().ReverseMap();
 
             CreateMap<CreateAccountReportRequest, AccountReport>();
+            CreateMap<Account, CollabReportResponse>()
+                .ForMember(x=>x.IdStudent , opt=>opt.MapFrom(src=>src.AccountInformation.IdStudent))
+                .ForMember(x => x.IdentityNumber, opt => opt.MapFrom(src => src.AccountInformation.IdentityNumber))
+                .ForMember(x => x.TaxNumber, opt => opt.MapFrom(src => src.AccountInformation.TaxNumber))
+                .ForMember(x => x.Beneficiary, opt => opt.MapFrom(src => src.AccountBankings.First().Beneficiary))
+                .ForMember(x => x.AccountNumber, opt => opt.MapFrom(src => src.AccountBankings.First().AccountNumber))
+                .ForMember(x => x.BankName, opt => opt.MapFrom(src => src.AccountBankings.First().BankName))
+                .ForMember(x => x.Branch, opt => opt.MapFrom(src => src.AccountBankings.First().Branch))
+                .ReverseMap();
             #endregion
 
             #region Admin Account

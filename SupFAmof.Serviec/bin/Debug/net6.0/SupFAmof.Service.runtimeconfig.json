@@ -12,6 +12,7 @@
       }
     ],
     "configProperties": {
+      "System.Drawing.EnableUnixSupport": true,
       "System.Reflection.NullabilityInfoContext.IsSupported": true
     }
   }

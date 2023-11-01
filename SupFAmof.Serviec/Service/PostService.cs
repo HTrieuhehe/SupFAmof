@@ -274,7 +274,7 @@ namespace SupFAmof.Service.Service
 
                 //validate Date
                 //request DateFrom must be greater than Current time or before 12 hours before event start
-                if (request.DateFrom <= DateTime.Now)
+                if (request.DateFrom <= Ultils.GetCurrentDatetime())
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
                                          PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());

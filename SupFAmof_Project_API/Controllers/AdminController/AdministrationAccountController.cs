@@ -31,7 +31,14 @@ namespace SupFAmof.API.Controllers.AdminController
         public async Task<ActionResult<BaseResponseViewModel<dynamic>>> Login
             ([FromBody] LoginRequest request)
         {
-            return await _adminAccountService.Login(request);
+            try
+            {
+                return await _adminAccountService.Login(request);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
         }
 
         /// <summary>
@@ -41,13 +48,20 @@ namespace SupFAmof.API.Controllers.AdminController
         public async Task<ActionResult<BaseResponsePagingViewModel<AdminAccountResponse>>> GetAdmins
             ([FromQuery] AdminAccountResponse request, [FromQuery] PagingRequest paging)
         {
-            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-            if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.SystemAdmin)
+            try
             {
-                return Unauthorized();
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.SystemAdmin)
+                {
+                    return Unauthorized();
+                }
+                return await _adminAccountService.GetAdmins(request, paging);
             }
-            return await _adminAccountService.GetAdmins(request, paging);
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
         }
 
         /// <summary>
@@ -56,13 +70,20 @@ namespace SupFAmof.API.Controllers.AdminController
         [HttpGet("getById")]
         public async Task<ActionResult<BaseResponseViewModel<AdminAccountResponse>>> GetAdminById()
         {
-            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-            if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.SystemAdmin)
+            try
             {
-                return Unauthorized();
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.SystemAdmin)
+                {
+                    return Unauthorized();
+                }
+                return await _adminAccountService.GetAdminById(account.Id);
             }
-            return await _adminAccountService.GetAdminById(account.Id);
+            catch(ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
         }
 
         /// <summary>

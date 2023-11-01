@@ -140,6 +140,7 @@ namespace SupFAmof.Service.Service
                     Id = staff.Id,
                     Username = staff.Username,
                     Name = staff.Name,
+                    RoleId = (int)SystemRoleEnum.SystemAdmin,
                     AccessToken = token
                 }
             };

@@ -12,6 +12,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IFinancialReportService
     {
         Task<BaseResponseViewModel<CollabInfoReportResponse>> GetAdmissionFinancialReport(int accountId);
-        Task GenerateAccountExcel(string sheetname);
+        Task<byte[]> GenerateAccountExcel();
     }
 }

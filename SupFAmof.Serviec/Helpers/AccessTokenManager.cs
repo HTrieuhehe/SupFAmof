@@ -21,6 +21,7 @@ namespace SupFAmof.Service.Helpers
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.NameIdentifier, accountId.ToString()),
                 new Claim(ClaimTypes.Role, role.ToString()),
+
             };
 
             var token = new JwtSecurityToken(tokenConfig["Issuer"],

@@ -33,12 +33,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpPost("get-account-excel")]
-        public async Task<ActionResult> GetAccountExcel([FromQuery] string sheetname)
+        public async Task<ActionResult> GetAccountExcel()
         {
             try
             {
-                 await _financialReportService.GenerateAccountExcel(sheetname);
-                return Ok("Complete");
+                 var result = await _financialReportService.GenerateAccountExcel();
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "account_report.xlsx");
             }
             catch (ErrorResponse ex)
             {

@@ -27,6 +27,18 @@
           }
         }
       },
+      "Expo.Server.SDK/1.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.3"
+        },
+        "compile": {
+          "lib/netcoreapp2.2/Expo.Server.SDK.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.2/Expo.Server.SDK.dll": {}
+        }
+      },
       "Humanizer.Core/2.8.26": {
         "type": "package",
         "compile": {
@@ -772,6 +784,19 @@
           }
         }
       },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -941,6 +966,15 @@
             "assetType": "native",
             "rid": "ubuntu.16.10-x64"
           }
+        }
+      },
+      "ServiceStack.Interfaces/6.8.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ServiceStack.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/ServiceStack.Interfaces.dll": {}
         }
       },
       "System.AppContext/4.3.0": {
@@ -2461,6 +2495,20 @@
         "readme.txt"
       ]
     },
+    "Expo.Server.SDK/1.0.2": {
+      "sha512": "Dp1zvR2w5Mh9gdxXhYXVELaDjcXVPF5BmuvwjbzxBXAzqJyx0utdyPUcaCEH9CNjchG7zXcDQZ/Ox4DPObK8dQ==",
+      "type": "package",
+      "path": "expo.server.sdk/1.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "expo.server.sdk.1.0.2.nupkg.sha512",
+        "expo.server.sdk.nuspec",
+        "lib/netcoreapp2.2/Expo.Server.SDK.dll",
+        "lib/netstandard2.0/Expo.Server.SDK.dll"
+      ]
+    },
     "Humanizer.Core/2.8.26": {
       "sha512": "OiKusGL20vby4uDEswj2IgkdchC1yQ6rwbIkZDVBPIR6al2b7n3pC91elBul9q33KaBgRKhbZH3+2Ur4fnWx2A==",
       "type": "package",
@@ -3420,6 +3468,37 @@
         "nettopologysuite.io.sqlserverbytes.nuspec"
       ]
     },
+    "Newtonsoft.Json/12.0.3": {
+      "sha512": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
+      "type": "package",
+      "path": "newtonsoft.json/12.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.12.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "sha512": "HdSSp5MnJSsg08KMfZThpuLPJpPwE5hBXvHwoKWosyHHfe8Mh5WKT0ylEOf6yNzX6Ngjxe4Whkafh5q7Ymac4Q==",
       "type": "package",
@@ -3642,6 +3721,20 @@
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.nuspec",
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
+      ]
+    },
+    "ServiceStack.Interfaces/6.8.0": {
+      "sha512": "nuGklCCNPlCtJU0UQ0q5jeg3J+djI28aWWBTwH8GvTNC3E74cH+fS2aUiukiOOwW0X/Z3oIPdWHPZi4yiv77Kg==",
+      "type": "package",
+      "path": "servicestack.interfaces/6.8.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net472/ServiceStack.Interfaces.dll",
+        "lib/net6.0/ServiceStack.Interfaces.dll",
+        "lib/netstandard2.0/ServiceStack.Interfaces.dll",
+        "servicestack.interfaces.6.8.0.nupkg.sha512",
+        "servicestack.interfaces.nuspec"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -7528,6 +7621,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "Expo.Server.SDK >= 1.0.2",
       "Microsoft.EntityFrameworkCore >= 6.0.16",
       "Microsoft.EntityFrameworkCore.Design >= 6.0.16",
       "Microsoft.EntityFrameworkCore.Proxies >= 6.0.16",
@@ -7535,7 +7629,8 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 6.0.16",
       "Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite >= 6.0.16",
       "Microsoft.Extensions.Configuration >= 6.0.0",
-      "Microsoft.Extensions.Configuration.Json >= 6.0.0"
+      "Microsoft.Extensions.Configuration.Json >= 6.0.0",
+      "ServiceStack.Interfaces >= 6.8.0"
     ]
   },
   "packageFolders": {
@@ -7577,6 +7672,10 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
+          "Expo.Server.SDK": {
+            "target": "Package",
+            "version": "[1.0.2, )"
+          },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
             "version": "[6.0.16, )"
@@ -7610,6 +7709,10 @@
           "Microsoft.Extensions.Configuration.Json": {
             "target": "Package",
             "version": "[6.0.0, )"
+          },
+          "ServiceStack.Interfaces": {
+            "target": "Package",
+            "version": "[6.8.0, )"
           }
         },
         "imports": [

@@ -2,16 +2,24 @@
 using AutoMapper;
 using ServiceStack;
 using OfficeOpenXml;
+using Service.Commons;
 using System.Drawing.Text;
 using SupFAmof.Data.Entity;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Helpers;
 using System.Security.Principal;
 using SupFAmof.Service.Utilities;
 using System.Collections.Generic;
+using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
+using System.Net.NetworkInformation;
+using AutoMapper.QueryableExtensions;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
+using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
 {
@@ -61,9 +69,18 @@ namespace SupFAmof.Service.Service
 
         public async Task<byte[]> GenerateAccountExcel()
         {
+            try
+            {
             var list = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("fpt.edu.vn"));
             var data = await AccountReportGenerator(list);
-            return data;
+                return data;
+
+            }catch(Exception ex)
+            {
+                throw new Exceptions.ErrorResponse(500, (int)AccountReportErrorEnum.MISSING_INFORMATION, AccountReportErrorEnum.MISSING_INFORMATION.GetDisplayName());
+            }
+
+
 
         }
         private async Task<byte[]> AccountReportGenerator(IQueryable<Account> accounts)
@@ -108,6 +125,33 @@ namespace SupFAmof.Service.Service
                 }
                 byte[] array  = memoryStream.ToArray();
                 return array;
+            }
+        }
+
+        public BaseResponsePagingViewModel<CollabReportResponse> AccountReportList(PagingRequest paging)
+        {
+            try
+            {
+                var accounts = _unitOfWork.Repository<Account>().GetAll()
+                                          .Where(x => x.Email.EndsWith("fpt.edu.vn"))
+                                          .OrderByDescending(x => x.Id)
+                                          .ProjectTo<CollabReportResponse>(_mapper.ConfigurationProvider)
+                                          .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                return new BaseResponsePagingViewModel<CollabReportResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = accounts.Item1
+                    },
+                    Data = accounts.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

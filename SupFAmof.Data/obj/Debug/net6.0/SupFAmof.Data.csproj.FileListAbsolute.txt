@@ -13,3 +13,18 @@ F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\refint\SupFAmof.Data.
 F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.pdb
 F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.genruntimeconfig.cache
 F:\CapstoneProject\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\ref\SupFAmof.Data.dll
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.deps.json
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.runtimeconfig.json
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.dll
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\bin\Debug\net6.0\SupFAmof.Data.pdb
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.csproj.AssemblyReference.cache
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.AssemblyInfoInputs.cache
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.AssemblyInfo.cs
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.csproj.CoreCompileInputs.cache
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\EFCoreSqlServerNetTopologySuite.cs
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.dll
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\refint\SupFAmof.Data.dll
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.pdb
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\SupFAmof.Data.genruntimeconfig.cache
+C:\Users\Admin\OneDrive\Desktop\FPT SPRING 2023\Đồ Án Kì 9\SupFAmof\SupFAmof.Data\obj\Debug\net6.0\ref\SupFAmof.Data.dll

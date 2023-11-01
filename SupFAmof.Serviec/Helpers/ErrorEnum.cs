@@ -422,12 +422,16 @@ namespace SupFAmof.Service.Helpers
         public enum AccountReportErrorEnum
         {
             //404
-            [Display(Name = "Not found thid Account Report")]
+            [Display(Name = "Not found this Account Report")]
             NOT_FOUND_REPORT = 4041,
 
             //500
             [Display(Name = "Does not have enough information to generate report")]
             MISSING_INFORMATION = 4042,
+
+            //400
+            [Display(Name = "Must have post permission to view ")]
+            UNAUTHORIZED = 4001,
 
         }
     }

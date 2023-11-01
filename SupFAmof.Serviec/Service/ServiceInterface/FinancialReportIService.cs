@@ -13,7 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IFinancialReportService
     {
         Task<BaseResponseViewModel<CollabInfoReportResponse>> GetAdmissionFinancialReport(int accountId);
-        Task<byte[]> GenerateAccountExcel();
-        BaseResponsePagingViewModel<CollabReportResponse> AccountReportList(PagingRequest paging);
+        Task<byte[]> GenerateAccountExcel(int accountId);
+        Task<BaseResponsePagingViewModel<CollabReportResponse>> AccountReportList(PagingRequest paging, int accountId);
     }
 }

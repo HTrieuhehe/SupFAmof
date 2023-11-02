@@ -3,6 +3,7 @@ using System.Data;
 using Service.Commons;
 using FirebaseAdmin.Auth;
 using SupFAmof.Data.Entity;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Helpers;
 using SupFAmof.Service.Utilities;
@@ -18,11 +19,6 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
-using ServiceStack.Web;
-using System.Net.WebSockets;
-using System.Net.NetworkInformation;
-using System.Security.Principal;
-using LAK.Sdk.Core.Utilities;
 
 namespace SupFAmof.Service.Service
 {
@@ -1238,6 +1234,39 @@ namespace SupFAmof.Service.Service
                 return true;
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+
+        public async  Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId,PagingRequest paging)
+        {
+                try
+                {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                }
+                var list = _unitOfWork.Repository<Account>().GetAll()
+                                              .Where(x => x.Email.EndsWith("fpt.edu.vn"))
+                                              .ProjectTo<ManageCollabAccountResponse>(_mapper.ConfigurationProvider)
+                                              .PagingQueryable(paging.Page, paging.PageSize,
+                                                               Constants.LimitPaging, Constants.DefaultPaging);
+                    return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = list.Item1
+                        },
+                        Data = list.Item2.ToList()
+                    };
+                }
+            catch (Exception ex)
             {
                 throw;
             }

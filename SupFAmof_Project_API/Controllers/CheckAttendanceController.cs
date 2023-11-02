@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
@@ -75,6 +76,44 @@ namespace SupFAmof.API.Controllers
             {//create qr code 
                 var result = await _checkInService.QrGenerate(request);
                 return File(result, "image/png");
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+        [HttpGet("attendance-record-collab")]
+        public async Task<ActionResult<List<CheckAttendanceResponse>>> AttendanceRecordCollab()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _checkInService.CheckAttendanceHistory(account.Id);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+        [HttpGet("admission-manage-attendance-record-collab")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<CheckAttendancePostResponse>>> AdmissionManageAttendanceRecordCollab([FromQuery] PagingRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _checkInService.AdmissionManageCheckAttendanceRecord(account.Id,request);
+                return Ok(result);
             }
             catch (ErrorResponse ex)
             {

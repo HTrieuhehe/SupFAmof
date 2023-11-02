@@ -56,7 +56,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? ContractDescription { get; set; }
 
         [Required(ErrorMessage = "Sample File cannot empty")]
-        public byte[]? SampleFile { get; set; }
+        public string? SampleFile { get; set; }
 
         [Required]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid signing date format.")]

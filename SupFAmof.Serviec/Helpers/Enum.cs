@@ -60,7 +60,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Opening")]
             Opening = 1,
 
-            [Display(Name = "Close Post Registration Of Post")]
+            [Display(Name = "Close Post Registration of Post")]
             Avoid_Regist = 2,
 
             [Display(Name = "Ended")]
@@ -70,7 +70,10 @@ namespace SupFAmof.Service.Helpers
             Cancel = 4,
 
             [Display(Name = "Deleted")]
-            Delete = 5
+            Delete = 5,
+
+            [Display(Name = "Re open post registration of post")]
+            Re_Open = 6
         }
 
         public enum PostPositionStatusEnum

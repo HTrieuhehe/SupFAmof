@@ -146,7 +146,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 //reopen event để cho phép apply đăng ký
-                post.Status = (int)PostStatusEnum.Opening;
+                post.Status = (int)PostStatusEnum.Re_Open;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
@@ -713,7 +713,7 @@ namespace SupFAmof.Service.Service
                 else if (checkAccount.IsPremium == true)
                 {
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
-                                       .Where(x => x.Status == (int)PostStatusEnum.Opening && x.Status == (int)PostStatusEnum.Avoid_Regist)
+                                       .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
@@ -952,13 +952,13 @@ namespace SupFAmof.Service.Service
             return postAttendees.Count(x => x.PositionId == positionId);
         }
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostsMissingSlot(int accountId, PostResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, PagingRequest paging)
         {
             try
             {
-                var checkAccount = _unitOfWork.Repository<Account>()
-                                              .GetAll()
-                                              .FirstOrDefault(a => a.Id == accountId);
+                int totalCount = 0;
+                int? totalAmountPosition = 0;
+                var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
 
                 if (checkAccount == null)
                 {
@@ -966,26 +966,118 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                //premium account check
-
-                if (checkAccount.IsPremium == true)
+                //check nếu tài khoảng premium mới cho coi post premium
+                else if (checkAccount.IsPremium == true)
                 {
-                    return null;
-                }
-
-                //regular account check
-
-                var post = _unitOfWork.Repository<Post>().GetAll()
-                                       .Where(x => x.IsPremium != true && x.Status == (int)PostStatusEnum.Opening)
+                    var premiumPost = _unitOfWork.Repository<Post>().GetAll()
+                                       .Where(x => x.Status == (int)PostStatusEnum.Re_Open)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order)
                                        .PagingQueryable(paging.Page, paging.PageSize);
 
-                //calculating to remove any post enough position
+                    var postPremiumResponses = premiumPost.Item2.ToList();
 
-                return null;
+                    foreach (var item in postPremiumResponses)
+                    {
+                        // Lấy danh sách PostAttendee 
+                        var totalPostPremiumAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                                 .Where(x => x.PostId == item.Id)
+                                                 .ToList();
+
+                        // Tính toán các trường cần thiết
+                        item.RegisterAmount = totalPostPremiumAttendee.Count;
+
+                        item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                        item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
+                        foreach (var itemDetail in item.PostPositions)
+                        {
+                            //count register amount in post attendee based on position
+                            totalCount += CountRegisterAmount(itemDetail.Id, totalPostPremiumAttendee);
+
+                            //transafer data to field in post position
+                            itemDetail.RegisterAmount = totalCount;
+
+                            //add number of amount required to total amount of a specific post
+                            totalAmountPosition += itemDetail.Amount;
+                        }
+                        //transfer data from position after add to field in post
+                        item.TotalAmountPosition = totalAmountPosition;
+
+                        // Reset temp variable
+                        totalCount = 0;
+                        totalAmountPosition = 0;
+                    }
+
+                    return new BaseResponsePagingViewModel<PostResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = premiumPost.Item1
+                        },
+                        //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                        Data = postPremiumResponses.ToList()
+                    };
+                }
+
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                        .Where(x => x.Status == (int)PostStatusEnum.Re_Open)
+                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                        .DynamicFilter(filter)
+                                        .DynamicSort(paging.Sort, paging.Order)
+                                        .PagingQueryable(paging.Page, paging.PageSize);
+
+                
+                var postResponses = post.Item2.ToList();
+
+                foreach (var item in postResponses)
+                {
+                    // Lấy danh sách PostAttendee 
+                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
+                                             .Where(x => x.PostId == item.Id)
+                                             .ToList();
+
+                    // Tính toán các trường cần thiết
+                    item.RegisterAmount = totalPostAttendee.Count;
+
+                    item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                    item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
+                    foreach (var itemDetail in item.PostPositions)
+                    {
+                        //count register amount in post attendee based on position
+                        totalCount += CountRegisterAmount(itemDetail.Id, totalPostAttendee);
+
+                        //transafer data to field in post position
+                        itemDetail.RegisterAmount = totalCount;
+
+                        //add number of amount required to total amount of a specific post
+                        totalAmountPosition += itemDetail.Amount;
+                    }
+                    //transfer data from position after add to field in post
+                    item.TotalAmountPosition = totalAmountPosition;
+
+                    // Reset temp variable
+                    totalCount = 0;
+                    totalAmountPosition = 0;
+                }
+
+                return new BaseResponsePagingViewModel<PostResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = post.Item1
+                    },
+                    //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                    Data = postResponses.ToList()
+                };
             }
             catch (Exception ex)
             {

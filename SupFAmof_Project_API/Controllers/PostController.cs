@@ -47,6 +47,31 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
+        /// Get Posts 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("getReOpen")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPostsReOpen
+        ([FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.GetPostReOpen(account.Id, filter, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Get Post By Code 
         /// </summary>
         /// <returns></returns>

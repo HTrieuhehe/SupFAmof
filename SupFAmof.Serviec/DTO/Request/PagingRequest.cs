@@ -12,7 +12,7 @@ namespace SupFAmof.Service.DTO.Request
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
         public string? Sort { get; set; }
-        public string? Order { get; set; }
+        public string? Order { get; set; } = "desc";
         //public string KeySearch { get; set; } = "";
         //public string SearchBy { get; set; } = "";
         //public SortOrder SortType { get; set; } = SortOrder.Descending;

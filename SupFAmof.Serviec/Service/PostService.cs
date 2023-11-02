@@ -761,7 +761,8 @@ namespace SupFAmof.Service.Service
                             Size = paging.PageSize,
                             Total = premiumPost.Item1
                         },
-                        Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                        //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                        Data = postPremiumResponses.ToList()
                     };
                 }
 
@@ -849,7 +850,8 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                    //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                    Data = postResponses.ToList()
                 };
             }
             catch (Exception ex)
@@ -947,6 +949,40 @@ namespace SupFAmof.Service.Service
         private static int CountRegisterAmount(int positionId, List<PostAttendee> postAttendees)
         {
             return postAttendees.Count(x => x.PositionId == positionId);
+        }
+
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostsMissingSlot(int accountId, PostResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var checkAccount = _unitOfWork.Repository<Account>()
+                                              .GetAll()
+                                              .FirstOrDefault(a => a.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //premium account check
+
+                //regular account check
+
+                var post = _unitOfWork.Repository<Post>().GetAll()
+                                       .Where(x => x.IsPremium != true && x.Status == (int)PostStatusEnum.Opening)
+                                       .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                       .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                       .DynamicFilter(filter)
+                                       .DynamicSort(paging.Sort, paging.Order)
+                                       .PagingQueryable(paging.Page, paging.PageSize);
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         #endregion

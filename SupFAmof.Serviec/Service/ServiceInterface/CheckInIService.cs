@@ -13,6 +13,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> CheckIn(int accountId, CheckInRequest checkin);
         Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, CheckOutRequest request);
         Task<byte[]> QrGenerate(QrRequest request);
+        Task<BaseResponseViewModel<List<CheckAttendanceResponse>>> CheckAttendanceHistory(int accountId);
+        Task<BaseResponsePagingViewModel<CheckAttendancePostResponse>> AdmissionManageCheckAttendanceRecord(int accountId,PagingRequest paging);
 
     }
 }

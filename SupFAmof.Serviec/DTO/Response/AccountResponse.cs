@@ -1,9 +1,9 @@
-﻿using SupFAmof.Data.Entity;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Text;
+using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SupFAmof.Service.DTO.Response
 {
@@ -58,4 +58,30 @@ namespace SupFAmof.Service.DTO.Response
     {
         public DateTime ExpirationDate { get; set; }
     }
+
+    public class ManageCollabAccountResponse
+    { 
+          public int Id { get; set; }
+          public string? Name { get; set; }
+          public string? ImgUrl { get; set; }
+          public bool? IsPremium { get; set; }
+          public string? Email { get; set; }
+          public string? Phone { get; set; }
+          public string? IdStudent { get; set; }
+          public virtual ICollection<CertificateResponse>? certificates { get; set; }
+
+
+    }
+    public class CertificateResponse
+    {
+        public int Id { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? Status { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+        public string? CertificateName { get; set; }
+
+    }
+
+
 }

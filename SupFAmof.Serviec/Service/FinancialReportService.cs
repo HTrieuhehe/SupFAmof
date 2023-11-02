@@ -1,21 +1,14 @@
-﻿using System.IO;
-using AutoMapper;
+﻿using AutoMapper;
 using ServiceStack;
 using OfficeOpenXml;
 using Service.Commons;
-using System.Drawing.Text;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.Helpers;
-using System.Security.Principal;
 using SupFAmof.Service.Utilities;
-using System.Collections.Generic;
-using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
-using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -74,7 +67,7 @@ namespace SupFAmof.Service.Service
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
                 if (account.PostPermission == false)
                 {
-                    throw new Exceptions.ErrorResponse(400, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
                 }
 
 
@@ -142,7 +135,7 @@ namespace SupFAmof.Service.Service
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
                 if (!account.PostPermission)
                 {
-                    throw new Exceptions.ErrorResponse(400, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
                 }
 
                 var accounts = _unitOfWork.Repository<Account>().GetAll()

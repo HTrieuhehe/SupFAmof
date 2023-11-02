@@ -768,7 +768,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                        .Where(x => x.Status == (int)PostStatusEnum.Opening && x.Status == (int)PostStatusEnum.Avoid_Regist)
+                                        .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)

@@ -35,7 +35,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpGet("get-account-report")]
-        public ActionResult<BaseResponsePagingViewModel<CollabReportResponse>> GetAccountReport([FromQuery] PagingRequest request)
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollabReportResponse>>> GetAccountReport([FromQuery] PagingRequest request)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = _financialReportService.AccountReportList(request, account.Id);
+                var result = await _financialReportService.AccountReportList(request, account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

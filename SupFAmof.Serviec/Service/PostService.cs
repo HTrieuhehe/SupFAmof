@@ -397,7 +397,8 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = post.Item1
                     },
-                    Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                    //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                    Data = postResponses.ToList()
                 };
             }
             catch (Exception ex)

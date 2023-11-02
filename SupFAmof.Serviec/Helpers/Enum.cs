@@ -60,7 +60,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Opening")]
             Opening = 1,
 
-            [Display(Name = "Running")]
+            [Display(Name = "Close Post Registration Of Post")]
             Avoid_Regist = 2,
 
             [Display(Name = "Ended")]

@@ -396,6 +396,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "End Date cannot be less than Start Date")]
             END_DATE_INVALID_WITH_START_DATE = 4007,
 
+            //400
+            [Display(Name = "End Date must be within 30 days: ")]
+            END_DATE_INVALID = 4008,
+
             //404
             [Display(Name = "Contract not found")]
             NOT_FOUND_CONTRACT = 4041,

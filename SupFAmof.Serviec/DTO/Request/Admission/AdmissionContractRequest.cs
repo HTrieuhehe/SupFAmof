@@ -71,8 +71,8 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Invalid numeric format.")]
         public double TotalSalary { get; set; }
 
-        [Range(typeof(bool), "true", "true", ErrorMessage = "IsActive must be either true or false.")]
-        public bool IsActive { get; set; }
+        //[Range(typeof(bool), "true", "true", ErrorMessage = "IsActive must be either true or false.")]
+        //public bool IsActive { get; set; }
 
         //chỉ cho sửa khi chưa gởi cho bất kì ai
     }

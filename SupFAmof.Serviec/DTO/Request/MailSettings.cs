@@ -93,6 +93,9 @@ namespace SupFAmof.Service.DTO.Request
         public string? StartDate { get; set; }
 
         [Required]
+        public string? EndDate { get; set; }
+
+        [Required]
         public string? TotalSalary { get; set; }
     }
 }

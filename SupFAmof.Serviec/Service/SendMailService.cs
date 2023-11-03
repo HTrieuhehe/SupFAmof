@@ -111,7 +111,8 @@ namespace SupFAmof.Service.Service
                         .Replace("{id}", request.Id.ToString())
                         .Replace("{name}", request.ContractName.ToString())
                         .Replace("{signingDate}", request.SigningDate.ToString())
-                        .Replace("{startingDate}", request.StartDate.ToString())
+                        .Replace("{startDate}", request.StartDate.ToString())
+                        .Replace("{endDate}", request.EndDate.ToString())
                         .Replace("{totalSalary}", request.TotalSalary.ToString());
 
                     message.Body = bodyBuilder.ToMessageBody();

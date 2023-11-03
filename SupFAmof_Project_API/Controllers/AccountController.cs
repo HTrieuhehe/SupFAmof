@@ -190,7 +190,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpPut("logout")]
-        public async Task<ActionResult> Logout([FromQuery] string expoToken)
+        public async Task<ActionResult> Logout(string? expoToken)
         {
             try
             {

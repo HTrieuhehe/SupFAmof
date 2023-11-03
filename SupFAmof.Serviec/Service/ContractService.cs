@@ -85,6 +85,12 @@ namespace SupFAmof.Service.Service
                                        ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE.GetDisplayName());
                 }
 
+                else if (request.EndDate < request.StartDate.AddDays(30) || request.EndDate > request.StartDate.AddDays(30) )
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID,
+                                       ContractErrorEnum.END_DATE_INVALID.GetDisplayName() + request.StartDate.AddDays(30));
+                }
+
                 var contract = _mapper.Map<CreateAdmissionContractRequest, Contract>(request);
 
                 contract.CreatePersonId = accountId;
@@ -374,7 +380,7 @@ namespace SupFAmof.Service.Service
                 {
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
 
-                    //if account banned. status will fail
+                    //if account banned or any contract confirmed. status will fail
                     if (checkCollab == null || checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
                     {
                         //account is banned
@@ -392,6 +398,16 @@ namespace SupFAmof.Service.Service
                         mapAccountContract.CreateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().InsertAsync(mapAccountContract);
+                        continue;
+                    }
+
+                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                                .GetAll()
+                                .Where(x => x.Status == (int)AccountContractStatusEnum.Fail && x.Contract.StartDate <= Ultils.GetCurrentDatetime() && x.Contract.EndDate >= Ultils.GetCurrentDatetime());
+
+                    if (checkCurrentContract == null)
+                    {
+                        //cannot send email. the collaborator has confirmed one contract already
                         continue;
                     }
 

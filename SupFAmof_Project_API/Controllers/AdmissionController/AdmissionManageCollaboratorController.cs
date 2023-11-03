@@ -130,6 +130,26 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
 
         }
+        [HttpGet("get-all-collab-accounts")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<ManageCollabAccountResponse>>> ManageCollaboratorList([FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionAccountService.GetAllCollabAccount(account.Id,paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+
+        }
 
     }
 }

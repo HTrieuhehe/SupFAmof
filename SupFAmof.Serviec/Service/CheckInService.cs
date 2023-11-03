@@ -1,15 +1,20 @@
 ﻿using QRCoder;
 using AutoMapper;
 using Newtonsoft.Json;
+using Service.Commons;
 using SupFAmof.Data.Entity;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
+using System.Net.NetworkInformation;
+using AutoMapper.QueryableExtensions;
 using SixLabors.ImageSharp.Formats.Png;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
@@ -322,6 +327,61 @@ namespace SupFAmof.Service.Service
                 }
             }
 
+        }
+
+
+        public async Task<BaseResponseViewModel<List<CheckAttendanceResponse>>> CheckAttendanceHistory(int accountId)
+        {
+            try
+            {
+                var attendanceRecord = _mapper.Map<List<CheckAttendanceResponse>>(await _unitOfWork.Repository<CheckAttendance>()
+                                                                            .GetWhere(x => x.AccountId == accountId));
+                return new BaseResponseViewModel<List<CheckAttendanceResponse>>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Record of attendance",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = attendanceRecord
+                };
+
+            }
+            catch(Exception ex)
+            {
+                throw; 
+            }
+        }
+        public async Task<BaseResponsePagingViewModel<CheckAttendancePostResponse>> AdmissionManageCheckAttendanceRecord(int accountId,PagingRequest paging)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                }
+                var attendanceRecord =_unitOfWork.Repository<Post>().GetAll().Where(x=>x.AccountId == accountId)
+                                          .ProjectTo<CheckAttendancePostResponse>(_mapper.ConfigurationProvider)
+                                          .PagingQueryable(paging.Page, paging.PageSize,
+                                                           Constants.LimitPaging, Constants.DefaultPaging);
+                return new BaseResponsePagingViewModel<CheckAttendancePostResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = attendanceRecord.Item1
+                    },
+                    Data = attendanceRecord.Item2.ToList()
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

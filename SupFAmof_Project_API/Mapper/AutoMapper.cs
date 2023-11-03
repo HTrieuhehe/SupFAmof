@@ -41,6 +41,14 @@ namespace SupFAmof.API.Mapper
             CreateMap<UpdateAccountInformationRequest, AccountInformation>();
             CreateMap<UpdateAccountRequest, Account>();
             CreateMap<UpdateAccountAvatar, Account>();
+
+            CreateMap<Account,ManageCollabAccountResponse>()
+                .ForMember(x=>x.certificates,opt=>opt.MapFrom(src=>src.AccountCertificateAccounts))
+                .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.AccountInformation.IdStudent))
+                .ReverseMap();
+            CreateMap<AccountCertificate, CertificateResponse>()
+                .ForMember(x=>x.CertificateName,opt=>opt.MapFrom(src=>src.TrainingCertificate.CertificateName))
+                .ReverseMap();
             #endregion
 
             #region Account Report
@@ -231,6 +239,13 @@ namespace SupFAmof.API.Mapper
             #region CheckIn - CheckOut
             CreateMap<CheckInRequest, CheckAttendance>().ReverseMap();
             CreateMap<CheckOutRequest, CheckAttendance>().ReverseMap();
+            CreateMap<CheckAttendance, CheckAttendanceResponse>().ReverseMap();
+
+            CreateMap<Post, CheckAttendancePostResponse>()
+                .ForMember(x=>x.Records,opt=>opt.MapFrom(src=>src.CheckAttendances))
+                .ReverseMap();
+            CreateMap<CheckAttendance, CheckAttendanceAdmission>()
+                .ReverseMap();
             #endregion
 
             #region Mail

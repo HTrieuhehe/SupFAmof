@@ -114,7 +114,8 @@ namespace SupFAmof.Service.Service
             {
                 //check Checking Existed
                 var checkOutCheck = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistration.Position.PostId == request.PostId && request.PositionId == request.PositionId);
+                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId 
+                                            && x.PostRegistration.Position.PostId == request.PostId && request.PositionId == request.PositionId);
 
                 if (checkOutCheck == null)
                 {
@@ -160,7 +161,6 @@ namespace SupFAmof.Service.Service
                     CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
                     {
                         AccountId = accountId,
-                        PostId = position.PostId,
                         PositionId = position.Id,
                         Salary = position.Salary,
                     };
@@ -204,7 +204,6 @@ namespace SupFAmof.Service.Service
                     CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
                     {
                         AccountId = accountId,
-                        PostId = position.PostId,
                         PositionId = position.Id,
                         Salary = position.Salary,
                     };

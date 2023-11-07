@@ -15,10 +15,6 @@ namespace SupFAmof.Service.DTO.Request
 
         [Required]
         [RegularExpression("^-?[0-9]+$", ErrorMessage = "AccountId must be a valid numeric value.")]
-        public int PostId { get; set; }
-
-        [Required]
-        [RegularExpression("^-?[0-9]+$", ErrorMessage = "AccountId must be a valid numeric value.")]
         public int PositionId { get; set; }
 
         [Required]

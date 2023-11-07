@@ -194,20 +194,6 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                //foreach (var item in post.PostPositions)
-                //{
-                //    //tìm kiếm các post Regist có cùng position Id để so sánh giữa amount và số lượng đk
-                //    var totalPostRegist = _unitOfWork.Repository<PostRegistration>().GetAll()
-                //                                     .Include(x => x.PostRegistrationDetails)
-                //                                     .Where(x => x.PostRegistrationDetails.Any(pd => pd.PositionId == item.Id) && x.Status == (int)PostRegistrationStatusEnum.Confirm);
-
-                //    if (totalPostRegist.Count() != item.Amount)
-                //    {
-                //        throw new ErrorResponse(404, (int)PostErrorEnum.INVALID_RUN_POST,
-                //                            PostErrorEnum.INVALID_RUN_POST.GetDisplayName());
-                //    }
-                //}
-
                 //nếu dữ liệu trùng khớp thì tiến hành run event
                 post.Status = (int)PostStatusEnum.Avoid_Regist;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
@@ -362,18 +348,22 @@ namespace SupFAmof.Service.Service
 
                 foreach (var item in postResponses)
                 {
-                    // Lấy danh sách PostAttendee 
-                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
-                                             .Where(x => x.PostId == item.Id)
-                                             .ToList();
+                    // lấy tất cả các position Id của bài post hiện tại
+                    var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                    // tìm post Registration có position Id trung với các bài post
+                    var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                                        .GetAll()
+                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                        .ToList();
 
                     // Tính toán các trường cần thiết
-                    item.RegisterAmount = totalPostAttendee.Count;
+                    item.RegisterAmount = postRegistrations.Count;
 
                     foreach (var itemDetail in item.PostPositions)
                     {
                         //count register amount in post attendee based on position
-                        totalCount += CountRegisterAmount(itemDetail.Id, totalPostAttendee);
+                        totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
                         itemDetail.RegisterAmount = totalCount;

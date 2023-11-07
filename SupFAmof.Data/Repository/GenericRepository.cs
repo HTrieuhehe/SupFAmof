@@ -13,11 +13,11 @@ namespace SupFAmof.Data.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        //private static SupFAmOf_Stg_DbContext Context;
-        private static SupFAmOf_Stg_Db_Ver_2Context Context;
+        private static SupFAmOf_Stg_DbContext Context;
+        //private static SupFAmOf_Stg_Db_Ver_2Context Context;
         private static DbSet<T> Table { get; set; }
 
-        public GenericRepository(SupFAmOf_Stg_Db_Ver_2Context context)
+        public GenericRepository(SupFAmOf_Stg_DbContext context)
         {
             Context = context;
             Table = Context.Set<T>();

@@ -8,8 +8,7 @@ namespace SupFAmof.Data.Entity
         public PostPosition()
         {
             AccountReports = new HashSet<AccountReport>();
-            PostAttendees = new HashSet<PostAttendee>();
-            PostRegistrationDetails = new HashSet<PostRegistrationDetail>();
+            PostRegistrations = new HashSet<PostRegistration>();
             PostRgupdateHistories = new HashSet<PostRgupdateHistory>();
         }
 
@@ -23,6 +22,7 @@ namespace SupFAmof.Data.Entity
         public string? Location { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longtitude { get; set; }
+        public DateTime Date { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }
         public bool? IsBusService { get; set; }
@@ -34,8 +34,7 @@ namespace SupFAmof.Data.Entity
         public virtual Post Post { get; set; } = null!;
         public virtual TrainingCertificate? TrainingCertificate { get; set; }
         public virtual ICollection<AccountReport> AccountReports { get; set; }
-        public virtual ICollection<PostAttendee> PostAttendees { get; set; }
-        public virtual ICollection<PostRegistrationDetail> PostRegistrationDetails { get; set; }
+        public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<PostRgupdateHistory> PostRgupdateHistories { get; set; }
     }
 }

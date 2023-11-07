@@ -31,13 +31,13 @@ namespace SupFAmof_Testing
                                       $"Trusted_Connection=False;" +
                                       $"Encrypt=True;" +
                                       $"TrustServerCertificate=True";
-            var dbContextOptions = new DbContextOptionsBuilder<SupFAmOf_Stg_Db_Ver_2Context>()
+            var dbContextOptions = new DbContextOptionsBuilder<SupFAmOf_Stg_DbContext>()
             .UseLazyLoadingProxies()
             .UseSqlServer(connectionString)
             .Options;
 
-            var dbContext = new SupFAmOf_Stg_Db_Ver_2Context(dbContextOptions);
-            builder.RegisterInstance(dbContext).As<SupFAmOf_Stg_Db_Ver_2Context>().SingleInstance();
+            var dbContext = new SupFAmOf_Stg_DbContext(dbContextOptions);
+            builder.RegisterInstance(dbContext).As<SupFAmOf_Stg_DbContext>().SingleInstance();
             var mailSettings = new MailSettings
             {
               Mail= "supfamof.dev.test@gmail.com",

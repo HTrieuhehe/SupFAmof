@@ -9,12 +9,14 @@ namespace SupFAmof.Data.MakeConnection
     {
         public static IServiceCollection ConnectToConnectionString(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(options =>
+            //services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(options =>
+            services.AddDbContext<SupFAmOf_Stg_DbContext>(options =>
             {
                 options.UseLazyLoadingProxies();
                 options.UseSqlServer(configuration.GetConnectionString("SQLServerDatabase"));
             });
-            services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(ServiceLifetime.Transient);
+            //services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(ServiceLifetime.Transient);
+            services.AddDbContext<SupFAmOf_Stg_DbContext>(ServiceLifetime.Transient);
             return services;
         }
     }

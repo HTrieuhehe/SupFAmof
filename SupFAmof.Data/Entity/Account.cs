@@ -15,12 +15,10 @@ namespace SupFAmof.Data.Entity
             AccountInformations = new HashSet<AccountInformation>();
             AccountReactivations = new HashSet<AccountReactivation>();
             AccountReports = new HashSet<AccountReport>();
-            CheckAttendances = new HashSet<CheckAttendance>();
             Complaints = new HashSet<Complaint>();
             Contracts = new HashSet<Contract>();
             ExpoPushTokens = new HashSet<ExpoPushToken>();
             NotificationHistories = new HashSet<NotificationHistory>();
-            PostAttendees = new HashSet<PostAttendee>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
         }
@@ -49,12 +47,10 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<AccountInformation> AccountInformations { get; set; }
         public virtual ICollection<AccountReactivation> AccountReactivations { get; set; }
         public virtual ICollection<AccountReport> AccountReports { get; set; }
-        public virtual ICollection<CheckAttendance> CheckAttendances { get; set; }
         public virtual ICollection<Complaint> Complaints { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
         public virtual ICollection<ExpoPushToken> ExpoPushTokens { get; set; }
         public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }
-        public virtual ICollection<PostAttendee> PostAttendees { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
     }

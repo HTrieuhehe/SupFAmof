@@ -60,11 +60,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         [Required(ErrorMessage = "Latitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
-        public string? Latitude { get; set; }
+        public decimal? Latitude { get; set; }
 
         [Required(ErrorMessage = "Longitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
-        public string? Longitude { get; set; }
+        public decimal? Longitude { get; set; }
 
         [Required(ErrorMessage = "Time From is requied")]
         public TimeSpan TimeFrom { get; set; }
@@ -116,11 +116,13 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [MaxLength(500, ErrorMessage = "Location cannot exceed 500 characters.")]
         public string? Location { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Latitude is requied")]
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
         public decimal? Latitude { get; set; }
 
-        [Required]
-        public decimal? Longtitude { get; set; }
+        [Required(ErrorMessage = "Longitude is requied")]
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Longitude must be a decimal number.")]
+        public decimal? Longitude { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public int Amount { get; set; }

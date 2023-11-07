@@ -21,7 +21,7 @@ namespace SupFAmof.Data.Entity
         public string? SchoolName { get; set; }
         public string? Location { get; set; }
         public decimal? Latitude { get; set; }
-        public decimal? Longtitude { get; set; }
+        public decimal? Longitude { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan TimeFrom { get; set; }
         public TimeSpan? TimeTo { get; set; }

@@ -395,7 +395,7 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.Location).HasMaxLength(500);
 
-                entity.Property(e => e.Longtitude).HasColumnType("decimal(9, 6)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(9, 6)");
 
                 entity.Property(e => e.PositionDescription).HasMaxLength(100);
 

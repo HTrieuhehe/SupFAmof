@@ -23,6 +23,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? PositionDescription { get; set; }
         public string? SchoolName { get; set; }
         public string? Location { get; set; }
+        public DateTime? Date { get; set; }
         public string? Latitude { get; set; }
         public string? Longtitude { get; set; }
         public TimeSpan TimeFrom { get; set; }

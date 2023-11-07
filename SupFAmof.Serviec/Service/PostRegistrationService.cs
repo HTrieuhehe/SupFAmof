@@ -93,13 +93,7 @@ namespace SupFAmof.Service.Service
             {
                 var postRegistration = _mapper.Map<PostRegistration>(request);
                 postRegistration.AccountId = accountId;
-                postRegistration.PostRegistrationDetails.Add(new PostRegistrationDetail
-                {
-                    PositionId = request.PositionId,
-                    PostId = request.PostId,
-                });
 
-                // Fetch the relevant PostPosition and Post
                 var postPosition = _unitOfWork.Repository<PostPosition>()
                     .GetAll()
                     .FirstOrDefault(x => x.Id == request.PositionId && x.PostId == request.PostId);
@@ -121,14 +115,14 @@ namespace SupFAmof.Service.Service
                 // Count the number of registrations for the same position
                 var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
-                    .Count(x => x.PostRegistrationDetails.Any(d => d.PositionId == request.PositionId) &&
+                    .Count(x => x.PositionId == request.PositionId &&
                                 x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                 // Check for duplicate forms
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
                     .SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId &&
-                                                 x.PostRegistrationDetails.Any(d => d.PostId == request.PostId&& d.PositionId == request.PositionId));
+                                                 x.Position.PostId == request.PostId&& x.PositionId == request.PositionId);
 
                 // Check for existing registrations on the same day
                 //var existingEventDate = await _unitOfWork.Repository<PostRegistration>()
@@ -259,7 +253,7 @@ namespace SupFAmof.Service.Service
                 }
                 if (request.PositionId != null)
                 {
-                    original.PostRegistrationDetails.First().PositionId = request.PositionId;
+                    original.PositionId = request.PositionId;
                 }
                 if (request.SchoolBusOption.HasValue)
                 {
@@ -268,10 +262,10 @@ namespace SupFAmof.Service.Service
                 PostRegistration updateEntity = original;
                 PostPosition checkPostPostion = new PostPosition();
 
-                checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.PostRegistrationDetails.First().PostId &&
+                checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.Position.PostId &&
                                                                                               x.Id == request.PositionId).First();
 
-                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PostRegistrationDetails.First().PositionId == request.PositionId
+                var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PositionId == request.PositionId
                                                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
                 if (updateEntity != null && original != null)
                 {
@@ -291,7 +285,7 @@ namespace SupFAmof.Service.Service
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
-                                original.PostRegistrationDetails.First().PositionId = request.PositionId;
+                                original.PositionId = request.PositionId;
                                 original.UpdateAt = updateEntity.CreateAt;
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(original);
                                 await _unitOfWork.CommitAsync();
@@ -322,9 +316,8 @@ namespace SupFAmof.Service.Service
 
                                 PostRgupdateHistory postTgupdate = new PostRgupdateHistory
                                 {
-                                    PostId = updateEntity.PostRegistrationDetails.First().PostId,
-                                    PostRegistrationId = updateEntity.PostRegistrationDetails.First().PostRegistrationId,
-                                    PositionId = updateEntity.PostRegistrationDetails.First().PositionId,
+                                    PostRegistrationId = updateEntity.Id,
+                                    PositionId = updateEntity.PositionId,
                                     BusOption = updateEntity.SchoolBusOption,
                                     CreateAt = updateEntity.CreateAt,
                                     Status = (int)PostRegistrationStatusEnum.Update_Request,
@@ -440,7 +433,7 @@ namespace SupFAmof.Service.Service
                         case true:
                             var checkPostPostion = _unitOfWork.Repository<PostPosition>()
                                 .GetAll()
-                                .Where(x => x.PostId == findRequest.PostId && x.Id == findRequest.PositionId)
+                                .Where(x => x.PostId == findRequest.Position.PostId && x.Id == findRequest.PositionId)
                                 .First();
 
                             var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>()
@@ -450,7 +443,7 @@ namespace SupFAmof.Service.Service
 
                             var matchingEntity = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
-                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.PostRegistrationDetails.First().PostId == findRequest.PostId);
+                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId);
 
                             var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
 
@@ -459,7 +452,7 @@ namespace SupFAmof.Service.Service
                                 if (checkPostPostion.Amount - countAllRegistrationForm > 0)
                                 {
                                     matchingEntity.SchoolBusOption = findRequest.BusOption;
-                                    matchingEntity.PostRegistrationDetails.First().PositionId = (int)findRequest.PositionId;
+                                    matchingEntity.PositionId = (int)findRequest.PositionId;
                                     matchingEntity.UpdateAt = GetCurrentDatetime();
                                     findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
@@ -512,8 +505,8 @@ namespace SupFAmof.Service.Service
 
         private async Task<bool> CheckPostPositionBus(PostRegistration rq)
         {
-            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.PostId == rq.PostRegistrationDetails.First().PostId
-                                                                                            && x.Id == rq.PostRegistrationDetails.First().PositionId);
+            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.PostId == rq.Position.PostId
+                                                                                            && x.Id == rq.PositionId);
             switch(entityMatching.IsBusService)
             {
                 case true:
@@ -539,7 +532,7 @@ namespace SupFAmof.Service.Service
                 var notUpdatedEntities = new List<PostRegistration>();
                 var listPr = await _unitOfWork.Repository<PostRegistration>()
                                             .GetAll()
-                                            .Where(x => postRegistrationIds.Contains(x.Id) && x.PostRegistrationDetails.First().Post.AccountId == accountId)
+                                            .Where(x => postRegistrationIds.Contains(x.Id) && x.Position.Post.AccountId == accountId)
                                             .ToListAsync();
 
                 if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
@@ -580,14 +573,14 @@ namespace SupFAmof.Service.Service
                         case true:
                             var checkPostPosition = _unitOfWork.Repository<PostPosition>()
                               .GetAll()
-                              .Where(x => x.PostId == postRegis.PostRegistrationDetails.First().PostId && x.Id == postRegis.PostRegistrationDetails.First().PositionId)
+                              .Where(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId)
                               .FirstOrDefault();
 
                             if (checkPostPosition != null)
                             {
                                 var availableSlot = checkPostPosition.Amount - _unitOfWork.Repository<PostRegistrationDetail>()
                                     .GetAll()
-                                    .Count(x => x.PositionId == postRegis.PostRegistrationDetails.First().PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
+                                    .Count(x => x.PositionId == postRegis.PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                                 if (availableSlot > 0 && listPr.Count <= availableSlot)
                                 {
@@ -679,7 +672,7 @@ namespace SupFAmof.Service.Service
             var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == matching.PostRegistrationId);
             var attendNeedToBeUpdated = _unitOfWork.Repository<PostAttendee>()
                               .GetAll()
-                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.PostRegistrationDetails.First().PostId);
+                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.Position.PostId);
             if (attendNeedToBeUpdated != null)
             {
                 attendNeedToBeUpdated.PositionId = matching.PositionId;
@@ -696,21 +689,21 @@ namespace SupFAmof.Service.Service
             List<MailBookingRequest> listMail = new List<MailBookingRequest>();
             foreach (PostRegistration postRegistration in request)
             {
-                var postPosition = _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefault(x => x.Id == postRegistration.PostRegistrationDetails.First().PositionId);
+                var postPosition = _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefault(x => x.Id == postRegistration.PositionId);
 
                 MailBookingRequest mailBookingRequest = new MailBookingRequest
                 {
                     Email = postRegistration.Account?.Email ?? "N/A",
                     RegistrationCode = postRegistration.RegistrationCode ?? "N/A",
-                    PostName = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.PostCategory?.PostCategoryType ?? "N/A",
-                    DateFrom = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.DateFrom.ToString() ?? "N/A",
-                    DateTo = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Post?.DateTo?.ToString() ?? "N/A",
+                    PostName = postRegistration.Position.Post.PostCategory.PostCategoryType?? "N/A",
+                    DateFrom = postRegistration.Position.Post.DateFrom.ToString() ?? "N/A",
+                    DateTo = postRegistration.Position.Post.DateTo.ToString() ?? "N/A",
                     PositionName = postPosition?.PositionName ?? "N/A",
                     TimeFrom = postPosition?.TimeFrom.ToString() ?? "N/A",
                     TimeTo = postPosition?.TimeTo?.ToString() ?? "N/A",
                     SchoolName = postPosition?.SchoolName ?? "N/A",
                     Location = postPosition?.Location ?? "N/A",
-                    Note = postRegistration.PostRegistrationDetails?.FirstOrDefault(x => x.PostRegistrationId == postRegistration.Id)?.Note ?? "N/A"
+                    Note = postRegistration.Note ?? "N/A"
                 };
 
                 listMail.Add(mailBookingRequest);
@@ -723,7 +716,7 @@ namespace SupFAmof.Service.Service
             var userCertificate = _unitOfWork.Repository<AccountCertificate>()                    
                 .GetAll().Where(x=>x.AccountId == request.AccountId).Select(x=>x.TrainingCertificateId).ToList() ?? new List<int>();
             var positionCertificate = await _unitOfWork.Repository<PostPosition>()
-                                                        .FindAsync(x => x.Id == request.PostRegistrationDetails.First().PositionId);
+                                                        .FindAsync(x => x.Id == request.PositionId);
             if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
             {
                 return true;
@@ -742,7 +735,7 @@ namespace SupFAmof.Service.Service
 
         private async Task<bool> CheckDatePost (PostRegistration request)
         {
-            var postDate = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == request.PostRegistrationDetails.First().PostId);
+            var postDate = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == request.Position.PostId);
             if(postDate.DateFrom > request.CreateAt)
             {
                 return true;
@@ -760,8 +753,8 @@ namespace SupFAmof.Service.Service
             {
                 var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
                     .GetAll()
-                    .Where(x => x.Id == request.PostRegistrationDetails.First().PositionId
-                             && x.PostId == request.PostRegistrationDetails.First().PostId)
+                    .Where(x => x.Id == request.PositionId
+                             && x.PostId == request.Position.PostId)
                     .FirstOrDefault();
 
                 if (positionTimeFromPostRegistered != null)
@@ -795,7 +788,7 @@ namespace SupFAmof.Service.Service
             {
                 var account = _unitOfWork.Repository<PostRegistration>().GetAll()
                                          .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
-                                         .Where(x => x.PostRegistrationDetails.Any(x => x.PositionId == positionId) && x.Status == (int)PostRegistrationStatusEnum.Pending)
+                                         .Where(x => x.PositionId == positionId && x.Status == (int)PostRegistrationStatusEnum.Pending)
                                          .OrderByDescending(x => x.CreateAt) // Sắp xếp theo CreateAt của PostRegistration
                                          .PagingQueryable(paging.Page, paging.PageSize,
                                               Constants.LimitPaging, Constants.DefaultPaging);

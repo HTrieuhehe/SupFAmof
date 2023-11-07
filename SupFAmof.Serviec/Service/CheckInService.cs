@@ -37,12 +37,11 @@ namespace SupFAmof.Service.Service
             {
                 var checkAttendance = _mapper.Map<CheckAttendance>(checkin);
                 checkAttendance.CheckInTime = Ultils.GetCurrentDatetime();
-                checkAttendance.AccountId = accountId;
 
                 var existingAttendance = await _unitOfWork.Repository<CheckAttendance>()
                                                           .GetAll()
-                                                          .SingleOrDefaultAsync(x => x.PostId == checkin.PostId
-                                                                                 && x.AccountId == accountId
+                                                          .SingleOrDefaultAsync(x => x.PostRegistration.Position.Post.Id == checkin.PostId
+                                                                                 && x.PostRegistration.AccountId == accountId
                                                                                  );
 
                 if (existingAttendance != null)
@@ -51,7 +50,7 @@ namespace SupFAmof.Service.Service
                                         AttendanceErrorEnum.ALREADY_CHECK_IN.GetDisplayName());
                 }
 
-                var postVerification = await _unitOfWork.Repository<PostAttendee>().GetAll().SingleOrDefaultAsync(x => x.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId);
+                var postVerification = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Position.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
                 if (postVerification == null)
                 {
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
@@ -74,7 +73,7 @@ namespace SupFAmof.Service.Service
                 if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.PositionId == checkin.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PositionId == checkin.PositionId);
 
                     if (registration == null)
                     {
@@ -115,7 +114,7 @@ namespace SupFAmof.Service.Service
             {
                 //check Checking Existed
                 var checkOutCheck = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                    .FirstOrDefault(x => x.AccountId == accountId && x.PostId == request.PostId && request.PositionId == request.PositionId);
+                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistration.Position.PostId == request.PostId && request.PositionId == request.PositionId);
 
                 if (checkOutCheck == null)
                 {
@@ -148,7 +147,7 @@ namespace SupFAmof.Service.Service
                     checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
 
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.Id == request.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PositionId == request.PositionId);
 
                     if (registration == null)
                     {
@@ -192,7 +191,7 @@ namespace SupFAmof.Service.Service
                     checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
 
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PostRegistrationDetails.Any(x => x.PositionId == checkOut.PositionId));
+                                                .Find(x => x.AccountId == accountId && x.PositionId == checkOut.PostRegistration.PositionId);
 
                     if (registration == null)
                     {
@@ -237,9 +236,9 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        private static bool VerifyDateTimeCheckin(PostAttendee postTime, DateTime checkInTime)
+        private static bool VerifyDateTimeCheckin(PostRegistration postTime, DateTime checkInTime)
         {
-            if (postTime.Post.DateFrom.Date != checkInTime.Date)
+            if (postTime.Position.Post.DateFrom.Date != checkInTime.Date)
             {
                 throw new ErrorResponse(400, 400, "Cant register if you are not on the day of event");
             }
@@ -335,7 +334,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var attendanceRecord = _mapper.Map<List<CheckAttendanceResponse>>(await _unitOfWork.Repository<CheckAttendance>()
-                                                                            .GetWhere(x => x.AccountId == accountId));
+                                                                            .GetWhere(x => x.PostRegistration.AccountId == accountId));
                 return new BaseResponseViewModel<List<CheckAttendanceResponse>>()
                 {
                     Status = new StatusViewModel()

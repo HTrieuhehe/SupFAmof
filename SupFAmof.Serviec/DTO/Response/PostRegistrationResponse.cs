@@ -17,23 +17,13 @@ namespace SupFAmof.Service.DTO.Response
         public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-
-        public virtual CollaboratorAccountReponse? Account { get; set; }
-        public virtual ICollection<PostRegistrationDetailResponse>? PostRegistrationDetails { get; set; }
-    }
-    public  class PostRegistrationDetailResponse
-    {
-        public int Id { get; set; }
-        public int PostRegistrationId { get; set; }
         public int PostId { get; set; }
         public int PositionId { get; set; }
-
         public string? Note { get; set; }
-        public double? SalaryBonus { get; set; }
         public double Salary { get; set; }
-        public double FinalSalary { get; set; }
 
 
+        public virtual CollaboratorAccountReponse? Account { get; set; }
     }
     public class PostRgupdateHistoryResponse
     {

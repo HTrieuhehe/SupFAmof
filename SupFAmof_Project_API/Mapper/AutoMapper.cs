@@ -90,25 +90,14 @@ namespace SupFAmof.API.Mapper
 
             #region PostRegistration
             CreateMap<PostRegistration, PostRegistrationResponse>()
-              .ForMember(dest => dest.PostRegistrationDetails, opt =>
-              {
-                  opt.MapFrom(src => src.PostRegistrationDetails);
-              })
               .ReverseMap();
 
-            CreateMap<PostRegistrationDetail, PostRegistrationDetailResponse>()
-                .ReverseMap();
 
             CreateMap<Post, AdmissionPostsResponse>()
                 .ForMember(dest => dest.PostCategoryName, opt=> opt.MapFrom(src=>src.PostCategory.PostCategoryType))
-                .ForMember(dest=>dest.CollabRequest , opt=>opt.MapFrom(src=>src.PostRegistrationDetails))
                 .ReverseMap();
 
             CreateMap<PostRegistration, CollabRegistrationResponse>()
-                .ForMember(dest => dest.PostRegistrationDetail, opt=>opt.MapFrom(src=>src.PostRegistrationDetails.FirstOrDefault()))
-                .ReverseMap();
-            CreateMap<PostRegistrationDetail, CollabRegistrationDetailResponse>()
-                .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Post.PostPositions.FirstOrDefault(x => x.Id == src.PositionId)))
                 .ReverseMap();
             CreateMap<Post, CollabPostResponse>()
     .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
@@ -139,30 +128,10 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
 
             CreateMap<PostRegistration, ReportPostRegistrationResponse>()
-                .ForMember(dest => dest.PostRegistrationDetails, opt =>
-                {
-                    opt.MapFrom(src => src.PostRegistrationDetails);
-                })
               .ReverseMap();
             CreateMap<PostRegistrationDetail, ReportPostRegistrationDetailResponse>().ReverseMap();
 
             #endregion
-
-            #region Post Attendee
-            CreateMap<PostRegistration, PostAttendeeRequest>()
-                  .ForMember(dest => dest.PositionId, opt =>
-                  {
-                      opt.MapFrom(src => src.PostRegistrationDetails.First().PositionId);
-                  })
-                  .ForMember(dest => dest.PostId, opt =>
-                  {
-                      opt.MapFrom(src => src.PostRegistrationDetails.First().PostId);
-                  })
-
-                .ReverseMap();
-            CreateMap<PostAttendee, PostAttendeeRequest>().ReverseMap();
-            #endregion
-
             #region Admission Post Category
             CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();
@@ -242,22 +211,12 @@ namespace SupFAmof.API.Mapper
             CreateMap<CheckAttendance, CheckAttendanceResponse>().ReverseMap();
 
             CreateMap<Post, CheckAttendancePostResponse>()
-                .ForMember(x=>x.Records,opt=>opt.MapFrom(src=>src.CheckAttendances))
                 .ReverseMap();
             CreateMap<CheckAttendance, CheckAttendanceAdmission>()
                 .ReverseMap();
             #endregion
 
             #region Mail
-                CreateMap<PostRegistration, PostAttendee>()
-            .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId))
-            .ForMember(dest => dest.PositionId, opt => opt.MapFrom(src => src.PostRegistrationDetails.FirstOrDefault().Post.PostPositions.FirstOrDefault().Id))
-            .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.PostRegistrationDetails.FirstOrDefault().Post.Id))
-            .ForMember(dest => dest.ConfirmAt, opt => opt.MapFrom(src => src.CreateAt))
-            .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
-            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.PostRegistrationDetails.FirstOrDefault().Post.PostPositions.FirstOrDefault()))
-            .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.PostRegistrationDetails.FirstOrDefault().Post))
-            .ReverseMap();
             #endregion
 
             #region Account Banned

@@ -14,6 +14,8 @@ using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace SupFAmof.Service.Service
 {
@@ -837,6 +839,36 @@ namespace SupFAmof.Service.Service
 
             { throw ex; }
         }
+
+        #region Code của Hải Triều
+
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationCheckIn(int accountId, PagingRequest paging)
+        {
+            try
+            {
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                  .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.Position.Date == Ultils.GetCurrentDatetime().Date)
+                                                  .PagingQueryable(paging.Page, paging.PageSize);
+
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = postRegistration.Item1
+                    },
+                    Data = postRegistration.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 
 }

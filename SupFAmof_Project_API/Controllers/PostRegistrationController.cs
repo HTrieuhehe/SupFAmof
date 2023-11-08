@@ -108,7 +108,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postRegistrationService.CancelPostregistration(account.Id ,postRegistrationId);
+                return await _postRegistrationService.CancelPostregistration(account.Id, postRegistrationId);
             }
             catch (ErrorResponse ex)
             {
@@ -141,7 +141,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.UpdatePostRegistration(account.Id ,postRegistrationId, request);
+                var result = await _postRegistrationService.UpdatePostRegistration(account.Id, postRegistrationId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -179,6 +179,35 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+        #region Code của Hải Triều
+
+        /// <summary>
+        /// Get Post Registration near current time to check in.
+        /// </summary>
+        /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
+        /// <returns>
+        /// </returns>
+        [HttpGet("getCheckInPostRegistration")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostRegistrationResponse>>> GetPostRegistrationCheckIn([FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId == (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id);
+            }
+            catch(ErrorResponse ex) 
+            {
+                return BadRequest(ex.Error);
+            } 
+        }
+
+        #endregion
     }
 }
 

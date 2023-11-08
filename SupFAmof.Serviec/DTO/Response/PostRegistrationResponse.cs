@@ -22,7 +22,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? Note { get; set; }
         public double Salary { get; set; }
 
-
+        public virtual PostPositionResponse? Position { get; set; }  
         public virtual CollaboratorAccountReponse? Account { get; set; }
     }
     public class PostRgupdateHistoryResponse

@@ -116,6 +116,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [MaxLength(500, ErrorMessage = "Location cannot exceed 500 characters.")]
         public string? Location { get; set; }
 
+        [Required(ErrorMessage = "Date is requied")]
+        public DateTime Date { get; set; }
+
         [Required(ErrorMessage = "Latitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]
         public decimal? Latitude { get; set; }

@@ -266,7 +266,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
-            UPDATE_FAIl = 4006,
+            UPDATE_FAIL = 4006,
 
             //400
             [Display(Name = "Your post status ended or it has alrady opened")]

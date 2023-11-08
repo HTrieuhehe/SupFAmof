@@ -484,9 +484,11 @@ namespace SupFAmof.Service.Service
                                          PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
+                var postPositionIds = checkPost.PostPositions.Select(p => p.Id).ToList();
+
                 //check if anyone apply to any position
-                var postRegistration = _unitOfWork.Repository<PostRegistrationDetail>().GetAll()
-                                                    .FirstOrDefault(x => x.PostId == postId);
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                    .FirstOrDefault(x => postPositionIds.Contains(x.PositionId));
                 checkPost.Id = postId;
                 checkPost.AccountId = accountId;
                 checkPost.PostCategoryId = request.PostCategoryId;
@@ -503,8 +505,7 @@ namespace SupFAmof.Service.Service
                                     .FirstOrDefault(x => x.Id == item.Id);
                         if (checkPosition == null)
                         {
-                            throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
-                                         PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                            continue;
                         }
 
                         item.Id = item.Id;
@@ -512,7 +513,7 @@ namespace SupFAmof.Service.Service
                         item.SchoolName = checkPosition.SchoolName;
                         item.Location = checkPosition.Location;
                         item.Latitude = checkPosition.Latitude;
-                        item.Longtitude = checkPosition.Longtitude;
+                        item.Longitude = checkPosition.Longitude;
                         item.Amount = checkPosition.Amount;
                         item.Salary = checkPosition.Salary;
                     }
@@ -538,8 +539,7 @@ namespace SupFAmof.Service.Service
                                 .FirstOrDefault(x => x.Id == item.Id);
                     if (checkPosition == null)
                     {
-                        throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
-                                     PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                        continue;
                     }
 
                     item.Id = item.Id;
@@ -547,7 +547,7 @@ namespace SupFAmof.Service.Service
                     item.SchoolName = checkPosition.SchoolName;
                     item.Location = checkPosition.Location;
                     item.Latitude = checkPosition.Latitude;
-                    item.Longtitude = checkPosition.Longtitude;
+                    item.Longitude = checkPosition.Longitude;
                     item.Amount = checkPosition.Amount;
                     item.Salary = checkPosition.Salary;
                 }
@@ -588,7 +588,7 @@ namespace SupFAmof.Service.Service
 
                 //validate to makesure there is no applied in this position
 
-                var checkApplied = await _unitOfWork.Repository<PostRegistrationDetail>().GetAll().FirstOrDefaultAsync(x => x.PositionId == positionId);
+                var checkApplied = await _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefaultAsync(x => x.PositionId == positionId);
 
                 if (checkApplied != null)
                 {
@@ -635,16 +635,20 @@ namespace SupFAmof.Service.Service
                 }
 
                 //validate to makesure there is no applied in this position
+                var postPositionIds = post.PostPositions.Select(p => p.Id).ToList();
 
-                var checkApplied = await _unitOfWork.Repository<PostRegistrationDetail>().GetAll().FirstOrDefaultAsync(x => x.PostId == postId);
+                var checkApplied = await _unitOfWork.Repository<PostRegistration>()
+                                                    .GetAll()
+                                                    .FirstOrDefaultAsync(x => postPositionIds.Contains(x.PositionId));
 
                 if (checkApplied != null)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIl,
-                                         PostErrorEnum.UPDATE_FAIl.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIL,
+                                         PostErrorEnum.UPDATE_FAIL.GetDisplayName());
                 }
 
                 post.Status = (int)PostStatusEnum.Delete;
+                post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
                 await _unitOfWork.CommitAsync();

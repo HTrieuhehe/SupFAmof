@@ -45,6 +45,8 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                var currentTime = Ultils.GetCurrentDatetime();
+
                 var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
 
                 if (account == null)
@@ -55,6 +57,9 @@ namespace SupFAmof.Service.Service
 
                 var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
 
+                //var minPositionTime = post.PostPositions.Min(p => p.TimeFrom);
+                //var maxPositionTime = post.PostPositions.Max(p => p.TimeTo);
+
                 if (post == null)
                 {
                     throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
@@ -62,14 +67,17 @@ namespace SupFAmof.Service.Service
                 }
 
                 //validate nếu post chưa xong thì không được end
-                if (post.DateFrom > Ultils.GetCurrentDatetime() 
-                    || post.DateTo > Ultils.GetCurrentDatetime() 
-                    || post.PostPositions.Any(x => x.TimeFrom >= Ultils.GetCurrentDatetime().TimeOfDay 
-                                                || x.TimeTo > Ultils.GetCurrentDatetime().TimeOfDay))
+                // update lại thời gian đóng post phải nằm trong range ngày bắt đầu và kết thúc
+
+                if (post.DateFrom > currentTime
+                    || post.DateTo > currentTime
+                    || post.PostPositions.Any(x => x.TimeFrom >= currentTime.TimeOfDay && x.Date <= currentTime
+                                                || x.TimeTo > currentTime.TimeOfDay && x.Date <= currentTime))
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_END_POST,
                                         PostErrorEnum.INVALID_END_POST.GetDisplayName());
                 }
+
 
                 post.Status = (int)PostStatusEnum.Ended;
                 post.UpdateAt = Ultils.GetCurrentDatetime();

@@ -56,14 +56,14 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
                                         AttendanceErrorEnum.WRONG_INFORMATION.GetDisplayName());
                 }
-                if (postVerification.Position.Latitude == null || postVerification.Position.Longtitude == null)
+                if (postVerification.Position.Latitude == null || postVerification.Position.Longitude == null)
                 {
                     throw new ErrorResponse(500, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
                                        AttendanceErrorEnum.MISSING_INFORMATION_POSITION.GetDisplayName());
                 }
                 double distance = 0.04; // kilometer 
 
-                double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longtitude, checkin.Latitude, checkin.Longtitude));
+                double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longitude, checkin.Latitude, checkin.Longtitude));
 
                 if (userCurrentPosition > distance)
                 {

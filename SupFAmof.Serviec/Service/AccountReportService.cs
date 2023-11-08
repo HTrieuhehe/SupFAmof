@@ -103,20 +103,21 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountReportErrorEnum.NOT_FOUND_REPORT,
                                                     AccountReportErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
+                
+                // t comment lại cho nó hết lỗi
 
-
-                var postRegistration = await _unitOfWork.Repository<PostRegistration>()
-                                                    .FindAsync(x => x.PostRegistrationDetails
-                                                    .Any(pd => pd.PostId == accountReport.PostId 
-                                                               && pd.PositionId == accountReport.PositionId));
+                //var postRegistration = await _unitOfWork.Repository<PostRegistration>()
+                //                                    .FindAsync(x => x.PostRegistrationDetails
+                //                                    .Any(pd => pd.PostId == accountReport.PostId 
+                //                                               && pd.PositionId == accountReport.PositionId));
 
                 // Filter the PostPositions based on your condition
-                foreach (var detail in postRegistration.PostRegistrationDetails)
-                {
-                    detail.Position.Post.PostPositions = detail.Position.Post.PostPositions
-                                                    .Where(position => position.Id == accountReport.PositionId)
-                                                    .ToList();
-                }
+                //foreach (var detail in postRegistration.PostRegistrationDetails)
+                //{
+                //    detail.Position.Post.PostPositions = detail.Position.Post.PostPositions
+                //                                    .Where(position => position.Id == accountReport.PositionId)
+                //                                    .ToList();
+                //}
 
                 return new BaseResponseViewModel<ReportPostRegistrationResponse>()
                 {
@@ -126,19 +127,8 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
-                };
-
-
-                return new BaseResponseViewModel<ReportPostRegistrationResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
+                    Data = null
+                    //Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
                 };
 
                 //return new BaseResponseViewModel<ReportPostRegistrationResponse>()

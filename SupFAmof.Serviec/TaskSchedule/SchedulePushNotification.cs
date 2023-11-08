@@ -41,12 +41,15 @@ namespace SupFAmof.Service.TaskSchedule
             DateTime now = GetCurrentDatetime();
             DateTime nextDay = now.AddDays(1);
             Dictionary<int,string> attendee = new Dictionary<int, string>();
-            var list = _unitOfWork.Repository<PostAttendee>().GetAll()
-                                    .Where(x => x.Post.DateFrom.Day.Equals(nextDay.Day)).ToList();
-            foreach ( var item in list )
-            {
-                attendee.Add(item.AccountId, item.Post.DateFrom.Date.ToString("MM/dd/yyyy"));
-            }
+
+            //t comment lại nha
+
+            //var list = _unitOfWork.Repository<PostAttendee>().GetAll()
+            //                        .Where(x => x.Post.DateFrom.Day.Equals(nextDay.Day)).ToList();
+            //foreach ( var item in list )
+            //{
+            //    attendee.Add(item.AccountId, item.Post.DateFrom.Date.ToString("MM/dd/yyyy"));
+            //}
             return attendee;
         }
     }

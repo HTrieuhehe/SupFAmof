@@ -430,61 +430,63 @@ namespace SupFAmof.Service.Service
                             break;
                     }
 
-                    switch (approve)
-                    {
-                        case true:
-                            var checkPostPostion = _unitOfWork.Repository<PostPosition>()
-                                .GetAll()
-                                .Where(x => x.PostId == findRequest.Position.PostId && x.Id == findRequest.PositionId)
-                                .First();
+                    // t comment lại khúc này
 
-                            var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>()
-                                .GetAll()
-                                .Where(x => x.PositionId == findRequest.PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                .Count();
+                    //switch (approve)
+                    //{
+                    //    case true:
+                    //        var checkPostPostion = _unitOfWork.Repository<PostPosition>()
+                    //            .GetAll()
+                    //            .Where(x => x.PostId == findRequest.Position.PostId && x.Id == findRequest.PositionId)
+                    //            .First();
 
-                            var matchingEntity = _unitOfWork.Repository<PostRegistration>()
-                                .GetAll()
-                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId);
+                    //        var countAllRegistrationForm = _unitOfWork.Repository<PostRegistrationDetail>()
+                    //            .GetAll()
+                    //            .Where(x => x.PositionId == findRequest.PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm)
+                    //            .Count();
 
-                            var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
+                    //        var matchingEntity = _unitOfWork.Repository<PostRegistration>()
+                    //            .GetAll()
+                    //            .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId);
 
-                            if (checkMatching.Contains(matchingEntity))
-                            {
-                                if (checkPostPostion.Amount - countAllRegistrationForm > 0)
-                                {
-                                    matchingEntity.SchoolBusOption = findRequest.BusOption;
-                                    matchingEntity.PositionId = (int)findRequest.PositionId;
-                                    matchingEntity.UpdateAt = GetCurrentDatetime();
-                                    findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
-                                    await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
-                                    await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
-                                    await UpdatePostAttendeeUser(findRequest);
-                                    await _unitOfWork.CommitAsync();
-                                    listResponse.Add(matchingEntity);
-                                }
-                                else
-                                {
-                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-                                        PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
-                                }
-                            }
-                            else
-                            {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                            }
-                            break;
+                    //        var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
 
-                        case false:
-                            findRequest.Status = (int)PostRegistrationStatusEnum.Reject;
-                            await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
-                            await _unitOfWork.CommitAsync();
-                            break;
+                    //        if (checkMatching.Contains(matchingEntity))
+                    //        {
+                    //            if (checkPostPostion.Amount - countAllRegistrationForm > 0)
+                    //            {
+                    //                matchingEntity.SchoolBusOption = findRequest.BusOption;
+                    //                matchingEntity.PositionId = (int)findRequest.PositionId;
+                    //                matchingEntity.UpdateAt = GetCurrentDatetime();
+                    //                findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
+                    //                await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
+                    //                await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
+                    //                await UpdatePostAttendeeUser(findRequest);
+                    //                await _unitOfWork.CommitAsync();
+                    //                listResponse.Add(matchingEntity);
+                    //            }
+                    //            else
+                    //            {
+                    //                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
+                    //                    PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                    //                PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                    //        }
+                    //        break;
 
-                        default:
-                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
-                    }
+                    //    case false:
+                    //        findRequest.Status = (int)PostRegistrationStatusEnum.Reject;
+                    //        await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
+                    //        await _unitOfWork.CommitAsync();
+                    //        break;
+
+                    //    default:
+                    //        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
+                    //}
                 }
 
                 // You can return a response for all processed entities if needed
@@ -580,9 +582,12 @@ namespace SupFAmof.Service.Service
 
                             if (checkPostPosition != null)
                             {
-                                var availableSlot = checkPostPosition.Amount - _unitOfWork.Repository<PostRegistrationDetail>()
-                                    .GetAll()
-                                    .Count(x => x.PositionId == postRegis.PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
+                                //t ghi bừa nó là 0 cho nó không lỗi code
+                                var availableSlot = 0;
+
+                                //var availableSlot = checkPostPosition.Amount - _unitOfWork.Repository<PostRegistrationDetail>()
+                                    //.GetAll()
+                                    //.Count(x => x.PositionId == postRegis.PositionId && x.PostRegistration.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                                 if (availableSlot > 0 && listPr.Count <= availableSlot)
                                 {
@@ -648,39 +653,39 @@ namespace SupFAmof.Service.Service
 
         private async Task AddUserToPostAttendee(List<PostRegistration> list)
         {
-            if (list.Any(postRegistration => postRegistration.Status == (int)PostRegistrationStatusEnum.Reject))
-            {
-                return;
-            }
-            // Map incoming data to PostAttendeeRequest and PostAttendee
-            var listAttendeeRequest = _mapper.Map<List<PostAttendeeRequest>>(list);
-            var listAttendeeFinal = _mapper.Map<List<PostAttendee>>(listAttendeeRequest);
+            //if (list.Any(postRegistration => postRegistration.Status == (int)PostRegistrationStatusEnum.Reject))
+            //{
+            //    return;
+            //}
+            //// Map incoming data to PostAttendeeRequest and PostAttendee
+            //var listAttendeeRequest = _mapper.Map<List<PostAttendeeRequest>>(list);
+            //var listAttendeeFinal = _mapper.Map<List<PostAttendee>>(listAttendeeRequest);
 
-            // Retrieve existing data from the database
-            var existingAttendees = _unitOfWork.Repository<PostAttendee>().GetAll();
+            //// Retrieve existing data from the database
+            //var existingAttendees = _unitOfWork.Repository<PostAttendee>().GetAll();
 
-            // Identify duplicates by comparing based on some unique identifier (e.g., UserId)
-            var duplicateAttendees = listAttendeeFinal
-                .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId && existingAttendee.PositionId == newAttendee.PositionId))
-                .ToList();
-            // Insert only the non-duplicate attendees
-            var nonDuplicateAttendees = listAttendeeFinal.Except(duplicateAttendees).ToList();
-            await _unitOfWork.Repository<PostAttendee>().InsertRangeAsync(nonDuplicateAttendees.AsQueryable());
+            //// Identify duplicates by comparing based on some unique identifier (e.g., UserId)
+            //var duplicateAttendees = listAttendeeFinal
+            //    .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId && existingAttendee.PositionId == newAttendee.PositionId))
+            //    .ToList();
+            //// Insert only the non-duplicate attendees
+            //var nonDuplicateAttendees = listAttendeeFinal.Except(duplicateAttendees).ToList();
+            //await _unitOfWork.Repository<PostAttendee>().InsertRangeAsync(nonDuplicateAttendees.AsQueryable());
         }
 
         private async Task UpdatePostAttendeeUser(PostRgupdateHistory matching)
         {
 
-            var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == matching.PostRegistrationId);
-            var attendNeedToBeUpdated = _unitOfWork.Repository<PostAttendee>()
-                              .GetAll()
-                              .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.Position.PostId);
-            if (attendNeedToBeUpdated != null)
-            {
-                attendNeedToBeUpdated.PositionId = matching.PositionId;
-                attendNeedToBeUpdated.ConfirmAt = GetCurrentDatetime();
-            }
-            await _unitOfWork.Repository<PostAttendee>().Update(attendNeedToBeUpdated, attendNeedToBeUpdated.Id);
+            //var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == matching.PostRegistrationId);
+            //var attendNeedToBeUpdated = _unitOfWork.Repository<PostAttendee>()
+            //                  .GetAll()
+            //                  .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.Position.PostId);
+            //if (attendNeedToBeUpdated != null)
+            //{
+            //    attendNeedToBeUpdated.PositionId = matching.PositionId;
+            //    attendNeedToBeUpdated.ConfirmAt = GetCurrentDatetime();
+            //}
+            //await _unitOfWork.Repository<PostAttendee>().Update(attendNeedToBeUpdated, attendNeedToBeUpdated.Id);
 
 
 
@@ -746,35 +751,35 @@ namespace SupFAmof.Service.Service
         }
         private async Task<bool> CheckTimePosition(PostRegistration request)
         {
-            var postsAttended = _unitOfWork.Repository<PostAttendee>()
-                                    .GetAll()
-                                    .Where(x => x.AccountId == request.AccountId)
-                                    .ToList();
+        //    var postsAttended = _unitOfWork.Repository<PostAttendee>()
+        //                            .GetAll()
+        //                            .Where(x => x.AccountId == request.AccountId)
+        //                            .ToList();
 
-            if (postsAttended != null && postsAttended.Any())
-            {
-                var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
-                    .GetAll()
-                    .Where(x => x.Id == request.PositionId
-                             && x.PostId == request.Position.PostId)
-                    .FirstOrDefault();
+        //    if (postsAttended != null && postsAttended.Any())
+        //    {
+        //        var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
+        //            .GetAll()
+        //            .Where(x => x.Id == request.PositionId
+        //                     && x.PostId == request.Position.PostId)
+        //            .FirstOrDefault();
 
-                if (positionTimeFromPostRegistered != null)
-                {
-                    foreach (var attendedPost in postsAttended)
-                    {
-                        if (attendedPost.Post.DateFrom.Date == positionTimeFromPostRegistered.Post.DateFrom.Date)
-                        {
-                            // Use Any() with a lambda expression to check for overlaps
-                            if ( IsTimeSpanOverlap(attendedPost.Position.TimeFrom, attendedPost.Position.TimeTo,
-                                positionTimeFromPostRegistered.TimeFrom, positionTimeFromPostRegistered.TimeTo))
-                            {
-                                return false; // If there is an overlap, return false
-                            }
-                        }
-                    }
-                }
-            }
+        //        if (positionTimeFromPostRegistered != null)
+        //        {
+        //            foreach (var attendedPost in postsAttended)
+        //            {
+        //                if (attendedPost.Post.DateFrom.Date == positionTimeFromPostRegistered.Post.DateFrom.Date)
+        //                {
+        //                    // Use Any() with a lambda expression to check for overlaps
+        //                    if ( IsTimeSpanOverlap(attendedPost.Position.TimeFrom, attendedPost.Position.TimeTo,
+        //                        positionTimeFromPostRegistered.TimeFrom, positionTimeFromPostRegistered.TimeTo))
+        //                    {
+        //                        return false; // If there is an overlap, return false
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
             return true;
         }

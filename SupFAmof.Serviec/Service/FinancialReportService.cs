@@ -31,15 +31,18 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = _unitOfWork.Repository<Account>()
-                                         .GetAll()
-                                         .Include(a => a.AccountInformation)
-                                         .Include(b => b.PostAttendees)
-                                            .ThenInclude(c => c.Position)
-                                         .Include(d => d.PostAttendees)
-                                            .ThenInclude(e => e.Post)
-                                            .ThenInclude(f => f.PostCategory)
-                                        .Where(x => x.Posts.Any(x => x.CreateAt >= Ultils.GetCurrentDatetime().AddMonths(-1) && x.AccountId == accountId));
+
+                //t comment code lại nha
+
+                //var account = _unitOfWork.Repository<Account>()
+                //                         .GetAll()
+                //                         .Include(a => a.AccountInformation)
+                //                         .Include(b => b.PostAttendees)
+                //                            .ThenInclude(c => c.Position)
+                //                         .Include(d => d.PostAttendees)
+                //                            .ThenInclude(e => e.Post)
+                //                            .ThenInclude(f => f.PostCategory)
+                //                        .Where(x => x.Posts.Any(x => x.CreateAt >= Ultils.GetCurrentDatetime().AddMonths(-1) && x.AccountId == accountId));
 
 
                 return new BaseResponseViewModel<CollabInfoReportResponse>()

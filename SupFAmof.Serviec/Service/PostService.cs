@@ -592,8 +592,8 @@ namespace SupFAmof.Service.Service
 
                 if (checkApplied != null)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIl,
-                                         PostErrorEnum.UPDATE_FAIl.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIL,
+                                         PostErrorEnum.UPDATE_FAIL.GetDisplayName());
                 }
 
                 postPosition.Status = (int)PostPositionStatusEnum.Delete;
@@ -968,13 +968,21 @@ namespace SupFAmof.Service.Service
 
                     foreach (var item in postPremiumResponses)
                     {
-                        // Lấy danh sách PostAttendee 
-                        var totalPostPremiumAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
-                                                 .Where(x => x.PostId == item.Id)
-                                                 .ToList();
+                        //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
+                        item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                        item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
 
-                        // Tính toán các trường cần thiết
-                        item.RegisterAmount = totalPostPremiumAttendee.Count;
+                        // lấy tất cả các position Id của bài post hiện tại
+                        var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                        // tìm post Registration có position Id trung với các bài post
+                        var premiumPostRegistrations = _unitOfWork.Repository<PostRegistration>()
+                            .GetAll()
+                            .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                            .ToList();
+
+                        // tính tổng các registration đã được confirm
+                        item.RegisterAmount = premiumPostRegistrations.Count;
 
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
                         item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
@@ -982,7 +990,7 @@ namespace SupFAmof.Service.Service
                         foreach (var itemDetail in item.PostPositions)
                         {
                             //count register amount in post attendee based on position
-                            totalCount += CountRegisterAmount(itemDetail.Id, totalPostPremiumAttendee);
+                            totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
 
                             //transafer data to field in post position
                             itemDetail.RegisterAmount = totalCount;
@@ -1024,13 +1032,21 @@ namespace SupFAmof.Service.Service
 
                 foreach (var item in postResponses)
                 {
-                    // Lấy danh sách PostAttendee 
-                    var totalPostAttendee = _unitOfWork.Repository<PostAttendee>().GetAll()
-                                             .Where(x => x.PostId == item.Id)
-                                             .ToList();
+                    //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
+                    item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                    item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
 
-                    // Tính toán các trường cần thiết
-                    item.RegisterAmount = totalPostAttendee.Count;
+                    // lấy tất cả các position Id của bài post hiện tại
+                    var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                    // tìm post Registration có position Id trung với các bài post
+                    var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                                        .GetAll()
+                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                        .ToList();
+
+                    // tính tổng các registration đã được confirm
+                    item.RegisterAmount = postRegistrations.Count;
 
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
                     item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
@@ -1038,7 +1054,7 @@ namespace SupFAmof.Service.Service
                     foreach (var itemDetail in item.PostPositions)
                     {
                         //count register amount in post attendee based on position
-                        totalCount += CountRegisterAmount(itemDetail.Id, totalPostAttendee);
+                        totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
                         itemDetail.RegisterAmount = totalCount;

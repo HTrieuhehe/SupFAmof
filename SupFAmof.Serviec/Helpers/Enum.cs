@@ -22,10 +22,10 @@ namespace SupFAmof.Service.Helpers
             AdmissionManager = 1,
 
             [Display(Name = "Cộng tác viên")]
-            Collaborator = 3,
+            Collaborator = 2,
 
             [Display(Name = "Những con báo kỳ 9")]
-            SystemAdmin = 5,
+            SystemAdmin = 3,
         }
 
         public enum PostRegistrationStatusEnum

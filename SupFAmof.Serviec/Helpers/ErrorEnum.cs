@@ -276,6 +276,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Your event is running or reach limit time of 30 minutes before running")]
             RE_OPEN_POST_FAIL = 4008,
 
+            //400
+            [Display(Name = "Date in position must in range of Date From and Date To in post")]
+            INVALID_POSITION_DATE = 4009,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

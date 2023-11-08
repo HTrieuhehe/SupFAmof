@@ -256,6 +256,13 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
                                          DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $"in Position Name: {position.PositionName}");
                     }
+
+                    //validate date in range
+                    if (request.DateFrom > position.Date || request.DateTo < position.Date)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_POSITION_DATE,
+                                         PostErrorEnum.INVALID_POSITION_DATE.GetDisplayName());
+                    }
                     continue;
                 }
 

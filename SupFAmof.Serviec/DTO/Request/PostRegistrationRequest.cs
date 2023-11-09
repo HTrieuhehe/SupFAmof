@@ -17,9 +17,6 @@ namespace SupFAmof.Service.DTO.Request
         [Required(ErrorMessage = "School bus option is required.")]
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
         public bool SchoolBusOption { get; set; }
-
-        [Required(ErrorMessage = "PostId is required.")]
-        public int PostId { get; set; }
         [Required(ErrorMessage = "PositionId is required.")]
         public int PositionId { get; set; }
     }

@@ -199,7 +199,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id, paging);
+                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id,paging);
             }
             catch(ErrorResponse ex) 
             {

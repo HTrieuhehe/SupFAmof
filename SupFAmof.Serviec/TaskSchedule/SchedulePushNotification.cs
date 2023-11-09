@@ -42,14 +42,13 @@ namespace SupFAmof.Service.TaskSchedule
             DateTime nextDay = now.AddDays(1);
             Dictionary<int,string> attendee = new Dictionary<int, string>();
 
-            //t comment lại nha
 
-            //var list = _unitOfWork.Repository<PostAttendee>().GetAll()
-            //                        .Where(x => x.Post.DateFrom.Day.Equals(nextDay.Day)).ToList();
-            //foreach ( var item in list )
-            //{
-            //    attendee.Add(item.AccountId, item.Post.DateFrom.Date.ToString("MM/dd/yyyy"));
-            //}
+            var list = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                    .Where(x => x.Position.Post.DateFrom.Day.Equals(nextDay.Day)).ToList();
+            foreach (var item in list)
+            {
+                attendee.Add(item.AccountId, item.Position.Post.DateFrom.Date.ToString("MM/dd/yyyy"));
+            }
             return attendee;
         }
     }

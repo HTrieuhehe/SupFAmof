@@ -27,41 +27,6 @@ namespace SupFAmof.Service.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseResponseViewModel<CollabInfoReportResponse>> GetAdmissionFinancialReport(int accountId)
-        {
-            try
-            {
-
-                //t comment code lại nha
-
-                //var account = _unitOfWork.Repository<Account>()
-                //                         .GetAll()
-                //                         .Include(a => a.AccountInformation)
-                //                         .Include(b => b.PostAttendees)
-                //                            .ThenInclude(c => c.Position)
-                //                         .Include(d => d.PostAttendees)
-                //                            .ThenInclude(e => e.Post)
-                //                            .ThenInclude(f => f.PostCategory)
-                //                        .Where(x => x.Posts.Any(x => x.CreateAt >= Ultils.GetCurrentDatetime().AddMonths(-1) && x.AccountId == accountId));
-
-
-                return new BaseResponseViewModel<CollabInfoReportResponse>()
-                {
-                    Status = new StatusViewModel
-                    {
-                        Message = "Success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = null
-                    //Data = _mapper.Map<CollabInfoReportResponse>(null)
-                };
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         public async Task<byte[]> GenerateAccountExcel(int accountId)
         {

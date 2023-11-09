@@ -20,20 +20,6 @@ namespace SupFAmof.API.Controllers.AdmissionController
         {
             _financialReportService = financialReportService;
         }
-
-        [HttpGet("get")]
-        public async Task<ActionResult<BaseResponseViewModel<CollabInfoReportResponse>>> Get([FromQuery] int accountId)
-        {
-            try
-            {
-                var result = await _financialReportService.GetAdmissionFinancialReport(accountId);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
         [HttpGet("get-account-report")]
         public async Task<ActionResult<BaseResponsePagingViewModel<CollabReportResponse>>> GetAccountReport([FromQuery] PagingRequest request)
         {

@@ -33,12 +33,14 @@ namespace SupFAmof.Service.Service
     public class PostService : IPostService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
-        public PostService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PostService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> EndPost(int accountId, int postId)
@@ -325,14 +327,15 @@ namespace SupFAmof.Service.Service
                 post.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
-                await _unitOfWork.CommitAsync();
+                
 
                 //send notification
                 //get account available to send
 
                 var account = _unitOfWork.Repository<Account>().GetAll()
                                             .Where(x => x.IsActive == true && x.RoleId == (int)SystemRoleEnum.Collaborator 
-                                                                           && x.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()));
+                                                                           || x.AccountBanneds.Any() // Đảm bảo có ít nhất một bản ghi AccountBanned
+                                                                           && x.AccountBanneds.Max(b => b.DayEnd) <= Ultils.GetCurrentDatetime());
 
                 var accountIds = account.Select(p => p.Id).ToList();
 
@@ -344,6 +347,11 @@ namespace SupFAmof.Service.Service
                     Body = "New event is available! Apply now!",
                     NotificationsType = (int)NotificationTypeEnum.Post_Created
                 };
+
+                await _notificationService.PushNotification(notificationRequest);
+                
+                //after completing, commmit them into database
+                await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()
                 {

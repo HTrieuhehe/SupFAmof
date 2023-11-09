@@ -29,13 +29,15 @@ namespace SupFAmof.Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISendMailService _sendMailService;
+        private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
-        public ContractService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService mailService)
+        public ContractService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService mailService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _sendMailService = mailService;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponseViewModel<AdmissionContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request)
@@ -330,7 +332,7 @@ namespace SupFAmof.Service.Service
 
                 var checkSendEmailContract = await _unitOfWork.Repository<AccountContract>()
                                                               .GetAll()
-                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id || x.Status == (int)AccountContractStatusEnum.Confirm);
+                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id && x.Status == (int)AccountContractStatusEnum.Confirm);
 
                 if (checkSendEmailContract != null)
                 {
@@ -401,14 +403,12 @@ namespace SupFAmof.Service.Service
 
                         //remove accountId from the list to avoid sending notification to this account
                         collaboratorAccountId.Remove(collab);
-
                         continue;
                     }
 
                     //validate if there is any contract in range of this collaborator
-                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
-                                .GetAll()
-                                .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime() 
+                    var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
+                                .FindAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime() 
                                                                                                && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
                                                                                                && x.AccountId == collab);
 
@@ -436,7 +436,6 @@ namespace SupFAmof.Service.Service
                     }
 
                     //account allow to send email
-
                     CreateAccountContractRequest accountContract = new CreateAccountContractRequest()
                     {
                         ContractId = contractId,
@@ -456,6 +455,7 @@ namespace SupFAmof.Service.Service
                         ContractName = checkContract.ContractName.ToString(),
                         SigningDate = checkContract.SigningDate.Date.ToString(),
                         StartDate = checkContract.StartDate.Date.ToString(),
+                        EndDate = checkContract.EndDate.Date.ToString(),
                         TotalSalary = checkContract.TotalSalary.ToString(),
                     };
 
@@ -464,23 +464,45 @@ namespace SupFAmof.Service.Service
 
                     //saving data to context
                     await _unitOfWork.Repository<AccountContract>().InsertAsync(accountContractMapping);
+                    //continue;
                 }
 
                 //sending Notification
-                
-
-                await _unitOfWork.CommitAsync();
-
-                return new BaseResponseViewModel<bool>
+                //create notification request 
+                if (collaboratorAccountId.Any())
                 {
-                    Status = new StatusViewModel
+                    PushNotificationRequest notificationRequest = new PushNotificationRequest()
                     {
-                        Message = "Saving success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = true
-                };
+                        Ids = collaboratorAccountId,
+                        Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
+                        Body = "New contract is sent to you! Check it now!",
+                        NotificationsType = (int)NotificationTypeEnum.Contract_Request
+                    };
+
+                    await _notificationService.PushNotification(notificationRequest);
+
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<bool>
+                    {
+                        Status = new StatusViewModel
+                        {
+                            Message = "Sending Success",
+                            ErrorCode = 0,
+                            Success = true,
+                        },
+                        Data = true
+                    };
+                }
+
+                else
+                {
+                    //saving data into database before return error
+                    await _unitOfWork.CommitAsync();
+
+                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.OVER_COLLABORATOR,
+                                       AccountContractErrorEnum.OVER_COLLABORATOR.GetDisplayName());
+                }
             }
             catch(Exception ex)
             {
@@ -587,17 +609,13 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId)
+        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId, int contractId)
         {
             /*
-            - check lại send Email contract phải validate coi 
-                + collab có confirm cái nào chưa mới cho gởi
-                + collab nào bị ban thì bỏ qua không gởi
-                + Check coi có gởi email, hay là noti chưa
             
             - confirm contract sẽ bao gồm các bước, yêu cầu validate như sau:
                 + Check Account đã có confirm 1 contract nào trong thời gian này chưa
-                + 
+                + Gởi noti cho Admission
                 +
 
              */
@@ -614,13 +632,49 @@ namespace SupFAmof.Service.Service
                 }
 
                 //check account banned current or not
-                else if (account.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                else if (account.AccountBanneds.Any() && account.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
                 {
                     throw new ErrorResponse(403, (int)AccountErrorEnums.BANNED_IN_PROCESS,
                                                          AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());
                 }
 
+                // validate if there is any contract in range of this collaborator
+                var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                            .GetAll()
+                            .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime()
+                                                                                            && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
+                                                                                            && x.AccountId == accountId);
+                if(checkCurrentContract != null)
+                {
+                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM,
+                                                         AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
+                }
 
+                var accountContract = await _unitOfWork.Repository<AccountContract>()
+                                                .FindAsync(x => x.Id == contractId && x.Status == (int)AccountContractStatusEnum.Pending);
+
+                if (accountContract == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
+                                                         AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                }
+
+                //filling data in 
+
+                List<int> admissionIds = new List<int>();
+                admissionIds.Add(accountContract.Contract.CreatePersonId);
+
+                //create notification request 
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = admissionIds,
+                    Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
+                    Body = "New contract is sent to you! Check it now!",
+                    NotificationsType = (int)NotificationTypeEnum.Contract_Request
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+                await _unitOfWork.CommitAsync();
                 return null;
             }
             catch (Exception)

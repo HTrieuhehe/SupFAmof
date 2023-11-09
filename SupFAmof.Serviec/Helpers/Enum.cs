@@ -94,7 +94,7 @@ namespace SupFAmof.Service.Helpers
             BookingMail = 2,
 
             [Display(Name = "ContractMail")]
-            ContractMail = 2,
+            ContractMail = 3,
         }
 
         public enum AccountCertificateStatusEnum
@@ -149,6 +149,9 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Post Confirm")]
             PostRegistration_Confirm = 2,
+
+            [Display(Name = "Bing Bong! New contract to you")]
+            Contract_Request = 3,
         }
     }
 }

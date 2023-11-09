@@ -44,6 +44,5 @@ namespace SupFAmof.Service.DTO.Request
         public string? Body { get; set; }
 
         public int? NotificationsType { get; set; }
-
     }
 }

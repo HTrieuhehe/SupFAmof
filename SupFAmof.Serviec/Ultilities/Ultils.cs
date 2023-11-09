@@ -167,5 +167,15 @@ namespace SupFAmof.Service.Utilities
         {
             return (decimal)(degrees * (decimal)Math.PI / 180.0m);
         }
+
+        public static List<string> TurnToExpoPushToken(List<string> tokens)
+        {
+            List<string> result = new List<string>();
+            foreach (var token in tokens)
+            {
+                result.Add($"ExponentPushToken[{token}]");
+            }
+            return result;
+        }
     }
 }

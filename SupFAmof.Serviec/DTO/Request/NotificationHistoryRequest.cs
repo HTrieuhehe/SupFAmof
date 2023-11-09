@@ -27,7 +27,7 @@ namespace SupFAmof.Service.DTO.Request
 
         [Required(ErrorMessage = "Notification Type is required")]
         [Range(0, int.MaxValue, ErrorMessage = "Notification Type must be a non-negative number")]
-        public int NotificationType { get; set; }
+        public int? NotificationType { get; set; }
 
         //[Required(ErrorMessage = "Status is required")]
         //[Range(0, int.MaxValue, ErrorMessage = "Status must be a non-negative number")]
@@ -40,8 +40,10 @@ namespace SupFAmof.Service.DTO.Request
     public class PushNotificationRequest
     {
         public List<int>? Ids { get; set; }
-        public string Title { get; set; }
-        public string Body { get; set; }
+        public string? Title { get; set; }
+        public string? Body { get; set; }
+
+        public int? NotificationsType { get; set; }
 
     }
 }

@@ -140,6 +140,15 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Failed")]
             Failed = 2,
-        }    
+        }
+
+        public enum NotificationTypeEnum
+        {
+            [Display(Name = "New Upcoming Event")]
+            Post_Created = 1,
+
+            [Display(Name = "Post Confirm")]
+            PostRegistration_Confirm = 2,
+        }
     }
 }

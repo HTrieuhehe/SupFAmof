@@ -1,4 +1,5 @@
-﻿using SupFAmof.Service.DTO.Request;
+﻿using Expo.Server.Models;
+using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         Task<BaseResponsePagingViewModel<NotificationHistoryResponse>> GetNotificationById(int recipientId, PagingRequest paging);
         Task<BaseResponsePagingViewModel<NotificationHistoryResponse>> GetNotifications(NotificationHistoryResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<NotificationHistoryResponse>> CreateNotification(CreateNotificationHistoryRequest request);
+        //Task<BaseResponseViewModel<NotificationHistoryResponse>> CreateNotification(CreateNotificationHistoryRequest request);
+        Task<PushTicketResponse> PushNotification(PushNotificationRequest request);
     }
 }

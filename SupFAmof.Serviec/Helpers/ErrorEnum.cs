@@ -85,6 +85,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "You did not have permission to use this function")]
             PERMISSION_NOT_ALLOW = 4032,
 
+            //403
+            [Display(Name = "You are banned! Now you can not do anything unitl banned is over!")]
+            BANNED_IN_PROCESS = 4033,
+
             //404
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 404,

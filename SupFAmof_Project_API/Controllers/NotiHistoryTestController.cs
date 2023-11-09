@@ -75,32 +75,34 @@ namespace SupFAmof.API.Controllers
         /// Create Noti 
         /// </summary>
         /// <returns></returns>
-        [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<NotificationHistoryResponse>>> GetNotifications
-            ([FromBody] CreateNotificationHistoryRequest request)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _notificationService.CreateNotification(request);
-            }
-            catch (ErrorResponse ex)
-            {
-                return BadRequest(ex.Error);
-            }
-        }
+        //[HttpPost("create")]
+        //public async Task<ActionResult<BaseResponseViewModel<NotificationHistoryResponse>>> GetNotifications
+        //    ([FromBody] CreateNotificationHistoryRequest request)
+        //{
+        //    try
+        //    {
+        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //        return await _notificationService.CreateNotification(request);
+        //    }
+        //    catch (ErrorResponse ex)
+        //    {
+        //        return BadRequest(ex.Error);
+        //    }
+        //}
+
+
         [HttpPost("push-notification")]
         public async Task<ActionResult<BaseResponseViewModel<PushTicketResponse>>> PushNotification
           ([FromBody] PushNotificationRequest request)
         {
             try
             {
-                var result = await _expoTokenService.PushNotification(request);
+                var result = await _notificationService.PushNotification(request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

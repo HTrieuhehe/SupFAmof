@@ -327,6 +327,23 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
                 await _unitOfWork.CommitAsync();
 
+                //send notification
+                //get account available to send
+
+                var account = _unitOfWork.Repository<Account>().GetAll()
+                                            .Where(x => x.IsActive == true && x.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()));
+
+                var accountIds = account.Select(p => p.Id).ToList();
+
+                //create notification request 
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.Post_Created.GetDisplayName(),
+                    Body = "New event is available! Apply now!",
+                    NotificationsType = (int)NotificationTypeEnum.Post_Created
+                };
+
                 return new BaseResponseViewModel<AdmissionPostResponse>()
                 {
                     Status = new StatusViewModel()

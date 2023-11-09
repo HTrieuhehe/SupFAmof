@@ -331,7 +331,8 @@ namespace SupFAmof.Service.Service
                 //get account available to send
 
                 var account = _unitOfWork.Repository<Account>().GetAll()
-                                            .Where(x => x.IsActive == true && x.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()));
+                                            .Where(x => x.IsActive == true && x.RoleId == (int)SystemRoleEnum.Collaborator 
+                                                                           && x.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()));
 
                 var accountIds = account.Select(p => p.Id).ToList();
 

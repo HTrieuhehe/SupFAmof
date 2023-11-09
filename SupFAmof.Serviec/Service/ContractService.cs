@@ -562,16 +562,46 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId)
+        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId)
         {
             /*
-            - check lại send Email contract phải validate coi collab có confirm cái nào chưa mới cho gởi
+            - check lại send Email contract phải validate coi 
+                + collab có confirm cái nào chưa mới cho gởi
+                + collab nào bị ban thì bỏ qua không gởi
+                + Check coi có gởi email, hay là noti chưa
             
             - confirm contract sẽ bao gồm các bước, yêu cầu validate như sau:
+                + Check Account đã có confirm 1 contract nào trong thời gian này chưa
                 + 
+                +
+
              */
 
-            throw new NotImplementedException();
+            try
+            {
+                //check Account
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //check account banned current or not
+                else if (account.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.BANNED_IN_PROCESS,
+                                                         AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());
+                }
+
+
+                return null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         #endregion

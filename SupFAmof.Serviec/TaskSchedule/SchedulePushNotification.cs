@@ -15,12 +15,12 @@ namespace SupFAmof.Service.TaskSchedule
     public class SchedulePushNotification : IInvocable
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IExpoTokenService notificationService;
+        private readonly INotificationService _notificationService;
 
-        public SchedulePushNotification(IUnitOfWork unitOfWork,IExpoTokenService notificationService)
+        public SchedulePushNotification(IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
-            this.notificationService = notificationService;
+            _notificationService = notificationService;
         }
         public async Task Invoke()
         {
@@ -32,7 +32,7 @@ namespace SupFAmof.Service.TaskSchedule
                     Body = $"Upcoming event incoming {dict.Values.First()}",
                     Title = "Reminder"
                 };
-                await notificationService.PushNotification(request);
+                await _notificationService.PushNotification(request);
             }
         }
 

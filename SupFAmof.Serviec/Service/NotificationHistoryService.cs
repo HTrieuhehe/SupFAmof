@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Expo.Server.Client;
+using Expo.Server.Models;
 using LAK.Sdk.Core.Utilities;
+using Org.BouncyCastle.Cms;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -31,7 +34,7 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponseViewModel<NotificationHistoryResponse>> CreateNotification(CreateNotificationHistoryRequest request)
+        private async Task<BaseResponseViewModel<NotificationHistoryResponse>> CreateNotification(CreateNotificationHistoryRequest request)
         {
             try
             {
@@ -109,6 +112,63 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<PushTicketResponse> PushNotification(PushNotificationRequest request)
+        {
+            try
+            {
+                //tạo các notification cho từng recipient để lưu database
+                //các accountId đã được validate trước khi gọi Push noti bảo đảm rằng các account disable hoặc bị banned sẽ không được nhận thông báo
+                foreach (var recipient in request.Ids)
+                {
+                    CreateNotificationHistoryRequest notificateRequest = new CreateNotificationHistoryRequest()
+                    {
+                        RecipientId = recipient,
+                        Title = request.Title,
+                        Text = request.Body,
+                        NotificationType = request.NotificationsType 
+                    };
+
+                    var notificationHistory = _mapper.Map<CreateNotificationHistoryRequest, NotificationHistory>(notificateRequest);
+                    notificationHistory.Status = (int)NotificationStatusEnum.Sent;
+
+                    //saving in db context but not commit
+                    await _unitOfWork.Repository<NotificationHistory>().InsertAsync(notificationHistory);
+                }
+
+                var tokens = _unitOfWork.Repository<ExpoPushToken>()
+                                           .GetAll()
+                                           .Where(x => request.Ids.Contains((int)x.AccountId) || request.Ids.Contains((int)x.AdminId))
+                                           .Select(y => y.Token.Trim())
+                                           .ToList();
+                List<string> tokenList = Ultils.TurnToExpoPushToken(tokens);
+
+                var expoSDKClient = new PushApiClient();
+                var pushTicketReq = new PushTicketRequest()
+                {
+                    PushTo = tokenList,
+                    PushBadgeCount = 7,
+                    PushBody = request.Body.Trim(),
+                    PushTitle = request.Title.Trim()
+                };
+                var result = await expoSDKClient.PushSendAsync(pushTicketReq);
+                if (result?.PushTicketErrors?.Count > 0)
+                {
+                    foreach (var error in result.PushTicketErrors)
+                    {
+                        Console.WriteLine($"Error: {error.ErrorCode} - {error.ErrorMessage}");
+                    }
+                }
+
+                //commit these data to database
+                await _unitOfWork.CommitAsync();
+                return result;
+            }
+            catch (Exception ex)
             {
                 throw;
             }

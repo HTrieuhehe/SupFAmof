@@ -95,6 +95,7 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<Post, AdmissionPostsResponse>()
                 .ForMember(dest => dest.PostCategoryName, opt=> opt.MapFrom(src=>src.PostCategory.PostCategoryType))
+                .ForMember(dest=>dest.Positions,opt=>opt.MapFrom(src=>src.PostPositions))
                 .ReverseMap();
 
             CreateMap<PostRegistration, CollabRegistrationResponse>()
@@ -102,10 +103,12 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, CollabPostResponse>()
     .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
     .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory));
-            
 
 
-          
+            CreateMap<PostPosition, AdmissionPostPositionResponse>()
+                .ForMember(dest=>dest.CollabRequest ,opt=>opt.MapFrom(src=>src.PostRegistrations))
+                .ReverseMap();
+          CreateMap<PostRegistration, CollabRegistrationFormResponse>().ReverseMap();
             CreateMap<PostRegistrationRequest, PostRegistration>()
             .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(src => src.CreateAt))
             .ForMember(dest => dest.UpdateAt, opt => opt.Ignore())

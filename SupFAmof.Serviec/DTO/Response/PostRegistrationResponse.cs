@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
-using SupFAmof.Data.Entity;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using SupFAmof.Service.DTO.Response.Admission;
+﻿using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.DTO.Response
 {
@@ -64,7 +57,7 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
-        public virtual ICollection<CollabRegistrationFormResponse>? CollabRequest { get; set; }
+        public virtual ICollection<AdmissionPostPositionResponse>? Positions { get; set; }
     }
 
     public class CollabRegistrationFormResponse
@@ -75,13 +68,16 @@ namespace SupFAmof.Service.DTO.Response
         public bool? SchoolBusOption { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-
         public int? AccountId { get; set; }
         public string? AccountEmail { get; set; }
         public string?  AccountName  { get; set; }
 
-        public int? PositionId { get; set; }
+    }
+    public class AdmissionPostPositionResponse
+    {
+        public int? Id { get; set; }
         public string? PositionName { get; set; }
+        public virtual ICollection<CollabRegistrationFormResponse> CollabRequest { get; set; }
     }
 
     public class CollabRegistrationResponse
@@ -91,7 +87,11 @@ namespace SupFAmof.Service.DTO.Response
         public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public virtual CollabRegistrationDetailResponse? PostRegistrationDetail { get; set; }
+        public int? PositionId { get; set; }
+        public string? Note { get; set; }
+
+
+
     }
     public class CollabRegistrationDetailResponse
     {

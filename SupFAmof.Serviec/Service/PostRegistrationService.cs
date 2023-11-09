@@ -65,11 +65,15 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+             
                 var list = _unitOfWork.Repository<Post>()
                                                       .GetAll()
                                                       .Where(pr => pr.AccountId == admissionAccountId)
+                                                      .Include(x=>x.PostPositions)
+                                                      .ThenInclude(x => x.PostRegistrations)
                                                       .ProjectTo<AdmissionPostsResponse>(_mapper.ConfigurationProvider)
                                                       .PagingQueryable(paging.Page, paging.PageSize);
+                
 
                 return new BaseResponsePagingViewModel<AdmissionPostsResponse>()
                 {
@@ -98,11 +102,11 @@ namespace SupFAmof.Service.Service
 
                 var postPosition = _unitOfWork.Repository<PostPosition>()
                     .GetAll()
-                    .FirstOrDefault(x => x.Id == request.PositionId && x.PostId == request.PostId);
+                    .FirstOrDefault(x => x.Id == request.PositionId);
 
                 var post = _unitOfWork.Repository<Post>()
                     .GetAll()
-                    .FirstOrDefault(x => x.Id == request.PostId);
+                    .FirstOrDefault(x => x.Id == postPosition.PostId);
 
                 if (postPosition == null)
                 {
@@ -124,7 +128,7 @@ namespace SupFAmof.Service.Service
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
                     .SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId &&
-                                                 x.Position.PostId == request.PostId&& x.PositionId == request.PositionId);
+                                                  x.PositionId == request.PositionId);
 
                 // Check for existing registrations on the same day
                 //var existingEventDate = await _unitOfWork.Repository<PostRegistration>()
@@ -508,8 +512,7 @@ namespace SupFAmof.Service.Service
 
         private async Task<bool> CheckPostPositionBus(PostRegistration rq)
         {
-            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.PostId == rq.Position.PostId
-                                                                                            && x.Id == rq.PositionId);
+            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.Id == rq.PositionId);
             switch(entityMatching.IsBusService)
             {
                 case true:
@@ -739,8 +742,8 @@ namespace SupFAmof.Service.Service
 
         private async Task<bool> CheckDatePost (PostRegistration request)
         {
-            var postDate = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == request.Position.PostId);
-            if(postDate.DateFrom > request.CreateAt)
+            var postDate = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == request.PositionId);
+            if(postDate.Post.DateFrom > request.CreateAt)
             {
                 return true;
             }

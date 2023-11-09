@@ -80,14 +80,14 @@ namespace SupFAmof.Service.Service
                         worksheet.Cells[row, 3].Value = account.AccountInformation?.IdStudent;
                         worksheet.Cells[row, 4].Value = account.AccountInformation?.IdentityNumber;
                         worksheet.Cells[row, 5].Value = account.AccountInformation?.TaxNumber;
-                        worksheet.Cells[row, 6].Value = account.AccountBankings.First().Beneficiary;
-                        worksheet.Cells[row, 7].Value = account.AccountBankings.First().AccountNumber;
-                        worksheet.Cells[row, 8].Value = account.AccountBankings.First().BankName;
-                        worksheet.Cells[row, 9].Value = account.AccountBankings.First().Branch;
 
-
-
+                        // Use null-conditional operator to access AccountBankings properties safely
+                        worksheet.Cells[row, 6].Value = account.AccountBankings?.FirstOrDefault()?.Beneficiary ?? "N/A";
+                        worksheet.Cells[row, 7].Value = account.AccountBankings?.FirstOrDefault()?.AccountNumber ?? "N/A";
+                        worksheet.Cells[row, 8].Value = account.AccountBankings?.FirstOrDefault()?.BankName ?? "N/A";
+                        worksheet.Cells[row, 9].Value = account.AccountBankings?.FirstOrDefault()?.Branch ?? "N/A";
                     }
+
                     // Save the Excel package to create the new file
                     await xlPackage.SaveAsync();
                 }

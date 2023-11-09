@@ -376,9 +376,9 @@ namespace SupFAmof.Service.Helpers
 
         public enum ContractErrorEnum
         {
-            //400
+            //403
             [Display(Name = "You are not verified by Admin to allow to create contract")]
-            ACCOUNT_CREATE_CONTRACT_INVALID = 4001,
+            ACCOUNT_CREATE_CONTRACT_INVALID = 4031,
 
             //400
             [Display(Name = "Siging date cannot be greater than Start Date")]

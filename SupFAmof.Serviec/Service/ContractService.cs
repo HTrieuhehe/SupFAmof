@@ -53,7 +53,7 @@ namespace SupFAmof.Service.Service
 
                 else if (checkAccount.PostPermission == false)
                 {
-                    throw new ErrorResponse(400, (int)ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID,
+                    throw new ErrorResponse(403, (int)ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID,
                                         ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID.GetDisplayName());
                 }
 
@@ -376,14 +376,46 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
+                //access to each accountId in list of accountIds
                 foreach (int collab in collaboratorAccountId)
                 {
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
 
                     //if account banned or any contract confirmed. status will fail
-                    if (checkCollab == null || checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                    if (checkCollab == null || checkCollab.AccountBanneds.Any() && checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
                     {
                         //account is banned
+                        CreateAccountContractRequest accountContractNew = new CreateAccountContractRequest()
+                        {
+                            ContractId = contractId,
+                            AccountId = collab,
+                            SubmittedFile = null,
+                        };
+
+                        var mapAccountContract = _mapper.Map<AccountContract>(accountContractNew);
+
+                        mapAccountContract.Status = (int)AccountContractStatusEnum.Fail;
+                        mapAccountContract.CreateAt = Ultils.GetCurrentDatetime();
+
+                        await _unitOfWork.Repository<AccountContract>().InsertAsync(mapAccountContract);
+
+                        //remove accountId from the list to avoid sending notification to this account
+                        collaboratorAccountId.Remove(collab);
+
+                        continue;
+                    }
+
+                    //validate if there is any contract in range of this collaborator
+                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                                .GetAll()
+                                .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime() 
+                                                                                               && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
+                                                                                               && x.AccountId == collab);
+
+                    if (checkCurrentContract != null)
+                    {
+                        //cannot send email. the collaborator has confirmed one contract already
+                        //remove accountId from the list to avoid sending notification to this account
 
                         CreateAccountContractRequest accountContractNew = new CreateAccountContractRequest()
                         {
@@ -398,16 +430,8 @@ namespace SupFAmof.Service.Service
                         mapAccountContract.CreateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().InsertAsync(mapAccountContract);
-                        continue;
-                    }
 
-                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
-                                .GetAll()
-                                .Where(x => x.Status == (int)AccountContractStatusEnum.Fail && x.Contract.StartDate <= Ultils.GetCurrentDatetime() && x.Contract.EndDate >= Ultils.GetCurrentDatetime());
-
-                    if (checkCurrentContract == null)
-                    {
-                        //cannot send email. the collaborator has confirmed one contract already
+                        collaboratorAccountId.Remove(collab);
                         continue;
                     }
 
@@ -430,19 +454,20 @@ namespace SupFAmof.Service.Service
                         Id = contractId.ToString(),
                         Email = checkCollab.Email.ToString(),
                         ContractName = checkContract.ContractName.ToString(),
-                        SigningDate = checkContract.SigningDate.ToString(),
-                        StartDate = checkContract.StartDate.ToString(),
+                        SigningDate = checkContract.SigningDate.Date.ToString(),
+                        StartDate = checkContract.StartDate.Date.ToString(),
                         TotalSalary = checkContract.TotalSalary.ToString(),
                     };
 
                     //send Email
                     await _sendMailService.SendEmailContract(mailContractRequest);
 
-                    //sending Notification
-                    //TODO...
-
+                    //saving data to context
                     await _unitOfWork.Repository<AccountContract>().InsertAsync(accountContractMapping);
                 }
+
+                //sending Notification
+                
 
                 await _unitOfWork.CommitAsync();
 

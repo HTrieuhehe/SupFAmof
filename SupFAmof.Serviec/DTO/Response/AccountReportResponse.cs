@@ -15,31 +15,21 @@ namespace SupFAmof.Service.DTO.Response
         public int? PositionId { get; set; }
         public double? Salary { get; set; }
         public DateTime? CreateAt { get; set; }
-
     }
 
     public class ReportPostRegistrationResponse
     {
         public int? Id { get; set; }
         public string? RegistrationCode { get; set; }
+        public int PositionId { get; set; }
+        public string? Note { get; set; }
+        public double Salary { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
         public string? CreateAt { get; set; }
         public string? UpdateAt { get; set; }
 
-        public virtual ICollection<ReportPostRegistrationDetailResponse>? PostRegistrationDetails { get; set; }
-    }
-
-    public class ReportPostRegistrationDetailResponse
-    {
-        public int? Id { get; set; }
-        public int? PostRegistrationId { get; set; }
-        public int? PostId { get; set; }
-        public int? PositionId { get; set; }
-        public string? Note { get; set; }
-        public double? Salary { get; set; }
-
-        public virtual ReportPostResponse? Post { get; set; }
+        public virtual ReportPostPositionResponse? Position { get; set; }
     }
 
     public class ReportPostResponse

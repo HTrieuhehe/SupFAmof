@@ -103,8 +103,6 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountReportErrorEnum.NOT_FOUND_REPORT,
                                                     AccountReportErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
                 }
-                
-                // t comment lại cho nó hết lỗi
 
                 //var postRegistration = await _unitOfWork.Repository<PostRegistration>()
                 //                                    .FindAsync(x => x.PostRegistrationDetails
@@ -119,6 +117,8 @@ namespace SupFAmof.Service.Service
                 //                                    .ToList();
                 //}
 
+                var postRegistration = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.Id == accountReport.PositionId && x.AccountId == accountId);
+
                 return new BaseResponseViewModel<ReportPostRegistrationResponse>()
                 {
                     Status = new StatusViewModel()
@@ -127,20 +127,8 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = null
-                    //Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
+                    Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
                 };
-
-                //return new BaseResponseViewModel<ReportPostRegistrationResponse>()
-                //{
-                //    Status = new StatusViewModel()
-                //    {
-                //        Message = "Success",
-                //        Success = true,
-                //        ErrorCode = 0
-                //    },
-                //    Data = _mapper.Map<ReportPostRegistrationResponse>(postRegistration)
-                //};
             }
             catch (Exception ex)
             {

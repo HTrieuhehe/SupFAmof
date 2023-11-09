@@ -20,8 +20,10 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionContractResponse>> DisableAdmissionContract(int accountId, int contractId);
         Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId);
 
+        //Collabotator Contract Zone
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountContractResponse>> GetContractById(int contractId);
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging);
+        Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId);
     }
 }

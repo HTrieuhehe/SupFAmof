@@ -81,9 +81,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cannot update multiple time! Try after 5 minutes")]
             UPDATE_INVALUD = 4012,
 
-            //400
+            //403
             [Display(Name = "You did not have permission to use this function")]
-            PERMISSION_NOT_ALLOW = 4013,
+            PERMISSION_NOT_ALLOW = 4032,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -201,11 +201,11 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Post Category existed!")]
-            POST_TITLE_TYPE_EXISTED = 4001,
+            POST_CATEGORY_TYPE_EXISTED = 4001,
 
             //400
             [Display(Name = "Post Category Type is duplication!")]
-            POST_TITLE_TYPE_DUPLICATE = 4002,
+            POST_CATEGORY_TYPE_DUPLICATE = 4002,
 
             //404
             [Display(Name = "Post Category not found!")]

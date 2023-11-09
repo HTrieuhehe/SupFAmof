@@ -562,6 +562,18 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId)
+        {
+            /*
+            - check lại send Email contract phải validate coi collab có confirm cái nào chưa mới cho gởi
+            
+            - confirm contract sẽ bao gồm các bước, yêu cầu validate như sau:
+                + 
+             */
+
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

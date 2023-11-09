@@ -71,7 +71,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postTitleService.CreatePostCategory(request);
+                return await _postTitleService.CreatePostCategory(account.Id, request);
             }
             catch (ErrorResponse ex)
             {
@@ -94,7 +94,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postTitleService.UpdatePostCategory(postTitleId, request);
+                return await _postTitleService.UpdatePostCategory(account.Id, postTitleId, request);
             }
             catch (ErrorResponse ex)
             {

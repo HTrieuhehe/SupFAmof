@@ -13,7 +13,7 @@ namespace SupFAmof.API.Controllers
     [ApiController]
     public class AccountReportController : ControllerBase
     {
-        private IAccountReportService _accountReportService;
+        private readonly IAccountReportService _accountReportService;
 
         public AccountReportController(IAccountReportService accountReportService)
         {

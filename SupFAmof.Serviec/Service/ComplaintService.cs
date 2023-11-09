@@ -112,7 +112,7 @@ namespace SupFAmof.Service.Service
 
                 if (checkAdmission == null )
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
@@ -149,7 +149,7 @@ namespace SupFAmof.Service.Service
 
                 if (checkAdmission == null)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
@@ -211,7 +211,7 @@ namespace SupFAmof.Service.Service
 
                 if (checkAdmission == null)
                 {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 

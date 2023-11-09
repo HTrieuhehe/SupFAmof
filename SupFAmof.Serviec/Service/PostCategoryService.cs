@@ -90,23 +90,33 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostCategory(CreatePostCategoryRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostCategory(int accountId, CreatePostCategoryRequest request)
         {
             try
             {
-                if (request.PostTitleType == null || request.PostTitleType == "")
+                //check account
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null || account.PostPermission == false) 
                 {
-                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+
+                if (request.PostCategoryType == null || request.PostCategoryType == "")
+                {
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var postTitle = _unitOfWork.Repository<PostCategory>()
-                                           .Find(x => x.PostCategoryType.Contains(request.PostTitleType));
+                                           .Find(x => x.PostCategoryType.Contains(request.PostCategoryType));
 
                 if (postTitle != null)
                 {
-                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED,
-                                        PostCategoryErrorEnum.POST_TITLE_TYPE_EXISTED.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_CATEGORY_TYPE_EXISTED,
+                                        PostCategoryErrorEnum.POST_CATEGORY_TYPE_EXISTED.GetDisplayName());
                 }
                 var result = _mapper.Map<CreatePostCategoryRequest, PostCategory>(request);
 
@@ -134,7 +144,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int postTitleId, UpdatePostCategoryRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int accountId, int postTitleId, UpdatePostCategoryRequest request)
         {
             try
             {
@@ -146,10 +156,10 @@ namespace SupFAmof.Service.Service
                                              PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                if (request.PostTitleType == null || request.PostTitleType == "")
+                if (request.PostCategoryType == null || request.PostCategoryType == "")
                 {
-                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE,
-                                        PostCategoryErrorEnum.POST_TITLE_TYPE_DUPLICATE.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE,
+                                        PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE.GetDisplayName());
                 }
 
                 var updatePostTitle = _mapper.Map<UpdatePostCategoryRequest, PostCategory>(request, postTitle);

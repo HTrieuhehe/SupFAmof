@@ -77,7 +77,7 @@ namespace SupFAmof.Service.DTO.Response
     {
         public int? Id { get; set; }
         public string? PositionName { get; set; }
-        public virtual ICollection<CollabRegistrationFormResponse> CollabRequest { get; set; }
+        public virtual ICollection<CollabRegistrationFormResponse>? CollabRequest { get; set; }
     }
 
     public class CollabRegistrationResponse
@@ -89,19 +89,10 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? UpdateAt { get; set; }
         public int? PositionId { get; set; }
         public string? Note { get; set; }
-
-
-
-    }
-    public class CollabRegistrationDetailResponse
-    {
-        public int? Id { get; set; }
-        public int PostRegistrationId { get; set; }
-        public string? Note { get; set; }
-        public double Salary { get; set; }
-
-        public virtual CollabPostResponse Post { get; set; }
+        public virtual CollabPostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
+
+
 
     }
     public class CollabPostResponse

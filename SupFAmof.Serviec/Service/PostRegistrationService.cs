@@ -760,8 +760,7 @@ namespace SupFAmof.Service.Service
             {
                 var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
                     .GetAll()
-                    .Where(x => x.Id == request.PositionId
-                             && x.PostId == request.Position.PostId)
+                    .Where(x => x.Id == request.PositionId)
                     .FirstOrDefault();
 
                 if (positionTimeFromPostRegistered != null)

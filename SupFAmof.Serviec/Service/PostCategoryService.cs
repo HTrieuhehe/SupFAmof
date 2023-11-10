@@ -41,6 +41,7 @@ namespace SupFAmof.Service.Service
                                             .ProjectTo<PostCategoryResponse>(_mapper.ConfigurationProvider)
                                             .DynamicFilter(filter)
                                             .DynamicSort(paging.Sort, paging.Order)
+                                            .Where(x => x.IsActive == true)
                                             .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostCategoryResponse>()
@@ -60,12 +61,12 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> GetPostCategoryById(int postTitleId)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> GetPostCategoryById(int postCategoryId)
         {
             try
             {
                 var postTitle = _unitOfWork.Repository<PostCategory>().GetAll()
-                                      .FirstOrDefault(x => x.Id == postTitleId);
+                                      .FirstOrDefault(x => x.Id == postCategoryId && x.IsActive == true);
 
                 if (postTitle == null)
                 {
@@ -110,10 +111,10 @@ namespace SupFAmof.Service.Service
                                         PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE.GetDisplayName());
                 }
 
-                var postTitle = _unitOfWork.Repository<PostCategory>()
-                                           .Find(x => x.PostCategoryType.Contains(request.PostCategoryType));
+                var postCategory = _unitOfWork.Repository<PostCategory>()
+                                           .Find(x => x.PostCategoryType.Contains(request.PostCategoryType) && x.IsActive == true);
 
-                if (postTitle != null)
+                if (postCategory != null)
                 {
                     throw new ErrorResponse(400, (int)PostCategoryErrorEnum.POST_CATEGORY_TYPE_EXISTED,
                                         PostCategoryErrorEnum.POST_CATEGORY_TYPE_EXISTED.GetDisplayName());
@@ -144,13 +145,13 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int accountId, int postTitleId, UpdatePostCategoryRequest request)
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int accountId, int postCategoryId, UpdatePostCategoryRequest request)
         {
             try
             {
-                var postTitle = _unitOfWork.Repository<PostCategory>().Find(x => x.Id == postTitleId);
+                var postCategory = _unitOfWork.Repository<PostCategory>().Find(x => x.Id == postCategoryId);
 
-                if (postTitle == null)
+                if (postCategory == null)
                 {
                     throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
                                              PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
@@ -162,12 +163,12 @@ namespace SupFAmof.Service.Service
                                         PostCategoryErrorEnum.POST_CATEGORY_TYPE_DUPLICATE.GetDisplayName());
                 }
 
-                var updatePostTitle = _mapper.Map<UpdatePostCategoryRequest, PostCategory>(request, postTitle);
+                var updatePostCategory = _mapper.Map<UpdatePostCategoryRequest, PostCategory>(request, postCategory);
 
-                updatePostTitle.PostCategoryType = updatePostTitle.PostCategoryType.ToUpper();
-                updatePostTitle.UpdateAt = DateTime.Now;
+                updatePostCategory.PostCategoryType = updatePostCategory.PostCategoryType.ToUpper();
+                updatePostCategory.UpdateAt = DateTime.Now;
 
-                await _unitOfWork.Repository<PostCategory>().UpdateDetached(updatePostTitle);
+                await _unitOfWork.Repository<PostCategory>().UpdateDetached(updatePostCategory);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<PostCategoryResponse>()
@@ -178,7 +179,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostCategoryResponse>(updatePostTitle)
+                    Data = _mapper.Map<PostCategoryResponse>(updatePostCategory)
                 };
             }
             catch (Exception ex)
@@ -219,6 +220,51 @@ namespace SupFAmof.Service.Service
                         Total = postCate.Item1
                     },
                     Data = postCate.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<PostCategoryResponse>> DisablePostCategory(int accountId, int postCategoryId)
+        {
+            try
+            {
+                //check account
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null || account.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                //find Post Category
+                var postCategory = await _unitOfWork.Repository<PostCategory>().FindAsync(pc => pc.Id == postCategoryId);
+
+                if (postCategory == null)
+                {
+                    throw new ErrorResponse(404, (int)PostCategoryErrorEnum.NOT_FOUND_ID,
+                                             PostCategoryErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                postCategory.IsActive = false;
+                postCategory.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<PostCategory>().UpdateDetached(postCategory);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<PostCategoryResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<PostCategoryResponse>(postCategory)
                 };
             }
             catch (Exception ex)

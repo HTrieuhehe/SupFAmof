@@ -13,9 +13,10 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IPostCategoryService
     {
         Task<BaseResponsePagingViewModel<PostCategoryResponse>> GetPostCategories(PostCategoryResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<PostCategoryResponse>> GetPostCategoryById(int postTitleId);
+        Task<BaseResponseViewModel<PostCategoryResponse>> GetPostCategoryById(int postCategoryId);
         Task<BaseResponseViewModel<PostCategoryResponse>> CreatePostCategory(int accountId, CreatePostCategoryRequest request);
-        Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int accountId, int postTitleId, UpdatePostCategoryRequest request);
+        Task<BaseResponseViewModel<PostCategoryResponse>> UpdatePostCategory(int accountId, int postCategoryId, UpdatePostCategoryRequest request);
         Task<BaseResponsePagingViewModel<PostCategoryResponse>> SearchPostCategory(string search, PagingRequest paging);
+        Task<BaseResponseViewModel<PostCategoryResponse>> DisablePostCategory(int accountId, int postCategoryId);
     }
 }

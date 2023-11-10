@@ -28,8 +28,5 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Required]
         [MaxLength(10, ErrorMessage = "Post Category Type cannot exceed 10 characters.")]
         public string? PostCategoryType { get; set; }
-
-        [Range(typeof(bool), "true", "false", ErrorMessage = "Is Active must be either true or false.")]
-        public bool IsActive { get; set; }
     }
 }

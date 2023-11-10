@@ -44,11 +44,11 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         [HttpGet("getById")]
         public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> GetPostCategoryById
-            ([FromQuery] int postTitleId)
+            ([FromQuery] int postCategoryId)
         {
             try
             {
-                return await _postTitleService.GetPostCategoryById(postTitleId);
+                return await _postTitleService.GetPostCategoryById(postCategoryId);
             }
             catch (ErrorResponse ex)
             {
@@ -84,7 +84,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         [HttpPut("update")]
         public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> UpdatePostCategory
-            ([FromQuery] int postTitleId, [FromBody] UpdatePostCategoryRequest request)
+            ([FromQuery] int postCategoryId, [FromBody] UpdatePostCategoryRequest request)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postTitleService.UpdatePostCategory(account.Id, postTitleId, request);
+                return await _postTitleService.UpdatePostCategory(account.Id, postCategoryId, request);
             }
             catch (ErrorResponse ex)
             {
@@ -118,6 +118,29 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _postTitleService.SearchPostCategory(search, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Disable Post Category                     
+        /// </summary>
+        [HttpPut("disable")]
+        public async Task<ActionResult<BaseResponseViewModel<PostCategoryResponse>>> DisablePostCategory
+            ([FromQuery] int postCategoryId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postTitleService.DisablePostCategory(account.Id, postCategoryId);
             }
             catch (ErrorResponse ex)
             {

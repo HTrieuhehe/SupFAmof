@@ -75,7 +75,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get Contract By id
+        /// Get Search Contract
         /// </summary>
         /// <returns></returns>
         /// 
@@ -127,7 +127,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Get Contract By id
+        /// Update Contract
         /// </summary>
         /// <returns></returns>
         /// 
@@ -145,6 +145,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 }
 
                 return await _contractService.UpdateAdmissionContract(account.Id, contractId, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Send contract email to Collaborators
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPost("sendContractEmail")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> AdmissionSendContractEmail([FromQuery] int contractId, [FromBody] List<int> collaboratorAccountId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _contractService.AdmissionSendContractEmail(account.Id, contractId, collaboratorAccountId);
             }
             catch (ErrorResponse ex)
             {

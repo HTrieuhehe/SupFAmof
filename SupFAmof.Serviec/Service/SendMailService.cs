@@ -99,7 +99,7 @@ namespace SupFAmof.Service.Service
                 var message = new MimeMessage();
                 message.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
                 message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
-                message.Subject = "Booking Confirmation";
+                message.Subject = "Contract Request";
                 message.To.Add(MailboxAddress.Parse(request.Email));
 
                 if (_mailPaths.Paths != null && _mailPaths.Paths.TryGetValue(EmailTypeEnum.ContractMail.GetDisplayName(), out string value))

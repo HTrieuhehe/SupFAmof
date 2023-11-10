@@ -24,6 +24,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountContractResponse>> GetContractById(int contractId);
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging);
-        Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId);
+        Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId, int contractId);
     }
 }

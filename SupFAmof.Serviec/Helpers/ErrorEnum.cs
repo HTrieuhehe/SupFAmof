@@ -376,9 +376,9 @@ namespace SupFAmof.Service.Helpers
 
         public enum ContractErrorEnum
         {
-            //400
+            //403
             [Display(Name = "You are not verified by Admin to allow to create contract")]
-            ACCOUNT_CREATE_CONTRACT_INVALID = 4001,
+            ACCOUNT_CREATE_CONTRACT_INVALID = 4031,
 
             //400
             [Display(Name = "Siging date cannot be greater than Start Date")]
@@ -444,6 +444,21 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Must have post permission to view ")]
             UNAUTHORIZED = 4001,
+        }
+
+        public enum AccountContractErrorEnum
+        {
+            //400
+            [Display(Name = "Collaborator has confirm one contract before")]
+            CONTRACT_ALREADY_CONFIRM = 4001,
+
+            //400
+            [Display(Name = "No Collaborator meet the need to send request")]
+            OVER_COLLABORATOR = 4002,
+
+            //404
+            [Display(Name = "Contract not found or removed by the Admission")]
+            CONTRACT_REMOVED_ADMISSION = 4041,
         }
     }
 }

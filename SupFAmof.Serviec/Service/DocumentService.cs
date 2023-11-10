@@ -33,21 +33,9 @@ namespace SupFAmof.Service.Service
         {
             var listDocument = _unitOfWork.Repository<DocumentTemplate>().GetAll()
                                           .ProjectTo<AdmissionDocumentResponse>(_mapper.ConfigurationProvider)
-                                          .PagingQueryable(paging.Page, paging.PageSize,
-                                           Constants.LimitPaging, Constants.DefaultPaging);
-            if (listDocument.Item2 == null)
-            {
-                return new BaseResponsePagingViewModel<AdmissionDocumentResponse>()
-                {
-                    Metadata = new PagingsMetadata()
-                    {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = listDocument.Item1
-                    },
-                    Data = new List<AdmissionDocumentResponse>()
-                };
-            }
+                                          .Where(x => x.IsActive == true)
+                                          .PagingQueryable(paging.Page, paging.PageSize);
+
             return new BaseResponsePagingViewModel<AdmissionDocumentResponse>()
             {
                 Metadata = new PagingsMetadata()
@@ -58,20 +46,33 @@ namespace SupFAmof.Service.Service
                 },
                 Data = listDocument.Item2.ToList()
             };
-
-
         }
-        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> CreateDocument(DocumentRequest request)
+
+        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> CreateDocument(int accountId, DocumentRequest request)
         {
             try
             {
-                if(request == null)
+                //check account post Permission
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null || account.PostPermission == false)
                 {
-                    throw new ErrorResponse(400,(int)DocumentErrorEnum.INVALID_DOCUMENT,DocumentErrorEnum.INVALID_DOCUMENT.GetDisplayName());
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
+
+                if (request == null)
+                {
+                    throw new ErrorResponse(400,(int)DocumentErrorEnum.INVALID_DOCUMENT,
+                                                     DocumentErrorEnum.INVALID_DOCUMENT.GetDisplayName());
+                }
+
                 var document = _mapper.Map<DocumentTemplate>(request);
+                document.IsActive = true;
+
                 await _unitOfWork.Repository<DocumentTemplate>().InsertAsync(document);
                 await _unitOfWork.CommitAsync();
+                
                 return new BaseResponseViewModel<AdmissionDocumentResponse>()
                 {
                     Status = new StatusViewModel()
@@ -89,33 +90,41 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> UpdateDocument(int documentId,DocumentUpdateRequest request)
+
+        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> UpdateDocument(int accountId, int documentId, DocumentUpdateRequest request)
         {
             try
             {
+                //check account post Permission
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null || account.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
                 if (request == null)
                 {
-                    throw new ErrorResponse(400, (int)DocumentErrorEnum.INVALID_DOCUMENT, DocumentErrorEnum.INVALID_DOCUMENT.GetDisplayName());
-                }
-                var document = _mapper.Map<DocumentTemplate>(request);
-                var documentNeedToBeUpdated = await _unitOfWork.Repository<DocumentTemplate>().GetAll().SingleOrDefaultAsync(x=>x.Id == documentId);
-                if (documentNeedToBeUpdated == null)
-                {
-                    throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT, DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName());
-
-                }
-                if (!string.IsNullOrWhiteSpace(request.DocName))
-                {
-                    documentNeedToBeUpdated.DocName = request.DocName;
+                    throw new ErrorResponse(400, (int)DocumentErrorEnum.INVALID_DOCUMENT, 
+                                                      DocumentErrorEnum.INVALID_DOCUMENT.GetDisplayName());
                 }
 
-                // Update only if the DocUrl is provided in the request
-                if (!string.IsNullOrWhiteSpace(request.DocUrl))
+                var checkDocument = await _unitOfWork.Repository<DocumentTemplate>()
+                                                     .FindAsync(x => x.Id == documentId && x.IsActive == true);
+
+                if (checkDocument == null)
                 {
-                    documentNeedToBeUpdated.DocUrl = request.DocUrl;
+                    throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT, 
+                                                      DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName());
+
                 }
-                await _unitOfWork.Repository<DocumentTemplate>().Update(documentNeedToBeUpdated,documentNeedToBeUpdated.Id);
+
+                var documentMapping = _mapper.Map<DocumentUpdateRequest, DocumentTemplate>(request, checkDocument);
+                
+                await _unitOfWork.Repository<DocumentTemplate>().UpdateDetached(documentMapping);
                 await _unitOfWork.CommitAsync();
+
                 return new BaseResponseViewModel<AdmissionDocumentResponse>()
                 {
                     Status = new StatusViewModel()
@@ -124,7 +133,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AdmissionDocumentResponse>(documentNeedToBeUpdated)
+                    Data = _mapper.Map<AdmissionDocumentResponse>(documentMapping)
                 };
             }
             catch (Exception ex)
@@ -133,22 +142,37 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> DisableDocument(int documentId)
+
+        public async Task<BaseResponseViewModel<AdmissionDocumentResponse>> DisableDocument(int accountId, int documentId)
         {
             try
             {
-             
-                var documentNeedToBeUpdated = await _unitOfWork.Repository<DocumentTemplate>().GetAll().SingleOrDefaultAsync(x => x.Id == documentId);
-                if (documentNeedToBeUpdated == null)
+
+                //check account post Permission
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null || account.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var document = await _unitOfWork.Repository<DocumentTemplate>()
+                                                               .FindAsync(x => x.Id == documentId);
+
+                if (document == null)
                 {
                     throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT, DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName());
                 }
-                if (!documentNeedToBeUpdated.IsActive)
+
+                if (!document.IsActive)
                 {
                     throw new ErrorResponse(400, (int)DocumentErrorEnum.ALREADY_DISABLED, DocumentErrorEnum.ALREADY_DISABLED.GetDisplayName());
                 }
 
-                await _unitOfWork.Repository<DocumentTemplate>().Update(documentNeedToBeUpdated, documentNeedToBeUpdated.Id);
+                document.IsActive = false;
+
+                await _unitOfWork.Repository<DocumentTemplate>().UpdateDetached(document);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionDocumentResponse>()
@@ -159,7 +183,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AdmissionDocumentResponse>(documentNeedToBeUpdated)
+                    Data = _mapper.Map<AdmissionDocumentResponse>(document)
                 };
             }
             catch (Exception ex)

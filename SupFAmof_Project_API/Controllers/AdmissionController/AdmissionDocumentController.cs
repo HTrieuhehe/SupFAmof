@@ -14,22 +14,20 @@ namespace SupFAmof.API.Controllers.AdmissionController
     [ApiController]
     public class AdmissionDocumentController : ControllerBase
     {
-        private readonly IDocumentService documentService;
+        private readonly IDocumentService _documentService;
 
         public AdmissionDocumentController(IDocumentService documentService)
         {
-            this.documentService = documentService;
+            _documentService = documentService;
         }
+
         /// <summary>
         /// Get All Document
         /// </summary>
-        /// <remarks>
-        /// true 
-        /// </remarks>
         /// <response code="200">Get All</response>
         /// <response code="400">Failed to retrieve any information</response>
-        [HttpGet]
-        public async Task<ActionResult<List<AdmissionDocumentResponse>>> GetAllDocument([FromQuery] PagingRequest paging) {
+        [HttpGet("getAll")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionDocumentResponse>>> GetAllDocument([FromQuery] PagingRequest paging) {
 
             try
             {
@@ -39,7 +37,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await documentService.GetDocuments(paging);
+                var result = await _documentService.GetDocuments(paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -52,13 +50,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <summary>
         /// Create Document
         /// </summary>
-        /// <remarks>
-        /// true 
-        /// </remarks>
         /// <response code="200">Create Success</response>
         /// <response code="400">Failed to create document</response>
-        [HttpPost]
-        public async Task<ActionResult> CreateDocument(DocumentRequest request)
+        [HttpPost("create")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionDocumentResponse>>> CreateDocument([FromBody] DocumentRequest request)
         {
             try
             {
@@ -68,24 +63,21 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await documentService.CreateDocument(request);
+                var result = await _documentService.CreateDocument(account.Id, request);
                 return Ok(result);
             }catch (ErrorResponse ex)
             {
                 return BadRequest(ex.Error);
             }
-
         }
+
         /// <summary>
         /// Update Document
         /// </summary>
-        /// <remarks>
-        /// true 
-        /// </remarks>
         /// <response code="200">Update Success</response>
         /// <response code="400">Failed to update any information</response>
-        [HttpPut("update-document/{documentId}")]
-        public async Task<ActionResult> UpdateDocument(int documentId , DocumentUpdateRequest request)
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateDocument([FromQuery] int documentId, [FromBody] DocumentUpdateRequest request)
         {
             try
             {
@@ -95,18 +87,20 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await documentService.UpdateDocument(documentId,request);
+                var result = await _documentService.UpdateDocument(account.Id, documentId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
             {
                 return BadRequest(ex.Error);
             }
-
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<AdmissionDocumentResponse>> DisableDocument(int documentId)
+        /// <summary>
+        /// Disable Document
+        /// </summary>
+        [HttpDelete("delete")]
+        public async Task<ActionResult<AdmissionDocumentResponse>> DisableDocument([FromQuery] int documentId)
         {
             try
             {
@@ -116,7 +110,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await documentService.DisableDocument(documentId);
+                var result = await _documentService.DisableDocument(account.Id, documentId);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -141,7 +135,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await documentService.SearchDocument(search, paging);
+                return await _documentService.SearchDocument(search, paging);
             }
             catch (ErrorResponse ex)
             {

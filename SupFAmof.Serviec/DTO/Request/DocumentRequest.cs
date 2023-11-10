@@ -23,13 +23,6 @@ namespace SupFAmof.Service.DTO.Request
         public string? DocName { get; set; }
 
         public string? DocUrl { get; set; }
-        [JsonIgnore]
-        public DateTime CreateAt { get; set; } = GetCurrentDatetime();
-
-    }
-    public class DocumentDisableRequest
-    {
-        public bool? IsActive { get; set; }
 
     }
 }

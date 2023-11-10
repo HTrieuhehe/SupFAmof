@@ -12,34 +12,64 @@ Kinh độ (longitude): Giá trị nằm trong khoảng -180 đến 180, lưu ý
 dotnet ef dbcontext scaffold "Server=3.0.33.161;Database=SupFAmOf_Stg_Db;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
 
 access token gmail sau login 
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMmQ0OGE5OS00YWMwLTQzZTMtYjUzMi1kMTllYTAyNGQ0NmQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiSGnhur91IE5ndXnhu4VuIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIxMSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IjEiLCJleHAiOjE2OTY1MTg3NTQsImlzcyI6IlN1cEZBbW9mLkFQSSIsImF1ZCI6IlN1cEZBbW9mLkFQSSJ9.xzZpbM4UDW6FvrUQByO-Bjm_m3adBMHTESIzvEAfPBg
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkN2JiNWI2Yy1jY2Q4LTRlZjgtOTQxMi1lM2ExZjJkODVkZWYiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiSGlldSBOZ3V5ZW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjciLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzAyMDk4Nzg3LCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.jMABvjVHcc70l0I2DVO7UEqYakzrsogGYiplytftXQM
 
 Access Token FPT sau login
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOGRiYTg1MS1iMTQ2LTRjYzktYTI0NS0yN2Y5M2IwODBhZWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRHV5IEPhu6VjIFPDungiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNjk3MDkyMzIyLCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.0mI3gAlgiTzcoJpXnZIugsxhkxG-yVSZYz48eIND168
 
 {
   "postCategoryId": 1,
-  "postDescription": "Test Create",
-  "postImg": "https://images05.military.com/sites/default/files/media/equipment/military-vehicles/m1a2-abrams-main-battle-tank/2014/02/m1a2-abrams-battle-tank-08.jpg",
+  "postDescription": "test thử coi có noti hong",
+  "postImg": "https://cdn.britannica.com/07/183407-050-C35648B5/Chicken.jpg",
   "priority": 1,
-  "dateFrom": "2023-10-25",
-  "dateTo": "",
+  "dateFrom": "2023-11-11",
+  "dateTo": "2023-11-12",
   "isPremium": false,
   "postPositions": [
     {
       "trainingCertificateId": null,
       "documentId": null,
-      "positionName": "test report",
-      "positionDescription": "test report",
-      "schoolName": "len len",
-      "location": "nothing",
-      "latitude": "10.841444",
-      "longitude": "106.810033",
+      "positionName": "test thử coi có noti hong",
+      "positionDescription": "test thử coi có noti hong",
+      "schoolName": "FPT University",
+      "location": "123 đường tăng",
+      "date": "2023-11-11",
+      "latitude": 10.841416800000001,
+      "longitude": 106.81007447258705,
       "timeFrom": "07:00:00",
       "timeTo": "09:00:00",
-      "isBusService": false,
+      "isBusService": true,
+      "amount": 10,
+      "salary": 300000
+    },
+{
+      "trainingCertificateId": null,
+      "documentId": null,
+      "positionName": "test thử coi có noti hong",
+      "positionDescription": "test thử coi có noti hong",
+      "schoolName": "FPT University",
+      "location": "123 đường tăng",
+      "date": "2023-11-12",
+      "latitude": 10.841416800000001,
+      "longitude": 106.81007447258705,
+      "timeFrom": "07:00:00",
+      "timeTo": "09:00:00",
+      "isBusService": true,
       "amount": 10,
       "salary": 300000
     }
   ]
+}
+
+
+https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contract%2Fcontract_template%2FH%E1%BB%A3p-%C4%91%E1%BB%93ng-kho%C3%A1n-g%E1%BB%8Dn-Modify.docx?alt=media&token=a4c2ea96-fdbd-47bc-b510-bf91e8dda052
+
+{
+  "contractName": "Just a contract template",
+  "contractDescription": "làm mình làm mẩy nha",
+  "sampleFile": "https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contract%2Fcontract_template%2FH%E1%BB%A3p-%C4%91%E1%BB%93ng-kho%C3%A1n-g%E1%BB%8Dn-Modify.docx?alt=media&token=a4c2ea96-fdbd-47bc-b510-bf91e8dda052",
+  "signingDate": "2023-11-15",
+  "startDate": "2023-11-16",
+  "endDate": "2023-12-16",
+  "totalSalary": 5000000
 }

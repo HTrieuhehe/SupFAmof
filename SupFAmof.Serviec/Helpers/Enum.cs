@@ -152,6 +152,9 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Bing Bong! New contract to you")]
             Contract_Request = 3,
+
+            [Display(Name = "Bing Bong! Check out complete")]
+            Check_out_complete = 4,
         }
     }
 }

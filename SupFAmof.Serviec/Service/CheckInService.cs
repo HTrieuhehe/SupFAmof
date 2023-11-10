@@ -23,12 +23,14 @@ namespace SupFAmof.Service.Service
     public class CheckInService : ICheckInService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService; 
         private readonly IMapper _mapper;
 
-        public CheckInService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CheckInService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponseViewModel<dynamic>> CheckIn(int accountId, CheckInRequest checkin)
@@ -108,130 +110,84 @@ namespace SupFAmof.Service.Service
                                     AttendanceErrorEnum.CAN_NOT_CHECK_OUT.GetDisplayName());
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, CheckOutRequest request)
+        public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, int postRegistrationId)
         {
             try
             {
                 //check Checking Existed
-                var checkOutCheck = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId 
-                                            && x.PostRegistration.Position.PostId == request.PostId && request.PositionId == request.PositionId);
+                var checkOut = _unitOfWork.Repository<CheckAttendance>().GetAll()
+                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == postRegistrationId);
 
-                if (checkOutCheck == null)
+                if (checkOut == null)
                 {
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.CHECK_OUT_FAIL,
                                         AttendanceErrorEnum.CHECK_OUT_FAIL.GetDisplayName());
                 }
 
-                //check timeTo have or not have data and validate in 2 situation
+                //get current Time
+                var currentTime = Ultils.GetCurrentDatetime();
+                var checkOutDate = checkOut.PostRegistration.Position.Date;
+                var checkOutTime = checkOut.PostRegistration.Position.TimeTo;
 
-                var position = _unitOfWork.Repository<PostPosition>().GetAll().FirstOrDefault(x => x.Id == request.PositionId);
-
-                if (position == null)
+                if (checkOutTime > currentTime.TimeOfDay && checkOutDate != currentTime.Date)
                 {
-                    throw new ErrorResponse(404, (int)PostErrorEnum.POSITION_NOT_FOUND,
-                                                            PostErrorEnum.POSITION_NOT_FOUND.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_TIME_INVALID,
+                                    AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
                 }
 
-                else if (position.TimeTo.HasValue)
+                checkOut.CheckOutTime = currentTime.Date;
+
+                var registration = _unitOfWork.Repository<PostRegistration>()
+                                            .Find(x => x.AccountId == accountId && x.PositionId == checkOut.PostRegistration.PositionId);
+
+                if (registration == null)
                 {
-                    //get current Time
-                    var currentTime = DateTime.Now.TimeOfDay;
-
-                    if (position.TimeTo > currentTime)
-                    {
-                        throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_TIME_INVALID,
-                                        AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
-                    }
-
-                    var checkOut = _mapper.Map<CheckOutRequest, CheckAttendance>(request, checkOutCheck);
-                    checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
-
-                    var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PositionId == request.PositionId);
-
-                    if (registration == null)
-                    {
-                        throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                    }
-
-                    registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
-
-                    CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
-                    {
-                        AccountId = accountId,
-                        PositionId = position.Id,
-                        Salary = position.Salary,
-                    };
-
-                    await CreateAccountReport(accountReport);
-
-                    await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(checkOut);
-                    await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
-                    await _unitOfWork.CommitAsync();
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
 
-                //if time to did not have value
-                else if (!position.TimeTo.HasValue)
+                registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
+
+                CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
                 {
-                    //get current Time
-                    var currentTime = DateTime.Now.TimeOfDay;
-                    var time = position.TimeFrom;
-                    time = time.Add(TimeSpan.FromHours(2));
+                    AccountId = accountId,
+                    PositionId = registration.PositionId,
+                    Salary = registration.Salary,
+                };
 
-                    //allow checkout after 2 hours
-                    if (time > currentTime)
+                await CreateAccountReport(accountReport);
+
+                //notification
+                List<int> accountIds = new List<int>(accountId);
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.Check_out_complete.GetDisplayName(),
+                    Body = "Check your bucket to see your salary!",
+                    NotificationsType = (int)NotificationTypeEnum.Post_Created
+                };
+
+                await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(checkOut);
+                await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
+                await _notificationService.PushNotification(notificationRequest);
+
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
                     {
-                        throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_TIME_INVALID,
-                                        AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
-                    }
-
-                    var checkOut = _mapper.Map<CheckOutRequest, CheckAttendance>(request, checkOutCheck);
-                    checkOut.CheckOutTime = Ultils.GetCurrentDatetime();
-
-                    var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PositionId == checkOut.PostRegistration.PositionId);
-
-                    if (registration == null)
-                    {
-                        throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                    }
-
-                    registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
-
-                    CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
-                    {
-                        AccountId = accountId,
-                        PositionId = position.Id,
-                        Salary = position.Salary,
-                    };
-
-                    await CreateAccountReport(accountReport);
-
-                    await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(checkOut);
-                    await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
-                    await _unitOfWork.CommitAsync();
-
-                    return new BaseResponseViewModel<dynamic>()
-                    {
-                        Status = new StatusViewModel()
-                        {
-                            Message = "Check Out Success",
-                            Success = true,
-                            ErrorCode = 0
-                        },
-                        Data = ""
-                    };
-                }
-
-                throw new ErrorResponse(400, (int)AttendanceErrorEnum.CAN_NOT_CHECK_OUT,
-                                    AttendanceErrorEnum.CAN_NOT_CHECK_OUT.GetDisplayName());
+                        Message = "Check Out Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = ""
+                };
             }
             catch (Exception ex)
             {
-                throw;
+                throw new ErrorResponse(400, (int)AttendanceErrorEnum.CAN_NOT_CHECK_OUT,
+                                    AttendanceErrorEnum.CAN_NOT_CHECK_OUT.GetDisplayName());
             }
         }
 
@@ -346,12 +302,12 @@ namespace SupFAmof.Service.Service
                 };
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
-        public async Task<BaseResponsePagingViewModel<CheckAttendancePostResponse>> AdmissionManageCheckAttendanceRecord(int accountId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CheckAttendancePostResponse>> AdmissionManageCheckAttendanceRecord(int accountId, PagingRequest paging)
         {
             try
             {
@@ -360,7 +316,7 @@ namespace SupFAmof.Service.Service
                 {
                     throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
                 }
-                var attendanceRecord =_unitOfWork.Repository<Post>().GetAll().Where(x=>x.AccountId == accountId)
+                var attendanceRecord = _unitOfWork.Repository<Post>().GetAll().Where(x => x.AccountId == accountId)
                                           .ProjectTo<CheckAttendancePostResponse>(_mapper.ConfigurationProvider)
                                           .PagingQueryable(paging.Page, paging.PageSize,
                                                            Constants.LimitPaging, Constants.DefaultPaging);

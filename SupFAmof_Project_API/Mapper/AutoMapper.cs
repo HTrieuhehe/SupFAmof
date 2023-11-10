@@ -201,7 +201,6 @@ namespace SupFAmof.API.Mapper
 
             #region CheckIn - CheckOut
             CreateMap<CheckInRequest, CheckAttendance>().ReverseMap();
-            CreateMap<CheckOutRequest, CheckAttendance>().ReverseMap();
             CreateMap<CheckAttendance, CheckAttendanceResponse>().ReverseMap();
 
             CreateMap<Post, CheckAttendancePostResponse>()

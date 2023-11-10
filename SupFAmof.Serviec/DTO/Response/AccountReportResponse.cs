@@ -11,7 +11,6 @@ namespace SupFAmof.Service.DTO.Response
     {
         public int? Id { get; set; }
         public int? AccountId { get; set; }
-        public int? PostId { get; set; }
         public int? PositionId { get; set; }
         public double? Salary { get; set; }
         public DateTime? CreateAt { get; set; }

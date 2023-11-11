@@ -25,7 +25,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <summary>
         /// Get Attendances History By PositionId
         /// </summary>
-        [HttpGet("getByPositionId/{positionId}")]
+        [HttpGet("getByPositionId")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionAttendanceResponse>>> GetAttendanceHistoryByPositionId
             ([FromQuery] int positionId, [FromQuery] PagingRequest paging)
         {

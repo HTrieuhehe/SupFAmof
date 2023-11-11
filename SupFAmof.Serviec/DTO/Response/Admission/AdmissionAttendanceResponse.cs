@@ -18,6 +18,8 @@ namespace SupFAmof.Service.DTO.Response.Admission
 
     public class AttendanceAccountResponse
     {
-
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? ImgUrl { get; set; }
     }
 }

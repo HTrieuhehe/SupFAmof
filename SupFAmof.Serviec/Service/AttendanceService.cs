@@ -56,7 +56,8 @@ namespace SupFAmof.Service.Service
 
                 //view attendance
                 var attendanceHistory = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                                   .Include(x => x.PostRegistration.Account)
+                                                   .Include(x => x.PostRegistration)
+                                                   .ThenInclude(x => x.Account)
                                                    .Where(x => x.PostRegistration.PositionId == positionId)
                                                    .ProjectTo<AdmissionAttendanceResponse>(_mapper.ConfigurationProvider)
                                                    .PagingQueryable(paging.Page, paging.PageSize);

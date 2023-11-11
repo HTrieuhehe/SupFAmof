@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LAK.Sdk.Core.Utilities;
-using Microsoft.EntityFrameworkCore;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
@@ -10,11 +9,6 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -35,12 +29,12 @@ namespace SupFAmof.Service.Service
         #region Admission
 
         public async Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId
-            (int accountId, int? positionId, PagingRequest paging)
+            (int accountId, int positionId, PagingRequest paging)
         
         { 
             try
             {
-                if (positionId == null|| positionId == 0)
+                if (positionId == 0)
                 {
                     throw new ErrorResponse(404, (int)CheckAttendanceErrorEnum.ATTENDANCE_NOT_FOUND,
                                         CheckAttendanceErrorEnum.ATTENDANCE_NOT_FOUND.GetDisplayName());

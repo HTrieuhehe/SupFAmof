@@ -13,7 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         #region Admission View Attendance History
 
-        Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId(int accountId, int? positionId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId(int accountId, int positionId, PagingRequest paging);
 
         #endregion
 

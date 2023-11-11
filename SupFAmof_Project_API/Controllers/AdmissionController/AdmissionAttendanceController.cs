@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Reso.Core.Custom;
 using ServiceStack.DataAnnotations;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.Enum;

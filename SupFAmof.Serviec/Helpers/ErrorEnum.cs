@@ -460,5 +460,12 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Contract not found or removed by the Admission")]
             CONTRACT_REMOVED_ADMISSION = 4041,
         }
+
+        public enum CheckAttendanceErrorEnum
+        {
+            //404
+            [Display(Name = "Attendance Not Found")]
+            ATTENDANCE_NOT_FOUND = 4041,
+        }
     }
 }

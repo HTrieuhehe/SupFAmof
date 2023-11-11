@@ -35,10 +35,17 @@ namespace SupFAmof.Service.Service
         #region Admission
 
         public async Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId
-            (int accountId, int positionId, PagingRequest paging)
+            (int accountId, int? positionId, PagingRequest paging)
+        
         { 
             try
             {
+                if (positionId == null|| positionId == 0)
+                {
+                    throw new ErrorResponse(404, (int)CheckAttendanceErrorEnum.ATTENDANCE_NOT_FOUND,
+                                        CheckAttendanceErrorEnum.ATTENDANCE_NOT_FOUND.GetDisplayName());
+                }
+
                 //check account post Permission
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
@@ -56,11 +63,10 @@ namespace SupFAmof.Service.Service
 
                 //view attendance
                 var attendanceHistory = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                                   .Include(x => x.PostRegistration)
-                                                   .ThenInclude(x => x.Account)
                                                    .Where(x => x.PostRegistration.PositionId == positionId)
                                                    .ProjectTo<AdmissionAttendanceResponse>(_mapper.ConfigurationProvider)
                                                    .PagingQueryable(paging.Page, paging.PageSize);
+
 
                 return new BaseResponsePagingViewModel<AdmissionAttendanceResponse>()
                 {

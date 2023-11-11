@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using LAK.Sdk.Core.Utilities;
+using Microsoft.EntityFrameworkCore;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
@@ -30,7 +34,8 @@ namespace SupFAmof.Service.Service
 
         #region Admission
 
-        public async Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> AdmissionGetAttendanceHistory(int accountId, int positionId)
+        public async Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId
+            (int accountId, int positionId, PagingRequest paging)
         { 
             try
             {
@@ -50,9 +55,22 @@ namespace SupFAmof.Service.Service
                 }
 
                 //view attendance
+                var attendanceHistory = _unitOfWork.Repository<CheckAttendance>().GetAll()
+                                                   .Include(x => x.PostRegistration.Account)
+                                                   .Where(x => x.PostRegistration.PositionId == positionId)
+                                                   .ProjectTo<AdmissionAttendanceResponse>(_mapper.ConfigurationProvider)
+                                                   .PagingQueryable(paging.Page, paging.PageSize);
 
-
-                return null;
+                return new BaseResponsePagingViewModel<AdmissionAttendanceResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = attendanceHistory.Item1
+                    },
+                    Data = attendanceHistory.Item2.ToList(),
+                };
             }
             catch(Exception ex)
             {

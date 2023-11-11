@@ -1,4 +1,5 @@
-﻿using SupFAmof.Service.DTO.Response;
+﻿using SupFAmof.Service.DTO.Request;
+using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         #region Admission View Attendance History
 
-        Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> AdmissionGetAttendanceHistory(int accountId, int positionId);
+        Task<BaseResponsePagingViewModel<AdmissionAttendanceResponse>> GetAttendanceHistoryByPositionId(int accountId, int positionId, PagingRequest paging);
 
         #endregion
 

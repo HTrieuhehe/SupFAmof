@@ -128,6 +128,7 @@ namespace SupFAmof.API.Mapper
               .ReverseMap();
 
             #endregion
+
             #region Admission Post Category
             CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();

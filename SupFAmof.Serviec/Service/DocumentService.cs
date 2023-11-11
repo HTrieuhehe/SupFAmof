@@ -98,7 +98,13 @@ namespace SupFAmof.Service.Service
                 //check account post Permission
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
-                if (account == null || account.PostPermission == false)
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (account.PostPermission == false)
                 {
                     throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());

@@ -25,6 +25,8 @@ namespace SupFAmof.API.Controllers
         /// <summary>
         /// This action method handles an HTTP GET request to retrieve a list of PostRegistrationResponse objects associated with a specific accountId.
         /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="filter"></param>
         /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
         /// <returns>
         /// - 200 OK: Returns a list of PostRegistrationResponse objects associated with the specified accountId.
@@ -32,7 +34,7 @@ namespace SupFAmof.API.Controllers
         /// </returns>
         [HttpGet("getById")]
         public async Task<ActionResult<CollabRegistrationResponse>> GetPostRegistrationsByAccountId
-          ([FromQuery] PagingRequest paging)
+          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse filter)
         {
             try
             {
@@ -42,7 +44,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging);
+                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging,filter);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

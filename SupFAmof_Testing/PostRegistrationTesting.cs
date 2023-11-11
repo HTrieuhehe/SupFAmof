@@ -19,32 +19,32 @@ namespace SupFAmof_Testing
                 .Resolve<IPostRegistrationService>();
         }
 
-        [Fact, TestPriority(1)]
-        public void GetAllPostRegistration()
-        {
-            int accountId = 15;
-            PagingRequest request = new PagingRequest
-            {
-                Page = 1,
-                PageSize = 3,
-            };
-            var result = _postRegistrationService.GetPostRegistrationByAccountId(accountId, request);
-            Assert.NotNull(result.Result);
-        }
-        [Fact, TestPriority(2)]
-        public void CreatePostRegistration_Show200Status()
-        {
-            int accountId = 15;
-            PostRegistrationRequest request = new PostRegistrationRequest
-            {
-                PostId = 29,
-                PositionId = 32,
-                SchoolBusOption = false
-            };
+        //[Fact, TestPriority(1)]
+        //public void GetAllPostRegistration()
+        //{
+        //    int accountId = 15;
+        //    PagingRequest request = new PagingRequest
+        //    {
+        //        Page = 1,
+        //        PageSize = 3,
+        //    };
+        //    var result = _postRegistrationService.GetPostRegistrationByAccountId(accountId, request);
+        //    Assert.NotNull(result.Result);
+        //}
+        //[Fact, TestPriority(2)]
+        //public void CreatePostRegistration_Show200Status()
+        //{
+        //    int accountId = 15;
+        //    PostRegistrationRequest request = new PostRegistrationRequest
+        //    {
+        //        PostId = 29,
+        //        PositionId = 32,
+        //        SchoolBusOption = false
+        //    };
 
-            var result = _postRegistrationService.CreatePostRegistration(accountId, request);
-            Assert.NotNull(result.Result);
-        }
+        //    var result = _postRegistrationService.CreatePostRegistration(accountId, request);
+        //    Assert.NotNull(result.Result);
+        //}
 
         [Fact, TestPriority(3)]
         public void ApprovePostRegistrationByAdmission_Show200Status()

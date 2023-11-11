@@ -51,11 +51,11 @@ namespace SupFAmof.Service.DTO.Response
         public string? PostCode { get; set; }
         public string? PostDescription { get; set; }
         public int? Priority { get; set; }
-        public DateTime? DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
+        public string? DateFrom { get; set; }
+        public string? DateTo { get; set; }
         public string? PostImg { get; set; }
-        public DateTime? CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; }
 
         public virtual ICollection<AdmissionPostPositionResponse>? Positions { get; set; }
     }
@@ -66,8 +66,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
-        public DateTime? CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; }
         public int? AccountId { get; set; }
         public string? AccountEmail { get; set; }
         public string?  AccountName  { get; set; }
@@ -82,11 +82,11 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollabRegistrationResponse
     {
-        public string RegistrationCode { get; set; } = null!;
+        public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; }
         public int? PositionId { get; set; }
         public string? Note { get; set; }
         public virtual CollabPostResponse? Post { get; set; }
@@ -104,13 +104,13 @@ namespace SupFAmof.Service.DTO.Response
         public string? PostImg { get; set; }
         public string? PostDescription { get; set; }
         public int? Priority { get; set; }
-        public DateTime DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
-        public bool IsPremium { get; set; }
+        public string? DateFrom { get; set; }
+        public string? DateTo { get; set; }
+        public bool? IsPremium { get; set; }
         public int? Status { get; set; }
-        public bool AttendanceComplete { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; } 
+        public bool? AttendanceComplete { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; } 
         public virtual AccountResponse? Account { get; set; }
         public virtual PostCategoryResponse? PostCategory { get; set; }
     }

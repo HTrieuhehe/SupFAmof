@@ -32,7 +32,7 @@ namespace SupFAmof.Service.Service
             this.sendMailService = sendMailService;
         }
 
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging, CollabRegistrationResponse filter)
         {
             try
             { 
@@ -42,6 +42,8 @@ namespace SupFAmof.Service.Service
                                                   .Where(x => x.AccountId == accountId)
                                                   .OrderByDescending(x => x.CreateAt)
                                                   .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .DynamicFilter(filter)
+                                                   .DynamicSort(paging.Sort, paging.Order)
                                                   .PagingQueryable(paging.Page, paging.PageSize,
                                                    Constants.LimitPaging, Constants.DefaultPaging);
                 return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
@@ -100,22 +102,22 @@ namespace SupFAmof.Service.Service
                 var postRegistration = _mapper.Map<PostRegistration>(request);
                 postRegistration.AccountId = accountId;
 
-                var postPosition = _unitOfWork.Repository<PostPosition>()
-                    .GetAll()
-                    .FirstOrDefault(x => x.Id == request.PositionId);
-
-                var post = _unitOfWork.Repository<Post>()
-                    .GetAll()
-                    .FirstOrDefault(x => x.Id == postPosition.PostId);
+                var postPosition = await _unitOfWork.Repository<PostPosition>()
+                                .FindAsync(x => x.Id == request.PositionId);
 
                 if (postPosition == null)
                 {
-                    throw new Exception("PostPosition not found."); // Replace with an appropriate exception type and message.
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                        PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                 }
+
+                var post = await _unitOfWork.Repository<Post>()
+                    .FindAsync(x => x.Id == postPosition.PostId);
 
                 if (post == null)
                 {
-                    throw new Exception("Post not found."); // Replace with an appropriate exception type and message.
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
                 // Count the number of registrations for the same position

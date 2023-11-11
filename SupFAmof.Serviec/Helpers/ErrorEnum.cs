@@ -197,6 +197,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Postion work time is duplicated to one that you are attending")]
             DUPLICATE_TIME_POSTION = 4014,
+            //404
+            [Display(Name = "Postion not found")]
+            POSITION_NOTFOUND = 4015,
 
 
         }

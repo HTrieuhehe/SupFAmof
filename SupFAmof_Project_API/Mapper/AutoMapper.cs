@@ -49,6 +49,8 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountCertificate, CertificateResponse>()
                 .ForMember(x=>x.CertificateName,opt=>opt.MapFrom(src=>src.TrainingCertificate.CertificateName))
                 .ReverseMap();
+
+            CreateMap<Account, AttendanceAccountResponse>().ReverseMap();
             #endregion
 
             #region Account Report
@@ -236,6 +238,13 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateNotificationHistoryRequest, NotificationHistory>();
             CreateMap<PushTicketResponse, NotificationHistoryResponse>()
                 .ReverseMap();
+
+            #endregion
+
+            #region Attendance History
+
+            CreateMap<CheckAttendance, AdmissionAttendanceResponse>().ReverseMap();
+            CreateMap<CheckAttendance, AttendanceResponse>().ReverseMap();
 
             #endregion
         }

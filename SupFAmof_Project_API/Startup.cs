@@ -147,6 +147,7 @@ namespace SupFAmof.API
             builder.RegisterType<ComplaintService>().As<IComplaintService>();
             builder.RegisterType<NotificationHistoryService>().As<INotificationService>();
             builder.RegisterType<FinancialReportService>().As<IFinancialReportService>();
+            builder.RegisterType<AttendanceService>().As<IAttendanceService>();
 
 
 

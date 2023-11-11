@@ -102,7 +102,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Int]
         public int Id { get; set; }
 
-        [MaxLength(20, ErrorMessage = "Position Name cannot exceed 20 characters.")]
+        [MaxLength(30, ErrorMessage = "Position Name cannot exceed 30 characters.")]
         public string? PositionName { get; set; }
 
         [MaxLength(100, ErrorMessage = "Position Description cannot exceed 100 characters.")]

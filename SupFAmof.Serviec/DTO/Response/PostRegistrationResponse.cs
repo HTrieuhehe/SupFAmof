@@ -82,6 +82,7 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollabRegistrationResponse
     {
+        public int? Id { get; set; }
         public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }

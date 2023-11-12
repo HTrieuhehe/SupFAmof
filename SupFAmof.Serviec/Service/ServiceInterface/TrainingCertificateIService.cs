@@ -14,8 +14,9 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> GetTrainingCertificateById(int trainingCertificateId);
-        Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(CreateTrainingCertificateRequest request);
-        Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int trainingCertificateId, UpdateTrainingCertificateRequest request);
+        Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(int accountId, CreateTrainingCertificateRequest request);
+        Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int accountId, int trainingCertificateId, UpdateTrainingCertificateRequest request);
+        Task<BaseResponseViewModel<bool>> DisableTrainingCertificate(int accountId, int trainingCertificateId);
         Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> SearchTrainingCertificate(string search, PagingRequest paging);
     }
 }

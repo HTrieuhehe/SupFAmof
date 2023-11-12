@@ -83,7 +83,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.CreateTrainingCertificate(request);
+                return await _certificateService.CreateTrainingCertificate(account.Id, request);
             }
             catch (ErrorResponse ex)
             {
@@ -106,7 +106,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.UpdateTrainingCertificate(trainingCertificateId, request);
+                return await _certificateService.UpdateTrainingCertificate(account.Id, trainingCertificateId, request);
             }
             catch (ErrorResponse ex)
             {
@@ -131,6 +131,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _certificateService.SearchTrainingCertificate(search, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Disable/Delete Training Ceritificate 
+        /// </summary>
+        /// 
+        [HttpDelete("disable")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> DisableTrainingCertificate
+            ([FromQuery] int trainingCertificateId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.DisableTrainingCertificate(account.Id, trainingCertificateId);
             }
             catch (ErrorResponse ex)
             {

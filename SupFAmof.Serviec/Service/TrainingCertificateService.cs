@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LAK.Sdk.Core.Utilities;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -39,6 +41,7 @@ namespace SupFAmof.Service.Service
                                     .ProjectTo<TrainingCertificateResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order)
+                                    .Where(x => x.IsActive == true)
                                     .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<TrainingCertificateResponse>()
@@ -62,8 +65,8 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var trainingCertificate = _unitOfWork.Repository<TrainingCertificate>().GetAll()
-                                      .FirstOrDefault(x => x.Id == trainingCertificateId);
+                var trainingCertificate = await _unitOfWork.Repository<TrainingCertificate>().GetAll()
+                                      .FirstOrDefaultAsync(x => x.Id == trainingCertificateId && x.IsActive == true);
 
                 if (trainingCertificate == null)
                 {
@@ -88,28 +91,44 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(CreateTrainingCertificateRequest request)
+        public async Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(int accountId, CreateTrainingCertificateRequest request)
         {
             try
             {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
                 if (request.TrainingTypeId == null || request.TrainingTypeId == "")
                 {
                     throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE,
                                         TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
-                var tranningCertificate = _unitOfWork.Repository<TrainingCertificate>()
-                                           .Find(x => x.TrainingTypeId.Contains(request.TrainingTypeId));
+                var tranningCertificate = await _unitOfWork.Repository<TrainingCertificate>()
+                                           .FindAsync(x => x.TrainingTypeId.Contains(request.TrainingTypeId) && x.IsActive == true);
 
                 if (tranningCertificate != null)
                 {
                     throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED,
                                         TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED.GetDisplayName());
                 }
+
                 var result = _mapper.Map<CreateTrainingCertificateRequest, TrainingCertificate>(request);
 
                 result.TrainingTypeId = result.TrainingTypeId.ToUpper();
-                result.CreateAt = DateTime.Now;
+                result.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<TrainingCertificate>().InsertAsync(result);
                 await _unitOfWork.CommitAsync();
@@ -131,16 +150,23 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int trainingCertificateId, UpdateTrainingCertificateRequest request)
+        public async Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int accountId, int trainingCertificateId, UpdateTrainingCertificateRequest request)
         {
             try
             {
-                var tranningCertificate = _unitOfWork.Repository<TrainingCertificate>().Find(x => x.Id == trainingCertificateId);
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
-                if (tranningCertificate == null)
+                if (checkAccount == null)
                 {
-                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
-                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
                 if (request.TrainingTypeId == null || request.TrainingTypeId == "")
@@ -149,10 +175,28 @@ namespace SupFAmof.Service.Service
                                         TrainingCertificateErrorEnum.INVALID_TRAINING_CERTIFICATE_TYPE.GetDisplayName());
                 }
 
+                var checkCertificate = await _unitOfWork.Repository<TrainingCertificate>()
+                                                        .FindAsync(x => x.TrainingTypeId == request.TrainingTypeId.ToUpper() && x.IsActive == true);
+
+                if (checkCertificate == null)
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED,
+                                             TrainingCertificateErrorEnum.TRAINING_CERTIFICATE_EXISTED.GetDisplayName());
+                }
+
+                var tranningCertificate = await _unitOfWork.Repository<TrainingCertificate>()
+                                                        .FindAsync(x => x.Id == trainingCertificateId && x.IsActive == true);
+
+                if (tranningCertificate == null)
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
                 var updateTrainingCertificate = _mapper.Map<UpdateTrainingCertificateRequest, TrainingCertificate>(request, tranningCertificate);
 
                 updateTrainingCertificate.TrainingTypeId = updateTrainingCertificate.TrainingTypeId.ToUpper();
-                updateTrainingCertificate.UpdateAt = DateTime.Now;
+                updateTrainingCertificate.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<TrainingCertificate>().UpdateDetached(updateTrainingCertificate);
                 await _unitOfWork.CommitAsync();
@@ -206,6 +250,57 @@ namespace SupFAmof.Service.Service
                         Total = certificate.Item1
                     },
                     Data = certificate.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<bool>> DisableTrainingCertificate(int accountId, int trainingCertificateId)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var trainingCertificate = await _unitOfWork.Repository<TrainingCertificate>()
+                                            .FindAsync(x => x.Id == trainingCertificateId && x.IsActive == true);
+
+                if (trainingCertificate == null)
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                trainingCertificate.IsActive = false;
+                trainingCertificate.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<TrainingCertificate>().UpdateDetached(trainingCertificate);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<bool>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Delete Training Certificate Successfully",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = true,
                 };
             }
             catch (Exception ex)

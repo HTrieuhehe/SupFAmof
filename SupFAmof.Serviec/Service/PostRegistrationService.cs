@@ -153,6 +153,11 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                             PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                     }
+                    if (!await CheckDateTimePosition(postRegistration))
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POSITION_OUTDATED,
+                            PostRegistrationErrorEnum.POSITION_OUTDATED.GetDisplayName());
+                    }
                     if (!await CheckCertificate(postRegistration))
                     {
                         throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
@@ -740,6 +745,17 @@ namespace SupFAmof.Service.Service
         {
             var postDate = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == request.PositionId);
             if(postDate.Post.DateTo >= request.CreateAt && postDate.Post.DateFrom.TimeOfDay <= new TimeSpan(17, 0, 0))
+            {
+                return true;
+            }
+            return false;
+        }
+        private async Task<bool> CheckDateTimePosition(PostRegistration request)
+        {
+            var postDate = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == request.PositionId);
+            var timeLimitation = postDate.Date + postDate.TimeFrom;
+            //if date that you register is after the timeLimitation it should return false
+            if (timeLimitation >= request.CreateAt)
             {
                 return true;
             }

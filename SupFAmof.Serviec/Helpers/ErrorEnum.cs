@@ -200,6 +200,9 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Postion not found")]
             POSITION_NOTFOUND = 4015,
+            //400
+            [Display(Name = "This position is done")]
+            POSITION_OUTDATED = 4016,
 
 
         }

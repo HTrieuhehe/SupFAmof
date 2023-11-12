@@ -38,10 +38,13 @@ namespace SupFAmof.API.Controllers
                 }
                 return await _checkInService.CheckIn(account.Id, request);
             }
-            catch (Exception ex)
+            catch (ErrorResponse ex)
             {
-                return BadRequest(ex);
-
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
             }
         }
 
@@ -64,11 +67,15 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
-        
-        
+
+
         [HttpPost("generate-qr")]
         public async Task<ActionResult> QrGenerate([FromBody] QrRequest request)
         {
@@ -79,6 +86,10 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -98,6 +109,10 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -112,11 +127,15 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _checkInService.AdmissionManageCheckAttendanceRecord(account.Id,request);
+                var result = await _checkInService.AdmissionManageCheckAttendanceRecord(account.Id, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }

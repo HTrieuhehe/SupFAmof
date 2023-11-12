@@ -35,6 +35,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -52,6 +56,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -75,6 +83,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -98,6 +110,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -121,6 +137,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }
@@ -144,6 +164,10 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }

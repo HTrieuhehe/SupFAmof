@@ -520,6 +520,12 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                if (accountId == 0 || accountId == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_ID_NOT_NULL,
+                                        AccountErrorEnums.ACCOUNT_ID_NOT_NULL.GetDisplayName());
+                }
+
                 var account = await _unitOfWork.Repository<Account>().GetAll()
                                                .Where(x => x.Id == accountId)
                                                .Include(x => x.AccountInformation)

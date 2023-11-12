@@ -213,6 +213,12 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                if (postRegistrationId == 0 || postRegistrationId == null)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY,
+                                            PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY.GetDisplayName());
+                }
+
                 var postRegistration = _unitOfWork.Repository<PostRegistration>()
                                                 .GetAll()
                                                 .FirstOrDefault(x => x.Id == postRegistrationId && x.AccountId == accountId);

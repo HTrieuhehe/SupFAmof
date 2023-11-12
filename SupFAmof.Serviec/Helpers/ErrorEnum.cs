@@ -82,6 +82,10 @@ namespace SupFAmof.Service.Helpers
             UPDATE_INVALUD = 4012,
 
             //403
+            [Display(Name = "AccountId cannot null or empty")]
+            ACCOUNT_ID_NOT_NULL = 4013,
+
+            //403
             [Display(Name = "You did not have permission to use this function")]
             PERMISSION_NOT_ALLOW = 4032,
 
@@ -204,7 +208,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "This position is done")]
             POSITION_OUTDATED = 4016,
 
-
+            //400
+            [Display(Name = "Post Registration Id cannot null or empty")]
+            POST_REGISTRATION_CANNOT_NULL_OR_EMPTY = 4017,
         }
 
         public enum PostCategoryErrorEnum

@@ -42,7 +42,7 @@ namespace SupFAmof.Service.Service
 
                 var existingAttendance = await _unitOfWork.Repository<CheckAttendance>()
                                                           .GetAll()
-                                                          .SingleOrDefaultAsync(x => x.PostRegistration.Position.Post.Id == checkin.PostId
+                                                          .SingleOrDefaultAsync(x => x.PostRegistrationId == checkin.PostRegistrationId
                                                                                  && x.PostRegistration.AccountId == accountId
                                                                                  );
 
@@ -52,7 +52,7 @@ namespace SupFAmof.Service.Service
                                         AttendanceErrorEnum.ALREADY_CHECK_IN.GetDisplayName());
                 }
 
-                var postVerification = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Position.PostId == checkin.PostId && x.PositionId == checkin.PositionId && x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                var postVerification = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Id == checkin.PostRegistrationId && x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
                 if (postVerification == null)
                 {
                     throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
@@ -75,7 +75,7 @@ namespace SupFAmof.Service.Service
                 if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {
                     var registration = _unitOfWork.Repository<PostRegistration>()
-                                                .Find(x => x.AccountId == accountId && x.PositionId == checkin.PositionId);
+                                                .Find(x => x.AccountId == accountId && x.Id == checkin.PostRegistrationId);
 
                     if (registration == null)
                     {
@@ -195,7 +195,7 @@ namespace SupFAmof.Service.Service
         {
             if (postTime.Position.Post.DateFrom.Date != checkInTime.Date)
             {
-                throw new ErrorResponse(400, 400, "Cant register if you are not on the day of event");
+                throw new ErrorResponse(400, 400, "Cant check in if you are not on the day of event");
             }
 
             // Calculate the time difference in hours between checkInTime and postTime.Position.TimeFrom

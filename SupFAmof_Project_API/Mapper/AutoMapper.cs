@@ -49,6 +49,8 @@ namespace SupFAmof.API.Mapper
             CreateMap<AccountCertificate, CertificateResponse>()
                 .ForMember(x=>x.CertificateName,opt=>opt.MapFrom(src=>src.TrainingCertificate.CertificateName))
                 .ReverseMap();
+
+            CreateMap<Account, AttendanceAccountResponse>();
             #endregion
 
             #region Account Report
@@ -126,6 +128,7 @@ namespace SupFAmof.API.Mapper
               .ReverseMap();
 
             #endregion
+
             #region Admission Post Category
             CreateMap<PostCategory, PostCategoryResponse>()
                 .ReverseMap();
@@ -236,6 +239,17 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateNotificationHistoryRequest, NotificationHistory>();
             CreateMap<PushTicketResponse, NotificationHistoryResponse>()
                 .ReverseMap();
+
+            #endregion
+
+            #region Attendance History
+
+            CreateMap<CheckAttendance, AdmissionAttendanceResponse>()
+                // ban đầu luồng là CheckAttendance -> PostRegistration -> Account
+                // bước này để nhảy map luồng PostRegistration -> Account vào cái AccountResponse luôn
+                .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.PostRegistration.Account))
+                .ReverseMap();
+            CreateMap<CheckAttendance, AttendanceResponse>().ReverseMap();
 
             #endregion
         }

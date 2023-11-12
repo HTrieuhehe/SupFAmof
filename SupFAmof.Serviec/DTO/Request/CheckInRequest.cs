@@ -14,11 +14,7 @@ namespace SupFAmof.Service.DTO.Request
     {
         [Required(ErrorMessage = "PostId is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "PostId must be greater than 0.")]
-        public int PostId { get; set; }
-
-        [Required(ErrorMessage = "PositionId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "PositionId must be greater than 0.")]
-        public int PositionId { get; set; }
+        public int PostRegistrationId  { get; set; }
 
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }

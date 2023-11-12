@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ServiceStack;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
@@ -15,7 +14,7 @@ using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using SupFAmof.Service.Exceptions;
 
 namespace SupFAmof.Service.Service
 {

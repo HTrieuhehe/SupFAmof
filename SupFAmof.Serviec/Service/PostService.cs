@@ -179,7 +179,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        
+
         public async Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePostRegistration(int accountId, int postId)
         {
             try
@@ -260,7 +260,7 @@ namespace SupFAmof.Service.Service
                         continue;
                     }
 
-                    else if(checkdocument == null)
+                    else if (checkdocument == null)
                     {
                         throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
                                          DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $"in Position Name: {position.PositionName}");
@@ -326,13 +326,13 @@ namespace SupFAmof.Service.Service
                 post.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().InsertAsync(post);
-                
+
 
                 //send notification
                 //get account available to send
 
                 var account = _unitOfWork.Repository<Account>().GetAll()
-                                            .Where(x => x.IsActive == true && x.RoleId == (int)SystemRoleEnum.Collaborator 
+                                            .Where(x => x.IsActive == true && x.RoleId == (int)SystemRoleEnum.Collaborator
                                                                            || x.AccountBanneds.Any() // Đảm bảo có ít nhất một bản ghi AccountBanned
                                                                            && x.AccountBanneds.Max(b => b.DayEnd) <= Ultils.GetCurrentDatetime());
 
@@ -348,7 +348,7 @@ namespace SupFAmof.Service.Service
                 };
 
                 await _notificationService.PushNotification(notificationRequest);
-                
+
                 //after completing, commmit them into database
                 await _unitOfWork.CommitAsync();
 
@@ -770,7 +770,7 @@ namespace SupFAmof.Service.Service
 
         #region Collaborator Post Service
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, PostResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging)
         {
             try
             {
@@ -787,6 +787,72 @@ namespace SupFAmof.Service.Service
                 //check nếu tài khoảng premium mới cho coi post premium
                 else if (checkAccount.IsPremium == true)
                 {
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        var searchPremiumPost = _unitOfWork.Repository<Post>().GetAll()
+                                       .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist
+                                       && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                    || x.PostDescription.Contains(search)
+                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                    || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                       .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                       .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                       .DynamicFilter(filter)
+                                       .DynamicSort(paging.Sort, paging.Order)
+                                       .PagingQueryable(paging.Page, paging.PageSize);
+
+                        var postPremiumSearchResponses = searchPremiumPost.Item2.ToList();
+
+                        foreach (var item in postPremiumSearchResponses)
+                        {
+                            // lấy tất cả các position Id của bài post hiện tại
+                            var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                            // tìm post Registration có position Id trung với các bài post
+                            var premiumPostRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                .GetAll()
+                                .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                .ToList();
+
+                            // tính tổng các registration đã được confirm
+                            item.RegisterAmount = premiumPostRegistrations.Count;
+
+
+                            item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                            item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
+                            foreach (var itemDetail in item.PostPositions)
+                            {
+                                //count register amount in post attendee based on position
+                                totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
+
+                                //transafer data to field in post position
+                                itemDetail.RegisterAmount = totalCount;
+
+                                //add number of amount required to total amount of a specific post
+                                totalAmountPosition += itemDetail.Amount;
+                            }
+                            //transfer data from position after add to field in post
+                            item.TotalAmountPosition = totalAmountPosition;
+
+                            // Reset temp variable
+                            totalCount = 0;
+                            totalAmountPosition = 0;
+                        }
+
+                        return new BaseResponsePagingViewModel<PostResponse>()
+                        {
+                            Metadata = new PagingsMetadata()
+                            {
+                                Page = paging.Page,
+                                Size = paging.PageSize,
+                                Total = searchPremiumPost.Item1
+                            },
+                            //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                            Data = postPremiumSearchResponses.ToList()
+                        };
+                    }
+
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
                                        .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
@@ -847,13 +913,81 @@ namespace SupFAmof.Service.Service
                     };
                 }
 
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var searchPost = _unitOfWork.Repository<Post>().GetAll()
+                                    .Where(x => x.Status >= (int)PostStatusEnum.Opening
+                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false
+                                                && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                            || x.PostDescription.Contains(search)
+                                                                                            || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                            || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                    .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                    .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                    .DynamicFilter(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
+
+                    var postSearchResponses = searchPost.Item2.ToList();
+
+
+                    foreach (var item in postSearchResponses)
+                    {
+                        //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
+                        item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
+                        item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
+                        // lấy tất cả các position Id của bài post hiện tại
+                        var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                        // tìm post Registration có position Id trung với các bài post
+                        var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                                            .GetAll()
+                                                            .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                            .ToList();
+
+                        // tính tổng các registration đã được confirm
+                        item.RegisterAmount = postRegistrations.Count;
+
+                        foreach (var itemDetail in item.PostPositions)
+                        {
+                            //count register amount in post attendee based on position
+                            totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+
+                            //transafer data to field in post position
+                            itemDetail.RegisterAmount = totalCount;
+
+                            //add number of amount required to total amount of a specific post
+                            totalAmountPosition += itemDetail.Amount;
+                        }
+                        //transfer data from position after add to field in post
+                        item.TotalAmountPosition = totalAmountPosition;
+
+                        // Reset temp variable
+                        totalCount = 0;
+                        totalAmountPosition = 0;
+                    }
+
+                    return new BaseResponsePagingViewModel<PostResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = searchPost.Item1
+                        },
+                        //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
+                        Data = postSearchResponses.ToList()
+                    };
+                }
                 var post = _unitOfWork.Repository<Post>().GetAll()
-                                        .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
-                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
-                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .DynamicFilter(filter)
-                                        .DynamicSort(paging.Sort, paging.Order)
-                                        .PagingQueryable(paging.Page, paging.PageSize);
+                                    .Where(x => x.Status >= (int)PostStatusEnum.Opening
+                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
+                                    .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                    .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                                    .DynamicFilter(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 var postResponses = post.Item2.ToList();
 
@@ -919,7 +1053,7 @@ namespace SupFAmof.Service.Service
             {
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
-                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost) 
+                                        .Where(x => x.PostCode.Contains(searchPost) || x.PostCategory.PostCategoryDescription.Contains(searchPost)
                                                                                     || x.PostDescription.Contains(searchPost)
                                                                                     || x.PostPositions.Any(x => x.SchoolName.Contains(searchPost))
                                                                                     || x.PostPositions.Any(x => x.Location.Contains(searchPost)))
@@ -951,7 +1085,7 @@ namespace SupFAmof.Service.Service
                 //1: premium
                 //2: regular
 
-                switch(status)
+                switch (status)
                 {
                     case 1:
 
@@ -969,7 +1103,7 @@ namespace SupFAmof.Service.Service
 
                         return premiumPost.Item2.ToList();
 
-                        #endregion
+                    #endregion
 
                     case 2:
 
@@ -1092,7 +1226,7 @@ namespace SupFAmof.Service.Service
                                         .DynamicSort(paging.Sort, paging.Order)
                                         .PagingQueryable(paging.Page, paging.PageSize);
 
-                
+
                 var postResponses = post.Item2.ToList();
 
                 foreach (var item in postResponses)

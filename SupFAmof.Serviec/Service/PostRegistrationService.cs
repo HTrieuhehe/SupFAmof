@@ -148,12 +148,6 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_CREATOR,
                            PostRegistrationErrorEnum.POST_CREATOR.GetDisplayName());
                     }
-                    if (!CheckOneDayDifference(post.DateFrom, postRegistration.CreateAt, 0))
-                    {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OUTDATED_REGISTER,
-                            PostRegistrationErrorEnum.OUTDATED_REGISTER.GetDisplayName());
-                    }
-
                     if (!await CheckPostPositionBus(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -745,7 +739,7 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckDatePost (PostRegistration request)
         {
             var postDate = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == request.PositionId);
-            if(postDate.Post.DateFrom > request.CreateAt)
+            if(postDate.Post.DateTo >= request.CreateAt && postDate.Post.DateFrom.TimeOfDay <= new TimeSpan(17, 0, 0))
             {
                 return true;
             }

@@ -90,6 +90,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? UpdateAt { get; set; }
         public int? PositionId { get; set; }
         public string? Note { get; set; }
+        public DateTime? PositionDate { get; set; }
+
         public virtual CollabPostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
     }

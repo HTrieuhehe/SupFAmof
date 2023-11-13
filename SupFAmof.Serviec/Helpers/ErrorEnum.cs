@@ -12,23 +12,24 @@ namespace SupFAmof.Service.Helpers
     {
         //400 Bad Request
         //404 Not Found
+        //403 Forbidden
 
         public enum ExpoPushTokenErrorEnum
         {
             //404
             [Display(Name = "Invalid Expo token!")]
-            INVALID_TOKEN = 400
+            INVALID_TOKEN = 4001
         }
 
         public enum RoleErrorEnums
         {
             //400
             [Display(Name = "Invalid Role")]
-            ROLE_INVALID = 400,
+            ROLE_INVALID = 4001,
 
             //404
             [Display(Name = "Not Found Role")]
-            ROLE_NOTE_FOUND = 404,
+            ROLE_NOTE_FOUND = 4041,
         }
 
         public enum AccountErrorEnums
@@ -95,13 +96,14 @@ namespace SupFAmof.Service.Helpers
 
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNT_NOT_FOUND = 404,
+            ACCOUNT_NOT_FOUND = 4041,
 
             //500
             [Display(Name = "Server are busy")]
-            SERVER_BUSY = 500,
+            SERVER_BUSY = 5001,
 
         }
+
         public enum AccountBankingErrorEnums
         {
             //400
@@ -122,7 +124,7 @@ namespace SupFAmof.Service.Helpers
 
             //404
             [Display(Name = "Not Found Account")]
-            ACCOUNTBANKING_NOT_FOUND = 404,
+            ACCOUNTBANKING_NOT_FOUND = 4041,
 
         }
 
@@ -148,37 +150,37 @@ namespace SupFAmof.Service.Helpers
             NOT_FOUND_POST = 4041,
 
             //400
-            [Display(Name = "UPDATE POST REGISTRATION FAILED")]
+            [Display(Name = "Post Registration update fail")]
             UPDATE_FAILED_POST = 4000,
 
             //400
-            [Display(Name = "EXCEEDING TIME LIMIT ")]
+            [Display(Name = "Exceeding time limit ")]
             EXCEEDING_TIME_LIMIT = 4001,
 
             //400
-            [Display(Name = "APPROVE OR DISAPPROVE MUST BE PROVIDED")]
+            [Display(Name = "Approve or disapprove must be provided")]
             APPROVE_OR_DISAPPROVE = 4002,
+
             //400
-            [Display(Name = "FULL SLOT")]
+            [Display(Name = "Slot already full!")]
             FULL_SLOT = 4003,
+
             //400
-            [Display(Name = "CANT REGISTER THE SAME POST OR POST THAT YOU ARE REGISTER HAS THE SAME DAY AS ANOTHER EVENT YOU REGISTER")]
+            [Display(Name = "Your registration overlaps with another registration time")]
             ALREADY_REGISTERED = 4004,
 
             //400
-            [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN APPROVED")]
+            [Display(Name = "Update request has already been approved")]
             ALREADY_APPROVE = 4005,
 
             //400
-            [Display(Name = "UPDATE REQUEST HAS ALREADY BEEN REJECTED")]
+            [Display(Name = "Update request has already been rejected")]
             ALREADY_REJECT = 4006,
-            //400
-            [Display(Name = "MUST SENT REGISTER 1 DAY BEFORE THE EVENT")]
-            OUTDATED_REGISTER = 4007,
 
             //400
             [Display(Name = "School Bus option is not qualified ")]
             NOT_QUALIFIED_SCHOOLBUS = 4008,
+
             //400
             [Display(Name = "Can not registrate cause you created this post")]
             POST_CREATOR = 4009,
@@ -198,12 +200,15 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "This post is done")]
             POST_OUTDATED = 4013,
+
             //400
             [Display(Name = "Postion work time is duplicated to one that you are attending")]
             DUPLICATE_TIME_POSTION = 4014,
+
             //404
             [Display(Name = "Postion not found")]
             POSITION_NOTFOUND = 4015,
+
             //400
             [Display(Name = "This position is done")]
             POSITION_OUTDATED = 4016,

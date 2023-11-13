@@ -75,6 +75,7 @@ namespace SupFAmof.Service.DTO.Response
     public class CertificateResponse
     {
         public int Id { get; set; }
+        public string? TrainingTypeId { get; set; }
         public int? TrainingCertificateId { get; set; }
         public int? Status { get; set; }
         public DateTime? CreateAt { get; set; }

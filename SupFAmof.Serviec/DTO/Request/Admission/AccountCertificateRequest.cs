@@ -10,11 +10,27 @@ namespace SupFAmof.Service.DTO.Request.Admission
     public class CreateAccountCertificateRequest
     {
         [Required]
-        [RegularExpression("^[0-9]+$", ErrorMessage = "AccountId must contain only numeric characters.")]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Account Id must contain only numeric characters.")]
         public int AccountId { get; set; }
 
         [Required]
-        [RegularExpression("^[0-9]+$", ErrorMessage = "TraningCertificateId must contain only numeric characters.")]
-        public int TraningCertificateId { get; set; }
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Traning Certificate Id must contain only numeric characters.")]
+        public int TrainingCertificateId { get; set; }
+    }
+
+    public class UpdateAccountCertificateRequest
+    {
+        [Required]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Account Id must contain only numeric characters.")]
+        public int AccountId { get; set; }
+
+        [Required]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Traning Certificate Id must contain only numeric characters.")]
+        public int TrainingCertificateId { get; set; }
+
+        [Required]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Status must containt only numeric character")]
+        public int Status { get; set; }
+
     }
 }

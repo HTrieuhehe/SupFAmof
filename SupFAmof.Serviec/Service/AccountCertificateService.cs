@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
 using ServiceStack.Web;
 using SupFAmof.Data.Entity;
@@ -26,7 +28,7 @@ namespace SupFAmof.Service.Service
 {
     public class AccountCertificateService : IAccountCertificateService
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
         public AccountCertificateService(IMapper mapper, IUnitOfWork unitOfWork)
@@ -42,10 +44,47 @@ namespace SupFAmof.Service.Service
 
             try
             {
-                var checkCertificate = await _unitOfWork.Repository<AccountCertificate>().GetAll()
-                                                  .FirstOrDefaultAsync(a => a.AccountId == request.AccountId && a.TrainingCertificateId == request.TraningCertificateId);
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == certificateIssuerId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                //check accountId is collaborator or not
+                var checkCollaboratorAccount = await _unitOfWork.Repository<Account>()
+                                                    .FindAsync(x => x.Id == request.AccountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                if (checkCollaboratorAccount == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.ACCOUNT_COLLABORATOR_INVALID,
+                                         AccountCertificateErrorEnum.ACCOUNT_COLLABORATOR_INVALID.GetDisplayName());
+                }
+
+                //check certificate
+                var checkCertificate = await _unitOfWork.Repository<TrainingCertificate>()
+                                                    .FindAsync(x => x.Id == request.TrainingCertificateId);
+
+                if (checkCertificate == null)
+                {
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                         TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                // check whether account certificate already had or not
+                var checkAccountCertificate = await _unitOfWork.Repository<AccountCertificate>().GetAll()
+                                                  .FirstOrDefaultAsync(a => a.AccountId == request.AccountId 
+                                                                        && a.TrainingCertificateId == request.TrainingCertificateId);
                 
-                if (checkCertificate != null) 
+                if (checkAccountCertificate != null) 
                 {
                     throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.ACCOUNT_CERTIFICATE_EXISTED,
                                          AccountCertificateErrorEnum.ACCOUNT_CERTIFICATE_EXISTED.GetDisplayName());
@@ -136,15 +175,42 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountCertificateResponse>> UpdateAccountCertificate(int accountId, int traningCertificateId, int certificateIssuerId)
+        public async Task<BaseResponseViewModel<AccountCertificateResponse>> UpdateAccountCertificate(int certificateIssuerId, UpdateAccountCertificateRequest request)
         {
             // chỉ có người tạo certi cho account mới có quyền update status
             // Mỗi collab account có 1 và chỉ 1 certi/loại. Có thể có certi A, B, C
             // nhưng không được có > 1 certi cùng loại 
             try
             {
-                var accountCertificate = _unitOfWork.Repository<AccountCertificate>().GetAll()
-                                                  .FirstOrDefault(a => a.AccountId == accountId && a.TrainingCertificateId == traningCertificateId && a.CertificateIssuerId == certificateIssuerId);
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == certificateIssuerId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                //check accountId is collaborator or not
+                var checkCollaboratorAccount = await _unitOfWork.Repository<Account>()
+                                                    .FindAsync(x => x.Id == request.AccountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                if (checkCollaboratorAccount == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.ACCOUNT_COLLABORATOR_INVALID,
+                                         AccountCertificateErrorEnum.ACCOUNT_COLLABORATOR_INVALID.GetDisplayName());
+                }
+
+                var accountCertificate = await _unitOfWork.Repository<AccountCertificate>()
+                                                  .FindAsync(a => a.AccountId == request.AccountId
+                                                  && a.Id == request.TrainingCertificateId 
+                                                  && a.CertificateIssuerId == certificateIssuerId);
 
                 if (accountCertificate == null)
                 {
@@ -152,8 +218,13 @@ namespace SupFAmof.Service.Service
                                          AccountCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                accountCertificate.Status = (int)AccountCertificateStatusEnum.Reject;
-                accountCertificate.UpdateAt = DateTime.Now;
+                if (accountCertificate.Status == request.Status)
+                {
+                    throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.STATUS_ALREADY_SAME,
+                                         AccountCertificateErrorEnum.STATUS_ALREADY_SAME.GetDisplayName());
+                }
+
+                accountCertificate.UpdateAt = Ultils.GetCurrentDatetime();
 
                 return new BaseResponseViewModel<AccountCertificateResponse>()
                 {

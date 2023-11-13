@@ -51,13 +51,13 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
-        /// Update Account Certificate 
+        /// Update Account Certificate Status 
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("reject-certificate")]
+        [HttpPut("update")]
         public async Task<ActionResult<BaseResponseViewModel<AccountCertificateResponse>>> UpdateAccountCertificate
-        ([FromQuery] int accountId, [FromQuery] int accountCertificateId)
+        ([FromBody] UpdateAccountCertificateRequest request)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _accountCertificateService.UpdateAccountCertificate(accountId, accountCertificateId, account.Id);
+                return await _accountCertificateService.UpdateAccountCertificate(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

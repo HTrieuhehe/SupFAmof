@@ -254,8 +254,16 @@ namespace SupFAmof.Service.Helpers
             INVALID_CREATE_PERSON = 4002,
 
             //400
+            [Display(Name = "Collaborator Certificate has not changing")]
+            STATUS_ALREADY_SAME = 4003,
+
+            //404
             [Display(Name = "Account Certificate not found!")]
             NOT_FOUND_ID = 4041,
+
+            //404
+            [Display(Name = "Account is not collaborator")]
+            ACCOUNT_COLLABORATOR_INVALID = 4042,
         }
 
         public enum PostErrorEnum

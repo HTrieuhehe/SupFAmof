@@ -4,28 +4,27 @@ namespace SupFAmof.Service.DTO.Response
 {
     public class PostRegistrationResponse
     {
-        public int Id { get; set; }
-        public string RegistrationCode { get; set; } = null!;
-        public int Status { get; set; }
+        public int? Id { get; set; }
+        public string? RegistrationCode { get; set; }
+        public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public int PostId { get; set; }
-        public int PositionId { get; set; }
+        public int? PositionId { get; set; }
         public string? Note { get; set; }
-        public double Salary { get; set; }
+        public double? Salary { get; set; }
 
         public virtual PostPositionResponse? Position { get; set; }  
         public virtual CollaboratorAccountReponse? Account { get; set; }
     }
     public class PostRgupdateHistoryResponse
     {
-        public int Id { get; set; }
-        public int PostId { get; set; }
-        public int PostRegistrationId { get; set; }
+        public int? Id { get; set; }
+        public int? PostId { get; set; }
+        public int? PostRegistrationId { get; set; }
         public int? PositionId { get; set; }
         public bool? BusOption { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public DateTime CreateAt { get; set; }
 
     }

@@ -34,7 +34,7 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging, CollabRegistrationResponse filter)
         {
             try
-            { 
+            {
                 //var list = _unitOfWork.Repository<PostRegistration>().GetAll()
                 //                                  .Where(x => x.AccountId == accountId);
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
@@ -66,15 +66,15 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-             
+
                 var list = _unitOfWork.Repository<Post>()
                                                       .GetAll()
                                                       .Where(pr => pr.AccountId == admissionAccountId)
-                                                      .Include(x=>x.PostPositions)
+                                                      .Include(x => x.PostPositions)
                                                       .ThenInclude(x => x.PostRegistrations)
                                                       .ProjectTo<AdmissionPostsResponse>(_mapper.ConfigurationProvider)
                                                       .PagingQueryable(paging.Page, paging.PageSize);
-                
+
 
                 return new BaseResponsePagingViewModel<AdmissionPostsResponse>()
                 {
@@ -93,7 +93,7 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        public async Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId ,PostRegistrationRequest request)
+        public async Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId, PostRegistrationRequest request)
         {
             //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY,CHECK IF USER HAS A TRAINING POSITION 
             try
@@ -140,7 +140,7 @@ namespace SupFAmof.Service.Service
                 // Continue with your logic
 
                 // if (checkDuplicateForm == null && existingEventDate == null)
-                if (checkDuplicateForm == null )
+                if (checkDuplicateForm == null)
                 {
                     if (post.AccountId == postRegistration.AccountId)
                     {
@@ -167,7 +167,7 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_OUTDATED,
                             PostRegistrationErrorEnum.POST_OUTDATED.GetDisplayName());
                     }
-                    
+
                     if (!await CheckTimePosition(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
@@ -179,7 +179,7 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
                             PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
                     }
-                    
+
                     // If both conditions are met, proceed with registration
                     await _unitOfWork.Repository<PostRegistration>().InsertAsync(postRegistration);
                     await _unitOfWork.CommitAsync();
@@ -519,15 +519,16 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckPostPositionBus(PostRegistration rq)
         {
             var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.Id == rq.PositionId);
-            switch(entityMatching.IsBusService)
+            switch (entityMatching.IsBusService)
             {
                 case true:
                     return true;
                 case false:
-                    if(rq.SchoolBusOption == false)
+                    if (rq.SchoolBusOption == false)
                     {
                         return true;
-                    }else
+                    }
+                    else
                     {
                         return false;
                     }
@@ -577,7 +578,7 @@ namespace SupFAmof.Service.Service
                             continue;
 
                         default:
-                            break;  
+                            break;
                     }
 
                     switch (approve)
@@ -708,7 +709,7 @@ namespace SupFAmof.Service.Service
                 {
                     Email = postRegistration.Account?.Email ?? "N/A",
                     RegistrationCode = postRegistration.RegistrationCode ?? "N/A",
-                    PostName = postRegistration.Position.Post.PostCategory.PostCategoryType?? "N/A",
+                    PostName = postRegistration.Position.Post.PostCategory.PostCategoryType ?? "N/A",
                     DateFrom = postRegistration.Position.Post.DateFrom.ToString() ?? "N/A",
                     DateTo = postRegistration.Position.Post.DateTo.ToString() ?? "N/A",
                     PositionName = postPosition?.PositionName ?? "N/A",
@@ -726,8 +727,8 @@ namespace SupFAmof.Service.Service
 
         private async Task<bool> CheckCertificate(PostRegistration request)
         {
-            var userCertificate = _unitOfWork.Repository<AccountCertificate>()                    
-                .GetAll().Where(x=>x.AccountId == request.AccountId).Select(x=>x.TrainingCertificateId).ToList() ?? new List<int>();
+            var userCertificate = _unitOfWork.Repository<AccountCertificate>()
+                .GetAll().Where(x => x.AccountId == request.AccountId).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
             var positionCertificate = await _unitOfWork.Repository<PostPosition>()
                                                         .FindAsync(x => x.Id == request.PositionId);
             if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
@@ -738,7 +739,7 @@ namespace SupFAmof.Service.Service
             {
                 return true;
             }
-            if(userCertificate.Contains((int)positionCertificate.TrainingCertificateId))
+            if (userCertificate.Contains((int)positionCertificate.TrainingCertificateId))
             {
                 return true;
             }
@@ -746,10 +747,10 @@ namespace SupFAmof.Service.Service
 
         }
 
-        private async Task<bool> CheckDatePost (PostRegistration request)
+        private async Task<bool> CheckDatePost(PostRegistration request)
         {
             var postDate = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == request.PositionId);
-            if(postDate.Post.DateTo >= request.CreateAt && postDate.Post.DateFrom.TimeOfDay <= new TimeSpan(17, 0, 0))
+            if (postDate.Post.DateTo >= request.CreateAt && postDate.Post.DateFrom.TimeOfDay <= new TimeSpan(17, 0, 0))
             {
                 return true;
             }
@@ -805,36 +806,6 @@ namespace SupFAmof.Service.Service
             return (start1 < end2 && end1 > start2);
         }
 
-        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetAccountByPostPositionId(int positionId, PagingRequest paging)
-        {
-            try
-            {
-                var account = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                         .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
-                                         .Where(x => x.PositionId == positionId && x.Status == (int)PostRegistrationStatusEnum.Pending)
-                                         .OrderByDescending(x => x.CreateAt) // Sắp xếp theo CreateAt của PostRegistration
-                                         .PagingQueryable(paging.Page, paging.PageSize,
-                                              Constants.LimitPaging, Constants.DefaultPaging);
-
-
-                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
-                {
-
-                    Metadata = new PagingsMetadata()
-                    {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = account.Item1
-                    },
-                    Data = account.Item2.ToList(),
-                };
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public async Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PagingRequest paging)
         {
             try
@@ -886,6 +857,75 @@ namespace SupFAmof.Service.Service
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetAccountByPostPositionId
+            (int accountId, int positionId, string searchEmail, PostRegistrationResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                if(!string.IsNullOrEmpty(searchEmail))
+                {
+                    var searchAccount = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                         .Where(x => x.PositionId == positionId && x.Account.Email.Contains(searchEmail))
+                                         .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                         .DynamicFilter(filter)
+                                         .DynamicSort(paging.Sort, paging.Order)
+                                         .PagingQueryable(paging.Page, paging.PageSize);
+
+
+                    return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                    {
+
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = searchAccount.Item1
+                        },
+                        Data = searchAccount.Item2.OrderByDescending(x => x.CreateAt).ToList(),
+                    };
+                }
+
+                var account = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                         .Where(x => x.PositionId == positionId)
+                                         .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
+                                         .DynamicFilter(filter)
+                                         .DynamicSort(paging.Sort, paging.Order)
+                                         .PagingQueryable(paging.Page, paging.PageSize);
+
+
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = account.Item1
+                    },
+                    Data = account.Item2.OrderByDescending(x => x.CreateAt).ToList(),
+                };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 

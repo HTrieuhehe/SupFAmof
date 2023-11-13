@@ -540,6 +540,21 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
                 var checkPost = _unitOfWork.Repository<Post>()
                                         .Find(x => x.Id == postId && x.AccountId == accountId);
 

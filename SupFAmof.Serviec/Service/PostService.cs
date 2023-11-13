@@ -781,6 +781,66 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> CreatePostPosition(int accountId, int postId, CreatePostPositionRequest request)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                //check post
+
+                var post = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == postId);
+
+                if (post == null)
+                {
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                        PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                }
+
+                if (request == null)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_NEW_POSITION,
+                                        PostErrorEnum.INVALID_NEW_POSITION.GetDisplayName());
+                }
+
+                var position = _mapper.Map<CreatePostPositionRequest, PostPosition>(request);
+                position.Status = (int)PostPositionStatusEnum.Active;
+
+                post.PostPositions.Add(position);
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(post);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionPostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AdmissionPostResponse>(post)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
         #region Collaborator Post Service

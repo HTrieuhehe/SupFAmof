@@ -105,9 +105,9 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
                 .ReverseMap();
             CreateMap<Post, CollabPostResponse>()
-    .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
-    .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory));
-
+                .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
+                .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
+                .ReverseMap();
 
             CreateMap<PostPosition, AdmissionPostPositionResponse>()
                 .ForMember(dest=>dest.CollabRequest ,opt=>opt.MapFrom(src=>src.PostRegistrations))

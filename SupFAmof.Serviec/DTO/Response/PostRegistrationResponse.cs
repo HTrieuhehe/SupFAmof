@@ -14,6 +14,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? Note { get; set; }
         public double? Salary { get; set; }
 
+        public virtual CollabPostResponse? Post { get; set; }  
         public virtual PostPositionResponse? Position { get; set; }  
         public virtual CollaboratorAccountReponse? Account { get; set; }
     }
@@ -91,9 +92,6 @@ namespace SupFAmof.Service.DTO.Response
         public string? Note { get; set; }
         public virtual CollabPostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
-
-
-
     }
     public class CollabPostResponse
     {

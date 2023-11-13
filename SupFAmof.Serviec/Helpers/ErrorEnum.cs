@@ -312,6 +312,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Date in position must in range of Date From and Date To in post")]
             INVALID_POSITION_DATE = 4009,
 
+            //400
+            [Display(Name = "New position cannot be null")]
+            INVALID_NEW_POSITION = 40010,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,
@@ -321,7 +325,7 @@ namespace SupFAmof.Service.Helpers
             POSITION_NOT_FOUND = 4042,
 
             //404
-            [Display(Name = "Post Position Not Found")]
+            [Display(Name = "Cannot end post if there is any position is running")]
             INVALID_END_POST = 4043,
         }
 

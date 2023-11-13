@@ -207,7 +207,7 @@ namespace SupFAmof.API.Controllers
         /// <returns>
         /// </returns>
         [HttpGet("getCheckInPostRegistration")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<PostRegistrationResponse>>> GetPostRegistrationCheckIn([FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> GetPostRegistrationCheckIn([FromQuery] PagingRequest paging)
         {
             try
             {

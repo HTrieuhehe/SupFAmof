@@ -334,5 +334,34 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Create new Post Position
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("updateNewPosition")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> AddNewPosition
+            ([FromQuery] int postId, [FromBody] CreatePostPositionRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.CreatePostPosition(account.Id, postId, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

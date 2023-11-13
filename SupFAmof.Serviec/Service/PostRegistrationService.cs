@@ -839,16 +839,16 @@ namespace SupFAmof.Service.Service
 
         #region Code của Hải Triều
 
-        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetPostRegistrationCheckIn(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationCheckIn(int accountId, PagingRequest paging)
         {
             try
             {
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                  .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider)
-                                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.Position.Date == Ultils.GetCurrentDatetime().Date)
+                                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.PostPosition.Date == Ultils.GetCurrentDatetime().Date)
                                                   .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {

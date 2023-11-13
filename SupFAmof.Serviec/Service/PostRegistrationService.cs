@@ -5,6 +5,7 @@ using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using System.Collections.Generic;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
@@ -14,7 +15,6 @@ using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using SupFAmof.Service.Exceptions;
 
 namespace SupFAmof.Service.Service
 {
@@ -147,7 +147,12 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_CREATOR,
                            PostRegistrationErrorEnum.POST_CREATOR.GetDisplayName());
                     }
-                    if (!await CheckPostPositionBus(postRegistration))
+                    if(post.Status != (int)PostStatusEnum.Opening && post.Status != (int)PostStatusEnum.Re_Open)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_NOT_AVAILABLE,
+                           PostRegistrationErrorEnum.POST_NOT_AVAILABLE.GetDisplayName());
+                    }
+                        if (!await CheckPostPositionBus(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                             PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());

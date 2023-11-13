@@ -155,6 +155,8 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Bing Bong! Check out complete")]
             Check_out_complete = 4,
+            [Display(Name = "Bing Bong! Post is re-opened")]
+            Post_Re_Opened = 5,
         }
     }
 }

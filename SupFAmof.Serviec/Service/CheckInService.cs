@@ -105,6 +105,9 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+
+            throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_IN_FAIL,
+                                    AttendanceErrorEnum.CHECK_IN_FAIL.GetDisplayName());
         }
 
         public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, int postRegistrationId)

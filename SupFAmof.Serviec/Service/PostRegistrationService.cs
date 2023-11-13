@@ -167,11 +167,11 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                             PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                     }
-                    if (!await CheckDatePost(postRegistration))
-                    {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_OUTDATED,
-                            PostRegistrationErrorEnum.POST_OUTDATED.GetDisplayName());
-                    }
+                    //if (!await CheckDatePost(postRegistration))
+                    //{
+                    //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_OUTDATED,
+                    //        PostRegistrationErrorEnum.POST_OUTDATED.GetDisplayName());
+                    //}
 
                     if (!await CheckTimePosition(postRegistration))
                     {

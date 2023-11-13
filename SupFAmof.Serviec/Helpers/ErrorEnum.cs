@@ -372,9 +372,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Wrong information (post or position not exist)")]
             WRONG_INFORMATION = 4007,
-            //500
+            //401
             [Display(Name = "Position longtitude and latitude is not specified to perform checkin")]
-            MISSING_INFORMATION_POSITION = 4008,
+            MISSING_INFORMATION_POSITION = 4011,
         }
 
         public enum AccountBannedErrorEnum

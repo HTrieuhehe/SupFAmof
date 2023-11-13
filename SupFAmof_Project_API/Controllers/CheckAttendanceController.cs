@@ -44,6 +44,10 @@ namespace SupFAmof.API.Controllers
                 {
                     return NotFound(ex.Error);
                 }
+                else if (ex.Error.StatusCode == 401)
+                {
+                    return Conflict(ex.Error);
+                }
                 return BadRequest(ex.Error);
             }
         }

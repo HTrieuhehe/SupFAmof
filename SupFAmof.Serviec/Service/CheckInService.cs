@@ -48,19 +48,19 @@ namespace SupFAmof.Service.Service
 
                 if (existingAttendance != null)
                 {
-                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.ALREADY_CHECK_IN,
+                    throw new ErrorResponse(400, (int)AttendanceErrorEnum.ALREADY_CHECK_IN,
                                         AttendanceErrorEnum.ALREADY_CHECK_IN.GetDisplayName());
                 }
 
                 var postVerification = await _unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefaultAsync(x => x.Id == checkin.PostRegistrationId && x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
                 if (postVerification == null)
                 {
-                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.WRONG_INFORMATION,
+                    throw new ErrorResponse(400, (int)AttendanceErrorEnum.WRONG_INFORMATION,
                                         AttendanceErrorEnum.WRONG_INFORMATION.GetDisplayName());
                 }
                 if (postVerification.Position.Latitude == null || postVerification.Position.Longitude == null)
                 {
-                    throw new ErrorResponse(500, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
+                    throw new ErrorResponse(401, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
                                        AttendanceErrorEnum.MISSING_INFORMATION_POSITION.GetDisplayName());
                 }
                 double distance = 0.1; // kilometer 
@@ -105,9 +105,6 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
-
-            throw new ErrorResponse(400, (int)AttendanceErrorEnum.CAN_NOT_CHECK_OUT,
-                                    AttendanceErrorEnum.CAN_NOT_CHECK_OUT.GetDisplayName());
         }
 
         public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, int postRegistrationId)

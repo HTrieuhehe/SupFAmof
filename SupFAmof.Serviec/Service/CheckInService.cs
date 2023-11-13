@@ -70,7 +70,7 @@ namespace SupFAmof.Service.Service
                 if (userCurrentPosition > distance)
                 {
                     throw new ErrorResponse(400, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
-                                        AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $":{userCurrentPosition} km");
+                                        AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $": {userCurrentPosition} km");
                 }
                 if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {

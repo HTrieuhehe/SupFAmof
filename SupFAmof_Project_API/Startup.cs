@@ -114,6 +114,8 @@ namespace SupFAmof.API
             #region Coravel
             services.AddScheduler();
             services.AddScoped<SchedulePushNotification>();
+            services.AddScoped<ScheduleClosePost>();
+            services.AddScoped<ScheduleNotificationPostReOpen>();
             #endregion
         }
 
@@ -166,7 +168,13 @@ namespace SupFAmof.API
             var provider = app.ApplicationServices;
             provider.UseScheduler(scheduler =>
             {
-                scheduler.Schedule<SchedulePushNotification>().EveryMinute().Once();
+                scheduler.OnWorker("Notification");
+                scheduler.Schedule<SchedulePushNotification>().EveryThirtyMinutes().Once();
+                scheduler.Schedule<ScheduleNotificationPostReOpen>().Hourly().Once();
+                scheduler.OnWorker("Post");
+                scheduler.Schedule<ScheduleClosePost>()
+                   .Daily()
+                   .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
             });
             //app.ConfigMigration<>();
             app.UseCors(MyAllowSpecificOrigins);

@@ -216,6 +216,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Post Registration Id cannot null or empty")]
             POST_REGISTRATION_CANNOT_NULL_OR_EMPTY = 4017,
+            //400
+            [Display(Name = "Post is either closed or deleted")]
+            POST_NOT_AVAILABLE = 4018,
         }
 
         public enum PostCategoryErrorEnum

@@ -83,7 +83,7 @@ namespace SupFAmof.Service.Service
                                         PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                     }
 
-                    registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
+                    registration.Status = (int)PostRegistrationStatusEnum.CheckIn;
 
                     await _unitOfWork.Repository<CheckAttendance>().InsertAsync(checkAttendance);
                     await _unitOfWork.CommitAsync();

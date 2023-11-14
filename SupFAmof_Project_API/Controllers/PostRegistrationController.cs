@@ -34,7 +34,7 @@ namespace SupFAmof.API.Controllers
         /// </returns>
         [HttpGet("getById")]
         public async Task<ActionResult<CollabRegistrationResponse>> GetPostRegistrationsByAccountId
-          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse filter)
+          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse filter, [FromQuery] FilterPostRegistrationResponse statusFilter)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging,filter);
+                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging,filter, statusFilter);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

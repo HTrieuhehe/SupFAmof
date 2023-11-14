@@ -118,7 +118,7 @@ namespace SupFAmof.Service.DTO.Response
 
     public class FilterPostRegistrationResponse
     {
-        public List<int>? Status { get; set; }
+        public List<int>? RegistrationStatus { get; set; }
     }
 
 

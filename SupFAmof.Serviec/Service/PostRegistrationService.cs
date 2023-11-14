@@ -34,7 +34,8 @@ namespace SupFAmof.Service.Service
             this.sendMailService = sendMailService;
         }
 
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging, CollabRegistrationResponse filter)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId
+            (int accountId, PagingRequest paging, CollabRegistrationResponse filter, FilterPostRegistrationResponse statusFilter)
         {
             try
             {
@@ -47,15 +48,17 @@ namespace SupFAmof.Service.Service
                                                   .DynamicSort(paging.Sort, paging.Order)
                                                   .PagingQueryable(paging.Page, paging.PageSize);
 
+                var list = FilterPostRegis(postRegistration.Item2.ToList(), statusFilter);
+
                 return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = postRegistration.Item1
+                        Total = list.Keys.First(),
                     },
-                    Data = postRegistration.Item2.ToList()
+                    Data = list.Values.First().ToList(),
                 };
             }
             catch (Exception)
@@ -977,9 +980,9 @@ namespace SupFAmof.Service.Service
         private static Dictionary<int,IQueryable<CollabRegistrationResponse>> FilterPostRegis(List<CollabRegistrationResponse> list, FilterPostRegistrationResponse filter)
         {
             var query = list.AsQueryable();
-            if (filter.Status != null && filter.Status.Any())
+            if (filter.RegistrationStatus != null && filter.RegistrationStatus.Any())
             {
-                query = query.Where(d => filter.Status.Contains((int)d.Status));
+                query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
             }
             int size = query.Count();
             return new Dictionary<int, IQueryable<CollabRegistrationResponse>>

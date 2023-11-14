@@ -115,5 +115,10 @@ namespace SupFAmof.Service.DTO.Response
         public virtual PostCategoryResponse? PostCategory { get; set; }
     }
 
+    public class FilterPostRegistrationResponse
+    {
+        public List<int>? Status { get; set; }
+    }
+
 
 }

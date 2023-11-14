@@ -22,6 +22,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PagingRequest paging);
 
         Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationCheckIn(int accountId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, FilterPostRegistrationResponse filter, PagingRequest paging);
 
     }
 

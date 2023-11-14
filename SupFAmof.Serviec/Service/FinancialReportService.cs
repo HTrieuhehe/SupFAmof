@@ -48,8 +48,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
 
-
-
         }
         private async Task<byte[]> AccountReportGenerator(IQueryable<Account> accounts)
         {

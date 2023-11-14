@@ -203,7 +203,6 @@ namespace SupFAmof.API.Controllers
         /// <summary>
         /// Get Post Registration near current time to check in.
         /// </summary>
-        /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
         /// <returns>
         /// </returns>
         [HttpGet("getCheckInPostRegistration")]
@@ -217,7 +216,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id,paging);
+                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id, paging);
             }
             catch(ErrorResponse ex) 
             {

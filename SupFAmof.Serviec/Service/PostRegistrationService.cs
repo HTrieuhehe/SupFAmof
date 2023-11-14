@@ -842,10 +842,21 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                //                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                //                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.PostPosition.Date == Ultils.GetCurrentDatetime().Date)
+                //                                  .PagingQueryable(paging.Page, paging.PageSize);
+
+                var currentDate = Ultils.GetCurrentDatetime();
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
-                                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.PostPosition.Date == Ultils.GetCurrentDatetime().Date)
-                                                  .PagingQueryable(paging.Page, paging.PageSize);
+                                                 .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                    && x.AccountId == accountId
+                                                                    && x.Position.Date == currentDate.Date
+                                                                    && x.Position.TimeFrom >= currentDate.TimeOfDay
+                                                                    && x.Position.TimeFrom <= currentDate.TimeOfDay.Add(TimeSpan.FromHours(1)))
+                                                 .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                 .PagingQueryable(paging.Page, paging.PageSize);
+
 
                 return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using System.Linq;
 using Service.Commons;
+using ServiceStack.Text;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -12,6 +14,7 @@ using SupFAmof.Service.DTO.Response;
 using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
 using static SupFAmof.Service.Helpers.Enum;
+using DocumentFormat.OpenXml.Wordprocessing;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -364,8 +367,8 @@ namespace SupFAmof.Service.Service
 
 
                         default:
-                            // Handle any default case
-                            break;
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANT_BE_UPDATED,
+                                                     PostRegistrationErrorEnum.CANT_BE_UPDATED.GetDisplayName());
                     }
                     return new BaseResponseViewModel<dynamic>
                     {
@@ -945,6 +948,40 @@ namespace SupFAmof.Service.Service
         }
 
         #endregion
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, FilterPostRegistrationResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                   .Where(x => x.AccountId == accountId)
+                                                   .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                   .PagingQueryable(paging.Page, paging.PageSize);
+                var list = FilterPostRegis(postRegistration.Item2.ToList(), filter);
+                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Keys.First(),
+                    },
+                    Data = list.Values.First().ToList(),
+                };
+            }catch(Exception ex) { throw; }
+        }
+        private static Dictionary<int,IQueryable<CollabRegistrationResponse>> FilterPostRegis(List<CollabRegistrationResponse> list, FilterPostRegistrationResponse filter)
+        {
+            var query = list.AsQueryable();
+            if (filter.Status != null && filter.Status.Any())
+            {
+                query = query.Where(d => filter.Status.Contains((int)d.Status));
+            }
+            int size = query.Count();
+            return new Dictionary<int, IQueryable<CollabRegistrationResponse>>
+            {
+                { size, query }
+            };
+        }
     }
 
 }

@@ -948,15 +948,19 @@ namespace SupFAmof.Service.Service
         }
 
         #endregion
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, FilterPostRegistrationResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration
+            (int accountId, CollabRegistrationResponse postRegistrationfilter, FilterPostRegistrationResponse filter, PagingRequest paging)
         {
             try
             {
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                    .Where(x => x.AccountId == accountId)
                                                    .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                   .DynamicFilter(postRegistrationfilter)
                                                    .PagingQueryable(paging.Page, paging.PageSize);
+
                 var list = FilterPostRegis(postRegistration.Item2.ToList(), filter);
+
                 return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {
                     Metadata = new PagingsMetadata()
@@ -969,6 +973,7 @@ namespace SupFAmof.Service.Service
                 };
             }catch(Exception ex) { throw; }
         }
+        
         private static Dictionary<int,IQueryable<CollabRegistrationResponse>> FilterPostRegis(List<CollabRegistrationResponse> list, FilterPostRegistrationResponse filter)
         {
             var query = list.AsQueryable();

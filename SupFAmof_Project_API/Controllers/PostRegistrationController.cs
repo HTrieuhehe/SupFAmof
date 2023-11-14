@@ -232,7 +232,7 @@ namespace SupFAmof.API.Controllers
 
         [HttpGet("Filter-status")]
         public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
-    ([FromQuery] PagingRequest paging, [FromQuery] FilterPostRegistrationResponse filter)
+    ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse postRegistrationFilter, [FromQuery] FilterPostRegistrationResponse filter)
         {
             try
             {
@@ -242,7 +242,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.FilterPostRegistration(account.Id, filter, paging);
+                var result = await _postRegistrationService.FilterPostRegistration(account.Id, postRegistrationFilter, filter, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

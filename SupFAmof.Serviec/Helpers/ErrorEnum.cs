@@ -219,6 +219,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Post is either closed or deleted")]
             POST_NOT_AVAILABLE = 4018,
+            //400
+            [Display(Name = "Cant be updated ")]
+            CANT_BE_UPDATED = 4019,
         }
 
         public enum PostCategoryErrorEnum

@@ -230,6 +230,31 @@ namespace SupFAmof.API.Controllers
         }
 
         #endregion
+
+        [HttpGet("Filter-status")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
+    ([FromQuery] PagingRequest paging, [FromQuery] FilterPostRegistrationResponse filter)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.FilterPostRegistration(account.Id, filter, paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }
 

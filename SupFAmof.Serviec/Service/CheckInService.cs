@@ -204,7 +204,7 @@ namespace SupFAmof.Service.Service
             // Check if the time difference is within a 2-hour range
             if (timeDifference.TotalHours < -1 || timeDifference.TotalHours > 0.5)
             {
-                throw new ErrorResponse(400, 400, "Must check in around 30 minutes when the position start");
+                throw new ErrorResponse(400, 400, $"Check in is available in {postTime.Position.TimeFrom - TimeSpan.FromMinutes(30)}");
             }
 
             return true;

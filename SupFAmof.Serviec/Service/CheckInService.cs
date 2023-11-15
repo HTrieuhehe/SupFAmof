@@ -110,17 +110,17 @@ namespace SupFAmof.Service.Service
                                     AttendanceErrorEnum.CHECK_IN_FAIL.GetDisplayName());
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, int postRegistrationId)
+        public async Task<BaseResponseViewModel<dynamic>> CheckOut(int accountId, CheckOutRequest checkout)
         {
             try
             {
                 //check Checking Existed
                 var checkOut = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == postRegistrationId);
+                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == checkout.PostRegistrationId);
 
                 if (checkOut == null)
                 {
-                    throw new ErrorResponse(404, (int)AttendanceErrorEnum.CHECK_OUT_FAIL,
+                    throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_FAIL,
                                         AttendanceErrorEnum.CHECK_OUT_FAIL.GetDisplayName());
                 }
 

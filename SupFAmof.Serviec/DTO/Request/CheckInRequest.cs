@@ -12,12 +12,19 @@ namespace SupFAmof.Service.DTO.Request
 {
     public class CheckInRequest
     {
-        [Required(ErrorMessage = "PostId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "PostId must be greater than 0.")]
+        [Required(ErrorMessage = "Post Registration Id is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Post Registration Id must be greater than 0.")]
         public int PostRegistrationId  { get; set; }
 
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
+    }
+
+    public class CheckOutRequest
+    {
+        [Required(ErrorMessage = "Post Registration Id is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Post Registration Id must be greater than 0.")]
+        public int PostRegistrationId { get; set; }
     }
 
     public class QrRequest

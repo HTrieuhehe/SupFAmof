@@ -41,18 +41,19 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Cancel")]
             Cancel = 4,
-
-            [Display(Name = "Update Request")]
-            Update_Request = 5,
-
-            [Display(Name = "Approved Request")]
-            Approved_Request = 6,
-
             [Display(Name = "Check-in")]
-            CheckIn = 7,
-
+            CheckIn = 5,
             [Display(Name = "Check-out")]
-            CheckOut = 8
+            CheckOut = 6
+        }
+        public enum PostRGUpdateHistoryEnum
+        {
+            [Display(Name = "Pending")]
+            Pending = 1,
+            [Display(Name = "Reject")]
+            Rejected = 3,
+            [Display(Name = "Approve")]
+            Approved = 2
         }
 
         public enum PostStatusEnum

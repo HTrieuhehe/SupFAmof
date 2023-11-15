@@ -308,7 +308,7 @@ namespace SupFAmof.Service.Service
                             {
                                 original.SchoolBusOption = updateEntity.SchoolBusOption;
                                 original.PositionId = request.PositionId;
-                                original.UpdateAt = updateEntity.CreateAt;
+                                original.UpdateAt = GetCurrentDatetime();
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(original);
                                 await _unitOfWork.CommitAsync();
 
@@ -341,10 +341,15 @@ namespace SupFAmof.Service.Service
                                     PostRegistrationId = updateEntity.Id,
                                     PositionId = updateEntity.PositionId,
                                     BusOption = updateEntity.SchoolBusOption,
-                                    CreateAt = updateEntity.CreateAt,
-                                    Status = (int)PostRegistrationStatusEnum.Update_Request,
+                                    CreateAt = GetCurrentDatetime(),
+                                    Status = (int)PostRGUpdateHistoryEnum.Pending,
 
                                 };
+                                if(!await CheckDuplicatePostRgUpdate(postTgupdate))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
+                                                       PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
+                                }
 
                                 await _unitOfWork.Repository<PostRgupdateHistory>().InsertAsync(postTgupdate);
                                 await _unitOfWork.CommitAsync();
@@ -435,13 +440,13 @@ namespace SupFAmof.Service.Service
                 {
                     switch (findRequest.Status)
                     {
-                        case (int)PostRegistrationStatusEnum.Approved_Request:
+                        case (int)PostRGUpdateHistoryEnum.Approved:
                             throw new ErrorResponse(400,
                                 (int)PostRegistrationErrorEnum.ALREADY_APPROVE,
                                 PostRegistrationErrorEnum.ALREADY_APPROVE.GetDisplayName());
 
                         // Add more cases here if needed
-                        case (int)PostRegistrationStatusEnum.Reject:
+                        case (int)PostRGUpdateHistoryEnum.Rejected:
                             throw new ErrorResponse(400,
                                 (int)PostRegistrationErrorEnum.ALREADY_REJECT,
                                 PostRegistrationErrorEnum.ALREADY_REJECT.GetDisplayName());
@@ -477,10 +482,9 @@ namespace SupFAmof.Service.Service
                                     matchingEntity.SchoolBusOption = findRequest.BusOption;
                                     matchingEntity.PositionId = (int)findRequest.PositionId;
                                     matchingEntity.UpdateAt = GetCurrentDatetime();
-                                    findRequest.Status = (int)PostRegistrationStatusEnum.Approved_Request;
+                                    findRequest.Status = (int)PostRGUpdateHistoryEnum.Approved;
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
-                                    await UpdatePostAttendeeUser(findRequest);
                                     await _unitOfWork.CommitAsync();
                                     listResponse.Add(matchingEntity);
                                 }
@@ -498,7 +502,7 @@ namespace SupFAmof.Service.Service
                             break;
 
                         case false:
-                            findRequest.Status = (int)PostRegistrationStatusEnum.Reject;
+                            findRequest.Status = (int)PostRGUpdateHistoryEnum.Rejected;
                             await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
                             await _unitOfWork.CommitAsync();
                             break;
@@ -641,7 +645,6 @@ namespace SupFAmof.Service.Service
 
                 // Update the range of entities in your repository
                 _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
-                await AddUserToPostAttendee(listToUpdate);
                 await _unitOfWork.CommitAsync();
                 await sendMailService.SendEmailBooking(MailEntity(listToUpdate));
                 var resultMap = new Dictionary<int, List<PostRegistration>>
@@ -667,47 +670,6 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-
-        private async Task AddUserToPostAttendee(List<PostRegistration> list)
-        {
-            //if (list.Any(postRegistration => postRegistration.Status == (int)PostRegistrationStatusEnum.Reject))
-            //{
-            //    return;
-            //}
-            //// Map incoming data to PostAttendeeRequest and PostAttendee
-            //var listAttendeeRequest = _mapper.Map<List<PostAttendeeRequest>>(list);
-            //var listAttendeeFinal = _mapper.Map<List<PostAttendee>>(listAttendeeRequest);
-
-            //// Retrieve existing data from the database
-            //var existingAttendees = _unitOfWork.Repository<PostAttendee>().GetAll();
-
-            //// Identify duplicates by comparing based on some unique identifier (e.g., UserId)
-            //var duplicateAttendees = listAttendeeFinal
-            //    .Where(newAttendee => existingAttendees.Any(existingAttendee => existingAttendee.AccountId == newAttendee.AccountId && existingAttendee.PositionId == newAttendee.PositionId))
-            //    .ToList();
-            //// Insert only the non-duplicate attendees
-            //var nonDuplicateAttendees = listAttendeeFinal.Except(duplicateAttendees).ToList();
-            //await _unitOfWork.Repository<PostAttendee>().InsertRangeAsync(nonDuplicateAttendees.AsQueryable());
-        }
-
-        private async Task UpdatePostAttendeeUser(PostRgupdateHistory matching)
-        {
-
-            //var orginalPostRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefault(x => x.Id == matching.PostRegistrationId);
-            //var attendNeedToBeUpdated = _unitOfWork.Repository<PostAttendee>()
-            //                  .GetAll()
-            //                  .FirstOrDefault(x => x.AccountId == orginalPostRegistration.AccountId && x.PostId == orginalPostRegistration.Position.PostId);
-            //if (attendNeedToBeUpdated != null)
-            //{
-            //    attendNeedToBeUpdated.PositionId = matching.PositionId;
-            //    attendNeedToBeUpdated.ConfirmAt = GetCurrentDatetime();
-            //}
-            //await _unitOfWork.Repository<PostAttendee>().Update(attendNeedToBeUpdated, attendNeedToBeUpdated.Id);
-
-
-
-        }
-
         private List<MailBookingRequest> MailEntity(List<PostRegistration> request)
         {
             List<MailBookingRequest> listMail = new List<MailBookingRequest>();
@@ -808,6 +770,15 @@ namespace SupFAmof.Service.Service
                 }
             }
 
+            return true;
+        }
+        private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
+        {
+            var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);
+            if(duplicate != null)
+            {
+                return false;
+            }
             return true;
         }
 

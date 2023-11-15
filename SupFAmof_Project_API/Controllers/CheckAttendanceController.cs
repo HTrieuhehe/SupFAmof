@@ -57,7 +57,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPost("check-out")]
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromQuery] int postRegistrationId)
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromBody] int postRegistrationId)
         {
             try
             {

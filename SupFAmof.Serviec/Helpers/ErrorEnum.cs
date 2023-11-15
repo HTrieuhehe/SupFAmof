@@ -222,6 +222,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cant be updated ")]
             CANT_BE_UPDATED = 4019,
+            //400
+            [Display(Name = "Already sent update request.Only request one time ")]
+            DUPLICATED_REQUEST_UPDATE = 4020,
         }
 
         public enum PostCategoryErrorEnum

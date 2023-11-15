@@ -10,7 +10,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IPostRegistrationService
     {
-        Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging, CollabRegistrationResponse filter, FilterPostRegistrationResponse statusFilter);
+        Task<BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>> GetPostRegistrationByAccountId
+            (int accountId, PagingRequest paging, CollabRegistrationUpdateViewResponse filter, FilterPostRegistrationResponse statusFilter);
         Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId,PostRegistrationRequest request);
         Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId,int postRegistrationId);
         Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId,int PostRegistrationId, PostRegistrationUpdateRequest request);
@@ -22,7 +23,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PagingRequest paging);
 
         Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationCheckIn(int accountId, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, CollabRegistrationResponse postRegistrationFilter, FilterPostRegistrationResponse filter, PagingRequest paging);
+        //Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, CollabRegistrationResponse postRegistrationFilter, FilterPostRegistrationResponse filter, PagingRequest paging);
 
     }
 

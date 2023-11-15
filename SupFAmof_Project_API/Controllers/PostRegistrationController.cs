@@ -33,8 +33,8 @@ namespace SupFAmof.API.Controllers
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
         [HttpGet("getById")]
-        public async Task<ActionResult<CollabRegistrationResponse>> GetPostRegistrationsByAccountId
-          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse filter, [FromQuery] FilterPostRegistrationResponse statusFilter)
+        public async Task<ActionResult<CollabRegistrationUpdateViewResponse>> GetPostRegistrationsByAccountId
+          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationUpdateViewResponse filter, [FromQuery] FilterPostRegistrationResponse statusFilter)
         {
             try
             {
@@ -56,6 +56,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// This action method handles an HTTP POST request to create a request a PostRegistration objects.
         /// </summary>
@@ -97,6 +98,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// Cancel Post Registration By Id.
         /// </summary>
@@ -125,6 +127,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// Update Post Registration By Id.
         /// </summary>
@@ -163,7 +166,6 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-
 
         /// <summary>
         /// This action method handles an HTTP GET request to retrieve a list of PostRgUpdateRequestResponse objects associated with a specific accountId.
@@ -230,30 +232,30 @@ namespace SupFAmof.API.Controllers
 
         #endregion
 
-        [HttpGet("Filter-status")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
-    ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse postRegistrationFilter, [FromQuery] FilterPostRegistrationResponse filter)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                var result = await _postRegistrationService.FilterPostRegistration(account.Id, postRegistrationFilter, filter, paging);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
-            }
-        }
+        //[HttpGet("Filter-status")]
+        //public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
+        //    ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse postRegistrationFilter, [FromQuery] FilterPostRegistrationResponse filter)
+        //{
+        //    try
+        //    {
+        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //        var result = await _postRegistrationService.FilterPostRegistration(account.Id, postRegistrationFilter, filter, paging);
+        //        return Ok(result);
+        //    }
+        //    catch (ErrorResponse ex)
+        //    {
+        //        if (ex.Error.StatusCode == 404)
+        //        {
+        //            return NotFound(ex.Error);
+        //        }
+        //        return BadRequest(ex.Error);
+        //    }
+        //}
     }
 }
 

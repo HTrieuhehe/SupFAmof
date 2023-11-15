@@ -106,9 +106,23 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.PositionDate, opt => opt.MapFrom(src => src.Position.Date))
                 .ForMember(dest => dest.PostCategoryId, opt => opt.MapFrom(src => src.Position.Post.PostCategoryId))
                 .ReverseMap();
+
             CreateMap<Post, CollabPostResponse>()
                 .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
                 .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
+                .ReverseMap();
+            
+            CreateMap<Post, CollabRegistrationUpdatePostResponse>()
+                .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
+                .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
+                .ReverseMap();
+
+            CreateMap<PostRegistration, CollabRegistrationUpdateViewResponse>()
+                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
+                .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
+                .ForMember(dest => dest.PositionDate, opt => opt.MapFrom(src => src.Position.Date))
+                .ForMember(dest => dest.PostCategoryId, opt => opt.MapFrom(src => src.Position.Post.PostCategoryId))
+                .ForMember(dest => dest.PostPositionsUnregistereds, opt => opt.MapFrom(src => src.Position.Post.PostPositions))
                 .ReverseMap();
 
             CreateMap<PostPosition, AdmissionPostPositionResponse>()

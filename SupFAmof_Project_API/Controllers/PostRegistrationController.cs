@@ -34,7 +34,7 @@ namespace SupFAmof.API.Controllers
         /// </returns>
         [HttpGet("getById")]
         public async Task<ActionResult<CollabRegistrationUpdateViewResponse>> GetPostRegistrationsByAccountId
-          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationUpdateViewResponse filter, [FromBody] FilterPostRegistrationResponse statusFilter)
+          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationUpdateViewResponse filter, [FromQuery] FilterPostRegistrationResponse statusFilter)
         {
             try
             {

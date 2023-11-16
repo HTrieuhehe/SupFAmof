@@ -375,9 +375,15 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Distance too far")]
             DISTANCE_TOO_FAR = 4006,
+
             //400
             [Display(Name = "Wrong information (post or position not exist)")]
             WRONG_INFORMATION = 4007,
+
+            //400
+            [Display(Name = "You are not check in yet")]
+            NOT_CHECK_IN_YET = 4008,
+
             //401
             [Display(Name = "Position longtitude and latitude is not specified to perform checkin")]
             MISSING_INFORMATION_POSITION = 4011,

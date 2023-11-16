@@ -115,8 +115,8 @@ namespace SupFAmof.Service.Service
             try
             {
                 //check Checking Existed
-                var checkOut = _unitOfWork.Repository<CheckAttendance>().GetAll()
-                                    .FirstOrDefault(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == checkout.PostRegistrationId);
+                var checkOut = await _unitOfWork.Repository<CheckAttendance>().GetAll()
+                                    .FirstOrDefaultAsync(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == checkout.PostRegistrationId);
 
                 if (checkOut == null)
                 {
@@ -124,15 +124,41 @@ namespace SupFAmof.Service.Service
                                         AttendanceErrorEnum.CHECK_OUT_FAIL.GetDisplayName());
                 }
 
+                //check post Registraion
+                var postRegistrastionCheck = await _unitOfWork.Repository<PostRegistration>().GetAll()
+                                    .FirstOrDefaultAsync(x => x.AccountId == accountId && x.Id == checkout.PostRegistrationId);
+
+                if (postRegistrastionCheck == null)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
+
                 //get current Time
                 var currentTime = Ultils.GetCurrentDatetime();
-                var checkOutDate = checkOut.PostRegistration.Position.Date;
+
+                //get date from DB
+                //cast to catch only date but no time
+                var checkOutDate = checkOut.PostRegistration.Position.Date.ToString("MM/dd/yyyy");
+
+                //split to get only date but no time in CurrentTime
+                var currentDate = currentTime.ToString("MM/dd/yyyy");
+
+                //Get timeTo of position in database
                 var checkOutTime = checkOut.PostRegistration.Position.TimeTo;
 
-                if (checkOutTime > currentTime.TimeOfDay && checkOutDate != currentTime.Date)
+                //not approve to check in if currentime if greater than TimeFrom and you are in that day of position
+                if (checkOutTime > currentTime.TimeOfDay && checkOutDate.Equals(currentDate))
                 {
                     throw new ErrorResponse(400, (int)AttendanceErrorEnum.CHECK_OUT_TIME_INVALID,
                                     AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
+                }
+
+                //just in case if the swagger be stolen. not approve to check in if the post Registration status is not check in yet
+                if (postRegistrastionCheck.Status != (int)PostRegistrationStatusEnum.CheckIn)
+                {
+                    throw new ErrorResponse(400, (int)AttendanceErrorEnum.NOT_CHECK_IN_YET,
+                                    AttendanceErrorEnum.NOT_CHECK_IN_YET.GetDisplayName());
                 }
 
                 checkOut.CheckOutTime = currentTime;

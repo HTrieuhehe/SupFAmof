@@ -2,9 +2,11 @@
 using System.Linq;
 using Service.Commons;
 using ServiceStack.Text;
+using System.Formats.Asn1;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
+using System.Linq.Dynamic.Core;
 using SupFAmof.Service.Utilities;
 using System.Collections.Generic;
 using SupFAmof.Service.Exceptions;
@@ -13,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
+using DocumentFormat.OpenXml.Presentation;
 using static SupFAmof.Service.Helpers.Enum;
 using DocumentFormat.OpenXml.Wordprocessing;
 using static SupFAmof.Service.Utilities.Ultils;
@@ -267,31 +270,26 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId, int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId, PostRegistrationUpdateRequest request)
         {
             try
             {
 
                 var original = _unitOfWork.Repository<PostRegistration>()
                                            .GetAll()
-                                           .SingleOrDefault(x => x.Id == postRegistrationId && x.AccountId == accountId);
+                                           .SingleOrDefault(x => x.Id == request.Id && x.AccountId == accountId);
+                if (!await CheckUpdatePosition(request))
+                {
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.WRONG_POSITION,
+                        PostRegistrationErrorEnum.WRONG_POSITION.GetDisplayName());
+                }
                 if (original == null)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
-                if (request.PositionId != null)
-                {
-                    original.PositionId = request.PositionId;
-                }
-                if (request.SchoolBusOption.HasValue)
-                {
-                    original.SchoolBusOption = request.SchoolBusOption;
-                }
                 PostRegistration updateEntity = original;
-                PostPosition checkPostPostion = new PostPosition();
-
-                checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.Position.PostId &&
+                var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.Position.PostId &&
                                                                                               x.Id == request.PositionId).First();
 
                 var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PositionId == request.PositionId
@@ -301,11 +299,7 @@ namespace SupFAmof.Service.Service
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
                         case PostRegistrationStatusEnum.Pending:
-                            if (!await CheckPostPositionBus(updateEntity))
-                            {
-                                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
-                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
-                            }
+                         
                             if (!await CheckCertificate(updateEntity))
                             {
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
@@ -313,10 +307,9 @@ namespace SupFAmof.Service.Service
                             }
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
-                                original.SchoolBusOption = updateEntity.SchoolBusOption;
-                                original.PositionId = request.PositionId;
-                                original.UpdateAt = GetCurrentDatetime();
-                                await _unitOfWork.Repository<PostRegistration>().UpdateDetached(original);
+                                updateEntity.PositionId = request.PositionId;
+                                updateEntity.UpdateAt = GetCurrentDatetime();
+                                await _unitOfWork.Repository<PostRegistration>().UpdateDetached(updateEntity);
                                 await _unitOfWork.CommitAsync();
 
                             }
@@ -328,11 +321,6 @@ namespace SupFAmof.Service.Service
                             break;
 
                         case PostRegistrationStatusEnum.Confirm:
-                            if (!await CheckPostPositionBus(updateEntity))
-                            {
-                                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
-                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
-                            }
                             if (!await CheckCertificate(updateEntity))
                             {
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
@@ -347,7 +335,6 @@ namespace SupFAmof.Service.Service
                                 {
                                     PostRegistrationId = updateEntity.Id,
                                     PositionId = updateEntity.PositionId,
-                                    BusOption = updateEntity.SchoolBusOption,
                                     CreateAt = GetCurrentDatetime(),
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
@@ -395,7 +382,7 @@ namespace SupFAmof.Service.Service
                             ErrorCode = 0
 
                         },
-                        Data = _mapper.Map<CollabRegistrationResponse>(_unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefault(x => x.Id == postRegistrationId))
+                        Data = _mapper.Map<CollabRegistrationResponse>(_unitOfWork.Repository<PostRegistration>().GetAll().SingleOrDefault(x => x.Id == request.Id))
                     };
                 }
                 else
@@ -968,6 +955,54 @@ namespace SupFAmof.Service.Service
             {
                 { size, query }
             };
+        }
+        private async Task<bool> CheckUpdatePosition(PostRegistrationUpdateRequest request)
+        {
+                var currentPosition =  await _unitOfWork.Repository<PostRegistration>().FindAsync(x=>x.Id == request.Id);
+                var positions = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == currentPosition.Position.PostId);
+                var positionCanbeUpdate = positions.Where(x=>x.Id != currentPosition.PositionId);
+                if(positionCanbeUpdate.Any(x=>x.Id == request.PositionId))
+                {
+                    return true;
+                }
+                return false;
+        }
+        public async Task<BaseResponseViewModel<dynamic>> UpdateSchoolBus(int accountId, UpdateSchoolBusRequest request)
+        {
+            try
+            {
+                var schoolBusOriginal = await _unitOfWork.Repository<PostRegistration>().FindAsync(x=>x.Id == request.Id && x.AccountId==accountId);
+                if (schoolBusOriginal == null)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                   PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
+                schoolBusOriginal.SchoolBusOption = request.SchoolBusOption;
+                schoolBusOriginal.UpdateAt = GetCurrentDatetime();
+                if(!await CheckPostPositionBus(schoolBusOriginal))
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
+                                   PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
+                }
+                await _unitOfWork.Repository<PostRegistration>().UpdateDetached(schoolBusOriginal);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>
+                {
+                    Status = new StatusViewModel()
+                    {
+
+                        Message = "UPDATE SUCCESS",
+                        Success = true,
+                        ErrorCode = 0
+
+                    }
+                };
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
     }
 

@@ -25,10 +25,8 @@ namespace SupFAmof.Service.DTO.Request
 
     public class PostRegistrationUpdateRequest
     {
+        public int Id { get; set; }
 
-        [Required(ErrorMessage = "true or false is required.")]
-        [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
-        public bool? SchoolBusOption { get; set; }
         [JsonIgnore]
         public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentDatetime();
         public int PositionId { get; set; }
@@ -52,5 +50,10 @@ namespace SupFAmof.Service.DTO.Request
             get; set;
         }
 
+    }
+    public class UpdateSchoolBusRequest
+    {
+        public int Id { get; set; }
+        public bool SchoolBusOption { get; set; }
     }
 }

@@ -144,7 +144,7 @@ namespace SupFAmof.API.Controllers
         /// <response code="200">Update success</response>
         /// <response code="400">Failed to Update</response>
         [HttpPost("update")]
-        public async Task<ActionResult<BaseResponseViewModel<CollabRegistrationResponse>>> UpdatePostRegistration(int postRegistrationId, PostRegistrationUpdateRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<CollabRegistrationResponse>>> UpdatePostRegistration(PostRegistrationUpdateRequest request)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.UpdatePostRegistration(account.Id, postRegistrationId, request);
+                var result = await _postRegistrationService.UpdatePostRegistration(account.Id, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -232,30 +232,54 @@ namespace SupFAmof.API.Controllers
 
         #endregion
 
-        //[HttpGet("Filter-status")]
-        //public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
-        //    ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse postRegistrationFilter, [FromQuery] FilterPostRegistrationResponse filter)
-        //{
-        //    try
-        //    {
-        //        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        //        var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-        //        if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //        var result = await _postRegistrationService.FilterPostRegistration(account.Id, postRegistrationFilter, filter, paging);
-        //        return Ok(result);
-        //    }
-        //    catch (ErrorResponse ex)
-        //    {
-        //        if (ex.Error.StatusCode == 404)
-        //        {
-        //            return NotFound(ex.Error);
-        //        }
-        //        return BadRequest(ex.Error);
-        //    }
-        //}
+    //    [HttpGet("Filter-status")]
+    //    public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> FilterPostRegistration
+    //([FromQuery] PagingRequest paging, [FromQuery] FilterPostRegistrationResponse filter)
+    //    {
+    //        try
+    //        {
+    //            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+    //            var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+    //            if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+    //            {
+    //                return Unauthorized();
+    //            }
+    //            var result = await _postRegistrationService.FilterPostRegistration(account.Id, filter, paging);
+    //            return Ok(result);
+    //        }
+    //        catch (ErrorResponse ex)
+    //        {
+    //            if (ex.Error.StatusCode == 404)
+    //            {
+    //                return NotFound(ex.Error);
+    //            }
+    //            return BadRequest(ex.Error);
+    //        }
+    //    }
+        [HttpPut("update-SchoolBus")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> UpdateSchoolBusOption
+ (UpdateSchoolBusRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.UpdateSchoolBus(account.Id, request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }
 

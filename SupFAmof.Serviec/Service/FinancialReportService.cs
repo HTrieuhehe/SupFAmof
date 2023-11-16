@@ -2,19 +2,19 @@
 using System.Net;
 using ServiceStack;
 using OfficeOpenXml;
-using System.Drawing;
 using Service.Commons;
 using OfficeOpenXml.Style;
 using SupFAmof.Data.Entity;
 using OfficeOpenXml.Drawing;
+using Path = System.IO.Path;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.DTO.Request;
-using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Wordprocessing;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -270,5 +270,103 @@ namespace SupFAmof.Service.Service
             }
         }
 
+
+        public async Task<byte[]> GenerateOpendayReportMonthly(int accountId, FinancialReportRequest request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                }
+
+
+                var data = await OpenDayMonthlyReportGenerator(request);
+                return data;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        private async Task<byte[]> OpenDayMonthlyReportGenerator(FinancialReportRequest request)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var accounts = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("@fpt.edu.vn"));
+            var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month).OrderBy(post => post.DateFrom);
+            HashSet<DateTime> uniqueDates = new HashSet<DateTime>();
+            HashSet<(string PostCategoryDescription, DateTime DateFrom)> uniquePostCategories = new HashSet<(string, DateTime)>();
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (ExcelPackage xlPackage = new ExcelPackage(memoryStream))
+                {
+                    int nameRow = 2;
+                    int mergeRow = 3;
+                    ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add($"OD Tháng {request.Month}");
+                    worksheet.Cells["A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
+                    Dictionary<int,string> keyValuePairs= new Dictionary<int, string>
+                    {
+                        { 1,"STT"},{ 2,"Họ tên"},{ 3,"MSSV"},{ 4,"CMND"},{ 5,"MST"}
+                    };
+
+                    foreach(var index in keyValuePairs)
+                    {
+                        char columnLetter = (char)('A' + index.Key - 1);
+                        string cellAddress = $"{columnLetter}{nameRow}";
+                        string cellmerge = $"{columnLetter}{mergeRow}";
+                        worksheet.Cells[$"{cellAddress}:{cellmerge}"].Merge = true;
+                        worksheet.Cells[$"{cellAddress}"].Value = "STT";
+                        worksheet.Cells[cellAddress].Value = index.Value;
+                        worksheet.Cells[cellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[cellAddress].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    }
+                    int postCollumn = 6;
+                    foreach(var post in posts)
+                    {
+                        var postKey = (post.PostCategory.PostCategoryDescription, post.DateFrom);
+
+                        if (uniqueDates.Contains(post.DateFrom))
+                        {
+                            Console.WriteLine($"Duplicate DateFrom found: {post.DateFrom.ToString("dd/MM")}. Skipping...");
+                        }
+                        else
+                        {
+                            char columnLetter = (char)('A' + postCollumn - 1);
+                            string cellAddress = $"{columnLetter}{mergeRow}";
+                            worksheet.Cells[$"{cellAddress}"].Value = $"{post.PostCategory.PostCategoryDescription}\n{post.DateFrom.ToString("dd/MM")}";
+                            postCollumn++;
+
+                            uniqueDates.Add(post.DateFrom);
+                        }
+
+                    }
+                    int postCollumn1 = 6;
+                    char mercell1 = (char)('A' + postCollumn1 - 1);
+                    int count = uniqueDates.Count();
+                    char mercell2 = (char)('A' + (count + postCollumn1) - 2);
+                    string cellAddress1 = $"{mercell1}{nameRow}";
+                    string cellAddress2 = $"{mercell2}{nameRow}";
+                    worksheet.Cells[$"{cellAddress1}:{cellAddress2}"].Merge = true;
+                    worksheet.Cells[$"{cellAddress1}"].Value = "Nội dung công việc";
+                    worksheet.Cells[cellAddress1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    int valueRow = 4;
+                    foreach(var account in accounts)
+                    {
+                        worksheet.Cells[valueRow, 1].Value = account.Id;
+                        worksheet.Cells[valueRow, 2].Value = account.Name;
+                        worksheet.Cells[valueRow, 3].Value = account.AccountInformation?.IdStudent;
+                        worksheet.Cells[valueRow, 4].Value = account.AccountInformation?.IdentityNumber;
+                        worksheet.Cells[valueRow, 5].Value = account.AccountInformation?.TaxNumber;
+                        valueRow++;
+                    }
+                    await xlPackage.SaveAsync();
+                }
+                byte[] array = memoryStream.ToArray();
+                return array;
+            }
+        }
     }
 }

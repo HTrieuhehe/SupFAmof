@@ -33,8 +33,8 @@ namespace SupFAmof.API.Controllers
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
         [HttpGet("getById")]
-        public async Task<ActionResult<CollabRegistrationResponse>> GetPostRegistrationsByAccountId
-          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationResponse filter)
+        public async Task<ActionResult<CollabRegistrationUpdateViewResponse>> GetPostRegistrationsByAccountId
+          ([FromQuery] PagingRequest paging, [FromQuery] CollabRegistrationUpdateViewResponse filter, [FromQuery] FilterPostRegistrationResponse statusFilter)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging,filter);
+                var result = await _postRegistrationService.GetPostRegistrationByAccountId(account.Id, paging,filter, statusFilter);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -56,6 +56,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// This action method handles an HTTP POST request to create a request a PostRegistration objects.
         /// </summary>
@@ -97,6 +98,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// Cancel Post Registration By Id.
         /// </summary>
@@ -125,6 +127,7 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+        
         /// <summary>
         /// Update Post Registration By Id.
         /// </summary>
@@ -164,7 +167,6 @@ namespace SupFAmof.API.Controllers
             }
         }
 
-
         /// <summary>
         /// This action method handles an HTTP GET request to retrieve a list of PostRgUpdateRequestResponse objects associated with a specific accountId.
         /// </summary>
@@ -203,7 +205,6 @@ namespace SupFAmof.API.Controllers
         /// <summary>
         /// Get Post Registration near current time to check in.
         /// </summary>
-        /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
         /// <returns>
         /// </returns>
         [HttpGet("getCheckInPostRegistration")]
@@ -217,7 +218,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id,paging);
+                return await _postRegistrationService.GetPostRegistrationCheckIn(account.Id, paging);
             }
             catch(ErrorResponse ex) 
             {

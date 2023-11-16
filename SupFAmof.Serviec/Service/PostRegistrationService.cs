@@ -37,26 +37,38 @@ namespace SupFAmof.Service.Service
             this.sendMailService = sendMailService;
         }
 
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> GetPostRegistrationByAccountId(int accountId, PagingRequest paging, CollabRegistrationResponse filter)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>> GetPostRegistrationByAccountId
+            (int accountId, PagingRequest paging, CollabRegistrationUpdateViewResponse filter, FilterPostRegistrationResponse statusFilter)
         {
             try
             {
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.AccountId == accountId)
-                                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                  .ProjectTo<CollabRegistrationUpdateViewResponse>(_mapper.ConfigurationProvider)
                                                   .DynamicFilter(filter)
                                                   .DynamicSort(paging.Sort, paging.Order)
                                                   .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
+                var postRegistrationLists = postRegistration.Item2.ToList();
+
+                foreach (var registration in postRegistrationLists)
+                {
+                    registration.PostPositionsUnregistereds.Remove(registration.PostPositionsUnregistereds
+                        .ToList()
+                        .Find(p => p.Id == registration.PositionId));
+                }
+
+                var list = FilterPostRegis(postRegistrationLists, statusFilter);
+
+                return new BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = postRegistration.Item1
+                        Total = list.Keys.First(),
                     },
-                    Data = postRegistration.Item2.ToList()
+                    Data = list.Values.First().ToList(),
                 };
             }
             catch (Exception)
@@ -150,12 +162,12 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_CREATOR,
                            PostRegistrationErrorEnum.POST_CREATOR.GetDisplayName());
                     }
-                    if(post.Status != (int)PostStatusEnum.Opening && post.Status != (int)PostStatusEnum.Re_Open)
+                    if (post.Status != (int)PostStatusEnum.Opening && post.Status != (int)PostStatusEnum.Re_Open)
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_NOT_AVAILABLE,
                            PostRegistrationErrorEnum.POST_NOT_AVAILABLE.GetDisplayName());
                     }
-                        if (!await CheckPostPositionBus(postRegistration))
+                    if (!await CheckPostPositionBus(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                             PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
@@ -801,10 +813,21 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                //                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                //                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.PostPosition.Date == Ultils.GetCurrentDatetime().Date)
+                //                                  .PagingQueryable(paging.Page, paging.PageSize);
+
+                var currentDate = Ultils.GetCurrentDatetime();
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
-                                                  .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm && x.PostPosition.Date == Ultils.GetCurrentDatetime().Date)
-                                                  .PagingQueryable(paging.Page, paging.PageSize);
+                                                 .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                    && x.AccountId == accountId
+                                                                    && x.Position.Date == currentDate.Date
+                                                                    && x.Position.TimeFrom >= currentDate.TimeOfDay
+                                                                    && x.Position.TimeFrom <= currentDate.TimeOfDay.Add(TimeSpan.FromHours(1)))
+                                                 .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+                                                 .PagingQueryable(paging.Page, paging.PageSize);
+
 
                 return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
                 {
@@ -843,7 +866,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                if(!string.IsNullOrEmpty(searchEmail))
+                if (!string.IsNullOrEmpty(searchEmail))
                 {
                     var searchAccount = _unitOfWork.Repository<PostRegistration>().GetAll()
                                          .Where(x => x.PositionId == positionId && x.Account.Email.Contains(searchEmail))
@@ -893,36 +916,42 @@ namespace SupFAmof.Service.Service
         }
 
         #endregion
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration(int accountId, FilterPostRegistrationResponse filter, PagingRequest paging)
-        {
-            try
-            {
-                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                   .Where(x => x.AccountId == accountId)
-                                                   .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
-                                                   .PagingQueryable(paging.Page, paging.PageSize);
-                var list = FilterPostRegis(postRegistration.Item2.ToList(), filter);
-                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
-                {
-                    Metadata = new PagingsMetadata()
-                    {
-                        Page = paging.Page,
-                        Size = paging.PageSize,
-                        Total = list.Keys.First(),
-                    },
-                    Data = list.Values.First().ToList(),
-                };
-            }catch(Exception ex) { throw; }
-        }
-        private static Dictionary<int,IQueryable<CollabRegistrationResponse>> FilterPostRegis(List<CollabRegistrationResponse> list, FilterPostRegistrationResponse filter)
+        //public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration
+        //    (int accountId, CollabRegistrationResponse postRegistrationfilter, FilterPostRegistrationResponse filter, PagingRequest paging)
+        //{
+        //    try
+        //    {
+        //        var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+        //                                           .Where(x => x.AccountId == accountId)
+        //                                           .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
+        //                                           .DynamicFilter(postRegistrationfilter)
+        //                                           .PagingQueryable(paging.Page, paging.PageSize);
+
+        //        var list = FilterPostRegis(postRegistration.Item2.ToList(), filter);
+
+        //        return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
+        //        {
+        //            Metadata = new PagingsMetadata()
+        //            {
+        //                Page = paging.Page,
+        //                Size = paging.PageSize,
+        //                Total = list.Keys.First(),
+        //            },
+        //            Data = list.Values.First().ToList(),
+        //        };
+        //    }
+        //    catch (Exception ex) { throw; }
+        //}
+
+        private static Dictionary<int, IQueryable<CollabRegistrationUpdateViewResponse>> FilterPostRegis(List<CollabRegistrationUpdateViewResponse> list, FilterPostRegistrationResponse filter)
         {
             var query = list.AsQueryable();
-            if (filter.Status != null && filter.Status.Any())
+            if (filter.RegistrationStatus != null && filter.RegistrationStatus.Any())
             {
-                query = query.Where(d => filter.Status.Contains((int)d.Status));
+                query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
             }
             int size = query.Count();
-            return new Dictionary<int, IQueryable<CollabRegistrationResponse>>
+            return new Dictionary<int, IQueryable<CollabRegistrationUpdateViewResponse>>
             {
                 { size, query }
             };

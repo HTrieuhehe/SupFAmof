@@ -57,7 +57,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPost("check-out")]
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromQuery] int postRegistrationId)
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CheckOut([FromBody] CheckOutRequest request)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _checkInService.CheckOut(account.Id, postRegistrationId);
+                return await _checkInService.CheckOut(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

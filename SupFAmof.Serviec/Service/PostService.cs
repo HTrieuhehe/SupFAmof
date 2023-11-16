@@ -49,6 +49,8 @@ namespace SupFAmof.Service.Service
             {
                 var currentTime = Ultils.GetCurrentDatetime();
 
+                #region Check Account 
+
                 var account = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
 
                 if (account == null)
@@ -57,7 +59,15 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var post = _unitOfWork.Repository<Post>().Find(x => x.Id == postId && x.AccountId == accountId);
+                else if (account.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                #endregion
+
+                var post = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == postId && x.AccountId == accountId);
 
                 //var minPositionTime = post.PostPositions.Min(p => p.TimeFrom);
                 //var maxPositionTime = post.PostPositions.Max(p => p.TimeTo);
@@ -80,11 +90,25 @@ namespace SupFAmof.Service.Service
                                         PostErrorEnum.INVALID_END_POST.GetDisplayName());
                 }
 
-
                 post.Status = (int)PostStatusEnum.Ended;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
+
+                #region Update Post Registration Pending to Cancel
+
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                  .Where(x => x.Position.PostId == post.Id && x.Status == (int)PostRegistrationStatusEnum.Pending);
+
+                foreach(var item in postRegistration)
+                {
+                    item.Status = (int)PostRegistrationStatusEnum.Cancel;
+
+                    await _unitOfWork.Repository<PostRegistration>().UpdateDetached(item);
+                }
+
+                #endregion
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()
@@ -230,8 +254,7 @@ namespace SupFAmof.Service.Service
 
         #region Admission Post Service
 
-        public async Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost
-            (int accountId, CreatePostRequest request)
+        public async Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost(int accountId, CreatePostRequest request)
         {
             try
             {

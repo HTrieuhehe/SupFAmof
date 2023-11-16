@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult<Service.DTO.Response.BaseResponsePagingViewModel<AccountResponse>>> SearchCollabByEmail
+        public async Task<ActionResult<BaseResponsePagingViewModel<AccountResponse>>> SearchCollabByEmail
             ([FromQuery] string email, [FromQuery] PagingRequest paging)
         {
             try
@@ -55,8 +55,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// View number of active collaborator account 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("")]
-        public async Task<ActionResult<Service.DTO.Response.BaseResponsePagingViewModel<AccountResponse>>> ViewCollaborator()
+        [HttpGet("viewNumber")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<AccountResponse>>> ViewCollaborator()
         {
             try
             {

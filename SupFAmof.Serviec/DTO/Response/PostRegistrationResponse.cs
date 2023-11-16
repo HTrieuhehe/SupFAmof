@@ -1,4 +1,5 @@
-﻿using SupFAmof.Service.DTO.Response.Admission;
+﻿using SupFAmof.Data.Entity;
+using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.DTO.Response
 {
@@ -91,10 +92,50 @@ namespace SupFAmof.Service.DTO.Response
         public int? PositionId { get; set; }
         public string? Note { get; set; }
         public DateTime? PositionDate { get; set; }
+        public int? PostCategoryId { get; set; }
 
         public virtual CollabPostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
     }
+
+    public class CollabRegistrationUpdateViewResponse
+    {
+        public int? Id { get; set; }
+        public string? RegistrationCode { get; set; }
+        public int? Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; }
+        public int? PositionId { get; set; }
+        public string? Note { get; set; }
+        public DateTime? PositionDate { get; set; }
+        public int? PostCategoryId { get; set; }
+        public virtual ICollection<PostPositionResponse>? PostPositionsUnregistereds { get; set; }
+
+        public virtual CollabRegistrationUpdatePostResponse? Post { get; set; }
+        public virtual PostPositionResponse? PostPosition { get; set; }
+    }
+
+    public class CollabRegistrationUpdatePostResponse
+    {
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
+        public int? PostCategoryId { get; set; }
+        public string? PostCode { get; set; }
+        public string? PostImg { get; set; }
+        public string? PostDescription { get; set; }
+        public int? Priority { get; set; }
+        public string? DateFrom { get; set; }
+        public string? DateTo { get; set; }
+        public bool? IsPremium { get; set; }
+        public int? Status { get; set; }
+        public bool? AttendanceComplete { get; set; }
+        public string? CreateAt { get; set; }
+        public string? UpdateAt { get; set; }
+        public virtual AccountResponse? Account { get; set; }
+        public virtual PostCategoryResponse? PostCategory { get; set; }
+    }
+
     public class CollabPostResponse
     {
         public int? Id { get; set; }
@@ -117,7 +158,7 @@ namespace SupFAmof.Service.DTO.Response
 
     public class FilterPostRegistrationResponse
     {
-        public List<int>? Status { get; set; }
+        public List<int>? RegistrationStatus { get; set; }
     }
 
 

@@ -122,7 +122,7 @@ namespace SupFAmof.API.Mapper
             .ForMember(dest => dest.SchoolBusOption, opt => opt.MapFrom(src => src.SchoolBusOption)).ReverseMap();
             CreateMap<PostRegistrationUpdateRequest, PostRegistration>()
                 .ReverseMap();
-
+            CreateMap<UpdateSchoolBusRequest, PostRegistration>();
             CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
 
             CreateMap<PostRegistration, ReportPostRegistrationResponse>()

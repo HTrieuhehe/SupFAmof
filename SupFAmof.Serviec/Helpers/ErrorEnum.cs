@@ -225,6 +225,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Already sent update request.Only request one time ")]
             DUPLICATED_REQUEST_UPDATE = 4020,
+            //400
+            [Display(Name = "Can only update position in that post")]
+            WRONG_POSITION = 4021,
         }
 
         public enum PostCategoryErrorEnum

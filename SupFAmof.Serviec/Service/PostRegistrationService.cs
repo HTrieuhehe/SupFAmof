@@ -118,7 +118,7 @@ namespace SupFAmof.Service.Service
 
                 var postPosition = await _unitOfWork.Repository<PostPosition>()
                                 .FindAsync(x => x.Id == request.PositionId);
-
+                postRegistration.Salary = postPosition.Salary;
                 if (postPosition == null)
                 {
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,

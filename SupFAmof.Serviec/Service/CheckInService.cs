@@ -135,7 +135,7 @@ namespace SupFAmof.Service.Service
                                     AttendanceErrorEnum.CHECK_OUT_TIME_INVALID.GetDisplayName());
                 }
 
-                checkOut.CheckOutTime = currentTime.Date;
+                checkOut.CheckOutTime = currentTime;
 
                 var registration = _unitOfWork.Repository<PostRegistration>()
                                             .Find(x => x.AccountId == accountId && x.PositionId == checkOut.PostRegistration.PositionId);

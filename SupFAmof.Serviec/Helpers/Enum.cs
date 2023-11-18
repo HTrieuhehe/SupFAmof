@@ -148,7 +148,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "New Upcoming Event")]
             Post_Created = 1,
 
-            [Display(Name = "Post Confirm")]
+            [Display(Name = "Post Registration Confirm")]
             PostRegistration_Confirm = 2,
 
             [Display(Name = "Bing Bong! New contract to you")]
@@ -156,8 +156,12 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Bing Bong! Check out complete")]
             Check_out_complete = 4,
+
             [Display(Name = "Bing Bong! Post is re-opened")]
             Post_Re_Opened = 5,
+
+            [Display(Name = "Application Request")]
+            Application = 6,
         }
     }
 }

@@ -24,6 +24,7 @@ namespace SupFAmof.Service.Service
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
         public ApplicationService(IMapper mapper, IUnitOfWork unitOfWork)
         {
@@ -45,13 +46,28 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var report = _mapper.Map<CreateAccountApplicationRequest, Complaint>(request);
+                var report = _mapper.Map<CreateAccountApplicationRequest, Application>(request);
 
                 report.AccountId = accountId;
                 report.ReportDate = Ultils.GetCurrentDatetime();
                 report.Status = (int)ReportProblemStatusEnum.Pending;
 
-                await _unitOfWork.Repository<Complaint>().InsertAsync(report);
+                await _unitOfWork.Repository<Application>().InsertAsync(report);
+
+                //create notification request 
+
+                List<int> accountIds = new List<int> { accountId };
+
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.Application.GetDisplayName(),
+                    Body = "Application Request is now created! Waiting for replying",
+                    NotificationsType = (int)NotificationTypeEnum.Application
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<ApplicationResponse>
@@ -76,7 +92,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var reportProblem = _unitOfWork.Repository<Complaint>().GetAll()
+                var reportProblem = _unitOfWork.Repository<Application>().GetAll()
                                                .Where(x => x.AccountId == accountId)
                                                .OrderByDescending(x => x.ReportDate)
                                                .ProjectTo<ApplicationResponse>(_mapper.ConfigurationProvider)
@@ -116,7 +132,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var reportProblem = _unitOfWork.Repository<Complaint>().GetAll()
+                var reportProblem = _unitOfWork.Repository<Application>().GetAll()
                                                .ProjectTo<AdmissionComplaintResponse>(_mapper.ConfigurationProvider)
                                                .OrderByDescending(x => x.ReportDate)
                                                .DynamicFilter(filter)
@@ -153,7 +169,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var report = await _unitOfWork.Repository<Complaint>().FindAsync(r => r.Id == reportId);
+                var report = await _unitOfWork.Repository<Application>().FindAsync(r => r.Id == reportId);
 
                 if (report == null)
                 {
@@ -177,12 +193,27 @@ namespace SupFAmof.Service.Service
                         break;
                 }
 
-                var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Complaint>(request, report);
+                var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Reject;
 
-                await _unitOfWork.Repository<Complaint>().UpdateDetached(replyReport);
+                await _unitOfWork.Repository<Application>().UpdateDetached(replyReport);
+
+                //create notification request 
+
+                List<int> accountIds = new List<int> { accountId };
+
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.Application.GetDisplayName(),
+                    Body = "Your application is replied! Check it now",
+                    NotificationsType = (int)NotificationTypeEnum.Application
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionComplaintResponse>
@@ -215,7 +246,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var report = await _unitOfWork.Repository<Complaint>().FindAsync(r => r.Id == reportId);
+                var report = await _unitOfWork.Repository<Application>().FindAsync(r => r.Id == reportId);
 
                 if (report == null)
                 {
@@ -239,12 +270,27 @@ namespace SupFAmof.Service.Service
                         break;
                 }
 
-                var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Complaint>(request, report);
+                var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Approve;
 
-                await _unitOfWork.Repository<Complaint>().UpdateDetached(replyReport);
+                await _unitOfWork.Repository<Application>().UpdateDetached(replyReport);
+
+                //create notification request 
+
+                List<int> accountIds = new List<int> { accountId };
+
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.Application.GetDisplayName(),
+                    Body = "Your application is replied! Check it now",
+                    NotificationsType = (int)NotificationTypeEnum.Application
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionComplaintResponse>

@@ -29,12 +29,14 @@ namespace SupFAmof.Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ISendMailService sendMailService;
+        private readonly INotificationService _notificationService;
 
-        public PostRegistrationService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService sendMailService)
+        public PostRegistrationService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService sendMailService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             this.sendMailService = sendMailService;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>> GetPostRegistrationByAccountId
@@ -651,7 +653,22 @@ namespace SupFAmof.Service.Service
 
                 // Update the range of entities in your repository
                 _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
+
+                var accountIds = listPr.Select(x => x.AccountId).ToList();
+
+                //create notification request 
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.PostRegistration_Confirm.GetDisplayName(),
+                    Body = "",
+                    NotificationsType = (int)NotificationTypeEnum.PostRegistration_Confirm
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
+
                 await sendMailService.SendEmailBooking(MailEntity(listToUpdate));
                 var resultMap = new Dictionary<int, List<PostRegistration>>
         {

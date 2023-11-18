@@ -25,8 +25,8 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountReactivation> AccountReactivations { get; set; } = null!;
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<Admin> Admins { get; set; } = null!;
+        public virtual DbSet<Application> Applications { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
-        public virtual DbSet<Complaint> Complaints { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
         public virtual DbSet<ExpoPushToken> ExpoPushTokens { get; set; } = null!;
@@ -241,6 +241,25 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.Username).HasMaxLength(100);
             });
 
+            modelBuilder.Entity<Application>(entity =>
+            {
+                entity.ToTable("Application");
+
+                entity.Property(e => e.ProblemNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReplyDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ReplyNote).HasMaxLength(500);
+
+                entity.Property(e => e.ReportDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Applications)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountReportProblem_Account");
+            });
+
             modelBuilder.Entity<CheckAttendance>(entity =>
             {
                 entity.ToTable("CheckAttendance");
@@ -254,25 +273,6 @@ namespace SupFAmof.Data.Entity
                     .HasForeignKey(d => d.PostRegistrationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CheckAttendance_PostRegistration");
-            });
-
-            modelBuilder.Entity<Complaint>(entity =>
-            {
-                entity.ToTable("Complaint");
-
-                entity.Property(e => e.ProblemNote).HasMaxLength(500);
-
-                entity.Property(e => e.ReplyDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReplyNote).HasMaxLength(500);
-
-                entity.Property(e => e.ReportDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.Complaints)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AccountReportProblem_Account");
             });
 
             modelBuilder.Entity<Contract>(entity =>

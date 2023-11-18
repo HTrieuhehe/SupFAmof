@@ -12,12 +12,12 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IContractService
     {
-        Task<BaseResponsePagingViewModel<AdmissionContractResponse>> GetAdmissionContracts(int accountId, AdmissionContractResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AdmissionContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging);
-        Task<BaseResponseViewModel<AdmissionContractResponse>> GetAdmissionContractById(int accountId, int contractId);
-        Task<BaseResponseViewModel<AdmissionContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request);
-        Task<BaseResponseViewModel<AdmissionContractResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request);
-        Task<BaseResponseViewModel<AdmissionContractResponse>> DisableAdmissionContract(int accountId, int contractId);
+        Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> GetAdmissionContracts(int accountId, AdmissionApplicationResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging);
+        Task<BaseResponseViewModel<AdmissionApplicationResponse>> GetAdmissionContractById(int accountId, int contractId);
+        Task<BaseResponseViewModel<AdmissionApplicationResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request);
+        Task<BaseResponseViewModel<AdmissionApplicationResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request);
+        Task<BaseResponseViewModel<AdmissionApplicationResponse>> DisableAdmissionContract(int accountId, int contractId);
         Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId);
 
         //Collabotator Contract Zone

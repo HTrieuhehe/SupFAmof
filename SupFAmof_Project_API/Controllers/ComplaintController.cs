@@ -14,11 +14,11 @@ namespace SupFAmof.API.Controllers
     [ApiController]
     public class ComplaintController : ControllerBase
     {
-        private readonly IComplaintService _complaintService;
+        private readonly IApplicationService _applicationService;
 
-        public ComplaintController(IComplaintService complaintService)
+        public ComplaintController(IApplicationService applicationService)
         {
-            _complaintService = complaintService;
+            _applicationService = applicationService;
         }
 
         ///<summary>
@@ -26,8 +26,8 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CompaintResponse>>> GetAccountReportsByToken
-            ([FromQuery] CompaintResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> GetAccountReportsByToken
+            ([FromQuery] ApplicationResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _complaintService.GetAccountReportProblemsByToken(account.Id, filter, paging);
+                return await _applicationService.GetAccountReportProblemsByToken(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -54,8 +54,8 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<CompaintResponse>>> CreateAccountReport
-            ([FromBody] CreateAccountReportProblemRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<ApplicationResponse>>> CreateAccountReport
+            ([FromBody] CreateAccountApplicationRequest request)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _complaintService.CreateAccountReportProblem(account.Id, request);
+                return await _applicationService.CreateAccountReportProblem(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

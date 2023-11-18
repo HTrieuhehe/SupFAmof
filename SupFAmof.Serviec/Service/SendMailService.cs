@@ -52,7 +52,8 @@ namespace SupFAmof.Service.Service
                             .Replace("{Timeto}", recipient.TimeTo.ToString())
                             .Replace("{schoolName}", recipient.SchoolName.ToString())
                             .Replace("{location}", recipient.Location.ToString())
-                            .Replace("{note}", recipient.Note.ToString());
+                            .Replace("{note}", recipient.Note.ToString())
+                            .Replace("{Link}", recipient.Link.ToString());
 
                         message.Body = bodyBuilder.ToMessageBody();
                         messages.Add(message);

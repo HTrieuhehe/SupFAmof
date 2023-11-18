@@ -18,12 +18,12 @@ namespace SupFAmof.API.Controllers.AdmissionController
     public class AdmissionManageCollaboratorController : ControllerBase
     {
         private readonly IAccountService _admissionAccountService;
-        private readonly IComplaintService _admissionComplaintService;
+        private readonly IApplicationService _admissionApplicationService;
 
-        public AdmissionManageCollaboratorController(IAccountService admissionAccountService, IComplaintService admissionComplaintService)
+        public AdmissionManageCollaboratorController(IAccountService admissionAccountService, IApplicationService admissionApplicationService)
         {
             _admissionAccountService = admissionAccountService;
-            _admissionComplaintService = admissionComplaintService;
+            _admissionApplicationService = admissionApplicationService;
         }
 
         [HttpGet("search")]
@@ -80,7 +80,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpPut("reject-request")]
-        public async Task<ActionResult<CompaintResponse>> RejectProblemRequest(int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        public async Task<ActionResult<ApplicationResponse>> RejectProblemRequest(int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionComplaintService.RejectReportProblem(account.Id,reportId,request);
+                var result = await _admissionApplicationService.RejectReportProblem(account.Id,reportId,request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -104,7 +104,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpPut("approve-request")]
-        public async Task<ActionResult<CompaintResponse>> ApproveProblemRequest(int reportId, UpdateAdmissionAccountReportProblemRequest request)
+        public async Task<ActionResult<ApplicationResponse>> ApproveProblemRequest(int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionComplaintService.ApproveReportProblem(account.Id, reportId, request);
+                var result = await _admissionApplicationService.ApproveReportProblem(account.Id, reportId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -127,7 +127,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpGet("admission-replied-application")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CompaintResponse>>> AdmissionReplyApplication([FromQuery] AdmissionComplaintResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> AdmissionReplyApplication([FromQuery] AdmissionComplaintResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionComplaintService.GetAdmissionAccountReportProblems(account.Id, filter, paging);
+                var result = await _admissionApplicationService.GetAdmissionAccountReportProblems(account.Id, filter, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

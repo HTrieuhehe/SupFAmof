@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupFAmof.Service.DTO.Request
 {
-    public class CreateAccountReportProblemRequest
+    public class CreateAccountApplicationRequest
     {
         //public int Id { get; set; }
         //public int AccountId { get; set; }
@@ -22,7 +22,7 @@ namespace SupFAmof.Service.DTO.Request
         //public int Status { get; set; }
     }
 
-    public class UpdateAdmissionAccountReportProblemRequest
+    public class UpdateAdmissionAccountApplicationRequest
     {
         //public int Id { get; set; }
         //public int AccountId { get; set; }

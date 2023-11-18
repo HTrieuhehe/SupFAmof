@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SupFAmof.Service.DTO.Response.Admission
 {
-    public class AdmissionContractResponse
+    public class AdmissionApplicationResponse
     {
         public int? Id { get; set; }
         public string? ContractName { get; set; }

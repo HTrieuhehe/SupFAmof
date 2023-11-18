@@ -171,6 +171,35 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
+        /// Re Open Post Registration
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("Re-openPostRegistration")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionPostResponse>>> ReOpenPost
+            ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.ReOpenPostRegistration(account.Id, postId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Confirm running Post
         /// </summary>
         /// <returns></returns>

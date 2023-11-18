@@ -73,6 +73,8 @@ namespace SupFAmof.Service.DTO.Request
         public string? Location { get; set; }
 
         public string? Note { get; set; }
+
+        public string? Link { get; set; }
     }
 
     public class MailContractRequest

@@ -119,7 +119,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpGet("getByAccountId")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionPostResponse>>> GetPostByAccountId
-        ([FromQuery] PagingRequest paging)
+        ([FromQuery] AdmissionPostResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPostByAccountId(account.Id, paging);
+                return await _postService.GetPostByAccountId(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {

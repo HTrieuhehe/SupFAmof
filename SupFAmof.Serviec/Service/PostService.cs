@@ -461,7 +461,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, AdmissionPostResponse filter, PagingRequest paging)
         {
             try
             {
@@ -471,7 +471,8 @@ namespace SupFAmof.Service.Service
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                       .ProjectTo<AdmissionPostResponse>(_mapper.ConfigurationProvider)
                                       .Where(x => x.AccountId == accountId)
-                                      .OrderByDescending(x => x.CreateAt)
+                                      .DynamicFilter(filter)
+                                      .DynamicSort(paging.Sort, paging.Order)
                                       .PagingQueryable(paging.Page, paging.PageSize,
                                             Constants.LimitPaging, Constants.DefaultPaging);
 
@@ -520,7 +521,7 @@ namespace SupFAmof.Service.Service
                         Total = post.Item1
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = postResponses.ToList()
+                    Data = postResponses
                 };
             }
             catch (ErrorResponse ex)
@@ -947,7 +948,7 @@ namespace SupFAmof.Service.Service
                                 Total = searchPremiumPost.Item1
                             },
                             //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                            Data = postPremiumSearchResponses.ToList()
+                            Data = postPremiumSearchResponses
                         };
                     }
 
@@ -1007,7 +1008,7 @@ namespace SupFAmof.Service.Service
                             Total = premiumPost.Item1
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = postPremiumResponses.ToList()
+                        Data = postPremiumResponses
                     };
                 }
 

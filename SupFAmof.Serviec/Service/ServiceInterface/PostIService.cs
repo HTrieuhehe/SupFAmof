@@ -15,7 +15,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         #region Admission Post IService
         Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetAdmissionPosts(int accountId, AdmissionPostResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> GetPostByPostcode(string postCode);
-        Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionPostResponse>> GetPostByAccountId(int accountId, AdmissionPostResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AdmissionPostResponse>> CreateAdmissionPost(int accountId, CreatePostRequest request);
         Task<BaseResponseViewModel<AdmissionPostResponse>> UpdateAdmissionPost(int accountId, int postId, UpdatePostRequest request);
         Task<BaseResponseViewModel<AdmissionPostResponse>> ClosePostRegistration(int accountId, int postId);

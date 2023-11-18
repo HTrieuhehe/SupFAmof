@@ -30,6 +30,10 @@ namespace SupFAmof.Service.DTO.Request
         [JsonIgnore]
         public DateTime? CreateAt { get; set; } = Utilities.Ultils.GetCurrentDatetime();
         public int PositionId { get; set; }
+        [Required(ErrorMessage = "true or false is required.")]
+        [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
+        public bool SchoolBusOption { get; set; }
+
 
     }
 

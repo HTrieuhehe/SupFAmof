@@ -283,6 +283,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.WRONG_POSITION,
                         PostRegistrationErrorEnum.WRONG_POSITION.GetDisplayName());
                 }
+             
                 if (original == null)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
@@ -294,7 +295,7 @@ namespace SupFAmof.Service.Service
 
                 var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PositionId == request.PositionId
                                                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
-                if (updateEntity != null && original != null)
+                if (updateEntity != null)
                 {
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
@@ -308,7 +309,13 @@ namespace SupFAmof.Service.Service
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 updateEntity.PositionId = request.PositionId;
+                                updateEntity.SchoolBusOption = request.SchoolBusOption;
                                 updateEntity.UpdateAt = GetCurrentDatetime();
+                                if (!await CheckPostPositionBus(updateEntity))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
+                                                   PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
+                                }
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(updateEntity);
                                 await _unitOfWork.CommitAsync();
 
@@ -333,8 +340,9 @@ namespace SupFAmof.Service.Service
 
                                 PostRgupdateHistory postTgupdate = new PostRgupdateHistory
                                 {
-                                    PostRegistrationId = updateEntity.Id,
-                                    PositionId = updateEntity.PositionId,
+                                    PostRegistrationId = request.Id,
+                                    PositionId = request.PositionId,
+                                    BusOption = request.SchoolBusOption,
                                     CreateAt = GetCurrentDatetime(),
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
@@ -344,7 +352,11 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
                                                        PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
                                 }
-
+                                if (!await CheckPostPositionBus(updateEntity))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
+                                                   PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
+                                }
                                 await _unitOfWork.Repository<PostRgupdateHistory>().InsertAsync(postTgupdate);
                                 await _unitOfWork.CommitAsync();
                                 entityPostTgupdate = postTgupdate;
@@ -683,7 +695,8 @@ namespace SupFAmof.Service.Service
                     TimeTo = postPosition?.TimeTo?.ToString() ?? "N/A",
                     SchoolName = postPosition?.SchoolName ?? "N/A",
                     Location = postPosition?.Location ?? "N/A",
-                    Note = postRegistration.Note ?? "N/A"
+                    Note = postRegistration.Note ?? "N/A",
+                    Link = postPosition?.Document?.DocUrl ?? "N/A"
                 };
 
                 listMail.Add(mailBookingRequest);

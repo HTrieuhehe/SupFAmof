@@ -94,9 +94,11 @@ namespace SupFAmof.Service.Service
 
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
+                    
+                    var checkToken = await _unitOfWork.Repository<ExpoPushToken>().FindAsync(x => x.Id == account.Id);
 
-                    //Add fcm token 
-                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                    //Add expo token 
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0 && !data.ExpoPushToken.Equals(checkToken.Token))
                         _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()
@@ -697,8 +699,10 @@ namespace SupFAmof.Service.Service
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
+                    var checkToken = await _unitOfWork.Repository<ExpoPushToken>().FindAsync(x => x.Id == account.Id);
+
                     //Add expo token 
-                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
+                    if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0 && !data.ExpoPushToken.Equals(checkToken.Token))
                         _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
 
                     return new BaseResponseViewModel<LoginResponse>()

@@ -429,17 +429,19 @@ namespace SupFAmof.Service.Service
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
-                        itemDetail.RegisterAmount = totalCount;
+                        itemDetail.PositionRegisterAmount = totalCount;
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
+
+                        // Reset temp variable
+                        totalCount = 0;
                     }
 
                     //transfer data from position after add to field in post
                     item.TotalAmountPosition = totalAmountPosition;
 
                     // Reset temp variable
-                    totalCount = 0;
                     totalAmountPosition = 0;
                 }
 
@@ -498,17 +500,19 @@ namespace SupFAmof.Service.Service
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
-                        itemDetail.RegisterAmount = totalCount;
+                        itemDetail.PositionRegisterAmount = totalCount;
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
+
+                        // Reset temp variable
+                        totalCount = 0;
                     }
 
                     //transfer data from position after add to field in post
                     item.TotalAmountPosition = totalAmountPosition;
 
                     // Reset temp variable
-                    totalCount = 0;
                     totalAmountPosition = 0;
                 }
 
@@ -926,16 +930,18 @@ namespace SupFAmof.Service.Service
                                 totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
 
                                 //transafer data to field in post position
-                                itemDetail.RegisterAmount = totalCount;
+                                itemDetail.PositionRegisterAmount = totalCount;
 
                                 //add number of amount required to total amount of a specific post
                                 totalAmountPosition += itemDetail.Amount;
+
+                                // Reset temp variable
+                                totalCount = 0;
                             }
                             //transfer data from position after add to field in post
                             item.TotalAmountPosition = totalAmountPosition;
 
                             // Reset temp variable
-                            totalCount = 0;
                             totalAmountPosition = 0;
                         }
 
@@ -986,16 +992,18 @@ namespace SupFAmof.Service.Service
                             totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
 
                             //transafer data to field in post position
-                            itemDetail.RegisterAmount = totalCount;
+                            itemDetail.PositionRegisterAmount = totalCount;
 
                             //add number of amount required to total amount of a specific post
                             totalAmountPosition += itemDetail.Amount;
+
+                            // Reset temp variable
+                            totalCount = 0;
                         }
                         //transfer data from position after add to field in post
                         item.TotalAmountPosition = totalAmountPosition;
 
                         // Reset temp variable
-                        totalCount = 0;
                         totalAmountPosition = 0;
                     }
 
@@ -1054,7 +1062,7 @@ namespace SupFAmof.Service.Service
                             totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                             //transafer data to field in post position
-                            itemDetail.RegisterAmount = totalCount;
+                            itemDetail.PositionRegisterAmount = totalCount;
 
                             //add number of amount required to total amount of a specific post
                             totalAmountPosition += itemDetail.Amount;
@@ -1115,16 +1123,18 @@ namespace SupFAmof.Service.Service
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
-                        itemDetail.RegisterAmount = totalCount;
+                        itemDetail.PositionRegisterAmount = totalCount;
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
+
+                        //reset temp count
+                        totalCount = 0;
                     }
                     //transfer data from position after add to field in post
                     item.TotalAmountPosition = totalAmountPosition;
 
                     // Reset temp variable
-                    totalCount = 0;
                     totalAmountPosition = 0;
                 }
 
@@ -1291,16 +1301,18 @@ namespace SupFAmof.Service.Service
                             totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
 
                             //transafer data to field in post position
-                            itemDetail.RegisterAmount = totalCount;
+                            itemDetail.PositionRegisterAmount = totalCount;
 
                             //add number of amount required to total amount of a specific post
                             totalAmountPosition += itemDetail.Amount;
+
+                            // Reset temp variable
+                            totalCount = 0;
                         }
                         //transfer data from position after add to field in post
                         item.TotalAmountPosition = totalAmountPosition;
 
                         // Reset temp variable
-                        totalCount = 0;
                         totalAmountPosition = 0;
                     }
 
@@ -1355,16 +1367,18 @@ namespace SupFAmof.Service.Service
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                         //transafer data to field in post position
-                        itemDetail.RegisterAmount = totalCount;
+                        itemDetail.PositionRegisterAmount = totalCount;
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
+
+                        // Reset temp variable
+                        totalCount = 0;
                     }
                     //transfer data from position after add to field in post
                     item.TotalAmountPosition = totalAmountPosition;
 
                     // Reset temp variable
-                    totalCount = 0;
                     totalAmountPosition = 0;
                 }
 

@@ -15,5 +15,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<byte[]> GenerateAccountExcel(int accountId);
         Task<BaseResponsePagingViewModel<CollabReportResponse>> AccountReportList(PagingRequest paging, int accountId);
         Task<byte[]> GenerateAccountWithIdentityExcel(int accountId);
+        Task<byte[]> GenerateOpendayReportMonthly(int accountId, FinancialReportRequest request);
     }
 }

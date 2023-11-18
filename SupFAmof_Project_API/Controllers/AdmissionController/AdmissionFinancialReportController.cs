@@ -91,5 +91,29 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+        [HttpPost("get-od-monthly-excel")]
+        public async Task<ActionResult> GenerateOpendayReportMonthly(int accountId,[FromQuery] FinancialReportRequest request)
+        {
+
+            try
+            {
+                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                //{
+                //    return Unauthorized();
+                //}
+                var result = await _financialReportService.GenerateOpendayReportMonthly(accountId,request);
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "account_report.xlsx");
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

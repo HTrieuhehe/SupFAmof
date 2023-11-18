@@ -661,7 +661,7 @@ namespace SupFAmof.Service.Service
                 {
                     Ids = accountIds,
                     Title = NotificationTypeEnum.PostRegistration_Confirm.GetDisplayName(),
-                    Body = "",
+                    Body = "Your Post Registration is confirmed! Check it now!",
                     NotificationsType = (int)NotificationTypeEnum.PostRegistration_Confirm
                 };
 

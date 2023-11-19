@@ -27,6 +27,7 @@ using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using static ServiceStack.Diagnostics;
 
 namespace SupFAmof.Service.Service
 {
@@ -874,13 +875,13 @@ namespace SupFAmof.Service.Service
 
         #region Collaborator Post Service
 
-        public BaseResponsePagingViewModel<PostResponse> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, string search, PostResponse filter, TimeFromFilter timeFromFilter, PagingRequest paging)
         {
             try
             {
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
-                var checkAccount = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(a => a.Id == accountId);
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
 
                 if (checkAccount == null)
                 {
@@ -905,7 +906,7 @@ namespace SupFAmof.Service.Service
                                        .DynamicSort(paging.Sort, paging.Order)
                                        .PagingQueryable(paging.Page, paging.PageSize);
 
-                        var postPremiumSearchResponses = searchPremiumPost.Item2.ToList();
+                        var postPremiumSearchResponses = await searchPremiumPost.Item2.ToListAsync();
 
                         foreach (var item in postPremiumSearchResponses)
                         {
@@ -967,9 +968,11 @@ namespace SupFAmof.Service.Service
                                        .DynamicSort(paging.Sort, paging.Order)
                                        .PagingQueryable(paging.Page, paging.PageSize);
 
-                    var postPremiumResponses = premiumPost.Item2.ToList();
+                    var premiumList = FilterPostDateFrom(await premiumPost.Item2.ToListAsync(), timeFromFilter);
 
-                    foreach (var item in postPremiumResponses)
+                    //var postPremiumResponses = premiumPost.Item2.ToList();
+
+                    foreach (var item in premiumList.Values.First().ToList())
                     {
                         // lấy tất cả các position Id của bài post hiện tại
                         var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
@@ -1014,10 +1017,10 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumPost.Item1
+                            Total = premiumList.Keys.First(),
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = postPremiumResponses
+                        Data = premiumList.Values.First().ToList()
                     };
                 }
 
@@ -1036,7 +1039,7 @@ namespace SupFAmof.Service.Service
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
 
-                    var postSearchResponses = searchPost.Item2.ToList();
+                    var postSearchResponses = await searchPost.Item2.ToListAsync();
 
 
                     foreach (var item in postSearchResponses)
@@ -1088,6 +1091,7 @@ namespace SupFAmof.Service.Service
                         Data = postSearchResponses.ToList()
                     };
                 }
+
                 var post = _unitOfWork.Repository<Post>().GetAll()
                                     .Where(x => x.Status >= (int)PostStatusEnum.Opening
                                                 && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
@@ -1097,10 +1101,12 @@ namespace SupFAmof.Service.Service
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
 
-                var postResponses = post.Item2.ToList();
+                var list = FilterPostDateFrom(await post.Item2.ToListAsync(), timeFromFilter);
+
+                //var postResponses = post.Item2.ToList();
 
 
-                foreach (var item in postResponses)
+                foreach (var item in list.Values.First().ToList())
                 {
                     //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1145,10 +1151,10 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = post.Item1
+                        Total = list.Keys.First()
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = postResponses.ToList()
+                    Data = list.Values.First().ToList()
                 };
             }
             catch (Exception ex)
@@ -1399,6 +1405,28 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+        #endregion
+
+        #region Private logic 
+
+        private static Dictionary<int, IQueryable<PostResponse>> FilterPostDateFrom(List<PostResponse> list, TimeFromFilter filter)
+        {
+            var query = list.AsQueryable();
+            if (filter.TimeFromEnd != null && filter.TimeFromEnd.HasValue && filter.TimeFromStart != null && filter.TimeFromStart.HasValue)
+            {
+                //query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
+
+                //filter here
+                query = query.Where(post => post.DateFrom >= filter.TimeFromStart && post.DateFrom <= filter.TimeFromEnd);
+
+            }
+            int size = query.Count();
+            return new Dictionary<int, IQueryable<PostResponse>>
+            {
+                { size, query }
+            };
         }
 
         #endregion

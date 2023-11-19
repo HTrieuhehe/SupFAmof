@@ -16,7 +16,7 @@ namespace SupFAmof.Data.MakeConnection
                 options.UseSqlServer(configuration.GetConnectionString("SQLServerDatabase"));
             });
             //services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(ServiceLifetime.Transient);
-            services.AddDbContext<SupFAmOf_Stg_DbContext>(ServiceLifetime.Transient);
+            services.AddDbContext<SupFAmOf_Stg_DbContext>(ServiceLifetime.Scoped);
             return services;
         }
     }

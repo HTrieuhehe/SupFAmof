@@ -45,4 +45,10 @@ namespace SupFAmof.Service.DTO.Response
         public PostCategoryResponse? PostCategory { get; set; }
         public ICollection<PostPositionResponse>? PostPositions { get; set; }
     }
+
+    public class TimeFromFilter
+    {
+        public DateTime? TimeFromStart { get; set; }
+        public DateTime? TimeFromEnd { get; set; }
+    }
 }

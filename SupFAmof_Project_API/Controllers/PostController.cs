@@ -27,8 +27,8 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpGet("getAll")]
-        public ActionResult<BaseResponsePagingViewModel<PostResponse>> GetPosts
-        ([FromQuery] PostResponse filter, string? search, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPosts
+        ([FromQuery] PostResponse filter, string? search, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return _postService.GetPosts(account.Id, search, filter, paging);
+                return await _postService.GetPosts(account.Id, search, filter, timeFromFilter, paging);
             }
             catch (ErrorResponse ex)
             {

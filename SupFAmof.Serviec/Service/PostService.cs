@@ -1414,12 +1414,12 @@ namespace SupFAmof.Service.Service
         private static Dictionary<int, IQueryable<PostResponse>> FilterPostDateFrom(List<PostResponse> list, TimeFromFilter filter)
         {
             var query = list.AsQueryable();
-            if (filter.TimeFromEnd != null && filter.TimeFromEnd.HasValue && filter.TimeFromStart != null && filter.TimeFromStart.HasValue)
+            if (filter.DateFromEnd != null && filter.DateFromEnd.HasValue && filter.DateFromStart != null && filter.DateFromStart.HasValue)
             {
                 //query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
 
                 //filter here
-                query = query.Where(post => post.DateFrom >= filter.TimeFromStart && post.DateFrom <= filter.TimeFromEnd);
+                query = query.Where(post => post.DateFrom >= filter.DateFromStart && post.DateFrom <= filter.DateFromEnd);
 
             }
             int size = query.Count();

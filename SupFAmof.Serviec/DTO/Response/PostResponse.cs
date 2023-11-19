@@ -48,7 +48,7 @@ namespace SupFAmof.Service.DTO.Response
 
     public class TimeFromFilter
     {
-        public DateTime? TimeFromStart { get; set; }
-        public DateTime? TimeFromEnd { get; set; }
+        public DateTime? DateFromStart { get; set; }
+        public DateTime? DateFromEnd { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         #endregion
 
         #region Collaborator Post IService
-        Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging);
+        BaseResponsePagingViewModel<PostResponse> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging);
         Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, PagingRequest paging);
         Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging);
         #endregion

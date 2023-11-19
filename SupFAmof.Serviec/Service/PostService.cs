@@ -874,7 +874,7 @@ namespace SupFAmof.Service.Service
 
         #region Collaborator Post Service
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging)
+        public BaseResponsePagingViewModel<PostResponse> GetPosts(int accountId, string search, PostResponse filter, PagingRequest paging)
         {
             try
             {

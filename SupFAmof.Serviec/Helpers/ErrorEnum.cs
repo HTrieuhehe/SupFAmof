@@ -141,6 +141,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Username or password is not correct")]
             LOGIN_FAIL = 4002,
+
+            //403
+            [Display(Name = "Admin is unable to use this function")]
+            ADMIN_FORBIDDEN = 4031,
         }
 
         public enum PostRegistrationErrorEnum
@@ -513,6 +517,13 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Attendance Not Found")]
             ATTENDANCE_NOT_FOUND = 4041,
+        }
+
+        public enum AdminSystemManagementErrorEnum
+        {
+            //400
+            [Display(Name = "Role email is not necessary to have @ character")]
+            CHARACTER_INVALID = 4041,
         }
     }
 }

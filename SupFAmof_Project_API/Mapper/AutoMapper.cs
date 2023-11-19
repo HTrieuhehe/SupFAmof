@@ -23,6 +23,15 @@ namespace SupFAmof.API.Mapper
             CreateMap<Role, RoleResponse>().ReverseMap();
             CreateMap<CreateRoleRequest, Role>();
             CreateMap<UpdateRoleRequest, Role>();
+
+            #region Admin System Management
+
+            CreateMap<Role, AdminSystemManagementResponse>().ReverseMap();
+            CreateMap<CreateAdminAccountRequest, Role>();
+            CreateMap<UpdateAdminAccountRequest, Role>();
+
+            #endregion
+
             #endregion
 
             #region Account
@@ -268,6 +277,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<CheckAttendance, AttendanceResponse>().ReverseMap();
 
             #endregion
+
         }
     }
 }

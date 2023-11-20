@@ -231,6 +231,12 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Can only update position in that post")]
             WRONG_POSITION = 4021,
+            //400
+            [Display(Name = "Already cancelled")]
+            ALREADY_CANCELLED = 4022,
+            //400
+            [Display(Name = "Already register this position.Cannot update to this position")]
+            UPDATE_FAILED = 4023,
         }
 
         public enum PostCategoryErrorEnum

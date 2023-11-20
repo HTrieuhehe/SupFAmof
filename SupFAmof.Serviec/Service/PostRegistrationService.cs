@@ -9,6 +9,7 @@ using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
 using SupFAmof.Service.Utilities;
 using System.Collections.Generic;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SupFAmof.Service.Service
 {
@@ -148,15 +150,6 @@ namespace SupFAmof.Service.Service
                     .SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId &&
                                                   x.PositionId == request.PositionId);
 
-                // Check for existing registrations on the same day
-                //var existingEventDate = await _unitOfWork.Repository<PostRegistration>()
-                //    .FindAsync(x => x.AccountId == postRegistration.AccountId &&
-                //                     x.Status == (int)PostRegistrationStatusEnum.Confirm &&
-                //                     x.PostRegistrationDetails.Any(d => d.Post.DateFrom.Date == post.DateFrom.Date));
-
-                // Continue with your logic
-
-                // if (checkDuplicateForm == null && existingEventDate == null)
                 if (checkDuplicateForm == null)
                 {
                     if (post.AccountId == postRegistration.AccountId)
@@ -235,7 +228,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                if (postRegistrationId == 0 || postRegistrationId == null)
+                if (postRegistrationId == 0)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY,
                                             PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY.GetDisplayName());
@@ -250,11 +243,36 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                             PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
-
-                postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
-
-                await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
-                await _unitOfWork.CommitAsync();
+                switch((PostRegistrationStatusEnum)postRegistration.Status)
+                {
+                    case PostRegistrationStatusEnum.Pending:
+                        postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                        await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
+                        await _unitOfWork.CommitAsync();
+                        break;
+                    case PostRegistrationStatusEnum.Confirm:
+                        CreateAccountApplicationRequest application = new CreateAccountApplicationRequest
+                        {
+                            ProblemNote = $"Request for cancellation for Position {postRegistration.Position.PositionName} from Post {postRegistration.Position.Post.PostCode}",
+                        };
+                        var report = _mapper.Map<CreateAccountApplicationRequest, Application>(application);
+                        report.AccountId = accountId;
+                        report.ReportDate = Ultils.GetCurrentDatetime();
+                        report.Status = (int)ReportProblemStatusEnum.Pending;
+                        await _unitOfWork.Repository<Application>().InsertAsync(report);
+                        await _unitOfWork.CommitAsync();
+                        return new BaseResponseViewModel<dynamic>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Success = true,
+                                Message = "Cancel Successfully",
+                                ErrorCode = 200
+                            }
+                            ,Data = report
+                        };
+                }
+                
 
                 return new BaseResponseViewModel<dynamic>()
                 {
@@ -313,6 +331,11 @@ namespace SupFAmof.Service.Service
                                 updateEntity.PositionId = request.PositionId;
                                 updateEntity.SchoolBusOption = request.SchoolBusOption;
                                 updateEntity.UpdateAt = GetCurrentDatetime();
+                                if (!await CheckDuplicateUpdate(updateEntity))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
+                                                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                }
                                 if (!await CheckPostPositionBus(updateEntity))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -349,7 +372,12 @@ namespace SupFAmof.Service.Service
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
                                 };
-                                if(!await CheckDuplicatePostRgUpdate(postTgupdate))
+                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
+                                                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                }
+                                if (!await CheckDuplicatePostRgUpdate(postTgupdate))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
                                                        PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
@@ -491,6 +519,11 @@ namespace SupFAmof.Service.Service
                                     matchingEntity.PositionId = (int)findRequest.PositionId;
                                     matchingEntity.UpdateAt = GetCurrentDatetime();
                                     findRequest.Status = (int)PostRGUpdateHistoryEnum.Approved;
+                                    if (!await CheckDuplicateUpdate(matchingEntity))
+                                    {
+                                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
+                                                       PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                    }
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
                                     await _unitOfWork.CommitAsync();
@@ -781,7 +814,7 @@ namespace SupFAmof.Service.Service
                 {
                     foreach (var attendedPost in postsAttended)
                     {
-                        if (attendedPost.Position.Post.DateFrom.Date == positionTimeFromPostRegistered.Post.DateFrom.Date)
+                        if (attendedPost.Position.Date.Date == positionTimeFromPostRegistered.Date.Date)
                         {
                             // Use Any() with a lambda expression to check for overlaps
                             if (IsTimeSpanOverlap(attendedPost.Position.TimeFrom, attendedPost.Position.TimeTo,
@@ -800,6 +833,16 @@ namespace SupFAmof.Service.Service
         {
             var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);
             if(duplicate != null)
+            {
+                return false;
+            }
+            return true;
+        }
+        private async Task<bool> CheckDuplicatePostRgUpdateSend(PostRgupdateHistory request,int accountId)
+        {
+            var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == accountId
+                                                                                         && x.PositionId == request.PositionId);
+            if (duplicate != null)
             {
                 return false;
             }
@@ -946,32 +989,6 @@ namespace SupFAmof.Service.Service
         }
 
         #endregion
-        //public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> FilterPostRegistration
-        //    (int accountId, CollabRegistrationResponse postRegistrationfilter, FilterPostRegistrationResponse filter, PagingRequest paging)
-        //{
-        //    try
-        //    {
-        //        var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-        //                                           .Where(x => x.AccountId == accountId)
-        //                                           .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
-        //                                           .DynamicFilter(postRegistrationfilter)
-        //                                           .PagingQueryable(paging.Page, paging.PageSize);
-
-        //        var list = FilterPostRegis(postRegistration.Item2.ToList(), filter);
-
-        //        return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
-        //        {
-        //            Metadata = new PagingsMetadata()
-        //            {
-        //                Page = paging.Page,
-        //                Size = paging.PageSize,
-        //                Total = list.Keys.First(),
-        //            },
-        //            Data = list.Values.First().ToList(),
-        //        };
-        //    }
-        //    catch (Exception ex) { throw; }
-        //}
 
         private static Dictionary<int, IQueryable<CollabRegistrationUpdateViewResponse>> FilterPostRegis(List<CollabRegistrationUpdateViewResponse> list, FilterPostRegistrationResponse filter)
         {
@@ -1034,6 +1051,75 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> CancelPostRegistrationAdmission(List<int> Ids,int accountId)
+        {
+            try
+            {
+                var listResponse = new List<PostRegistration>();
+                var findRequests = await _unitOfWork.Repository<PostRegistration>()
+                    .GetAll()
+                    .Where(x => Ids.Contains(x.Id)&&x.Position.Post.AccountId == accountId)
+                    .ToListAsync();
+
+                if (Ids.Distinct().Count() != Ids.Count)
+                {
+                    throw new ErrorResponse(400,
+                        (int)PostRegistrationErrorEnum.DUPLICATE_IDS,
+                        PostRegistrationErrorEnum.DUPLICATE_IDS.GetDisplayName());
+                }
+                if (findRequests.Count == 0)
+                {
+                    throw new ErrorResponse(404,
+                        (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
+
+                foreach (var findRequest in findRequests)
+                {
+                    switch (findRequest.Status)
+                    {
+                        case (int)PostRegistrationStatusEnum.Cancel:
+                            throw new ErrorResponse(400,
+                                (int)PostRegistrationErrorEnum.ALREADY_CANCELLED,
+                                PostRegistrationErrorEnum.ALREADY_CANCELLED.GetDisplayName());
+                        default:
+                            findRequest.Status = (int)PostRegistrationStatusEnum.Cancel;
+                            await _unitOfWork.Repository<PostRegistration>().UpdateDetached(findRequest);
+                            await _unitOfWork.CommitAsync();
+                            break;
+                    }
+            }
+                listResponse = findRequests;
+                return new BaseResponseViewModel<List<PostRegistrationResponse>>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Cancel success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<List<PostRegistrationResponse>>(listResponse)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<bool> CheckDuplicateUpdate(PostRegistration update)
+        {
+            var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == update.AccountId
+                                                                                           && x.PositionId == update.PositionId);
+            if(duplicate !=null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
     }
 
 }

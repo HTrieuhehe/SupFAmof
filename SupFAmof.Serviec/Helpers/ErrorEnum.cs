@@ -523,7 +523,11 @@ namespace SupFAmof.Service.Helpers
         {
             //400
             [Display(Name = "Role email is not necessary to have @ character")]
-            CHARACTER_INVALID = 4041,
+            CHARACTER_INVALID = 4001,
+
+            //400
+            [Display(Name = "Role email is not necessary to have @ character")]
+            SYSTEM_ROLE_NOT_FOUND = 4041,
         }
     }
 }

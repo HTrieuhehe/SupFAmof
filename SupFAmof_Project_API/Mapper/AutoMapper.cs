@@ -12,6 +12,7 @@ using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using SupFAmof.Service.DTO.Request.Admin;
 
 namespace SupFAmof.API.Mapper
 {
@@ -27,8 +28,8 @@ namespace SupFAmof.API.Mapper
             #region Admin System Management
 
             CreateMap<Role, AdminSystemManagementResponse>().ReverseMap();
-            CreateMap<CreateAdminAccountRequest, Role>();
-            CreateMap<UpdateAdminAccountRequest, Role>();
+            CreateMap<CreateAdminSystemManagementRequest, Role>();
+            CreateMap<UpdateAdminSystemManagementRequest, Role>();
 
             #endregion
 

@@ -101,7 +101,6 @@ namespace SupFAmof.Service.Helpers
             //500
             [Display(Name = "Server are busy")]
             SERVER_BUSY = 5001,
-
         }
 
         public enum AccountBankingErrorEnums
@@ -340,6 +339,10 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Cannot end post if there is any position is running")]
             INVALID_END_POST = 4043,
+
+            //408
+            [Display(Name = "Request Time Out!")]
+            REQUEST_TIME_OUT = 4081,
         }
 
         public enum DocumentErrorEnum

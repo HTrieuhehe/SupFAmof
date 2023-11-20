@@ -1159,7 +1159,8 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw;
+                throw new ErrorResponse(408, (int)PostErrorEnum.REQUEST_TIME_OUT,
+                                         PostErrorEnum.REQUEST_TIME_OUT.GetDisplayName());
             }
         }
 

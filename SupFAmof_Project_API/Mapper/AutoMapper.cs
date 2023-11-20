@@ -36,6 +36,7 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Account
+
             CreateMap<Account, AccountResponse>().ReverseMap();
             CreateMap<Account, NewCollaboratorResponse>().ReverseMap();
             CreateMap<Account, CollaboratorAccountReponse>().ReverseMap();
@@ -61,6 +62,14 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
 
             CreateMap<Account, AttendanceAccountResponse>();
+
+            #region Admission Manage Admission Account 
+
+            CreateMap<Account, AdminAccountAdmissionResponse>().ReverseMap();
+            CreateMap<UpdateAdminAccountAdmissionRequest, Account>();
+
+            #endregion
+
             #endregion
 
             #region Account Report

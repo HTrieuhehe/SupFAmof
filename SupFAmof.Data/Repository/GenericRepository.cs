@@ -23,12 +23,6 @@ namespace SupFAmof.Data.Repository
             Table = Context.Set<T>();
         }
 
-        private string GenerateRedisKey(Expression<Func<T, bool>> predicate)
-        {
-            // Generate a unique key for caching based on the predicate
-            return $"{typeof(T).FullName}_{predicate.ToString()}";
-        }
-
         public T Find(Func<T, bool> predicate)
         {
             return Table.FirstOrDefault(predicate);

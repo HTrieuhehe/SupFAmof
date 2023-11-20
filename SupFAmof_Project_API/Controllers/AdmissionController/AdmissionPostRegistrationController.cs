@@ -143,5 +143,29 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+        [HttpDelete("cancel-post-registration")]
+        public async Task<ActionResult<BaseResponseViewModel<List<PostRegistrationResponse>>>> CancelPostRegistrationAdmission
+         ([FromBody] List<int> PostRegistrationIds)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.CancelPostRegistrationAdmission(PostRegistrationIds, account.Id);
+                return result;
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

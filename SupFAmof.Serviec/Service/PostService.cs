@@ -923,7 +923,7 @@ namespace SupFAmof.Service.Service
                             // tính tổng các registration đã được confirm
                             item.RegisterAmount = premiumPostRegistrations.Count;
 
-
+                            //lấy thời gian min max
                             item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
                             item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
 
@@ -971,8 +971,6 @@ namespace SupFAmof.Service.Service
 
                     var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter);
 
-                    //var postPremiumResponses = premiumPost.Item2.ToList();
-
                     foreach (var item in premiumList)
                     {
                         // lấy tất cả các position Id của bài post hiện tại
@@ -987,7 +985,7 @@ namespace SupFAmof.Service.Service
                         // tính tổng các registration đã được confirm
                         item.RegisterAmount = premiumPostRegistrations.Count;
 
-
+                        //lấy thời gian min max
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
                         item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
 
@@ -1256,7 +1254,7 @@ namespace SupFAmof.Service.Service
             return postRegistrations.Count(x => x.PositionId == positionId);
         }
 
-        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, TimeFromFilter timeFromFilter, PagingRequest paging)
         {
             try
             {
@@ -1278,12 +1276,11 @@ namespace SupFAmof.Service.Service
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
-                                       .DynamicSort(paging.Sort, paging.Order)
-                                       .PagingQueryable(paging.Page, paging.PageSize);
+                                       .DynamicSort(paging.Sort, paging.Order);
 
-                    var postPremiumResponses = premiumPost.Item2.ToList();
+                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter);
 
-                    foreach (var item in postPremiumResponses)
+                    foreach (var item in premiumList)
                     {
                         //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1325,31 +1322,32 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
+                    premiumList.PagingQueryable(paging.Page, paging.PageSize);
+
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
                         Metadata = new PagingsMetadata()
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumPost.Item1
+                            Total = premiumList.Count(),
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = postPremiumResponses.ToList()
+                        Data = await premiumList.ToListAsync()
                     };
                 }
 
-                var post = _unitOfWork.Repository<Post>().GetAll()
+                var posts = _unitOfWork.Repository<Post>().GetAll()
                                         .Where(x => x.Status == (int)PostStatusEnum.Re_Open)
                                         .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
-                                        .DynamicSort(paging.Sort, paging.Order)
-                                        .PagingQueryable(paging.Page, paging.PageSize);
+                                        .DynamicSort(paging.Sort, paging.Order);
+                                        //.PagingQueryable(paging.Page, paging.PageSize);
 
+                var dateFilter = FilterPostDateFrom(posts, timeFromFilter);
 
-                var postResponses = post.Item2.ToList();
-
-                foreach (var item in postResponses)
+                foreach (var item in dateFilter)
                 {
                     //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1367,9 +1365,6 @@ namespace SupFAmof.Service.Service
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrations.Count;
 
-                    item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
-                    item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
-
                     foreach (var itemDetail in item.PostPositions)
                     {
                         //count register amount in post attendee based on position
@@ -1381,7 +1376,7 @@ namespace SupFAmof.Service.Service
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
 
-                        // Reset temp variable
+                        //reset temp count
                         totalCount = 0;
                     }
                     //transfer data from position after add to field in post
@@ -1391,16 +1386,18 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
+                dateFilter.PagingQueryable(paging.Page, paging.PageSize);
+
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = post.Item1
+                        Total = dateFilter.Count()
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = postResponses.ToList()
+                    Data = await dateFilter.ToListAsync()
                 };
             }
             catch (Exception ex)
@@ -1432,25 +1429,6 @@ namespace SupFAmof.Service.Service
             //int size = list.Count();
             return list;
         }
-
-        //private static IQueryable<PostResponse> FilterPostDateFrom(this IQueryable<PostResponse> posts, TimeFromFilter filter)
-        //{
-        //    if (filter.DateFromEnd != null && filter.DateFromEnd.HasValue &&
-        //        filter.DateFromStart != null && filter.DateFromStart.HasValue)
-        //    {
-        //        posts = posts.Where(p => p.DateFrom >= filter.DateFromStart
-        //                                && p.DateFrom <= filter.DateFromEnd);
-        //    }
-
-        //    if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue &&
-        //        filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
-        //    {
-        //        posts = posts.Where(p => p.CreateAt >= filter.CreateAtStart
-        //                                && p.CreateAt <= filter.CreateAtEnd);
-        //    }
-
-        //    return posts;
-        //}
 
         #endregion
     }

@@ -57,7 +57,7 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getReOpen")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPostsReOpen
-        ([FromQuery] PostResponse filter, [FromQuery] PagingRequest paging)
+        ([FromQuery] PostResponse filter, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPostReOpen(account.Id, filter, paging);
+                return await _postService.GetPostReOpen(account.Id, filter, timeFromFilter, paging);
             }
             catch (ErrorResponse ex)
             {

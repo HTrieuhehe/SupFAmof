@@ -897,18 +897,19 @@ namespace SupFAmof.Service.Service
                     if (!string.IsNullOrEmpty(search))
                     {
                         var searchPremiumPost = _unitOfWork.Repository<Post>().GetAll()
-                                       .Where(x => x.Status == (int)PostStatusEnum.Opening || x.Status == (int)PostStatusEnum.Avoid_Regist
-                                       && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
-                                                                                    || x.PostDescription.Contains(search)
-                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(search))
-                                                                                    || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                       .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order)
                                        .PagingQueryable(paging.Page, paging.PageSize);
 
-                        var postPremiumSearchResponses = await searchPremiumPost.Item2.ToListAsync();
+                        var filterStatus = searchPremiumPost.Item2.Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                    || x.PostDescription.Contains(search)
+                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                    || x.PostPositions.Any(x => x.Location.Contains(search)));
+
+                        var postPremiumSearchResponses = await filterStatus.ToListAsync();
 
                         foreach (var item in postPremiumSearchResponses)
                         {
@@ -1029,17 +1030,18 @@ namespace SupFAmof.Service.Service
                 if (!string.IsNullOrEmpty(search))
                 {
                     var searchPost = _unitOfWork.Repository<Post>().GetAll()
-                                    .Where(x => x.Status == (int)PostStatusEnum.Opening
-                                                || x.Status == (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false
-                                                && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
-                                                                                            || x.PostDescription.Contains(search)
-                                                                                            || x.PostPositions.Any(x => x.SchoolName.Contains(search))
-                                                                                            || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                    .Where(x => x.Status >= (int)PostStatusEnum.Opening
+                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
                                     .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                     .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
+
+                    var filterStatus = searchPost.Item2.Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                            || x.PostDescription.Contains(search)
+                                                                                            || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                            || x.PostPositions.Any(x => x.Location.Contains(search)));
 
                     var postSearchResponses = await searchPost.Item2.ToListAsync();
 
@@ -1273,17 +1275,17 @@ namespace SupFAmof.Service.Service
                     if (!string.IsNullOrEmpty(search))
                     {
                         var searchPremiumPost = _unitOfWork.Repository<Post>().GetAll()
-                                       .Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
-                                                                                    || x.PostDescription.Contains(search)
-                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(search))
-                                                                                    || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                       .Where(x => x.Status == (int)PostStatusEnum.Re_Open)
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order)
                                        .PagingQueryable(paging.Page, paging.PageSize);
 
-                        var filterStatus = searchPremiumPost.Item2.Where(x => x.Status == (int)PostStatusEnum.Re_Open);
+                        var filterStatus = searchPremiumPost.Item2.Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                    || x.PostDescription.Contains(search)
+                                                                                    || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                    || x.PostPositions.Any(x => x.Location.Contains(search)));
                         
                         var postPremiumSearchResponses = await filterStatus.ToListAsync();
 
@@ -1407,17 +1409,17 @@ namespace SupFAmof.Service.Service
                 if (!string.IsNullOrEmpty(search))
                 {
                     var searchPost = _unitOfWork.Repository<Post>().GetAll()
-                                    .Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
-                                                                                            || x.PostDescription.Contains(search)
-                                                                                            || x.PostPositions.Any(x => x.SchoolName.Contains(search))
-                                                                                            || x.PostPositions.Any(x => x.Location.Contains(search)))
+                                    .Where(x => x.Status == (int)PostStatusEnum.Re_Open)
                                     .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                     .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order)
                                     .PagingQueryable(paging.Page, paging.PageSize);
 
-                    var filterStatus = searchPost.Item2.Where(x => x.Status == (int)PostStatusEnum.Re_Open);
+                    var filterStatus = searchPost.Item2.Where(x => x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
+                                                                                            || x.PostDescription.Contains(search)
+                                                                                            || x.PostPositions.Any(x => x.SchoolName.Contains(search))
+                                                                                            || x.PostPositions.Any(x => x.Location.Contains(search)));
 
                     var postPremiumSearchResponses = await filterStatus.ToListAsync();
 

@@ -50,19 +50,20 @@ namespace SupFAmof.Service.Service
                                                   .Where(x => x.AccountId == accountId)
                                                   .ProjectTo<CollabRegistrationUpdateViewResponse>(_mapper.ConfigurationProvider)
                                                   .DynamicFilter(filter)
-                                                  .DynamicSort(paging.Sort, paging.Order)
-                                                  .PagingQueryable(paging.Page, paging.PageSize);
+                                                  .DynamicSort(paging.Sort, paging.Order);
+                //.PagingQueryable(paging.Page, paging.PageSize);
+                var list = FilterPostRegis(postRegistration, statusFilter);
 
-                var postRegistrationLists = postRegistration.Item2.ToList();
+                list.PagingQueryable(paging.Page, paging.PageSize);
 
-                foreach (var registration in postRegistrationLists)
+                var postRegistrationResponse = await list.ToListAsync();
+
+                foreach (var registration in postRegistrationResponse)
                 {
                     registration.PostPositionsUnregistereds.Remove(registration.PostPositionsUnregistereds
                         .ToList()
                         .Find(p => p.Id == registration.PositionId));
                 }
-
-                var list = FilterPostRegis(postRegistrationLists, statusFilter);
 
                 return new BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>()
                 {
@@ -70,9 +71,9 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = list.Keys.First(),
+                        Total = postRegistrationResponse.Count(),
                     },
-                    Data = list.Values.First().ToList(),
+                    Data = postRegistrationResponse,
                 };
             }
             catch (Exception)
@@ -990,19 +991,15 @@ namespace SupFAmof.Service.Service
 
         #endregion
 
-        private static Dictionary<int, IQueryable<CollabRegistrationUpdateViewResponse>> FilterPostRegis(List<CollabRegistrationUpdateViewResponse> list, FilterPostRegistrationResponse filter)
+        private static IQueryable<CollabRegistrationUpdateViewResponse> FilterPostRegis(IQueryable<CollabRegistrationUpdateViewResponse> list, FilterPostRegistrationResponse filter)
         {
-            var query = list.AsQueryable();
             if (filter.RegistrationStatus != null && filter.RegistrationStatus.Any())
             {
-                query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
+                list = list.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
             }
-            int size = query.Count();
-            return new Dictionary<int, IQueryable<CollabRegistrationUpdateViewResponse>>
-            {
-                { size, query }
-            };
+            return list;
         }
+        
         private async Task<bool> CheckUpdatePosition(PostRegistrationUpdateRequest request)
         {
                 var currentPosition =  await _unitOfWork.Repository<PostRegistration>().FindAsync(x=>x.Id == request.Id);

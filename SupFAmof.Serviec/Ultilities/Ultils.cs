@@ -265,6 +265,6 @@ namespace SupFAmof.Service.Utilities
             if (isNegative) result = "Âm " + result;
             return result;
         }
-    
+
     }
 }

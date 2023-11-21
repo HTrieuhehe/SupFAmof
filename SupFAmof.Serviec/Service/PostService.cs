@@ -29,6 +29,7 @@ using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using static ServiceStack.Diagnostics;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.VariantTypes;
 
 namespace SupFAmof.Service.Service
 {
@@ -969,9 +970,10 @@ namespace SupFAmof.Service.Service
                                        .DynamicSort(paging.Sort, paging.Order);
                                        //.PagingQueryable(paging.Page, paging.PageSize);
 
-                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter);
+                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
+                    var response = await premiumList.Item2.ToListAsync();
 
-                    foreach (var item in premiumList)
+                    foreach (var item in response)
                     {
                         // lấy tất cả các position Id của bài post hiện tại
                         var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
@@ -1010,7 +1012,7 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
-                   var premiumData = premiumList.PagingQueryable(paging.Page, paging.PageSize);
+                   
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -1018,10 +1020,10 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumData.Item1,
+                            Total = response.Count(),
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = premiumData.Item2.ToList()
+                        Data = response
                     };
                 }
 
@@ -1100,9 +1102,10 @@ namespace SupFAmof.Service.Service
                                     .DynamicFilter(filter)
                                     .DynamicSort(paging.Sort, paging.Order);
 
-                var dateFilter = FilterPostDateFrom(posts, timeFromFilter);
+                var dateFilter = FilterPostDateFrom(posts, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
+                var data = await dateFilter.Item2.ToListAsync();
 
-                foreach (var item in dateFilter)
+                foreach (var item in data)
                 {
                     //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1141,18 +1144,16 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
-                var data = dateFilter.PagingQueryable(paging.Page, paging.PageSize);
-
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = data.Item1
+                        Total = data.Count()
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = data.Item2.ToList()
+                    Data = data
                 };
             }
             catch (Exception ex)
@@ -1277,9 +1278,10 @@ namespace SupFAmof.Service.Service
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order);
 
-                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter);
+                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
+                    var premiumResponses = await premiumList.Item2.ToListAsync();
 
-                    foreach (var item in premiumList)
+                    foreach (var item in premiumResponses)
                     {
                         //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1321,18 +1323,16 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
-                    var premiumData = premiumList.PagingQueryable(paging.Page, paging.PageSize);
-
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
                         Metadata = new PagingsMetadata()
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumData.Item1,
+                            Total = premiumResponses.Count(),
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = premiumData.Item2.ToList()
+                        Data = premiumResponses
                     };
                 }
 
@@ -1344,9 +1344,10 @@ namespace SupFAmof.Service.Service
                                         .DynamicSort(paging.Sort, paging.Order);
                                         //.PagingQueryable(paging.Page, paging.PageSize);
 
-                var dateFilter = FilterPostDateFrom(posts, timeFromFilter);
+                var dateFilter = FilterPostDateFrom(posts, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
+                var responses = await dateFilter.Item2.ToListAsync();
 
-                foreach (var item in dateFilter)
+                foreach (var item in responses)
                 {
                     //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1385,18 +1386,16 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
-                var data = dateFilter.PagingQueryable(paging.Page, paging.PageSize);
-
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = data.Item1
+                        Total = responses.Count()
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = data.Item2.ToList()
+                    Data = responses
                 };
             }
             catch (Exception ex)

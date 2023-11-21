@@ -51,12 +51,10 @@ namespace SupFAmof.Service.Service
                                                   .ProjectTo<CollabRegistrationUpdateViewResponse>(_mapper.ConfigurationProvider)
                                                   .DynamicFilter(filter)
                                                   .DynamicSort(paging.Sort, paging.Order);
-                //.PagingQueryable(paging.Page, paging.PageSize);
-                var list = FilterPostRegis(postRegistration, statusFilter);
 
-                var data = list.PagingQueryable(paging.Page, paging.PageSize);
+                var list = FilterPostRegis(postRegistration, statusFilter).PagingQueryable(paging.Page, paging.PageSize);
 
-                var postRegistrationResponse = await list.ToListAsync();
+                var postRegistrationResponse = await list.Item2.ToListAsync();
 
                 foreach (var registration in postRegistrationResponse)
                 {

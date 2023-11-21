@@ -50,5 +50,7 @@ namespace SupFAmof.Service.DTO.Response
     {
         public DateTime? DateFromStart { get; set; }
         public DateTime? DateFromEnd { get; set; }
+        public DateTime? CreateAtStart { get; set; }
+        public DateTime? CreateAtEnd { get; set; }
     }
 }

@@ -28,6 +28,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using static ServiceStack.Diagnostics;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 
 namespace SupFAmof.Service.Service
 {
@@ -101,7 +102,7 @@ namespace SupFAmof.Service.Service
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.Position.PostId == post.Id && x.Status == (int)PostRegistrationStatusEnum.Pending);
 
-                foreach(var item in postRegistration)
+                foreach (var item in postRegistration)
                 {
                     item.Status = (int)PostRegistrationStatusEnum.Cancel;
 
@@ -965,14 +966,14 @@ namespace SupFAmof.Service.Service
                                        .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
-                                       .DynamicSort(paging.Sort, paging.Order)
-                                       .PagingQueryable(paging.Page, paging.PageSize);
+                                       .DynamicSort(paging.Sort, paging.Order);
+                                       //.PagingQueryable(paging.Page, paging.PageSize);
 
-                    var premiumList = FilterPostDateFrom(await premiumPost.Item2.ToListAsync(), timeFromFilter);
+                    var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter);
 
                     //var postPremiumResponses = premiumPost.Item2.ToList();
 
-                    foreach (var item in premiumList.Values.First().ToList())
+                    foreach (var item in premiumList)
                     {
                         // lấy tất cả các position Id của bài post hiện tại
                         var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
@@ -1011,16 +1012,18 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
+                    premiumList.PagingQueryable(paging.Page, paging.PageSize);
+
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
                         Metadata = new PagingsMetadata()
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumList.Keys.First(),
+                            Total = premiumList.Count(),
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = premiumList.Values.First().ToList()
+                        Data = await premiumList.ToListAsync()
                     };
                 }
 
@@ -1092,21 +1095,17 @@ namespace SupFAmof.Service.Service
                     };
                 }
 
-                var post = _unitOfWork.Repository<Post>().GetAll()
+                var posts = _unitOfWork.Repository<Post>().GetAll()
                                     .Where(x => x.Status >= (int)PostStatusEnum.Opening
-                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
+                                             && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
                                     .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                     .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
-                                    .DynamicSort(paging.Sort, paging.Order)
-                                    .PagingQueryable(paging.Page, paging.PageSize);
+                                    .DynamicSort(paging.Sort, paging.Order);
 
-                var list = FilterPostDateFrom(await post.Item2.ToListAsync(), timeFromFilter);
+                var dateFilter = FilterPostDateFrom(posts, timeFromFilter);
 
-                //var postResponses = post.Item2.ToList();
-
-
-                foreach (var item in list.Values.First().ToList())
+                foreach (var item in dateFilter)
                 {
                     //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                     item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1145,16 +1144,18 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
+                dateFilter.PagingQueryable(paging.Page, paging.PageSize);
+
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = list.Keys.First()
+                        Total = dateFilter.Count()
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = list.Values.First().ToList()
+                    Data = await dateFilter.ToListAsync()
                 };
             }
             catch (Exception ex)
@@ -1412,23 +1413,44 @@ namespace SupFAmof.Service.Service
 
         #region Private logic 
 
-        private static Dictionary<int, IQueryable<PostResponse>> FilterPostDateFrom(List<PostResponse> list, TimeFromFilter filter)
+        private static IQueryable<PostResponse> FilterPostDateFrom(IQueryable<PostResponse> list, TimeFromFilter filter)
         {
-            var query = list.AsQueryable();
             if (filter.DateFromEnd != null && filter.DateFromEnd.HasValue && filter.DateFromStart != null && filter.DateFromStart.HasValue)
             {
-                //query = query.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
-
                 //filter here
-                query = query.Where(post => post.DateFrom >= filter.DateFromStart && post.DateFrom <= filter.DateFromEnd);
+                list = list.Where(post => post.DateFrom >= filter.DateFromStart && post.DateFrom <= filter.DateFromEnd);
 
             }
-            int size = query.Count();
-            return new Dictionary<int, IQueryable<PostResponse>>
+
+            if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue && filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
             {
-                { size, query }
-            };
+                //filter here
+                list = list.Where(post => post.CreateAt >= filter.CreateAtStart && post.DateFrom <= filter.CreateAtEnd);
+
+            }
+
+            //int size = list.Count();
+            return list;
         }
+
+        //private static IQueryable<PostResponse> FilterPostDateFrom(this IQueryable<PostResponse> posts, TimeFromFilter filter)
+        //{
+        //    if (filter.DateFromEnd != null && filter.DateFromEnd.HasValue &&
+        //        filter.DateFromStart != null && filter.DateFromStart.HasValue)
+        //    {
+        //        posts = posts.Where(p => p.DateFrom >= filter.DateFromStart
+        //                                && p.DateFrom <= filter.DateFromEnd);
+        //    }
+
+        //    if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue &&
+        //        filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
+        //    {
+        //        posts = posts.Where(p => p.CreateAt >= filter.CreateAtStart
+        //                                && p.CreateAt <= filter.CreateAtEnd);
+        //    }
+
+        //    return posts;
+        //}
 
         #endregion
     }

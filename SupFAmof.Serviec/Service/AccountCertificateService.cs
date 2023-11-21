@@ -243,7 +243,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountCertificateResponse>> GetAccountCertificateByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountCertificateResponse>> GetAccountCertificateByAccountId(int accountId, AccountCertificateResponse filter, PagingRequest paging)
         {
             try
             {
@@ -251,9 +251,10 @@ namespace SupFAmof.Service.Service
                 var accountCerti = _unitOfWork.Repository<AccountCertificate>().GetAll()
                                     .Where(a => a.AccountId == accountId)
                                     .ProjectTo<AccountCertificateResponse>(_mapper.ConfigurationProvider)
+                                    .DynamicFilter(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
                                     .OrderByDescending(x => x.CreateAt)
-                                    .PagingQueryable(paging.Page, paging.PageSize,
-                                    Constants.LimitPaging, Constants.DefaultPaging);
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountCertificateResponse>()
                 {

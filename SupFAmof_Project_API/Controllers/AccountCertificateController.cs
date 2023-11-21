@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getbyToken")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AccountCertificateResponse>>> GetAccountCertificateById
-        ([FromQuery] PagingRequest paging)
+        ([FromQuery] AccountCertificateResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountCertificateService.GetAccountCertificateByAccountId(account.Id, paging);
+                return await _accountCertificateService.GetAccountCertificateByAccountId(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {

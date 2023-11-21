@@ -54,7 +54,7 @@ namespace SupFAmof.Service.Service
                 //.PagingQueryable(paging.Page, paging.PageSize);
                 var list = FilterPostRegis(postRegistration, statusFilter);
 
-                list.PagingQueryable(paging.Page, paging.PageSize);
+                var data = list.PagingQueryable(paging.Page, paging.PageSize);
 
                 var postRegistrationResponse = await list.ToListAsync();
 

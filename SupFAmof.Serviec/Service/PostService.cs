@@ -1010,7 +1010,7 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
-                    premiumList.PagingQueryable(paging.Page, paging.PageSize);
+                   var premiumData = premiumList.PagingQueryable(paging.Page, paging.PageSize);
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -1018,10 +1018,10 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumList.Count(),
+                            Total = premiumData.Item1,
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = await premiumList.ToListAsync()
+                        Data = premiumData.Item2.ToList()
                     };
                 }
 
@@ -1041,7 +1041,6 @@ namespace SupFAmof.Service.Service
                                     .PagingQueryable(paging.Page, paging.PageSize);
 
                     var postSearchResponses = await searchPost.Item2.ToListAsync();
-
 
                     foreach (var item in postSearchResponses)
                     {
@@ -1142,7 +1141,7 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
-                dateFilter.PagingQueryable(paging.Page, paging.PageSize);
+                var data = dateFilter.PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
@@ -1150,10 +1149,10 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = dateFilter.Count()
+                        Total = data.Item1
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = await dateFilter.ToListAsync()
+                    Data = data.Item2.ToList()
                 };
             }
             catch (Exception ex)
@@ -1322,7 +1321,7 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
-                    premiumList.PagingQueryable(paging.Page, paging.PageSize);
+                    var premiumData = premiumList.PagingQueryable(paging.Page, paging.PageSize);
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -1330,10 +1329,10 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = premiumList.Count(),
+                            Total = premiumData.Item1,
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                        Data = await premiumList.ToListAsync()
+                        Data = premiumData.Item2.ToList()
                     };
                 }
 
@@ -1386,7 +1385,7 @@ namespace SupFAmof.Service.Service
                     totalAmountPosition = 0;
                 }
 
-                dateFilter.PagingQueryable(paging.Page, paging.PageSize);
+                var data = dateFilter.PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostResponse>()
                 {
@@ -1394,10 +1393,10 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = dateFilter.Count()
+                        Total = data.Item1
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
-                    Data = await dateFilter.ToListAsync()
+                    Data = data.Item2.ToList()
                 };
             }
             catch (Exception ex)

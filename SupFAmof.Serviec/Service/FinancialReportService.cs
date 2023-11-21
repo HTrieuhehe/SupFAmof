@@ -308,7 +308,6 @@ namespace SupFAmof.Service.Service
                     int nameRow = 2;
                     int mergeRow = 3;
                     ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add($"OD Tháng {request.Month}");
-                    worksheet.Cells["A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
                     Dictionary<int, string> keyValuePairs = new Dictionary<int, string>
                     {
                         { 1,"STT"},{ 2,"Họ tên"},{ 3,"MSSV"},{ 4,"CMND"},{ 5,"MST"}
@@ -323,6 +322,8 @@ namespace SupFAmof.Service.Service
                         worksheet.Cells[cellAddress].Value = index.Value;
                         worksheet.Cells[cellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                         worksheet.Cells[cellAddress].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        worksheet.Cells[cellAddress].Style.Font.Bold = true;
+
                     }
                     foreach (var post in posts)
                     {
@@ -336,6 +337,7 @@ namespace SupFAmof.Service.Service
                         char columnLetter = (char)('A' + postCollumn - 1);
                         string cellAddress = $"{columnLetter}{mergeRow}";
                         worksheet.Cells[$"{cellAddress}"].Value = $"OPEN DAY" + "\r\n" + $"{date.ToString("dd/MM")}";
+                        worksheet.Cells[cellAddress].Style.Font.Bold = true;
                         collumJob.Add(cellAddress, new Tuple<string, string>("OPEN DAY", $"{date.ToString("dd/MM")}"));
                         postCollumn++;
                     }
@@ -347,27 +349,39 @@ namespace SupFAmof.Service.Service
                     string cellAddress2 = $"{mercell2}{nameRow}";
                     worksheet.Cells[$"{cellAddress1}:{cellAddress2}"].Merge = true;
                     worksheet.Cells[$"{cellAddress1}"].Value = "Nội dung công việc";
+                    worksheet.Cells[cellAddress1].Style.Font.Bold = true;
                     worksheet.Cells[cellAddress1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    // Thành Tiền
+                    var columnLetter3 = (char)('A' + count + postCollumn1-1);
+                    string cellAddress3 = $"{columnLetter3}{nameRow}";
+                    string cellmerge3 = $"{columnLetter3}{mergeRow}";
+                    worksheet.Cells[$"{cellAddress3}:{cellmerge3}"].Merge = true;
+                    worksheet.Cells[$"{cellAddress3}"].Value = "Thành Tiền";
+                    worksheet.Cells[cellAddress3].Style.Font.Bold = true;
+
                     int valueRow = 4;
                     foreach (var account in accounts)
                     {
+
+                        double? salary = 0;
+                        double? totalSalary = 0;
+                        string? dateToWork = "";
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;
                         worksheet.Cells[valueRow, 3].Value = account.AccountInformation?.IdStudent;
                         worksheet.Cells[valueRow, 4].Value = account.AccountInformation?.IdentityNumber;
                         worksheet.Cells[valueRow, 5].Value = account.AccountInformation?.TaxNumber;
-                        double? salary = 0;
-                        string? dateToWork = "";
                         if (account.AccountReports.Any())
                         {
                             foreach (var report in account.AccountReports)
                             {
                                 salary = report.Salary;
+                                totalSalary += salary; 
                                 dateToWork = report.Position.Date.ToString("dd/MM");
                                 foreach (var kvp in collumJob)
                                 {
-                                    string columnLetter = kvp.Key.Substring(0, 1); // Extract column letter from the key
-                                    string matchedCellAddress = $"{columnLetter}{valueRow}"; // Construct the new cell address
+                                    string columnLetter = kvp.Key.Substring(0, 1);
+                                    string matchedCellAddress = $"{columnLetter}{valueRow}";
                                     Tuple<string, string> cellValues = kvp.Value;
 
                                     string openDayText = cellValues.Item1;
@@ -375,13 +389,21 @@ namespace SupFAmof.Service.Service
                                     if (dateText.Trim().Equals(dateToWork.Trim()))
                                     {
                                         worksheet.Cells[$"{matchedCellAddress}"].Value = $"{salary}";
+                                        worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
                                         break;
                                     }
                                 }
                             }
                         }
+                        worksheet.Cells[valueRow, count + postCollumn1].Value = totalSalary;
                         valueRow++;
                     }
+                    string lastCell = cellAddress3.Substring(0, 1);
+                    worksheet.Cells[$"A1:{lastCell}1"].Merge = true;
+                    worksheet.Cells[$"A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
+                    worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells["A1"].Style.Font.Bold= true; 
                     await xlPackage.SaveAsync();
                 }
                 byte[] array = memoryStream.ToArray();

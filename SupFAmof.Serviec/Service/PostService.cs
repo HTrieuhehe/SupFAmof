@@ -897,7 +897,7 @@ namespace SupFAmof.Service.Service
                     if (!string.IsNullOrEmpty(search))
                     {
                         var searchPremiumPost = _unitOfWork.Repository<Post>().GetAll()
-                                       .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist
+                                       .Where(x => x.Status == (int)PostStatusEnum.Opening || x.Status == (int)PostStatusEnum.Avoid_Regist
                                        && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
                                                                                     || x.PostDescription.Contains(search)
                                                                                     || x.PostPositions.Any(x => x.SchoolName.Contains(search))
@@ -968,7 +968,6 @@ namespace SupFAmof.Service.Service
                                        .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                        .DynamicFilter(filter)
                                        .DynamicSort(paging.Sort, paging.Order);
-                                       //.PagingQueryable(paging.Page, paging.PageSize);
 
                     var premiumList = FilterPostDateFrom(premiumPost, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
                     var response = await premiumList.Item2.ToListAsync();
@@ -1030,8 +1029,8 @@ namespace SupFAmof.Service.Service
                 if (!string.IsNullOrEmpty(search))
                 {
                     var searchPost = _unitOfWork.Repository<Post>().GetAll()
-                                    .Where(x => x.Status >= (int)PostStatusEnum.Opening
-                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false
+                                    .Where(x => x.Status == (int)PostStatusEnum.Opening
+                                                || x.Status == (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false
                                                 && x.PostCode.Contains(search) || x.PostCategory.PostCategoryDescription.Contains(search)
                                                                                             || x.PostDescription.Contains(search)
                                                                                             || x.PostPositions.Any(x => x.SchoolName.Contains(search))

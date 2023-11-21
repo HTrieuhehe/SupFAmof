@@ -92,19 +92,19 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpPost("get-od-monthly-excel")]
-        public async Task<ActionResult> GenerateOpendayReportMonthly(int accountId,[FromQuery] FinancialReportRequest request)
+        public async Task<ActionResult> GenerateOpendayReportMonthly([FromQuery] FinancialReportRequest request)
         {
 
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
-                var result = await _financialReportService.GenerateOpendayReportMonthly(accountId,request);
-                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "account_report.xlsx");
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _financialReportService.GenerateOpendayReportMonthly(account.Id,request);
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Lương-OD-Tháng-{request.Month}.xlsx");
             }
             catch (ErrorResponse ex)
             {

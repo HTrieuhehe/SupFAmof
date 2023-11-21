@@ -28,7 +28,7 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getAll")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPosts
-        ([FromQuery] PostResponse filter, string? search, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
+        ([FromQuery] PostResponse filter, string? Search, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPosts(account.Id, search, filter, timeFromFilter, paging);
+                return await _postService.GetPosts(account.Id, Search, filter, timeFromFilter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -57,7 +57,7 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getReOpen")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostResponse>>> GetPostsReOpen
-        ([FromQuery] PostResponse filter, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
+        ([FromQuery] PostResponse filter, string? Search, [FromQuery] TimeFromFilter? timeFromFilter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _postService.GetPostReOpen(account.Id, filter, timeFromFilter, paging);
+                return await _postService.GetPostReOpen(account.Id, filter, Search, timeFromFilter, paging);
             }
             catch (ErrorResponse ex)
             {

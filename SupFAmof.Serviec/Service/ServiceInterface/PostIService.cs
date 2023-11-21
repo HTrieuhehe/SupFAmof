@@ -30,7 +30,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         #region Collaborator Post IService
         Task<BaseResponsePagingViewModel<PostResponse>> GetPosts(int accountId, string search, PostResponse filter, TimeFromFilter timeFromFilter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, TimeFromFilter timeFromFilter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, string search, TimeFromFilter timeFromFilter, PagingRequest paging);
         Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging);
         #endregion
     }

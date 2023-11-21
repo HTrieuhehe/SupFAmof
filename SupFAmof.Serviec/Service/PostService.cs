@@ -956,7 +956,7 @@ namespace SupFAmof.Service.Service
                             {
                                 Page = paging.Page,
                                 Size = paging.PageSize,
-                                Total = searchPremiumPost.Item1
+                                Total = postPremiumSearchResponses.Count()
                             },
                             //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                             Data = postPremiumSearchResponses
@@ -1030,8 +1030,7 @@ namespace SupFAmof.Service.Service
                 if (!string.IsNullOrEmpty(search))
                 {
                     var searchPost = _unitOfWork.Repository<Post>().GetAll()
-                                    .Where(x => x.Status >= (int)PostStatusEnum.Opening
-                                                && x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
+                                    .Where(x => x.Status <= (int)PostStatusEnum.Avoid_Regist && x.IsPremium == false)
                                     .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                     .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                     .DynamicFilter(filter)
@@ -1043,7 +1042,7 @@ namespace SupFAmof.Service.Service
                                                                                             || x.PostPositions.Any(x => x.SchoolName.Contains(search))
                                                                                             || x.PostPositions.Any(x => x.Location.Contains(search)));
 
-                    var postSearchResponses = await searchPost.Item2.ToListAsync();
+                    var postSearchResponses = await filterStatus.ToListAsync();
 
                     foreach (var item in postSearchResponses)
                     {
@@ -1088,7 +1087,7 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = searchPost.Item1
+                            Total = postSearchResponses.Count()
                         },
                         //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                         Data = postSearchResponses.ToList()
@@ -1334,7 +1333,7 @@ namespace SupFAmof.Service.Service
                             {
                                 Page = paging.Page,
                                 Size = paging.PageSize,
-                                Total = searchPremiumPost.Item1
+                                Total = postPremiumSearchResponses.Count()
                             },
                             //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                             Data = postPremiumSearchResponses
@@ -1468,7 +1467,7 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = searchPost.Item1
+                            Total = postSearchResponses.Count()
                         },
                         //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                         Data = postSearchResponses.ToList()

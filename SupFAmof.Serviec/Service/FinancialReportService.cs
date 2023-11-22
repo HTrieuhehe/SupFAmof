@@ -47,10 +47,11 @@ namespace SupFAmof.Service.Service
 
 
                 var list = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("fpt.edu.vn"));
-            var data = await AccountReportGenerator(list);
+                var data = await AccountReportGenerator(list);
                 return data;
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw;
             }
@@ -118,7 +119,7 @@ namespace SupFAmof.Service.Service
                     // Save the Excel package to create the new file
                     await xlPackage.SaveAsync();
                 }
-                byte[] array  = memoryStream.ToArray();
+                byte[] array = memoryStream.ToArray();
                 return array;
             }
         }
@@ -185,7 +186,7 @@ namespace SupFAmof.Service.Service
                                         FileInfo frontImageFileInfo = new FileInfo(tempFrontFileName);
                                         ExcelPicture frontPicture = worksheet.Drawings.AddPicture($"FrontImg_{row}", frontImageFileInfo);
                                         frontPicture.From.Column = 7;
-                                        frontPicture.From.Row = row-1;
+                                        frontPicture.From.Row = row - 1;
                                         frontPicture.SetSize(100, 100);
                                     }
                                 }
@@ -218,7 +219,7 @@ namespace SupFAmof.Service.Service
                                         FileInfo backImageFileInfo = new FileInfo(tempBackFileName);
                                         ExcelPicture backPicture = worksheet.Drawings.AddPicture($"BackImg_{row}", backImageFileInfo);
                                         backPicture.From.Column = 8;
-                                        backPicture.From.Row = row-1;
+                                        backPicture.From.Row = row - 1;
                                         backPicture.SetSize(100, 100);
                                     }
                                 }
@@ -284,7 +285,7 @@ namespace SupFAmof.Service.Service
                 }
 
 
-                var data = await OpenDayMonthlyReportGenerator(request);
+                var data = await OpenDayMonthlyReportGenerator(request, accountId);
                 return data;
 
             }
@@ -294,11 +295,13 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        private async Task<byte[]> OpenDayMonthlyReportGenerator(FinancialReportRequest request)
+        private async Task<byte[]> OpenDayMonthlyReportGenerator(FinancialReportRequest request, int accountId)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             var accounts = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("@fpt.edu.vn"));
-            var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month && x.PostCategoryId == 1);
+            var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month
+                                                                    && x.PostCategoryId == 1
+                                                                    && x.AccountId == accountId);
             HashSet<DateTime> uniqueDates = new HashSet<DateTime>();
             Dictionary<string, Tuple<string, string>> collumJob = new Dictionary<string, Tuple<string, string>>();
             using (MemoryStream memoryStream = new MemoryStream())
@@ -352,7 +355,7 @@ namespace SupFAmof.Service.Service
                     worksheet.Cells[cellAddress1].Style.Font.Bold = true;
                     worksheet.Cells[cellAddress1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     // Thành Tiền
-                    var columnLetter3 = (char)('A' + count + postCollumn1-1);
+                    var columnLetter3 = (char)('A' + count + postCollumn1 - 1);
                     string cellAddress3 = $"{columnLetter3}{nameRow}";
                     string cellmerge3 = $"{columnLetter3}{mergeRow}";
                     worksheet.Cells[$"{cellAddress3}:{cellmerge3}"].Merge = true;
@@ -376,7 +379,7 @@ namespace SupFAmof.Service.Service
                             foreach (var report in account.AccountReports)
                             {
                                 salary = report.Salary;
-                                totalSalary += salary; 
+                                totalSalary += salary;
                                 dateToWork = report.Position.Date.ToString("dd/MM");
                                 foreach (var kvp in collumJob)
                                 {
@@ -403,7 +406,7 @@ namespace SupFAmof.Service.Service
                     worksheet.Cells[$"A1:{lastCell}1"].Merge = true;
                     worksheet.Cells[$"A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
                     worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    worksheet.Cells["A1"].Style.Font.Bold= true; 
+                    worksheet.Cells["A1"].Style.Font.Bold = true;
                     await xlPackage.SaveAsync();
                 }
                 byte[] array = memoryStream.ToArray();
@@ -411,5 +414,118 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<byte[]> GenerateTuyenSinhReportMonthly(int accountId, FinancialReportRequest request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                }
+
+
+                var data = await TuyenSinhMonthlyReportGenerator(request, accountId);
+                return data;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        private async Task<byte[]> TuyenSinhMonthlyReportGenerator(FinancialReportRequest request, int accountId)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var posts = _unitOfWork.Repository<Post>().GetAll()
+                                   .Where(x => x.DateFrom.Year == request.Year
+                                            && x.DateFrom.Month == request.Month
+                                            && x.PostCategoryId == 2
+                                            && x.AccountId == accountId);
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (ExcelPackage xlPackage = new ExcelPackage(memoryStream))
+                {
+                    ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add($"OD Tháng {request.Month}");
+
+                    SetTuyenSinhHeader(worksheet, 2, 3, request);
+                    SetTuyenSinhDate(worksheet, 4, request);
+
+                    await xlPackage.SaveAsync();
+
+                }
+                return memoryStream.ToArray();
+            }
+        }
+        private void SetTuyenSinhHeader(ExcelWorksheet worksheet, int nameRow, int mergeRow, FinancialReportRequest request)
+        {
+            worksheet.Cells[$"A1:J1"].Merge = true;
+            worksheet.Cells["A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
+            worksheet.Cells["A1"].Style.Font.Bold = true;
+
+            var keyValuePairs = new Dictionary<int, string>
+    {
+        { 1, "STT" },{ 2, "Họ tên" },{ 3, "MSSV" },{ 4, "CMND" },{ 5, "MST" },{ 6,"Tư vấn lớp 100.000đ /Buổi"},{ 7,"Tổng số buổi "},{ 8,"Thành Tiền"},{9,"Cam Kết"},{10,"Ghi Chú" }
+    };
+
+            foreach (var index in keyValuePairs)
+            {
+                if (index.Key == 6 || index.Key == 7)
+                {
+                    char columnLetter2 = (char)('A' + index.Key - 1);
+                    string cellDown = $"{columnLetter2}{mergeRow}";
+                    worksheet.Cells[$"{cellDown}"].Value = index.Value;
+                    worksheet.Cells[cellDown].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[cellDown].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    worksheet.Cells[cellDown].Style.Font.Bold = true;
+
+                    continue;
+                }
+                char columnLetter = (char)('A' + index.Key - 1);
+                string cellAddress = $"{columnLetter}{nameRow}";
+                string cellmerge = $"{columnLetter}{mergeRow}";
+
+                worksheet.Cells[$"{cellAddress}:{cellmerge}"].Merge = true;
+                worksheet.Cells[$"{cellAddress}"].Value = index.Value;
+                worksheet.Cells[cellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[cellAddress].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                worksheet.Cells[cellAddress].Style.Font.Bold = true;
+
+            }
+            //Merge Noi Dung cong viec
+            char columnMerge1 = (char)('A' + 6 - 1);
+            char columnMerge2 = (char)('A' + 7 - 1);
+            string cellMerge1 = $"{columnMerge1}{nameRow}";
+            string cellMerge2 = $"{columnMerge2}{nameRow}";
+            worksheet.Cells[$"{cellMerge1}:{cellMerge2}"].Merge = true;
+            worksheet.Cells[$"{cellMerge1}"].Value = "Nội dung công việc";
+            worksheet.Cells[cellMerge1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            worksheet.Cells[cellMerge1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            worksheet.Cells[cellMerge1].Style.Font.Bold = true;
+        }
+
+        private void SetTuyenSinhDate(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
+        {
+            var accountsWithReports = _unitOfWork.Repository<Account>()
+                                                            .GetAll()
+                                                            .Where(x => x.Email.EndsWith("@fpt.edu.vn")&&
+                                                                   x.AccountReports.Any(report => report.Position.Date.Month == request.Month&&report.Position.Date.Year==request.Year));
+            foreach (var account1 in accountsWithReports)
+            {
+                // Filter AccountReports for each account
+                account1.AccountReports = account1.AccountReports
+                    .Where(report => report.Position.Post.PostCategoryId == 2)
+                    .ToList();
+            }
+            foreach (var account in accountsWithReports)
+            {
+                worksheet.Cells[nameRow, 1].Value = account.Id;
+                worksheet.Cells[nameRow, 2].Value = account.Name;
+                worksheet.Cells[nameRow, 3].Value = account.AccountInformation?.IdStudent;
+                worksheet.Cells[nameRow, 4].Value = account.AccountInformation?.IdentityNumber;
+                worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
+            }
+        }
     }
 }

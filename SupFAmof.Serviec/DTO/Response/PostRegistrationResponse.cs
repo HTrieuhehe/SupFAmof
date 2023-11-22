@@ -112,6 +112,7 @@ namespace SupFAmof.Service.DTO.Response
         public int? PostCategoryId { get; set; }
         public virtual ICollection<PostPositionResponse>? PostPositionsUnregistereds { get; set; }
 
+        public bool? IsUpdated { get; set; }
         public virtual CollabRegistrationUpdatePostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
     }

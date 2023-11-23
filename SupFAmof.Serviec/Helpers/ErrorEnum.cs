@@ -237,6 +237,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Already register this position.Cannot update to this position")]
             UPDATE_FAILED = 4023,
+            //400
+            [Display(Name = "Sorry.To prevent spamming we are limiting to one request for the same work day and time ")]
+            REQUEST_FAILED = 4024,
         }
 
         public enum PostCategoryErrorEnum

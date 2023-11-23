@@ -228,6 +228,21 @@ namespace SupFAmof.Service.DTO.Response
     {
         public List<int>? RegistrationStatus { get; set; }
     }
+    public class AdmissionUpdateRequestResponse
+    {
+        public int? Id { get; set; }
+        public int? PostRegistrationId { get; set; }
+        public int? PositionId { get; set; }
+        public bool? BusOption { get; set; }
+        public int? Status { get; set; }
+        public DateTime CreateAt { get; set; }
+        public virtual PostPositionResponse? PostPositionNeedToBeUpdated { get; set; }
+
+        public virtual PostPositionResponse? PostPositionOriginal { get; set; }
+        public virtual CollabPostResponse? Post { get; set; }
+
+
+    }
 
 
 }

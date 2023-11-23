@@ -80,6 +80,39 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         }
         /// <summary>
+        /// Get all post registration by post created by admssionId
+        /// </summary>
+        /// <remarks>
+        /// true 
+        /// </remarks>
+        /// <response code="200">Get success</response>
+        /// <response code="400">Failed to get</response>
+        [HttpGet("get-postRegistrationUpdateRequest-by-Admission-AccountId")]
+        public async Task<ActionResult<BaseResponseViewModel<List<AdmissionPostsResponse>>>> AdmissionUpdateRequests([FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+
+                var result = await _postRegistrationService.AdmissionUpdateRequests(account.Id, paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+
+        }
+        /// <summary>
         /// Approve Join Request Post
         /// </summary>
         /// <remarks>

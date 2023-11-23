@@ -1,28 +1,19 @@
 ﻿using AutoMapper;
-using System.Linq;
 using Service.Commons;
-using ServiceStack.Text;
-using System.Formats.Asn1;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
 using SupFAmof.Service.Utilities;
-using System.Collections.Generic;
-using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
-using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml.Presentation;
 using static SupFAmof.Service.Helpers.Enum;
-using DocumentFormat.OpenXml.Wordprocessing;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SupFAmof.Service.Service
 {
@@ -157,6 +148,36 @@ namespace SupFAmof.Service.Service
             }
 
         }
+
+        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging)
+        {
+            try
+            {
+
+                var list = _unitOfWork.Repository<PostRgupdateHistory>()
+                                                      .GetAll()
+                                                      .Where(pr => pr.Position.Post.AccountId == admissionAccountId)
+                                                      .ProjectTo<AdmissionUpdateRequestResponse>(_mapper.ConfigurationProvider)
+                                                      .PagingQueryable(paging.Page, paging.PageSize);
+
+
+                return new BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
         public async Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId, PostRegistrationRequest request)
         {
             //TO-DO LIst:VALIDATE 1 PERSON CANNOT REGISTER 2 EVENT THE SAME DAY,CHECK IF USER HAS A TRAINING POSITION 
@@ -173,7 +194,11 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
                         PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                 }
-
+                if(!await CheckPendingDuplicateTimePosition(request,accountId))
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.REQUEST_FAILED,
+                       PostRegistrationErrorEnum.REQUEST_FAILED.GetDisplayName());
+                }
                 var post = await _unitOfWork.Repository<Post>()
                     .FindAsync(x => x.Id == postPosition.PostId);
 
@@ -1164,6 +1189,21 @@ namespace SupFAmof.Service.Service
         private static int CountRegisterAmount(int positionId, List<PostRegistration> postRegistrations)
         {
             return postRegistrations.Count(x => x.PositionId == positionId);
+        }
+
+        private async Task<bool> CheckPendingDuplicateTimePosition(PostRegistrationRequest request, int accountId)
+        {
+            var positionWorkTime = await _unitOfWork.Repository<PostPosition>()
+                                                        .FindAsync(x => x.Id == request.PositionId);
+
+            var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                                .GetAll()
+                                                .Where(x => x.Position.Date == positionWorkTime.Date
+                                                            && x.AccountId == accountId
+                                                            && (x.Status == 1 || x.Status == 2)
+                                                            && x.Position.TimeFrom < positionWorkTime.TimeTo
+                                                            && x.Position.TimeTo > positionWorkTime.TimeFrom);
+            return !postRegistrations.Any();
         }
     }
 

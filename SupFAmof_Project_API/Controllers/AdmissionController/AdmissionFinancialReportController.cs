@@ -116,18 +116,18 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpPost("get-tuyen-sinh-monthly-excel")]
-        public async Task<ActionResult> GenerateTuyenSinhReportMonthly(int accountId,[FromQuery] FinancialReportRequest request)
+        public async Task<ActionResult> GenerateTuyenSinhReportMonthly([FromQuery] FinancialReportRequest request)
         {
 
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
-                //{
-                //    return Unauthorized();
-                //}
-                var result = await _financialReportService.GenerateTuyenSinhReportMonthly(accountId,request);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _financialReportService.GenerateTuyenSinhReportMonthly(account.Id,request);
                 return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Lương-tuyen-sinh-Tháng-{request.Month}.xlsx");
             }
             catch (ErrorResponse ex)

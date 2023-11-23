@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using Service.Commons;
 using OfficeOpenXml.Style;
 using SupFAmof.Data.Entity;
+using System.Globalization;
 using OfficeOpenXml.Drawing;
 using Path = System.IO.Path;
 using LAK.Sdk.Core.Utilities;
@@ -20,6 +21,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SupFAmof.Service.Service
 {
@@ -366,9 +368,9 @@ namespace SupFAmof.Service.Service
                     foreach (var account in accounts)
                     {
 
-                        double? salary = 0;
-                        double? totalSalary = 0;
-                        string? dateToWork = "";
+                        double salary = 0;
+                        double? combinedSalary = 0;
+                        DateTime dateToWork ;
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;
                         worksheet.Cells[valueRow, 3].Value = account.AccountInformation?.IdStudent;
@@ -376,30 +378,49 @@ namespace SupFAmof.Service.Service
                         worksheet.Cells[valueRow, 5].Value = account.AccountInformation?.TaxNumber;
                         if (account.AccountReports.Any())
                         {
+                            Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
                             foreach (var report in account.AccountReports)
                             {
-                                salary = report.Salary;
-                                totalSalary += salary;
-                                dateToWork = report.Position.Date.ToString("dd/MM");
-                                foreach (var kvp in collumJob)
+                                combinedSalary += report.Salary;
+                                 dateToWork = report.Position.Date.Date; // Use Date property to consider only the date part
+
+                                if (dateTotalSalary.TryGetValue(dateToWork, out var totalSalary))
                                 {
-                                    string columnLetter = kvp.Key.Substring(0, 1);
-                                    string matchedCellAddress = $"{columnLetter}{valueRow}";
-                                    Tuple<string, string> cellValues = kvp.Value;
+                                    // Date already exists in the dictionary, add the salary
+                                    dateTotalSalary[dateToWork] += report.Salary;
+                                }
+                                else
+                                {
+                                    // Date doesn't exist in the dictionary, add with the current salary
+                                    dateTotalSalary.Add(dateToWork, report.Salary);
+                                }
+                                foreach (var kvp in dateTotalSalary)
+                                {
+                                    dateToWork = kvp.Key;
+                                    totalSalary = kvp.Value;
 
-                                    string openDayText = cellValues.Item1;
-                                    string dateText = cellValues.Item2;
-                                    if (dateText.Trim().Equals(dateToWork.Trim()))
+                                    foreach (var KVP in collumJob)
                                     {
-                                        worksheet.Cells[$"{matchedCellAddress}"].Value = $"{salary}";
-                                        worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                                        string columnLetter = KVP.Key.Substring(0, 1);
+                                        string matchedCellAddress = $"{columnLetter}{valueRow}";
+                                        Tuple<string, string> cellValues = KVP.Value;
 
-                                        break;
+                                        string openDayText = cellValues.Item1;
+                                        string dateText = cellValues.Item2;
+
+                                        // Use Date property to consider only the date part
+                                        if (DateTime.TryParseExact(dateText.Trim(), "dd/MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate) &&
+                                            parsedDate == dateToWork)
+                                        {
+                                            worksheet.Cells[matchedCellAddress].Value = totalSalary;
+                                            worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
-                        worksheet.Cells[valueRow, count + postCollumn1].Value = totalSalary;
+                        worksheet.Cells[valueRow, count + postCollumn1].Value = combinedSalary;
                         valueRow++;
                     }
                     string lastCell = cellAddress3.Substring(0, 1);
@@ -450,7 +471,7 @@ namespace SupFAmof.Service.Service
                     ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add($"OD Tháng {request.Month}");
 
                     SetTuyenSinhHeader(worksheet, 2, 3, request);
-                    SetTuyenSinhDate(worksheet, 4, request);
+                    SetTuyenSinhData(worksheet, 4, request);
 
                     await xlPackage.SaveAsync();
 
@@ -505,19 +526,13 @@ namespace SupFAmof.Service.Service
             worksheet.Cells[cellMerge1].Style.Font.Bold = true;
         }
 
-        private void SetTuyenSinhDate(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
+        private void SetTuyenSinhData(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
         {
             var accountsWithReports = _unitOfWork.Repository<Account>()
                                                             .GetAll()
                                                             .Where(x => x.Email.EndsWith("@fpt.edu.vn")&&
                                                                    x.AccountReports.Any(report => report.Position.Date.Month == request.Month&&report.Position.Date.Year==request.Year));
-            foreach (var account1 in accountsWithReports)
-            {
-                // Filter AccountReports for each account
-                account1.AccountReports = account1.AccountReports
-                    .Where(report => report.Position.Post.PostCategoryId == 2)
-                    .ToList();
-            }
+
             foreach (var account in accountsWithReports)
             {
                 worksheet.Cells[nameRow, 1].Value = account.Id;
@@ -525,6 +540,47 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 3].Value = account.AccountInformation?.IdStudent;
                 worksheet.Cells[nameRow, 4].Value = account.AccountInformation?.IdentityNumber;
                 worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
+                Dictionary<DateTime, int> dateCountDictionary = new Dictionary<DateTime, int>();
+                double? sum = 0;
+                foreach (var report in account.AccountReports)
+                {
+                    sum += report.Salary;
+                    if (dateCountDictionary.TryGetValue(report.Position.Date, out var count))
+                    {
+                        // Date already exists in the dictionary, increment the count
+                        dateCountDictionary[report.Position.Date] = count + 1;
+                    }
+                    else
+                    {
+                        // Date doesn't exist in the dictionary, add with count 1
+                        dateCountDictionary.Add(report.Position.Date, 1);
+                    }
+                }
+                var cellF3 =worksheet.Cells[nameRow, 6];
+                var cellG3 = worksheet.Cells[nameRow, 7];
+
+                foreach (var kvp in dateCountDictionary)
+                {
+                    cellF3.Style.WrapText = true;
+                    cellF3.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    var r1 = cellF3.RichText.Add($"{kvp.Key.ToString("dd/MM")}" + "\r\n");
+                    cellF3.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    cellF3.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    //G3
+                    cellG3.Style.WrapText = true;
+                    cellG3.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    var r2 = cellG3.RichText.Add($"{kvp.Value}" + "\r\n");
+                    cellG3.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    cellG3.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+                worksheet.Cells[nameRow, 8].Value = sum;
+                worksheet.Cells[nameRow, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[nameRow, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //H3
+                worksheet.Cells[nameRow, 9].Value = "X";
+                worksheet.Cells[nameRow, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[nameRow, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
             }
         }
     }

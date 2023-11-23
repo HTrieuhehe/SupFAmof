@@ -1,28 +1,19 @@
 ﻿using AutoMapper;
-using System.Linq;
 using Service.Commons;
-using ServiceStack.Text;
-using System.Formats.Asn1;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
 using SupFAmof.Service.Utilities;
-using System.Collections.Generic;
-using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
-using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml.Presentation;
 using static SupFAmof.Service.Helpers.Enum;
-using DocumentFormat.OpenXml.Wordprocessing;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SupFAmof.Service.Service
 {
@@ -95,6 +86,36 @@ namespace SupFAmof.Service.Service
 
 
                 return new BaseResponsePagingViewModel<AdmissionPostsResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging)
+        {
+            try
+            {
+
+                var list = _unitOfWork.Repository<PostRgupdateHistory>()
+                                                      .GetAll()
+                                                      .Where(pr => pr.Position.Post.AccountId == admissionAccountId)
+                                                      .ProjectTo<AdmissionUpdateRequestResponse>(_mapper.ConfigurationProvider)
+                                                      .PagingQueryable(paging.Page, paging.PageSize);
+
+
+                return new BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {

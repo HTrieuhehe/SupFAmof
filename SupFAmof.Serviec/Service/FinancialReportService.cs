@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using Service.Commons;
 using OfficeOpenXml.Style;
 using SupFAmof.Data.Entity;
+using System.Globalization;
 using OfficeOpenXml.Drawing;
 using Path = System.IO.Path;
 using LAK.Sdk.Core.Utilities;
@@ -367,9 +368,9 @@ namespace SupFAmof.Service.Service
                     foreach (var account in accounts)
                     {
 
-                        double? salary = 0;
-                        double? totalSalary = 0;
-                        string? dateToWork = "";
+                        double salary = 0;
+                        double? combinedSalary = 0;
+                        DateTime dateToWork ;
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;
                         worksheet.Cells[valueRow, 3].Value = account.AccountInformation?.IdStudent;
@@ -377,30 +378,49 @@ namespace SupFAmof.Service.Service
                         worksheet.Cells[valueRow, 5].Value = account.AccountInformation?.TaxNumber;
                         if (account.AccountReports.Any())
                         {
+                            Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
                             foreach (var report in account.AccountReports)
                             {
-                                salary = report.Salary;
-                                totalSalary += salary;
-                                dateToWork = report.Position.Date.ToString("dd/MM");
-                                foreach (var kvp in collumJob)
+                                combinedSalary += report.Salary;
+                                 dateToWork = report.Position.Date.Date; // Use Date property to consider only the date part
+
+                                if (dateTotalSalary.TryGetValue(dateToWork, out var totalSalary))
                                 {
-                                    string columnLetter = kvp.Key.Substring(0, 1);
-                                    string matchedCellAddress = $"{columnLetter}{valueRow}";
-                                    Tuple<string, string> cellValues = kvp.Value;
+                                    // Date already exists in the dictionary, add the salary
+                                    dateTotalSalary[dateToWork] += report.Salary;
+                                }
+                                else
+                                {
+                                    // Date doesn't exist in the dictionary, add with the current salary
+                                    dateTotalSalary.Add(dateToWork, report.Salary);
+                                }
+                                foreach (var kvp in dateTotalSalary)
+                                {
+                                    dateToWork = kvp.Key;
+                                    totalSalary = kvp.Value;
 
-                                    string openDayText = cellValues.Item1;
-                                    string dateText = cellValues.Item2;
-                                    if (dateText.Trim().Equals(dateToWork.Trim()))
+                                    foreach (var KVP in collumJob)
                                     {
-                                        worksheet.Cells[$"{matchedCellAddress}"].Value = $"{salary}";
-                                        worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                                        string columnLetter = KVP.Key.Substring(0, 1);
+                                        string matchedCellAddress = $"{columnLetter}{valueRow}";
+                                        Tuple<string, string> cellValues = KVP.Value;
 
-                                        break;
+                                        string openDayText = cellValues.Item1;
+                                        string dateText = cellValues.Item2;
+
+                                        // Use Date property to consider only the date part
+                                        if (DateTime.TryParseExact(dateText.Trim(), "dd/MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate) &&
+                                            parsedDate == dateToWork)
+                                        {
+                                            worksheet.Cells[matchedCellAddress].Value = totalSalary;
+                                            worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
-                        worksheet.Cells[valueRow, count + postCollumn1].Value = totalSalary;
+                        worksheet.Cells[valueRow, count + postCollumn1].Value = combinedSalary;
                         valueRow++;
                     }
                     string lastCell = cellAddress3.Substring(0, 1);

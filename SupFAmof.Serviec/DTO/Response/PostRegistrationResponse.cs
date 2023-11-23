@@ -174,6 +174,12 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollabRegistrationUpdatePostResponse
     {
+        public CollabRegistrationUpdatePostResponse()
+        {
+            RegisterAmount = 0;
+            TotalAmountPosition = 0;
+        }
+
         public int? Id { get; set; }
         public int? AccountId { get; set; }
         public int? PostCategoryId { get; set; }
@@ -190,6 +196,12 @@ namespace SupFAmof.Service.DTO.Response
         public string? UpdateAt { get; set; }
         public virtual AccountResponse? Account { get; set; }
         public virtual PostCategoryResponse? PostCategory { get; set; }
+
+        public int? RegisterAmount;
+        //public  int? RegisterAmount { get => registerAmount ?? 0; set => registerAmount = value; }
+
+        public int? TotalAmountPosition;
+        //public  int? TotalAmountPosition { get => totalAmountPosition ?? 0; set => totalAmountPosition = value; }
     }
 
     public class CollabPostResponse

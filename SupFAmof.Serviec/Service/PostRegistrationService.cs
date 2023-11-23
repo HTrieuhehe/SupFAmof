@@ -46,21 +46,67 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                int totalCount = 0;
+                int? totalAmountPosition = 0;
+
+                //find registration base on collaborator based on their accountId
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.AccountId == accountId)
-                                                  .ProjectTo<CollabRegistrationUpdateViewResponse>(_mapper.ConfigurationProvider)
-                                                  .DynamicFilter(filter)
-                                                  .DynamicSort(paging.Sort, paging.Order);
+                                                  .ProjectTo<CollabRegistrationUpdateViewResponse>(_mapper.ConfigurationProvider);
+                //filter
+                var list = FilterPostRegis(postRegistration, statusFilter)
+                                    .DynamicFilter(filter)
+                                    .DynamicSort(paging.Sort, paging.Order)
+                                    .PagingQueryable(paging.Page, paging.PageSize);
 
-                var list = FilterPostRegis(postRegistration, statusFilter).PagingQueryable(paging.Page, paging.PageSize);
-
+                //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
+
+                var positionIds = await postRegistration.Select(x => x.PositionId).ToListAsync();
 
                 foreach (var registration in postRegistrationResponse)
                 {
-                    registration.PostPositionsUnregistereds.Remove(registration.PostPositionsUnregistereds
-                        .ToList()
-                        .Find(p => p.Id == registration.PositionId));
+                    //tìm ra các position đã đăng ký của bạn í
+                    var unregisteredPositions = registration.PostPositionsUnregistereds
+                                            .Where(x => positionIds.Contains(x.Id))
+                                            .ToList();
+
+                    var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();   
+
+                    // tìm post Registration có position Id trung với các bài post
+                    var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
+                                                        .GetAll()
+                                                        .Where(reg => positionIdsForCount.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                        .ToListAsync();
+
+                    // tính tổng các registration đã được confirm
+                    registration.Post.RegisterAmount = postRegistrations.Count;
+
+                    foreach (var unregisteredPosition in unregisteredPositions)
+                    {
+                        registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
+                    }
+
+                    foreach (var postPosition in registration.PostPositionsUnregistereds)
+                    {
+                        //count register amount in post attendee based on position
+                        totalCount += CountRegisterAmount(postPosition.Id, postRegistrations);
+
+                        //transafer data to field in post position
+                        postPosition.PositionRegisterAmount = totalCount;
+
+                        //add number of amount required to total amount of a specific post
+                        totalAmountPosition += postPosition.Amount;
+
+                        //reset temp count
+                        totalCount = 0;
+                    }
+
+                    //transfer data from position after add to field in post
+                    registration.Post.TotalAmountPosition = totalAmountPosition;
+
+                    // Reset temp variable
+                    totalAmountPosition = 0;
                 }
 
                 return new BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>()
@@ -69,7 +115,7 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = postRegistrationResponse.Count(),
+                        Total = list.Item1,
                     },
                     Data = postRegistrationResponse,
                 };
@@ -242,7 +288,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                             PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
-                switch((PostRegistrationStatusEnum)postRegistration.Status)
+                switch ((PostRegistrationStatusEnum)postRegistration.Status)
                 {
                     case PostRegistrationStatusEnum.Pending:
                         postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
@@ -268,10 +314,11 @@ namespace SupFAmof.Service.Service
                                 Message = "Cancel Successfully",
                                 ErrorCode = 200
                             }
-                            ,Data = report
+                            ,
+                            Data = report
                         };
                 }
-                
+
 
                 return new BaseResponseViewModel<dynamic>()
                 {
@@ -302,7 +349,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.WRONG_POSITION,
                         PostRegistrationErrorEnum.WRONG_POSITION.GetDisplayName());
                 }
-             
+
                 if (original == null)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
@@ -319,7 +366,7 @@ namespace SupFAmof.Service.Service
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
                         case PostRegistrationStatusEnum.Pending:
-                         
+
                             if (!await CheckCertificate(updateEntity))
                             {
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
@@ -371,7 +418,7 @@ namespace SupFAmof.Service.Service
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
                                 };
-                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
+                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate, accountId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
                                                    PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
@@ -831,13 +878,13 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
         {
             var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);
-            if(duplicate != null)
+            if (duplicate != null)
             {
                 return false;
             }
             return true;
         }
-        private async Task<bool> CheckDuplicatePostRgUpdateSend(PostRgupdateHistory request,int accountId)
+        private async Task<bool> CheckDuplicatePostRgUpdateSend(PostRgupdateHistory request, int accountId)
         {
             var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == accountId
                                                                                          && x.PositionId == request.PositionId);
@@ -997,23 +1044,23 @@ namespace SupFAmof.Service.Service
             }
             return list;
         }
-        
+
         private async Task<bool> CheckUpdatePosition(PostRegistrationUpdateRequest request)
         {
-                var currentPosition =  await _unitOfWork.Repository<PostRegistration>().FindAsync(x=>x.Id == request.Id);
-                var positions = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == currentPosition.Position.PostId);
-                var positionCanbeUpdate = positions.Where(x=>x.Id != currentPosition.PositionId);
-                if(positionCanbeUpdate.Any(x=>x.Id == request.PositionId))
-                {
-                    return true;
-                }
-                return false;
+            var currentPosition = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.Id == request.Id);
+            var positions = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == currentPosition.Position.PostId);
+            var positionCanbeUpdate = positions.Where(x => x.Id != currentPosition.PositionId);
+            if (positionCanbeUpdate.Any(x => x.Id == request.PositionId))
+            {
+                return true;
+            }
+            return false;
         }
         public async Task<BaseResponseViewModel<dynamic>> UpdateSchoolBus(int accountId, UpdateSchoolBusRequest request)
         {
             try
             {
-                var schoolBusOriginal = await _unitOfWork.Repository<PostRegistration>().FindAsync(x=>x.Id == request.Id && x.AccountId==accountId);
+                var schoolBusOriginal = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.Id == request.Id && x.AccountId == accountId);
                 if (schoolBusOriginal == null)
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
@@ -1021,7 +1068,7 @@ namespace SupFAmof.Service.Service
                 }
                 schoolBusOriginal.SchoolBusOption = request.SchoolBusOption;
                 schoolBusOriginal.UpdateAt = GetCurrentDatetime();
-                if(!await CheckPostPositionBus(schoolBusOriginal))
+                if (!await CheckPostPositionBus(schoolBusOriginal))
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
@@ -1041,20 +1088,20 @@ namespace SupFAmof.Service.Service
                 };
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-        public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> CancelPostRegistrationAdmission(List<int> Ids,int accountId)
+        public async Task<BaseResponseViewModel<List<PostRegistrationResponse>>> CancelPostRegistrationAdmission(List<int> Ids, int accountId)
         {
             try
             {
                 var listResponse = new List<PostRegistration>();
                 var findRequests = await _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
-                    .Where(x => Ids.Contains(x.Id)&&x.Position.Post.AccountId == accountId)
+                    .Where(x => Ids.Contains(x.Id) && x.Position.Post.AccountId == accountId)
                     .ToListAsync();
 
                 if (Ids.Distinct().Count() != Ids.Count)
@@ -1084,7 +1131,7 @@ namespace SupFAmof.Service.Service
                             await _unitOfWork.CommitAsync();
                             break;
                     }
-            }
+                }
                 listResponse = findRequests;
                 return new BaseResponseViewModel<List<PostRegistrationResponse>>()
                 {
@@ -1107,14 +1154,17 @@ namespace SupFAmof.Service.Service
         {
             var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == update.AccountId
                                                                                            && x.PositionId == update.PositionId);
-            if(duplicate !=null)
+            if (duplicate != null)
             {
                 return false;
             }
             return true;
         }
 
-
+        private static int CountRegisterAmount(int positionId, List<PostRegistration> postRegistrations)
+        {
+            return postRegistrations.Count(x => x.PositionId == positionId);
+        }
     }
 
 }

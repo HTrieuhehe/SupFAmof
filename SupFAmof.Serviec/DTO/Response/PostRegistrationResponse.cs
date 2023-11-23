@@ -28,12 +28,13 @@ namespace SupFAmof.Service.DTO.Response
         public int? Status { get; set; }
         public DateTime CreateAt { get; set; }
 
-        public virtual PosRGUpdatePostRegistrationResponse? PostRegistration { get; set; }
+        public virtual PostRGUpdatePostRegistrationResponse? PostRegistration { get; set; }
+        public virtual PostRGUpdatePostResponse? Post { get; set; }
         public virtual PostRGUpdatePositionResponse? Position { get; set; }
 
     }
 
-    public class PosRGUpdatePostRegistrationResponse
+    public class PostRGUpdatePostRegistrationResponse
     {
         public int Id { get; set; }
         public string RegistrationCode { get; set; } = null!;
@@ -66,6 +67,23 @@ namespace SupFAmof.Service.DTO.Response
         public bool? IsBusService { get; set; }
         public int? Amount { get; set; }
         public double? Salary { get; set; }
+    }
+
+    public class PostRGUpdatePostResponse
+    {
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
+        public int? PostCategoryId { get; set; }
+        public string? PostCode { get; set; }
+        public string? PostImg { get; set; }
+        public string? PostDescription { get; set; }
+        public int? Priority { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public bool? IsPremium { get; set; }
+        public int? Status { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
     }
 
     public class CollaboratorAccountReponse

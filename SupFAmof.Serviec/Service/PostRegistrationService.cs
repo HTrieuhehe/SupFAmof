@@ -127,7 +127,11 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
                         PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                 }
-
+                if(!await CheckPendingDuplicateTimePosition(request,accountId))
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.REQUEST_FAILED,
+                       PostRegistrationErrorEnum.REQUEST_FAILED.GetDisplayName());
+                }
                 var post = await _unitOfWork.Repository<Post>()
                     .FindAsync(x => x.Id == postPosition.PostId);
 
@@ -1115,6 +1119,20 @@ namespace SupFAmof.Service.Service
         }
 
 
+        private async Task<bool> CheckPendingDuplicateTimePosition(PostRegistrationRequest request, int accountId)
+        {
+            var positionWorkTime = await _unitOfWork.Repository<PostPosition>()
+                                                        .FindAsync(x => x.Id == request.PositionId);
+
+            var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                                                .GetAll()
+                                                .Where(x => x.Position.Date == positionWorkTime.Date
+                                                            && x.AccountId == accountId
+                                                            && (x.Status == 1 || x.Status == 2)
+                                                            && x.Position.TimeFrom < positionWorkTime.TimeTo
+                                                            && x.Position.TimeTo > positionWorkTime.TimeFrom);
+            return !postRegistrations.Any();
+        }
     }
 
 }

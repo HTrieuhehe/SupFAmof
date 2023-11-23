@@ -6,13 +6,13 @@ using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Request.Role;
 using SupFAmof.Service.DTO.Request.Staff;
+using SupFAmof.Service.DTO.Request.Admin;
 using SupFAmof.Service.DTO.Response.Admin;
 using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
-using SupFAmof.Service.DTO.Request.Admin;
 
 namespace SupFAmof.API.Mapper
 {
@@ -144,6 +144,7 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.PositionDate, opt => opt.MapFrom(src => src.Position.Date))
                 .ForMember(dest => dest.PostCategoryId, opt => opt.MapFrom(src => src.Position.Post.PostCategoryId))
                 .ForMember(dest => dest.PostPositionsUnregistereds, opt => opt.MapFrom(src => src.Position.Post.PostPositions))
+                .ForMember(dest => dest.IsUpdated, opt => opt.MapFrom(src => src.UpdateAt.HasValue))
                 .ReverseMap();
 
             CreateMap<PostPosition, AdmissionPostPositionResponse>()

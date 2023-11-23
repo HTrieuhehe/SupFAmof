@@ -451,7 +451,7 @@ namespace SupFAmof.Service.Service
                     ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add($"OD Tháng {request.Month}");
 
                     SetTuyenSinhHeader(worksheet, 2, 3, request);
-                    SetTuyenSinhDate(worksheet, 4, request);
+                    SetTuyenSinhData(worksheet, 4, request);
 
                     await xlPackage.SaveAsync();
 
@@ -506,7 +506,7 @@ namespace SupFAmof.Service.Service
             worksheet.Cells[cellMerge1].Style.Font.Bold = true;
         }
 
-        private void SetTuyenSinhDate(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
+        private void SetTuyenSinhData(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
         {
             var accountsWithReports = _unitOfWork.Repository<Account>()
                                                             .GetAll()
@@ -520,11 +520,47 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 3].Value = account.AccountInformation?.IdStudent;
                 worksheet.Cells[nameRow, 4].Value = account.AccountInformation?.IdentityNumber;
                 worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
-                var cell =worksheet.Cells[nameRow, 5];
-                foreach (var workday in account.AccountReports)
+                Dictionary<DateTime, int> dateCountDictionary = new Dictionary<DateTime, int>();
+                double? sum = 0;
+                foreach (var report in account.AccountReports)
                 {
-
+                    sum += report.Salary;
+                    if (dateCountDictionary.TryGetValue(report.Position.Date, out var count))
+                    {
+                        // Date already exists in the dictionary, increment the count
+                        dateCountDictionary[report.Position.Date] = count + 1;
+                    }
+                    else
+                    {
+                        // Date doesn't exist in the dictionary, add with count 1
+                        dateCountDictionary.Add(report.Position.Date, 1);
+                    }
                 }
+                var cellF3 =worksheet.Cells[nameRow, 6];
+                var cellG3 = worksheet.Cells[nameRow, 7];
+
+                foreach (var kvp in dateCountDictionary)
+                {
+                    cellF3.Style.WrapText = true;
+                    cellF3.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    var r1 = cellF3.RichText.Add($"{kvp.Key.ToString("dd/MM")}" + "\r\n");
+                    cellF3.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    cellF3.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    //G3
+                    cellG3.Style.WrapText = true;
+                    cellG3.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    var r2 = cellG3.RichText.Add($"{kvp.Value}" + "\r\n");
+                    cellG3.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    cellG3.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+                worksheet.Cells[nameRow, 8].Value = sum;
+                worksheet.Cells[nameRow, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[nameRow, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                //H3
+                worksheet.Cells[nameRow, 9].Value = "X";
+                worksheet.Cells[nameRow, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[nameRow, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
             }
         }
     }

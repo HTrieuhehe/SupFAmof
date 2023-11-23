@@ -20,6 +20,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SupFAmof.Service.Service
 {
@@ -511,13 +512,7 @@ namespace SupFAmof.Service.Service
                                                             .GetAll()
                                                             .Where(x => x.Email.EndsWith("@fpt.edu.vn")&&
                                                                    x.AccountReports.Any(report => report.Position.Date.Month == request.Month&&report.Position.Date.Year==request.Year));
-            foreach (var account1 in accountsWithReports)
-            {
-                // Filter AccountReports for each account
-                account1.AccountReports = account1.AccountReports
-                    .Where(report => report.Position.Post.PostCategoryId == 2)
-                    .ToList();
-            }
+
             foreach (var account in accountsWithReports)
             {
                 worksheet.Cells[nameRow, 1].Value = account.Id;
@@ -525,6 +520,11 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 3].Value = account.AccountInformation?.IdStudent;
                 worksheet.Cells[nameRow, 4].Value = account.AccountInformation?.IdentityNumber;
                 worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
+                var cell =worksheet.Cells[nameRow, 5];
+                foreach (var workday in account.AccountReports)
+                {
+
+                }
             }
         }
     }

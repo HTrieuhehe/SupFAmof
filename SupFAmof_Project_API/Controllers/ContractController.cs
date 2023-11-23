@@ -73,5 +73,32 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+        ///<summary>
+        /// Confirm Contract By Account Id
+        /// </summary>
+        /// 
+        [HttpPut("confirmContract")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountContractResponse>>> ConfirmContract([FromQuery] int contractId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _contractService.ConfirmContract(account.Id, contractId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

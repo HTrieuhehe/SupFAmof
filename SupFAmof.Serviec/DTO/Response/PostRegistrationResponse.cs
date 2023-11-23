@@ -22,13 +22,50 @@ namespace SupFAmof.Service.DTO.Response
     public class PostRgupdateHistoryResponse
     {
         public int? Id { get; set; }
-        public int? PostId { get; set; }
         public int? PostRegistrationId { get; set; }
         public int? PositionId { get; set; }
         public bool? BusOption { get; set; }
         public int? Status { get; set; }
         public DateTime CreateAt { get; set; }
 
+        public virtual PosRGUpdatePostRegistrationResponse? PostRegistration { get; set; }
+        public virtual PostRGUpdatePositionResponse? Position { get; set; }
+
+    }
+
+    public class PosRGUpdatePostRegistrationResponse
+    {
+        public int Id { get; set; }
+        public string RegistrationCode { get; set; } = null!;
+        public int AccountId { get; set; }
+        public int PositionId { get; set; }
+        public string? Note { get; set; }
+        public double Salary { get; set; }
+        public int Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+    }
+
+    public class PostRGUpdatePositionResponse
+    {
+        public int Id { get; set; }
+        public int? PostId { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
+        public string? PositionName { get; set; }
+        public string? PositionDescription { get; set; }
+        public string? SchoolName { get; set; }
+        public string? Location { get; set; }
+        public DateTime? Date { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public int? Status { get; set; }
+        public bool? IsBusService { get; set; }
+        public int? Amount { get; set; }
+        public double? Salary { get; set; }
     }
 
     public class CollaboratorAccountReponse

@@ -13,6 +13,7 @@ using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using Org.BouncyCastle.Asn1.Ocsp;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
@@ -304,6 +305,10 @@ namespace SupFAmof.Service.Service
             var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month
                                                                     && x.PostCategoryId == 1
                                                                     && x.AccountId == accountId);
+            if(posts.Count()<=0)
+            {
+                throw new Exceptions.ErrorResponse(400, 400, "Does not have post or account to generate in that month of the year");
+            }
             HashSet<DateTime> uniqueDates = new HashSet<DateTime>();
             Dictionary<string, Tuple<string, string>> collumJob = new Dictionary<string, Tuple<string, string>>();
             using (MemoryStream memoryStream = new MemoryStream())
@@ -364,54 +369,57 @@ namespace SupFAmof.Service.Service
                     worksheet.Cells[$"{cellAddress3}"].Value = "Thành Tiền";
                     worksheet.Cells[cellAddress3].Style.Font.Bold = true;
 
-                    int valueRow = 4;
                     foreach (var account in accounts)
                     {
-
-                        double salary = 0;
                         double? combinedSalary = 0;
-                        DateTime dateToWork ;
+                        int valueRow = 4;
+
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;
                         worksheet.Cells[valueRow, 3].Value = account.AccountInformation?.IdStudent;
                         worksheet.Cells[valueRow, 4].Value = account.AccountInformation?.IdentityNumber;
                         worksheet.Cells[valueRow, 5].Value = account.AccountInformation?.TaxNumber;
+
                         if (account.AccountReports.Any())
                         {
                             Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
                             foreach (var report in account.AccountReports)
                             {
                                 combinedSalary += report.Salary;
-                                 dateToWork = report.Position.Date.Date; // Use Date property to consider only the date part
+                                DateTime dateToWork = report.Position.Date.Date;
 
                                 if (dateTotalSalary.TryGetValue(dateToWork, out var totalSalary))
                                 {
-                                    // Date already exists in the dictionary, add the salary
                                     dateTotalSalary[dateToWork] += report.Salary;
                                 }
                                 else
                                 {
-                                    // Date doesn't exist in the dictionary, add with the current salary
                                     dateTotalSalary.Add(dateToWork, report.Salary);
                                 }
-                                foreach (var kvp in dateTotalSalary)
+                            }
+
+                            foreach (var kvp in dateTotalSalary)
+                            {
+                                DateTime dateToWork = kvp.Key;
+                                double? totalSalary = kvp.Value;
+
+                                foreach (var KVP in collumJob)
                                 {
-                                    dateToWork = kvp.Key;
-                                    totalSalary = kvp.Value;
+                                    string columnLetter = KVP.Key.Substring(0, 1);
+                                    string matchedCellAddress = $"{columnLetter}{valueRow}";
+                                    Tuple<string, string> cellValues = KVP.Value;
 
-                                    foreach (var KVP in collumJob)
+                                    string openDayText = cellValues.Item1;
+                                    string dateText = cellValues.Item2;
+
+                                    // Use Date property to consider only the date part
+                                    if (DateTime.TryParseExact(dateText.Trim(), "dd/MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
                                     {
-                                        string columnLetter = KVP.Key.Substring(0, 1);
-                                        string matchedCellAddress = $"{columnLetter}{valueRow}";
-                                        Tuple<string, string> cellValues = KVP.Value;
+                                        Console.WriteLine($"Checking cell: {matchedCellAddress}, Date: {parsedDate}, Expected Date: {dateToWork}");
 
-                                        string openDayText = cellValues.Item1;
-                                        string dateText = cellValues.Item2;
-
-                                        // Use Date property to consider only the date part
-                                        if (DateTime.TryParseExact(dateText.Trim(), "dd/MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate) &&
-                                            parsedDate == dateToWork)
+                                        if (parsedDate == dateToWork)
                                         {
+                                            Console.WriteLine($"Match found for cell: {matchedCellAddress}");
                                             worksheet.Cells[matchedCellAddress].Value = totalSalary;
                                             worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                                             break;
@@ -420,7 +428,8 @@ namespace SupFAmof.Service.Service
                                 }
                             }
                         }
-                        worksheet.Cells[valueRow, count + postCollumn1].Value = combinedSalary;
+
+                        worksheet.Cells[valueRow, collumJob.Count + 6].Value = combinedSalary;
                         valueRow++;
                     }
                     string lastCell = cellAddress3.Substring(0, 1);

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using System.Linq;
 using Service.Commons;
+using ServiceStack.Text;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -443,7 +445,12 @@ namespace SupFAmof.Service.Service
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
                                 };
-                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate, accountId))
+                                if (!CheckDuplicatePostRgUpdateSendPending(postTgupdate, accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
+                                                   PostRegistrationErrorEnum.DUPLICATE_PENDING.GetDisplayName());
+                                }
+                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
                                                    PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
@@ -914,6 +921,17 @@ namespace SupFAmof.Service.Service
             var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == accountId
                                                                                          && x.PositionId == request.PositionId);
             if (duplicate != null)
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool CheckDuplicatePostRgUpdateSendPending(PostRgupdateHistory request, int accountId)
+        {
+            var duplicate = _unitOfWork.Repository<PostRgupdateHistory>().GetAll().Where(x => x.PostRegistration.AccountId == accountId
+                                                                                         && x.PostRegistrationId == request.PostRegistrationId
+                                                                                         && x.Status == 1 );
+            if (duplicate.Any())
             {
                 return false;
             }

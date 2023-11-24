@@ -240,6 +240,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Sorry.To prevent spamming we are limiting to one request for the same work day and time ")]
             REQUEST_FAILED = 4024,
+            //400
+            [Display(Name = "Must wait for the update request be reiviewed before send a new one ")]
+            DUPLICATE_PENDING = 4025,
         }
 
         public enum PostCategoryErrorEnum

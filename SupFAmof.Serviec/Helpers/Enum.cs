@@ -44,7 +44,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Check-in")]
             CheckIn = 5,
             [Display(Name = "Check-out")]
-            CheckOut = 6
+            CheckOut = 6,
+            [Display(Name = "Quit")]
+            Quit = 7
         }
         public enum PostRGUpdateHistoryEnum
         {

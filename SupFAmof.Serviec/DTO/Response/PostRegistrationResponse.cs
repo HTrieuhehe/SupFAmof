@@ -24,14 +24,21 @@ namespace SupFAmof.Service.DTO.Response
         public int? Id { get; set; }
         public int? PostRegistrationId { get; set; }
         public int? PositionId { get; set; }
+        public int? OriginalId { get; set; }
         public bool? BusOption { get; set; }
         public int? Status { get; set; }
         public string? CreateAt { get; set; }
 
         public virtual PostRGUpdatePostRegistrationResponse? PostRegistration { get; set; }
         public virtual PostRGUpdatePostResponse? Post { get; set; }
-        public virtual PostRGUpdatePositionResponse? Position { get; set; }
+        public virtual PostRGUpdatePositionResponse? PostPositionNeedToBeUpdated { get; set; }
+        public virtual PostRGUpdateOriginalPositionResponse? PostPositionOriginal { get; set; }
 
+    }
+
+    public class PostRGUpdateOriginalPositionResponse
+    {
+        public string? PositionName { get; set; }
     }
 
     public class PostRGUpdatePostRegistrationResponse

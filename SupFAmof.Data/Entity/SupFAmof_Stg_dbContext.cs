@@ -451,8 +451,13 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.OriginalPosition)
+                    .WithMany(p => p.PostRgupdateHistoryOriginalPositions)
+                    .HasForeignKey(d => d.OriginalPositionId)
+                    .HasConstraintName("FK_PostRGUpdateHistory_PostPosition");
+
                 entity.HasOne(d => d.Position)
-                    .WithMany(p => p.PostRgupdateHistories)
+                    .WithMany(p => p.PostRgupdateHistoryPositions)
                     .HasForeignKey(d => d.PositionId)
                     .HasConstraintName("FK_PostTGupdateHistory_PostPosition");
 

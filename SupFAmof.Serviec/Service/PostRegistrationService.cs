@@ -438,6 +438,7 @@ namespace SupFAmof.Service.Service
 
                                 PostRgupdateHistory postTgupdate = new PostRgupdateHistory
                                 {
+                                    OriginalPositionId = original.PositionId,
                                     PostRegistrationId = request.Id,
                                     PositionId = request.PositionId,
                                     BusOption = request.SchoolBusOption,

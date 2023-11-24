@@ -75,7 +75,8 @@ namespace SupFAmof.Service.Service
 
                 else if (request.SigningDate < getCurrentTime.AddDays(2))
                 {
-                    var timeRequired = getCurrentTime.AddDays(2); 
+                    //báo lỗi thời gian yêu cầu cộng thêm 10 phút
+                    var timeRequired = getCurrentTime.AddDays(2).AddHours(0.1);
                     throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE,
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName() + $": {timeRequired}");
                 }

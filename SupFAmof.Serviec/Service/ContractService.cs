@@ -753,7 +753,7 @@ namespace SupFAmof.Service.Service
                 {
                     Ids = admissionIds,
                     Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
-                    Body = "New contract is sent to you! Check it now!",
+                    Body = "Congratulation! You are confirmed your contract!",
                     NotificationsType = (int)NotificationTypeEnum.Contract_Request
                 };
 

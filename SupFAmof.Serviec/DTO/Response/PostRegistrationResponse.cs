@@ -38,7 +38,23 @@ namespace SupFAmof.Service.DTO.Response
 
     public class PostRGUpdateOriginalPositionResponse
     {
-        public string? PositionName { get; set; }
+        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
+        public string PositionName { get; set; } = null!;
+        public string? PositionDescription { get; set; }
+        public string? SchoolName { get; set; }
+        public string? Location { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public DateTime Date { get; set; }
+        public string? TimeFrom { get; set; }
+        public string? TimeTo { get; set; }
+        public bool? IsBusService { get; set; }
+        public int Status { get; set; }
+        public int Amount { get; set; }
+        public double Salary { get; set; }
     }
 
     public class PostRGUpdatePostRegistrationResponse

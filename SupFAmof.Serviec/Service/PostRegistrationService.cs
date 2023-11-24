@@ -450,16 +450,16 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
                                                    PostRegistrationErrorEnum.DUPLICATE_PENDING.GetDisplayName());
                                 }
-                                if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
-                                {
-                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
-                                                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
-                                }
-                                if (!await CheckDuplicatePostRgUpdate(postTgupdate))
-                                {
-                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
-                                                       PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
-                                }
+                                //if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
+                                //{
+                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
+                                //                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                //}
+                                //if (!await CheckDuplicatePostRgUpdate(postTgupdate))
+                                //{
+                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
+                                //                       PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
+                                //}
                                 if (!await CheckPostPositionBus(updateEntity))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -907,25 +907,25 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
-        private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
-        {
-            var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);
-            if (duplicate != null)
-            {
-                return false;
-            }
-            return true;
-        }
-        private async Task<bool> CheckDuplicatePostRgUpdateSend(PostRgupdateHistory request, int accountId)
-        {
-            var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == accountId
-                                                                                         && x.PositionId == request.PositionId);
-            if (duplicate != null)
-            {
-                return false;
-            }
-            return true;
-        }
+        //private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
+        //{
+        //    var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);
+        //    if (duplicate != null)
+        //    {
+        //        return false;
+        //    }
+        //    return true;
+        //}
+        //private async Task<bool> CheckDuplicatePostRgUpdateSend(PostRgupdateHistory request, int accountId)
+        //{
+        //    var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == accountId
+        //                                                                                 && x.PositionId == request.PositionId);
+        //    if (duplicate != null)
+        //    {
+        //        return false;
+        //    }
+        //    return true;
+        //}
         private bool CheckDuplicatePostRgUpdateSendPending(PostRgupdateHistory request, int accountId)
         {
             var duplicate = _unitOfWork.Repository<PostRgupdateHistory>().GetAll().Where(x => x.PostRegistration.AccountId == accountId

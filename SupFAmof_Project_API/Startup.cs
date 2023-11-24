@@ -117,6 +117,7 @@ namespace SupFAmof.API
             services.AddScoped<SchedulePushNotification>();
             services.AddScoped<ScheduleClosePost>();
             services.AddScoped<ScheduleNotificationPostReOpen>();
+            services.AddScoped<SchedulePositionWorkCancelled>();
             #endregion
         }
 
@@ -178,6 +179,9 @@ namespace SupFAmof.API
                 scheduler.Schedule<ScheduleClosePost>()
                    .Daily()
                    .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+                scheduler.OnWorker("CheckAttendance");
+                scheduler.Schedule<SchedulePositionWorkCancelled>().EveryMinute().Once();
+
             });
             //app.ConfigMigration<>();
             app.UseCors(MyAllowSpecificOrigins);

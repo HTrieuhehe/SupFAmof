@@ -478,9 +478,7 @@ namespace SupFAmof.Service.Service
                                       .Where(x => x.AccountId == accountId)
                                       .DynamicFilter(filter)
                                       .DynamicSort(paging.Sort, paging.Order)
-                                      .OrderByDescending(x => x.CreateAt)
-                                      .PagingQueryable(paging.Page, paging.PageSize,
-                                            Constants.LimitPaging, Constants.DefaultPaging);
+                                      .PagingQueryable(paging.Page, paging.PageSize);
 
                 var postResponses = post.Item2.ToList();
 

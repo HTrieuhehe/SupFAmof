@@ -31,9 +31,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
         public DateTime StartDate { get; set; }
 
-        [Required(ErrorMessage = "End Date is required.")]
-        [DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
-        public DateTime EndDate { get; set; }
+        //[Required(ErrorMessage = "End Date is required.")]
+        //[DataType(DataType.DateTime, ErrorMessage = "Invalid start date format.")]
+        //public DateTime EndDate { get; set; }
 
         [Required (ErrorMessage = "Total Salary is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "Total Salary must be a non-negative number.")]

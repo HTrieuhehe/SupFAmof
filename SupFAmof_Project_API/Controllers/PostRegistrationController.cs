@@ -171,13 +171,14 @@ namespace SupFAmof.API.Controllers
         /// This action method handles an HTTP GET request to retrieve a list of PostRgUpdateRequestResponse objects associated with a specific accountId.
         /// </summary>
         /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
+        /// <param name="filter">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
         /// <returns>
         /// - 200 OK: Returns a list of PostRgUpdateRequestResponse objects associated with the specified accountId.
         /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
         /// </returns>
         [HttpGet("get-update-request")]
         public async Task<ActionResult<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>>> GetUpdateRequestByAccountId
-        ([FromQuery] PagingRequest paging)
+        ([FromQuery] PostRgupdateHistoryResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -187,7 +188,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = await _postRegistrationService.GetUpdateRequestByAccountId(account.Id, paging);
+                var result = await _postRegistrationService.GetUpdateRequestByAccountId(account.Id, filter, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

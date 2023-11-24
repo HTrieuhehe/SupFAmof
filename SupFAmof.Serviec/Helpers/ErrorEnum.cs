@@ -444,7 +444,7 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_CREATE_CONTRACT_INVALID = 4031,
 
             //400
-            [Display(Name = "Siging date cannot be greater than Start Date")]
+            [Display(Name = "Signing date cannot be greater than Start Date")]
             SIGNING_DATE_INVALID_WITH_START_DATE = 4002,
 
             //400

@@ -925,7 +925,7 @@ namespace SupFAmof.Service.Service
             return (start1 < end2 && end1 > start2);
         }
 
-        public async Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<PostRgupdateHistoryResponse>> GetUpdateRequestByAccountId(int accountId, PostRgupdateHistoryResponse filter, PagingRequest paging)
         {
             try
             {
@@ -933,6 +933,8 @@ namespace SupFAmof.Service.Service
                                                       .GetAll()
                                                       .Where(pr => pr.PostRegistration.AccountId == accountId)
                                                       .ProjectTo<PostRgupdateHistoryResponse>(_mapper.ConfigurationProvider)
+                                                      .DynamicFilter(filter)
+                                                      .DynamicSort(paging.Sort, paging.Order)
                                                       .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
 
                 return new BaseResponsePagingViewModel<PostRgupdateHistoryResponse>()

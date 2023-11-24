@@ -953,7 +953,7 @@ namespace SupFAmof.Service.Service
                                                       .ProjectTo<PostRgupdateHistoryResponse>(_mapper.ConfigurationProvider)
                                                       .DynamicFilter(filter)
                                                       .DynamicSort(paging.Sort, paging.Order)
-                                                      .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                                                      .PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<PostRgupdateHistoryResponse>()
                 {

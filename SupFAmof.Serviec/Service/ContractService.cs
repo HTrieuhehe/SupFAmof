@@ -75,8 +75,9 @@ namespace SupFAmof.Service.Service
 
                 else if (request.SigningDate < getCurrentTime.AddDays(2))
                 {
+                    var timeRequired = getCurrentTime.AddDays(2); 
                     throw new ErrorResponse(400, (int)ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE,
-                                        ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName());
+                                        ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName() + $": {timeRequired}");
                 }
 
                 else if(request.StartDate < request.SigningDate)

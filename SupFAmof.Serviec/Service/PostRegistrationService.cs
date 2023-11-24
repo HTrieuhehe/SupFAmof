@@ -805,7 +805,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        private List<MailBookingRequest> MailEntity(List<PostRegistration> request)
+        private List<MailBookingRequest> MailEntity(List<PostRegistration> request) 
         {
             List<MailBookingRequest> listMail = new List<MailBookingRequest>();
             foreach (PostRegistration postRegistration in request)

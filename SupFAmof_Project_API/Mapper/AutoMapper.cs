@@ -112,7 +112,9 @@ namespace SupFAmof.API.Mapper
             #region PostRegistration
             CreateMap<PostRegistration, PostRegistrationResponse>()
               .ReverseMap();
-
+            
+            CreateMap<PostRegistration, PostRGUpdatePostRegistrationResponse>()
+              .ReverseMap();
 
             CreateMap<Post, AdmissionPostsResponse>()
                 .ForMember(dest => dest.PostCategoryName, opt=> opt.MapFrom(src=>src.PostCategory.PostCategoryType))
@@ -136,6 +138,8 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
                 .ReverseMap();
 
+            CreateMap<Post, PostRGUpdatePostResponse>().ReverseMap();
+
             CreateMap<PostRegistration, CollabRegistrationUpdateViewResponse>()
                 .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
                 .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
@@ -158,7 +162,10 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRegistrationUpdateRequest, PostRegistration>()
                 .ReverseMap();
             CreateMap<UpdateSchoolBusRequest, PostRegistration>();
-            CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>().ReverseMap();
+
+            CreateMap<PostRgupdateHistory, PostRgupdateHistoryResponse>()
+                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
+                .ReverseMap();
 
             CreateMap<PostRegistration, ReportPostRegistrationResponse>()
               .ReverseMap();
@@ -231,6 +238,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, PostResponse>().ReverseMap();
             CreateMap<Post, ReportPostResponse>().ReverseMap();
             CreateMap<PostPosition, ReportPostPositionResponse>().ReverseMap();
+            CreateMap<PostPosition, PostRGUpdatePositionResponse>().ReverseMap();
             #endregion
 
             #region DocumentTemplate

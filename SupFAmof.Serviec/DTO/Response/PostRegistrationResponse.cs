@@ -22,13 +22,68 @@ namespace SupFAmof.Service.DTO.Response
     public class PostRgupdateHistoryResponse
     {
         public int? Id { get; set; }
-        public int? PostId { get; set; }
         public int? PostRegistrationId { get; set; }
         public int? PositionId { get; set; }
         public bool? BusOption { get; set; }
         public int? Status { get; set; }
         public DateTime CreateAt { get; set; }
 
+        public virtual PostRGUpdatePostRegistrationResponse? PostRegistration { get; set; }
+        public virtual PostRGUpdatePostResponse? Post { get; set; }
+        public virtual PostRGUpdatePositionResponse? Position { get; set; }
+
+    }
+
+    public class PostRGUpdatePostRegistrationResponse
+    {
+        public int Id { get; set; }
+        public string RegistrationCode { get; set; } = null!;
+        public int AccountId { get; set; }
+        public int PositionId { get; set; }
+        public string? Note { get; set; }
+        public double Salary { get; set; }
+        public int Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+    }
+
+    public class PostRGUpdatePositionResponse
+    {
+        public int Id { get; set; }
+        public int? PostId { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
+        public string? PositionName { get; set; }
+        public string? PositionDescription { get; set; }
+        public string? SchoolName { get; set; }
+        public string? Location { get; set; }
+        public DateTime? Date { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public int? Status { get; set; }
+        public bool? IsBusService { get; set; }
+        public int? Amount { get; set; }
+        public double? Salary { get; set; }
+    }
+
+    public class PostRGUpdatePostResponse
+    {
+        public int? Id { get; set; }
+        public int? AccountId { get; set; }
+        public int? PostCategoryId { get; set; }
+        public string? PostCode { get; set; }
+        public string? PostImg { get; set; }
+        public string? PostDescription { get; set; }
+        public int? Priority { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public bool? IsPremium { get; set; }
+        public int? Status { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
     }
 
     public class CollaboratorAccountReponse
@@ -119,6 +174,12 @@ namespace SupFAmof.Service.DTO.Response
 
     public class CollabRegistrationUpdatePostResponse
     {
+        public CollabRegistrationUpdatePostResponse()
+        {
+            RegisterAmount = 0;
+            TotalAmountPosition = 0;
+        }
+
         public int? Id { get; set; }
         public int? AccountId { get; set; }
         public int? PostCategoryId { get; set; }
@@ -135,6 +196,12 @@ namespace SupFAmof.Service.DTO.Response
         public string? UpdateAt { get; set; }
         public virtual AccountResponse? Account { get; set; }
         public virtual PostCategoryResponse? PostCategory { get; set; }
+
+        public int? RegisterAmount;
+        //public  int? RegisterAmount { get => registerAmount ?? 0; set => registerAmount = value; }
+
+        public int? TotalAmountPosition;
+        //public  int? TotalAmountPosition { get => totalAmountPosition ?? 0; set => totalAmountPosition = value; }
     }
 
     public class CollabPostResponse

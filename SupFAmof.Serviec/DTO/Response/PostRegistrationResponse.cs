@@ -46,6 +46,8 @@ namespace SupFAmof.Service.DTO.Response
         public bool? SchoolBusOption { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+
+        public virtual PostPositionResponse? Position { get; set; }
     }
 
     public class PostRGUpdatePositionResponse

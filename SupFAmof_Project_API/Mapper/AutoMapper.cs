@@ -114,6 +114,7 @@ namespace SupFAmof.API.Mapper
               .ReverseMap();
             
             CreateMap<PostRegistration, PostRGUpdatePostRegistrationResponse>()
+                .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
               .ReverseMap();
 
             CreateMap<Post, AdmissionPostsResponse>()

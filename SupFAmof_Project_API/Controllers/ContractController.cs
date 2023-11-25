@@ -79,7 +79,8 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPut("confirmContract")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountContractResponse>>> ConfirmContract([FromQuery] int contractId)
+        public async Task<ActionResult<BaseResponseViewModel<AccountContractResponse>>> ConfirmContract
+            ([FromQuery] int accountContractId, int status)
         {
             try
             {
@@ -89,7 +90,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _contractService.ConfirmContract(account.Id, contractId);
+                return await _contractService.ConfirmContract(account.Id, accountContractId, status);
             }
             catch (ErrorResponse ex)
             {

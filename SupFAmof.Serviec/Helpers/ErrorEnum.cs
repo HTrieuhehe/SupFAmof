@@ -515,15 +515,23 @@ namespace SupFAmof.Service.Helpers
         public enum AccountContractErrorEnum
         {
             //400
+            [Display(Name = "Collaborator has confirm or reject contract before")]
+            CONTRACT_ACCOUNT_ALREADY_UPDATE = 4001,
+
+            //400
             [Display(Name = "Collaborator has confirm one contract before")]
-            CONTRACT_ALREADY_CONFIRM = 4001,
+            CONTRACT_ALREADY_CONFIRM = 4002,
 
             //400
             [Display(Name = "No Collaborator meet the need to send request")]
-            OVER_COLLABORATOR = 4002,
+            OVER_COLLABORATOR = 4003,
+
+            //400
+            [Display(Name = "Collaborator ")]
+            COLLABORATOR_ERROR_HANDLING = 4004,
 
             //404
-            [Display(Name = "Contract not found or removed by the Admission")]
+            [Display(Name = "Error occur when collaborator do wrong")]
             CONTRACT_REMOVED_ADMISSION = 4041,
         }
 

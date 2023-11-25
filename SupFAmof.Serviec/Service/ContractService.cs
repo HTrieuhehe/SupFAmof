@@ -684,7 +684,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId, int contractId)
+        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId, int accountContractId, int status)
         {
             /*
             
@@ -713,64 +713,139 @@ namespace SupFAmof.Service.Service
                                                          AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());
                 }
 
-                // validate if there is any contract in range of this collaborator
-                var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
-                            .GetAll()
-                            .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime()
-                                                                                            && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
-                                                                                            && x.AccountId == accountId);
-                if (checkCurrentContract != null)
+                switch(status)
                 {
-                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM,
-                                                         AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
+                    case (int)AccountContractStatusEnum.Confirm:
+
+                        #region Code Here
+
+                        //find account Contract information
+                        var accountContract = await _unitOfWork.Repository<AccountContract>()
+                                                .FindAsync(x => x.Id == accountContractId && x.AccountId == accountId);
+
+                        if (accountContract == null)
+                        {
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
+                                                                 AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                        }
+
+                        //account contract has been confirm or reject before
+                        if(accountContract.Status != (int)AccountContractStatusEnum.Pending)
+                        {
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE,
+                                                                 AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE.GetDisplayName());
+                        }
+
+                        // validate if there is any contract in range of this collaborator
+
+                        #region Obsolete
+
+                        //var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                        //            .GetAll()
+                        //            .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime()
+                        //                                                                            && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
+                        //                                                                            && x.AccountId == accountId);
+
+                        #endregion
+
+                        var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
+                                                                    .GetAll()
+                                                                    .FirstOrDefaultAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm &&
+                                                                                              x.Contract.EndDate >= accountContract.Contract.StartDate &&
+                                                                                              x.AccountId == accountId);
+
+                        if (checkCurrentContract != null)
+                        {
+                            throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM,
+                                                                 AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
+                        }
+
+                        //filling data in 
+
+                        //var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == accountContract);
+
+                        var fileDocByte = await FillingDocTransfer(account, accountContract.Contract);
+
+                        accountContract.SubmittedFile = fileDocByte;
+                        accountContract.UpdateAt = Ultils.GetCurrentDatetime();
+
+                        await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
+
+                        List<int> admissionIds = new List<int>();
+                        admissionIds.Add(accountContract.Contract.CreatePersonId);
+
+                        //create notification request 
+                        PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                        {
+                            Ids = admissionIds,
+                            Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
+                            Body = "Congratulation! You are confirmed your contract!",
+                            NotificationsType = (int)NotificationTypeEnum.Contract_Request
+                        };
+
+                        await _notificationService.PushNotification(notificationRequest);
+                        await _unitOfWork.CommitAsync();
+
+                        return new BaseResponseViewModel<AccountContractResponse>
+                        {
+                            Status = new StatusViewModel
+                            {
+                                Message = "Success",
+                                ErrorCode = 0,
+                                Success = true,
+                            },
+                            Data = _mapper.Map<AccountContractResponse>(accountContract)
+
+                        };
+
+                        #endregion
+
+                    case (int)AccountContractStatusEnum.Reject:
+
+                        #region Code here
+
+                        //find account Contract information
+                        var accountContractCheck = await _unitOfWork.Repository<AccountContract>()
+                                                .FindAsync(x => x.Id == accountContractId && x.AccountId == accountId);
+
+                        if (accountContractCheck == null)
+                        {
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
+                                                                 AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                        }
+
+                        //account contract has been confirm or reject before
+                        if (accountContractCheck.Status != (int)AccountContractStatusEnum.Pending)
+                        {
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE,
+                                                                 AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE.GetDisplayName());
+                        }
+
+                        accountContractCheck.Status = (int)AccountContractStatusEnum.Reject;
+                        accountContractCheck.UpdateAt = Ultils.GetCurrentDatetime();
+
+                        await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContractCheck);
+                        await _unitOfWork.CommitAsync();
+
+                        return new BaseResponseViewModel<AccountContractResponse>
+                        {
+                            Status = new StatusViewModel
+                            {
+                                Message = "Success",
+                                ErrorCode = 0,
+                                Success = true,
+                            },
+                            Data = _mapper.Map<AccountContractResponse>(accountContractCheck)
+                        };
+                        #endregion
+
+                    default:
+                        //nothing gonna happen
+                        break;
                 }
 
-                var accountContract = await _unitOfWork.Repository<AccountContract>()
-                                                .FindAsync(x => x.Id == contractId && x.Status == (int)AccountContractStatusEnum.Pending);
-
-                if (accountContract == null)
-                {
-                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
-                                                         AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
-                }
-
-                //filling data in 
-
-                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId);
-
-                var fileDocByte = await FillingDocTransfer(account, contract);
-
-                accountContract.SubmittedFile = fileDocByte;
-                accountContract.UpdateAt = Ultils.GetCurrentDatetime();
-
-                await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
-
-                List<int> admissionIds = new List<int>();
-                admissionIds.Add(accountContract.Contract.CreatePersonId);
-
-                //create notification request 
-                PushNotificationRequest notificationRequest = new PushNotificationRequest()
-                {
-                    Ids = admissionIds,
-                    Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
-                    Body = "Congratulation! You are confirmed your contract!",
-                    NotificationsType = (int)NotificationTypeEnum.Contract_Request
-                };
-
-                await _notificationService.PushNotification(notificationRequest);
-                await _unitOfWork.CommitAsync();
-
-                return new BaseResponseViewModel<AccountContractResponse>
-                {
-                    Status = new StatusViewModel
-                    {
-                        Message = "Success",
-                        ErrorCode = 0,
-                        Success = true,
-                    },
-                    Data = _mapper.Map<AccountContractResponse>(contract)
-
-                };
+                throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
+                                                          AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
             }
             catch (Exception)
             {

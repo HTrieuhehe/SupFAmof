@@ -175,9 +175,15 @@ namespace SupFAmof.Service.Service
                                             PostErrorEnum.INVALID_RE_OPEN_POST.GetDisplayName());
                 }
 
+                //get time min of position and date too
                 var timeCheck = post.PostPositions.Min(p => p.TimeFrom);
+                var dateCheck = post.PostPositions.Min(p => p.Date.ToString("yyyy-MM-dd"));
 
-                if (timeCheck >= Ultils.GetCurrentDatetime().TimeOfDay || timeCheck < Ultils.GetCurrentDatetime().AddMinutes(-30).TimeOfDay)
+                //reduce timeCheck 30 minute
+                var timeRequired = timeCheck.Subtract(TimeSpan.FromMinutes(30));
+
+                //if (timeCheck >= Ultils.GetCurrentDatetime().TimeOfDay || timeCheck < Ultils.GetCurrentDatetime().AddMinutes(-30).TimeOfDay)
+                if (dateCheck == Ultils.GetCurrentDatetime().Date.ToString("yyyy-MM-dd") && timeRequired < Ultils.GetCurrentDatetime().AddMinutes(-30).TimeOfDay)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.RE_OPEN_POST_FAIL,
                                             PostErrorEnum.RE_OPEN_POST_FAIL.GetDisplayName());

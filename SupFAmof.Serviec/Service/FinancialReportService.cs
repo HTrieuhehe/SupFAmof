@@ -368,11 +368,10 @@ namespace SupFAmof.Service.Service
                     worksheet.Cells[$"{cellAddress3}:{cellmerge3}"].Merge = true;
                     worksheet.Cells[$"{cellAddress3}"].Value = "Thành Tiền";
                     worksheet.Cells[cellAddress3].Style.Font.Bold = true;
-
+                    int valueRow = 4;
                     foreach (var account in accounts)
                     {
                         double? combinedSalary = 0;
-                        int valueRow = 4;
 
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;
@@ -383,7 +382,7 @@ namespace SupFAmof.Service.Service
                         if (account.AccountReports.Any())
                         {
                             Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
-                            foreach (var report in account.AccountReports)
+                            foreach (var report in account.AccountReports.Where(x=>x.Position.Post.PostCategoryId ==1 ))
                             {
                                 combinedSalary += report.Salary;
                                 DateTime dateToWork = report.Position.Date.Date;
@@ -551,7 +550,7 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
                 Dictionary<DateTime, int> dateCountDictionary = new Dictionary<DateTime, int>();
                 double? sum = 0;
-                foreach (var report in account.AccountReports)
+                foreach (var report in account.AccountReports.Where(x=>x.Position.Post.PostCategoryId == 2))
                 {
                     sum += report.Salary;
                     if (dateCountDictionary.TryGetValue(report.Position.Date, out var count))

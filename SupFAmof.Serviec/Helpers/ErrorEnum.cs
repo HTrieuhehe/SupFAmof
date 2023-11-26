@@ -243,6 +243,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Must wait for the update request be reiviewed before send a new one ")]
             DUPLICATE_PENDING = 4025,
+            //400
+            [Display(Name = "Account banned")]
+            ACCOUNT_BANNED = 4025,
         }
 
         public enum PostCategoryErrorEnum

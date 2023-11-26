@@ -244,6 +244,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, ReportPostResponse>().ReverseMap();
             CreateMap<PostPosition, ReportPostPositionResponse>().ReverseMap();
             CreateMap<PostPosition, PostRGUpdatePositionResponse>().ReverseMap();
+            CreateMap<PostPosition, AccountReportPostPositionResponse>().ReverseMap();
             #endregion
 
             #region DocumentTemplate

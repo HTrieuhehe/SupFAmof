@@ -233,7 +233,7 @@ namespace SupFAmof.Service.Service
                 {
                     case 1:
                         //remove only token (Casual Logout)
-                        var tokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.Token.Equals(expoTokens) && x.AccountId == accountId || x.AdminId == accountId);
+                        var tokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.Token.Equals(expoTokens) && x.AccountId == accountId);
 
                         if (tokens == null)
                             return 0;
@@ -245,7 +245,7 @@ namespace SupFAmof.Service.Service
 
                     case 2:
                         //remove all token (When client disable there account
-                        var allTokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.AccountId == accountId || x.AdminId == accountId);
+                        var allTokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.AccountId == accountId);
 
                         if (allTokens == null)
                             return 0;
@@ -270,7 +270,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var expocheck =  await _unitOfWork.Repository<ExpoPushToken>()
-                                        .FindAsync(x => x.Token.Equals(expoToken) && x.AccountId == accountId || x.AdminId == accountId);
+                                        .FindAsync(x => x.Token.Equals(expoToken) && x.AccountId == accountId);
 
                 if (expoToken == null)
                 {

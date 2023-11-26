@@ -14,6 +14,30 @@ namespace SupFAmof.Service.DTO.Response
         public int? PositionId { get; set; }
         public double? Salary { get; set; }
         public DateTime? CreateAt { get; set; }
+
+        public virtual AccountResponse? Account { get; set; }
+        public virtual AccountReportPostPositionResponse? Position { get; set; }
+    }
+
+    public class AccountReportPostPositionResponse
+    {
+        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
+        public string PositionName { get; set; } = null!;
+        public string? PositionDescription { get; set; }
+        public string? SchoolName { get; set; }
+        public string? Location { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public DateTime Date { get; set; }
+        public TimeSpan TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+        public bool? IsBusService { get; set; }
+        public int Status { get; set; }
+        public int Amount { get; set; }
+        public double Salary { get; set; }
     }
 
     public class ReportPostRegistrationResponse

@@ -142,7 +142,7 @@ namespace SupFAmof.Service.Service
 
                 var tokens = _unitOfWork.Repository<ExpoPushToken>()
                                            .GetAll()
-                                           .Where(x => request.Ids.Contains((int)x.AccountId) || request.Ids.Contains((int)x.AdminId))
+                                           .Where(x => request.Ids.Contains((int)x.AccountId))
                                            .Select(y => y.Token.Trim())
                                            .ToList();
                 List<string> tokenList = Ultils.TurnToExpoPushToken(tokens);

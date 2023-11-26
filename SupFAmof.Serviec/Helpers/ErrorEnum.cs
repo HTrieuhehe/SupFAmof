@@ -527,8 +527,12 @@ namespace SupFAmof.Service.Helpers
             OVER_COLLABORATOR = 4003,
 
             //400
-            [Display(Name = "Collaborator ")]
+            [Display(Name = "Collaborator error handling")]
             COLLABORATOR_ERROR_HANDLING = 4004,
+
+            //400
+            [Display(Name = "Collaborator mising account banking information")]
+            MISSING_BANKING_INFORMATION = 4005,
 
             //404
             [Display(Name = "Error occur when collaborator do wrong")]

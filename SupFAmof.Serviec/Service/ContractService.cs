@@ -719,6 +719,13 @@ namespace SupFAmof.Service.Service
 
                         #region Code Here
 
+                        //validate account banking information
+                        if (!account.AccountBankings.Where(x => x.AccountId == accountId).Any())
+                        {
+                            throw new ErrorResponse(400, (int)AccountContractErrorEnum.MISSING_BANKING_INFORMATION,
+                                                                 AccountContractErrorEnum.MISSING_BANKING_INFORMATION.GetDisplayName());
+                        }
+
                         //find account Contract information
                         var accountContract = await _unitOfWork.Repository<AccountContract>()
                                                 .FindAsync(x => x.Id == accountContractId && x.AccountId == accountId);

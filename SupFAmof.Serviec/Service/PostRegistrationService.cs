@@ -39,6 +39,20 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                           .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
 
@@ -186,16 +200,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                              .Where(x => x.AccountIdBanned == accountId&&x.IsActive == true);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                              .Where(x => x.AccountIdBanned == accountId&& x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 var postRegistration = _mapper.Map<PostRegistration>(request);
                 postRegistration.AccountId = accountId;
@@ -313,16 +329,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                            .Where(x => x.AccountIdBanned == accountId);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 if (postRegistrationId == 0)
                 {
@@ -392,16 +410,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                            .Where(x => x.AccountIdBanned == accountId);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                            .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 var original = _unitOfWork.Repository<PostRegistration>()
                                            .GetAll()
@@ -984,16 +1004,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                            .Where(x => x.AccountIdBanned == accountId);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                              .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 var list = _unitOfWork.Repository<PostRgupdateHistory>()
                                                       .GetAll()
@@ -1026,16 +1048,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                              .Where(x => x.AccountIdBanned == accountId);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                            .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 //var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                 //                                  .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider)
@@ -1166,16 +1190,18 @@ namespace SupFAmof.Service.Service
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                            .Where(x => x.AccountIdBanned == accountId);
-
-                var currentDateTime = Ultils.GetCurrentDatetime();
-
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                if (maxDayEnd > currentDateTime)
+                                              .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
                 }
                 var schoolBusOriginal = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.Id == request.Id && x.AccountId == accountId);
                 if (schoolBusOriginal == null)

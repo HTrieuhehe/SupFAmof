@@ -12,11 +12,11 @@ namespace SupFAmof.API.Controllers
 {
     [Route(Helpers.SettingVersionAPI.ApiVersion)]
     [ApiController]
-    public class ComplaintController : ControllerBase
+    public class ApplicationController : ControllerBase
     {
         private readonly IApplicationService _applicationService;
 
-        public ComplaintController(IApplicationService applicationService)
+        public ApplicationController(IApplicationService applicationService)
         {
             _applicationService = applicationService;
         }

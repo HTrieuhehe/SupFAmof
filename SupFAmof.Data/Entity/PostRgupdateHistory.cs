@@ -10,6 +10,7 @@ namespace SupFAmof.Data.Entity
         public int? PositionId { get; set; }
         public int? OriginalPositionId { get; set; }
         public bool? BusOption { get; set; }
+        public string? Note { get; set; }
         public int Status { get; set; }
         public DateTime CreateAt { get; set; }
 

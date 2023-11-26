@@ -321,11 +321,6 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.ExpoPushTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK_FCMToken_Account");
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.ExpoPushTokens)
-                    .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK_AccessToken_Staff");
             });
 
             modelBuilder.Entity<NotificationHistory>(entity =>
@@ -450,6 +445,8 @@ namespace SupFAmof.Data.Entity
                 entity.ToTable("PostRGUpdateHistory");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Note).HasMaxLength(100);
 
                 entity.HasOne(d => d.OriginalPosition)
                     .WithMany(p => p.PostRgupdateHistoryOriginalPositions)

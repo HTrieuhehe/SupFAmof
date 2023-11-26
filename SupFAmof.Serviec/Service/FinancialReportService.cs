@@ -368,11 +368,10 @@ namespace SupFAmof.Service.Service
                     worksheet.Cells[$"{cellAddress3}:{cellmerge3}"].Merge = true;
                     worksheet.Cells[$"{cellAddress3}"].Value = "Thành Tiền";
                     worksheet.Cells[cellAddress3].Style.Font.Bold = true;
-
+                    int valueRow = 4;
                     foreach (var account in accounts)
                     {
                         double? combinedSalary = 0;
-                        int valueRow = 4;
 
                         worksheet.Cells[valueRow, 1].Value = account.Id;
                         worksheet.Cells[valueRow, 2].Value = account.Name;

@@ -26,7 +26,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> GetAccountReportsByToken
+        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> GetAccountApplicationsByToken
             ([FromQuery] ApplicationResponse filter, [FromQuery] PagingRequest paging)
         {
             try
@@ -54,7 +54,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<ApplicationResponse>>> CreateAccountReport
+        public async Task<ActionResult<BaseResponseViewModel<ApplicationResponse>>> CreateAccountApplication
             ([FromBody] CreateAccountApplicationRequest request)
         {
             try
@@ -65,7 +65,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _applicationService.CreateAccountReportProblem(account.Id, request);
+                return await _applicationService.CreateAccountApplication(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

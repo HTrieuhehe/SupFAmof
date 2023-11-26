@@ -90,7 +90,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionApplicationService.RejectReportProblem(account.Id,reportId,request);
+                var result = await _admissionApplicationService.RejectApplication(account.Id,reportId,request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -114,7 +114,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionApplicationService.ApproveReportProblem(account.Id, reportId, request);
+                var result = await _admissionApplicationService.ApproveApplication(account.Id, reportId, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)
@@ -137,7 +137,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionApplicationService.GetAdmissionAccountReportProblems(account.Id, filter, paging);
+                var result = await _admissionApplicationService.GetAdmissionAccountApplications(account.Id, filter, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

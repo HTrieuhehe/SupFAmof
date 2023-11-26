@@ -707,7 +707,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 //check account banned current or not
-                if (account.AccountBanneds.Any() && account.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                if (account.AccountBanneds.Any(x => x.IsActive == true) && account.AccountBanneds.Max(x => x.DayEnd >= Ultils.GetCurrentDatetime()))
                 {
                     throw new ErrorResponse(403, (int)AccountErrorEnums.BANNED_IN_PROCESS,
                                                          AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());

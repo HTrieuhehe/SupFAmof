@@ -346,7 +346,7 @@ namespace SupFAmof.Service.Service
                     {
                         char columnLetter = (char)('A' + postCollumn - 1);
                         string cellAddress = $"{columnLetter}{mergeRow}";
-                        worksheet.Cells[$"{cellAddress}"].Value = $"OPEN DAY" + "\r\n" + $"{date.ToString("dd/MM")}";
+                        worksheet.Cells[$"{cellAddress}"].Value =  $"{date.ToString("dd/MM")}";
                         worksheet.Cells[cellAddress].Style.Font.Bold = true;
                         collumJob.Add(cellAddress, new Tuple<string, string>("OPEN DAY", $"{date.ToString("dd/MM")}"));
                         postCollumn++;

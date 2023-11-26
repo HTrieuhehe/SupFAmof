@@ -26,13 +26,14 @@ namespace SupFAmof.Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly INotificationService _notificationService;
 
-        public ApplicationService(IMapper mapper, IUnitOfWork unitOfWork)
+        public ApplicationService(IMapper mapper, IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
-        public async Task<BaseResponseViewModel<ApplicationResponse>> CreateAccountReportProblem(int accountId, CreateAccountApplicationRequest request)
+        public async Task<BaseResponseViewModel<ApplicationResponse>> CreateAccountApplication(int accountId, CreateAccountApplicationRequest request)
         {
             try
             {
@@ -88,7 +89,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<ApplicationResponse>> GetAccountReportProblemsByToken(int accountId, ApplicationResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<ApplicationResponse>> GetAccountApplicationsByToken(int accountId, ApplicationResponse filter, PagingRequest paging)
         {
             try
             {
@@ -118,7 +119,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionComplaintResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountApplications(int accountId, AdmissionComplaintResponse filter, PagingRequest paging)
         {
             try
             {
@@ -157,7 +158,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectReportProblem(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -234,7 +235,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveReportProblem(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {

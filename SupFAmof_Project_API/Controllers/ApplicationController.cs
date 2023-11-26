@@ -37,7 +37,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _applicationService.GetAccountReportProblemsByToken(account.Id, filter, paging);
+                return await _applicationService.GetAccountApplicationsByToken(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {

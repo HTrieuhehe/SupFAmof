@@ -11,11 +11,11 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IApplicationService
     {
-        Task<BaseResponsePagingViewModel<ApplicationResponse>> GetAccountReportProblemsByToken(int accountId, ApplicationResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountReportProblems(int accountId, AdmissionComplaintResponse filter, PagingRequest paging);
-        Task<BaseResponseViewModel<ApplicationResponse>> CreateAccountReportProblem(int accountId, CreateAccountApplicationRequest request);
+        Task<BaseResponsePagingViewModel<ApplicationResponse>> GetAccountApplicationsByToken(int accountId, ApplicationResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountApplications(int accountId, AdmissionComplaintResponse filter, PagingRequest paging);
+        Task<BaseResponseViewModel<ApplicationResponse>> CreateAccountApplication(int accountId, CreateAccountApplicationRequest request);
 
-        Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveReportProblem(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
-        Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectReportProblem(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
+        Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
+        Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
     }
 }

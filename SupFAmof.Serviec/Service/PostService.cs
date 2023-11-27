@@ -515,6 +515,12 @@ namespace SupFAmof.Service.Service
 
                         // Reset temp variable
                         totalCount = 0;
+
+                        //tìm post update history có status pending
+                        var updateRegistration = _unitOfWork.Repository<PostRgupdateHistory>()
+                                .GetAll().Where(x => x.PositionId == itemDetail.Id && x.Status == (int)PostRGUpdateHistoryEnum.Pending);
+
+                        item.TotalUpdateRegisterAmount += updateRegistration.Count();
                     }
 
                     //transfer data from position after add to field in post

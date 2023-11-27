@@ -247,7 +247,7 @@ namespace SupFAmof.Service.Service
                 var checkDuplicateForm = await _unitOfWork.Repository<PostRegistration>()
                     .GetAll()
                     .SingleOrDefaultAsync(x => x.AccountId == postRegistration.AccountId &&
-                                                  x.PositionId == request.PositionId);
+                                                  x.PositionId == request.PositionId && x.Status == 2);
 
                 if (checkDuplicateForm == null)
                 {

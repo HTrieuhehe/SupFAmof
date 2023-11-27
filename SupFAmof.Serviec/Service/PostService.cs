@@ -1067,7 +1067,8 @@ namespace SupFAmof.Service.Service
                         var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                             .GetAll()
                                                             .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                                                   && reg.Status == (int)PostRegistrationStatusEnum.CheckIn)
+                                                                                                                   && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                                                   && reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
                                                             .ToListAsync();
 
                         // tính tổng các registration đã được confirm
@@ -1128,8 +1129,9 @@ namespace SupFAmof.Service.Service
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                         .GetAll()
-                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                                               && reg.Status == (int)PostRegistrationStatusEnum.CheckIn)
+                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Confirm
+                                                                                                               && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                                               && reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
                                                         .ToListAsync();
 
                     // tính tổng các registration đã được confirm

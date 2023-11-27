@@ -19,6 +19,12 @@ namespace SupFAmof.Service.DTO.Response
         public virtual AccountReportPostPositionResponse? Position { get; set; }
     }
 
+    public class AccountReportFilter
+    {
+        public DateTime? CreateAtStart { get; set; }
+        public DateTime? CreateAtEnd { get; set; }
+    }
+
     public class AccountReportPostPositionResponse
     {
         public int Id { get; set; }

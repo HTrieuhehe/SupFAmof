@@ -33,7 +33,8 @@ namespace SupFAmof.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReportByToken(int accountId, AccountReportResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReportByToken
+            (int accountId, AccountReportResponse filter, AccountReportFilter dateFilter, PagingRequest paging)
         {
             try
             {
@@ -43,8 +44,9 @@ namespace SupFAmof.Service.Service
                                                 .Where(x => x.AccountId == accountId)
                                                 .OrderByDescending(x => x.CreateAt)
                                                 .DynamicFilter(filter)
-                                                .DynamicSort(paging.Sort, paging.Order)
-                                                .PagingQueryable(paging.Page, paging.PageSize);
+                                                .DynamicSort(paging.Sort, paging.Order);
+                                                
+                var dateFilterLists = FilterReportDate(accountReport, dateFilter).PagingQueryable(paging.Page, paging.PageSize);
 
                 return new BaseResponsePagingViewModel<AccountReportResponse>()
                 {
@@ -52,9 +54,9 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = accountReport.Item1
+                        Total = dateFilterLists.Item1
                     },
-                    Data = accountReport.Item2.ToList()
+                    Data = dateFilterLists.Item2.ToList()
                 };
             }
             catch (Exception ex)
@@ -135,5 +137,25 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        #region private filter logic
+
+        private static IQueryable<AccountReportResponse> FilterReportDate(IQueryable<AccountReportResponse> list, AccountReportFilter filter)
+        {
+            if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue && filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
+            {
+                //minus CreateAtEnd 1 day and set all time to mid night
+                var startDate = filter.CreateAtStart.Value.Date;
+                var endDate = filter.CreateAtEnd.Value.Date.AddDays(-1);
+
+                //filter here
+                list = list.Where(post => post.CreateAt >= startDate && post.CreateAt <= endDate);
+            }
+
+            //int size = list.Count();
+            return list;
+        }
+
+        #endregion
     }
 }

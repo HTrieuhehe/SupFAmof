@@ -51,6 +51,35 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
+        /// Get Post By Id 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("getById")]
+        public async Task<ActionResult<BaseResponseViewModel<PostResponse>>> GetPostById
+        ([FromQuery] int postId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postService.GetPostById(account.Id, postId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Get Posts 
         /// </summary>
         /// <returns></returns>

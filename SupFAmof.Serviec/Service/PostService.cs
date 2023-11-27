@@ -1167,6 +1167,46 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<PostResponse>> GetPostById(int accountId, int postId)
+        {
+            try
+            {
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var post = await _unitOfWork.Repository<Post>().GetAll().FirstOrDefaultAsync(x => x.Id == postId);
+
+                if (post == null)
+                {
+                    if (post == null)
+                    {
+                        throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                             PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                    }
+                }
+
+                return new BaseResponseViewModel<PostResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<PostResponse>(post)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<BaseResponsePagingViewModel<PostResponse>> SearchPost(string searchPost, PagingRequest paging)
         {
             try

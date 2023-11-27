@@ -28,8 +28,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionApplicationResponse>>> GetAdmissionContracts
-            ([FromQuery] AdmissionApplicationResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionAccountContractResponse>>> GetAdmissionContracts
+            ([FromQuery] AdmissionAccountContractResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpGet("getById")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionApplicationResponse>>> GetAdmissionContractById
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> GetAdmissionContractById
             ([FromQuery] int contractId)
         {
             try
@@ -88,7 +88,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpGet("search")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionApplicationResponse>>> AdmissionSearchContract
+        public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionAccountContractResponse>>> AdmissionSearchContract
             ([FromQuery] string search, [FromQuery] PagingRequest paging)
         {
             try
@@ -118,7 +118,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpPost("create")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionApplicationResponse>>> CreateAdmissionContract
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> CreateAdmissionContract
             ([FromBody] CreateAdmissionContractRequest request)
         {
             try
@@ -148,7 +148,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpPut("update")]
-        public async Task<ActionResult<BaseResponseViewModel<AdmissionApplicationResponse>>> UpdateAdmissionContract
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> UpdateAdmissionContract
             ([FromQuery] int contractId, [FromBody] UpdateAdmissionContractRequest request)
         {
             try

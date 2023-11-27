@@ -127,7 +127,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpGet("admission-replied-application")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> AdmissionReplyApplication([FromQuery] AdmissionComplaintResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> AdmissionReplyApplication([FromQuery] AdmissionApplicationResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {

@@ -119,7 +119,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionComplaintResponse>> GetAdmissionAccountApplications(int accountId, AdmissionComplaintResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> GetAdmissionAccountApplications(int accountId, AdmissionApplicationResponse filter, PagingRequest paging)
         {
             try
             {
@@ -134,13 +134,13 @@ namespace SupFAmof.Service.Service
                 }
 
                 var reportProblem = _unitOfWork.Repository<Application>().GetAll()
-                                               .ProjectTo<AdmissionComplaintResponse>(_mapper.ConfigurationProvider)
+                                               .ProjectTo<AdmissionApplicationResponse>(_mapper.ConfigurationProvider)
                                                .OrderByDescending(x => x.ReportDate)
                                                .DynamicFilter(filter)
                                                .DynamicSort(paging.Sort, paging.Order)
                                                .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<AdmissionComplaintResponse>()
+                return new BaseResponsePagingViewModel<AdmissionApplicationResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -158,7 +158,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> RejectApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> RejectApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -217,7 +217,7 @@ namespace SupFAmof.Service.Service
 
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AdmissionComplaintResponse>
+                return new BaseResponseViewModel<AdmissionApplicationResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -225,7 +225,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionComplaintResponse>(report)
+                    Data = _mapper.Map<AdmissionApplicationResponse>(report)
 
                 };
             }
@@ -235,7 +235,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionComplaintResponse>> ApproveApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> ApproveApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -294,7 +294,7 @@ namespace SupFAmof.Service.Service
 
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AdmissionComplaintResponse>
+                return new BaseResponseViewModel<AdmissionApplicationResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -302,7 +302,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionComplaintResponse>(report)
+                    Data = _mapper.Map<AdmissionApplicationResponse>(report)
 
                 };
             }

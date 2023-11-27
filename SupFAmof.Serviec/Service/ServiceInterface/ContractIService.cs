@@ -12,14 +12,14 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IContractService
     {
-        Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> GetAdmissionContracts(int accountId, AdmissionApplicationResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging);
-        Task<BaseResponseViewModel<AdmissionApplicationResponse>> GetAdmissionContractById(int accountId, int contractId);
-        Task<BaseResponseViewModel<AdmissionApplicationResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request);
-        Task<BaseResponseViewModel<AdmissionApplicationResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request);
-        Task<BaseResponseViewModel<AdmissionApplicationResponse>> DisableAdmissionContract(int accountId, int contractId);
+        Task<BaseResponsePagingViewModel<AdmissionAccountContractResponse>> GetAdmissionContracts(int accountId, AdmissionAccountContractResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionAccountContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging);
+        Task<BaseResponseViewModel<AdmissionAccountContractResponse>> GetAdmissionContractById(int accountId, int contractId);
+        Task<BaseResponseViewModel<AdmissionAccountContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request);
+        Task<BaseResponseViewModel<AdmissionAccountContractResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request);
+        Task<BaseResponseViewModel<AdmissionAccountContractResponse>> DisableAdmissionContract(int accountId, int contractId);
         Task<BaseResponseViewModel<bool>> AdmissionSendContractEmail(int accountId, int contractId, List<int> collaboratorAccountId);
-        Task<BaseResponseViewModel<AdmissionApplicationResponse>> AdmissionCompleteContract(int accountId, int contractId, int collaboratorAccountId);
+        Task<BaseResponseViewModel<AdmissionAccountContractResponse>> AdmissionCompleteContract(int accountId, int accountContractId);
 
         //Collabotator Contract Zone
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging);

@@ -544,9 +544,17 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Collaborator mising account banking information")]
             MISSING_BANKING_INFORMATION = 4005,
 
+            //400
+            [Display(Name = "Account Contract is not available to complete")]
+            COMPLETE_INVALID = 4006,
+
             //404
             [Display(Name = "Error occur when collaborator do wrong")]
             CONTRACT_REMOVED_ADMISSION = 4041,
+
+            //404
+            [Display(Name = "Account Contract Not Found")]
+            NOT_FOUND_ACCOUNT_CONTRACT = 4042,
         }
 
         public enum CheckAttendanceErrorEnum

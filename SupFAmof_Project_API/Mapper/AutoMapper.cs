@@ -222,7 +222,7 @@ namespace SupFAmof.API.Mapper
 
             #region Admission Contract
 
-            CreateMap<Contract, AdmissionApplicationResponse>().ReverseMap();
+            CreateMap<Contract, AdmissionAccountContractResponse>().ReverseMap();
             CreateMap<Contract, ContractResponse>().ReverseMap();
             CreateMap<CreateAdmissionContractRequest, Contract>().ReverseMap();
             CreateMap<UpdateAdmissionContractRequest, Contract>().ReverseMap();
@@ -231,7 +231,7 @@ namespace SupFAmof.API.Mapper
 
             #region Admission Account Report Problem
 
-            CreateMap<Application, AdmissionComplaintResponse>().ReverseMap();
+            CreateMap<Application, AdmissionApplicationResponse>().ReverseMap();
             CreateMap<UpdateAdmissionAccountApplicationRequest, Application>().ReverseMap();
 
             #endregion

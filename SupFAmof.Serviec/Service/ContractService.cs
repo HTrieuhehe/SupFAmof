@@ -44,7 +44,7 @@ namespace SupFAmof.Service.Service
             _notificationService = notificationService;
         }
 
-        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> CreateAdmissionContract(int accountId, CreateAdmissionContractRequest request)
         {
             try
             {
@@ -109,7 +109,7 @@ namespace SupFAmof.Service.Service
                 await _unitOfWork.Repository<Contract>().InsertAsync(contract);
                 await _unitOfWork.CommitAsync();
 
-                return new BaseResponseViewModel<AdmissionApplicationResponse>
+                return new BaseResponseViewModel<AdmissionAccountContractResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -117,7 +117,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionApplicationResponse>(contract)
+                    Data = _mapper.Map<AdmissionAccountContractResponse>(contract)
 
                 };
             }
@@ -127,7 +127,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> UpdateAdmissionContract(int accountId, int contractId, UpdateAdmissionContractRequest request)
         {
             //allow update if there is no sending email to someone
 
@@ -196,7 +196,7 @@ namespace SupFAmof.Service.Service
 
                 //send update notification
 
-                return new BaseResponseViewModel<AdmissionApplicationResponse>
+                return new BaseResponseViewModel<AdmissionAccountContractResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -204,7 +204,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionApplicationResponse>(contractUpdate)
+                    Data = _mapper.Map<AdmissionAccountContractResponse>(contractUpdate)
 
                 };
             }
@@ -214,7 +214,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> GetAdmissionContractById(int accountId, int contractId)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> GetAdmissionContractById(int accountId, int contractId)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
-                return new BaseResponseViewModel<AdmissionApplicationResponse>
+                return new BaseResponseViewModel<AdmissionAccountContractResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -232,7 +232,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionApplicationResponse>(contract)
+                    Data = _mapper.Map<AdmissionAccountContractResponse>(contract)
 
                 };
             }
@@ -242,18 +242,18 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> GetAdmissionContracts(int accountId, AdmissionApplicationResponse filter, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionAccountContractResponse>> GetAdmissionContracts(int accountId, AdmissionAccountContractResponse filter, PagingRequest paging)
         {
             try
             {
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
                                                 .Where(x => x.CreatePersonId == accountId && x.IsActive == true)
-                                                .ProjectTo<AdmissionApplicationResponse>(_mapper.ConfigurationProvider)
+                                                .ProjectTo<AdmissionAccountContractResponse>(_mapper.ConfigurationProvider)
                                                 .DynamicFilter(filter)
                                                 .DynamicSort(paging.Sort, paging.Order)
                                                 .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<AdmissionApplicationResponse>
+                return new BaseResponsePagingViewModel<AdmissionAccountContractResponse>
                 {
                     Metadata = new PagingsMetadata
                     {
@@ -270,7 +270,7 @@ namespace SupFAmof.Service.Service
             }
         }
         
-        public async Task<BaseResponsePagingViewModel<AdmissionApplicationResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionAccountContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging)
         {
             //Search by Name
             try
@@ -283,7 +283,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 var contract = _unitOfWork.Repository<Contract>().GetAll()
-                                    .ProjectTo<AdmissionApplicationResponse>(_mapper.ConfigurationProvider)
+                                    .ProjectTo<AdmissionAccountContractResponse>(_mapper.ConfigurationProvider)
                                     .Where(x => x.ContractName.Contains(search) && x.CreatePersonId == accountId)
                                     .PagingQueryable(paging.Page, paging.PageSize,
                                                         Constants.LimitPaging, Constants.DefaultPaging);
@@ -294,7 +294,7 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
-                return new BaseResponsePagingViewModel<AdmissionApplicationResponse>()
+                return new BaseResponsePagingViewModel<AdmissionAccountContractResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
@@ -311,7 +311,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionApplicationResponse>> DisableAdmissionContract(int accountId, int contractId)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> DisableAdmissionContract(int accountId, int contractId)
         {
             try
             {
@@ -355,7 +355,7 @@ namespace SupFAmof.Service.Service
 
                 //send disable notification
 
-                return new BaseResponseViewModel<AdmissionApplicationResponse>
+                return new BaseResponseViewModel<AdmissionAccountContractResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -363,7 +363,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionApplicationResponse>(contract)
+                    Data = _mapper.Map<AdmissionAccountContractResponse>(contract)
 
                 };
             }
@@ -870,9 +870,42 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public Task<BaseResponseViewModel<AdmissionApplicationResponse>> AdmissionCompleteContract(int accountId, int contractId, int collaboratorAccountId)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> AdmissionCompleteContract(int accountId, int accountContractId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var accountContract = await _unitOfWork.Repository<AccountContract>().FindAsync(x => x.Id == accountContractId && x.Contract.CreatePersonId == accountId);
+
+                if (accountContract == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT,
+                                        AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT.GetDisplayName());
+                }
+
+                if (accountContract.Status != (int)AccountContractStatusEnum.Confirm)
+                {
+                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.COMPLETE_INVALID,
+                                        AccountContractErrorEnum.COMPLETE_INVALID.GetDisplayName());
+                }
+
+                accountContract.Status = (int)AccountContractStatusEnum.Complete;
+                accountContract.UpdateAt = Ultils.GetCurrentDatetime();
+
+                return new BaseResponseViewModel<AdmissionAccountContractResponse>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = _mapper.Map<AdmissionAccountContractResponse>(accountContract)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         #endregion

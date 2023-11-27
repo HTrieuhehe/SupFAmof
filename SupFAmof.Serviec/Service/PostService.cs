@@ -1024,7 +1024,7 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = response.Count(),
+                            Total = premiumList.Item1,
                         },
                         //Data = postPremiumResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                         Data = response
@@ -1154,7 +1154,7 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = data.Count()
+                        Total = dateFilter.Item1
                     },
                     //Data = postResponses.OrderByDescending(x => x.CreateAt).ThenByDescending(x => x.Priority).ToList()
                     Data = data

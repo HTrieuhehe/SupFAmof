@@ -120,8 +120,11 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Reject")]
             Reject = 3,
 
+            [Display(Name = "Complete")]
+            Complete = 4,
+
             [Display(Name = "Fail")]
-            Fail = 4,
+            Fail = 5,
         }
 
         public enum ReportProblemStatusEnum

@@ -377,16 +377,17 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var checkContract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId && x.CreatePersonId == accountId);
+                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId && x.CreatePersonId == accountId);
 
-                if (checkContract == null)
+                if (contract == null)
                 {
                     throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
                 //access to each accountId in list of accountIds
-                foreach (int collab in collaboratorAccountId)
+                var listCollab = collaboratorAccountId.ToList();
+                foreach (int collab in listCollab)
                 {
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
 
@@ -414,12 +415,16 @@ namespace SupFAmof.Service.Service
                     }
 
                     //validate if there is any contract in range of this collaborator
-                    var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
-                                .FindAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime() 
-                                                                                               && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
-                                                                                               && x.AccountId == collab);
+                    /*
+                      chúng ta so sánh ngày bắt đầu của hợp đồng (StartDate) phải nhỏ hơn hoặc bằng ngày kết thúc của khoảng (endDate), 
+                        và ngược lại, ngày kết thúc của hợp đồng (EndDate) phải lớn hơn hoặc bằng ngày bắt đầu của khoảng (startDate)
+                     */
+                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                                .GetAll().Where(x => x.Contract.StartDate <= contract.EndDate
+                                                                && x.Contract.EndDate >= contract.StartDate
+                                                                && x.AccountId == collab);
 
-                    if (checkCurrentContract != null)
+                    if (checkCurrentContract.Any(x => x.Status == (int)AccountContractStatusEnum.Confirm))
                     {
                         //cannot send email. the collaborator has confirmed one contract already
                         //remove accountId from the list to avoid sending notification to this account
@@ -442,6 +447,12 @@ namespace SupFAmof.Service.Service
                         continue;
                     }
 
+                    if (checkCurrentContract.Any(x => x.Contract.Id == contractId))
+                    {
+                        collaboratorAccountId.Remove(collab);
+                        continue;
+                    }
+
                     //account allow to send email
                     CreateAccountContractRequest accountContract = new CreateAccountContractRequest()
                     {
@@ -459,11 +470,11 @@ namespace SupFAmof.Service.Service
                     {
                         Id = contractId.ToString(),
                         Email = checkCollab.Email.ToString(),
-                        ContractName = checkContract.ContractName.ToString(),
-                        SigningDate = checkContract.SigningDate.Date.ToString(),
-                        StartDate = checkContract.StartDate.Date.ToString(),
-                        EndDate = checkContract.EndDate.Date.ToString(),
-                        TotalSalary = checkContract.TotalSalary.ToString(),
+                        ContractName = contract.ContractName.ToString(),
+                        SigningDate = contract.SigningDate.Date.ToString(),
+                        StartDate = contract.StartDate.Date.ToString(),
+                        EndDate = contract.EndDate.Date.ToString(),
+                        TotalSalary = contract.TotalSalary.ToString(),
                     };
 
                     //send Email
@@ -506,7 +517,6 @@ namespace SupFAmof.Service.Service
                 {
                     //saving data into database before return error
                     await _unitOfWork.CommitAsync();
-
                     throw new ErrorResponse(400, (int)AccountContractErrorEnum.OVER_COLLABORATOR,
                                        AccountContractErrorEnum.OVER_COLLABORATOR.GetDisplayName());
                 }
@@ -858,6 +868,11 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+        public Task<BaseResponseViewModel<AdmissionApplicationResponse>> AdmissionCompleteContract(int accountId, int contractId, int collaboratorAccountId)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -246,6 +246,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Account banned")]
             ACCOUNT_BANNED = 4025,
+            //400
+            [Display(Name = "Cancel Failed")]
+            CANCEL_FAILED = 4026,
         }
 
         public enum PostCategoryErrorEnum

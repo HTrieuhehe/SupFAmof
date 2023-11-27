@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using System.Linq;
-using Service.Commons;
-using ServiceStack.Text;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -165,7 +162,7 @@ namespace SupFAmof.Service.Service
 
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging,FilterUpdateRequestResponse IdFilter)
         {
             try
             {
@@ -173,19 +170,21 @@ namespace SupFAmof.Service.Service
                 var list = _unitOfWork.Repository<PostRgupdateHistory>()
                                                       .GetAll()
                                                       .Where(pr => pr.Position.Post.AccountId == admissionAccountId)
-                                                      .ProjectTo<AdmissionUpdateRequestResponse>(_mapper.ConfigurationProvider)
-                                                      .PagingQueryable(paging.Page, paging.PageSize);
+                                                      .ProjectTo<AdmissionUpdateRequestResponse>(_mapper.ConfigurationProvider);
 
 
+                var filteredList = FilterUpdateRequest(list, IdFilter)
+                                 .DynamicSort(paging.Sort, paging.Order)
+                                 .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>()
                 {
                     Metadata = new PagingsMetadata()
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = list.Item1
+                        Total = filteredList.Item1
                     },
-                    Data = list.Item2.ToList()
+                    Data = filteredList.Item2.ToList()
                 };
             }
             catch (Exception)
@@ -497,6 +496,7 @@ namespace SupFAmof.Service.Service
                                     PostRegistrationId = request.Id,
                                     PositionId = request.PositionId,
                                     BusOption = request.SchoolBusOption,
+                                    Note = request.Note,
                                     CreateAt = GetCurrentDatetime(),
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
@@ -1170,6 +1170,14 @@ namespace SupFAmof.Service.Service
             if (filter.RegistrationStatus != null && filter.RegistrationStatus.Any())
             {
                 list = list.Where(d => filter.RegistrationStatus.Contains((int)d.Status));
+            }
+            return list;
+        }
+        private static IQueryable<AdmissionUpdateRequestResponse> FilterUpdateRequest(IQueryable<AdmissionUpdateRequestResponse> list, FilterUpdateRequestResponse filter)
+        {
+            if (filter.Id != null)
+            {
+                list = list.Where(d => d.Post.Id == filter.Id);
             }
             return list;
         }

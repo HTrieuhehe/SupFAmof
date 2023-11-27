@@ -13,6 +13,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [RegularExpression("^[0-9]+$", ErrorMessage = "Account Id must contain only numeric characters.")]
         public int AccountId { get; set; }
 
+        public virtual ICollection<AccountTrainingCertificateRequest>? TrainingCertificates { get; set; } 
+    }
+
+    public class AccountTrainingCertificateRequest
+    {
         [Required]
         [RegularExpression("^[0-9]+$", ErrorMessage = "Traning Certificate Id must contain only numeric characters.")]
         public int TrainingCertificateId { get; set; }

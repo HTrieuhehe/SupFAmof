@@ -292,6 +292,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Collaborator Certificate has not changing")]
             STATUS_ALREADY_SAME = 4003,
 
+            //400
+            [Display(Name = "List of Certificates has no data")]
+            CERTIFICATE_LIST_EMPTY = 4004,
+
             //404
             [Display(Name = "Account Certificate not found!")]
             NOT_FOUND_ID = 4041,

@@ -144,9 +144,9 @@ namespace SupFAmof.Service.Service
         {
             if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue && filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
             {
-                //minus CreateAtEnd 1 day and set all time to mid night
+                //set all time to mid night
                 var startDate = filter.CreateAtStart.Value.Date;
-                var endDate = filter.CreateAtEnd.Value.Date.AddDays(-1);
+                var endDate = filter.CreateAtEnd.Value.Date;
 
                 //filter here
                 list = list.Where(post => post.CreateAt >= startDate && post.CreateAt <= endDate);

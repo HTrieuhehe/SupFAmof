@@ -356,6 +356,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
                                             PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                 }
+
                 switch ((PostRegistrationStatusEnum)postRegistration.Status)
                 {
                     case PostRegistrationStatusEnum.Pending:
@@ -364,6 +365,14 @@ namespace SupFAmof.Service.Service
                         await _unitOfWork.CommitAsync();
                         break;
                     case PostRegistrationStatusEnum.Confirm:
+                        DateTime combinedDateTime = postRegistration.Position.Date.Add(postRegistration.Position.TimeFrom);
+                        DateTime currentTime = GetCurrentDatetime();
+                        var timeDifference = combinedDateTime - currentTime;
+                        if (timeDifference.TotalHours < 6)
+                        {
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                      PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+                        }
                         CreateAccountApplicationRequest application = new CreateAccountApplicationRequest
                         {
                             ProblemNote = $"Request for cancellation for Position {postRegistration.Position.PositionName} from Post {postRegistration.Position.Post.PostCode}",
@@ -385,6 +394,10 @@ namespace SupFAmof.Service.Service
                             ,
                             Data = report
                         };
+                    default:
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+
                 }
 
 

@@ -253,6 +253,10 @@ namespace SupFAmof.Service.DTO.Response
     {
         public List<int>? RegistrationStatus { get; set; }
     }
+    public class FilterUpdateRequestResponse
+    {
+        public int? Id { get; set; }
+    }
     public class AdmissionUpdateRequestResponse
     {
         public int? Id { get; set; }

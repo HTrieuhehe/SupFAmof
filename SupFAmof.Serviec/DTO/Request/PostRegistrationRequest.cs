@@ -33,6 +33,7 @@ namespace SupFAmof.Service.DTO.Request
         [Required(ErrorMessage = "true or false is required.")]
         [ValidateBoolean(ErrorMessage = "Only 'true' or 'false' is allowed.")]
         public bool SchoolBusOption { get; set; }
+        public string? Note { get; set; }
 
 
     }

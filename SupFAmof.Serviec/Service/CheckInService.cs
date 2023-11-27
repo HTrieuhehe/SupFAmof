@@ -219,7 +219,7 @@ namespace SupFAmof.Service.Service
 
         private static bool VerifyDateTimeCheckin(PostRegistration postTime, DateTime checkInTime)
         {
-            if (postTime.Position.Post.DateFrom.Date != checkInTime.Date)
+            if (postTime.Position.Date != checkInTime.Date)
             {
                 throw new ErrorResponse(400, 400, "Cant check in if you are not on the day of event");
             }

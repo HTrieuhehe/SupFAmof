@@ -19,6 +19,7 @@ using AutoMapper.QueryableExtensions;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace SupFAmof.Service.Service
 {
@@ -142,6 +143,8 @@ namespace SupFAmof.Service.Service
 
         private static IQueryable<AccountReportResponse> FilterReportDate(IQueryable<AccountReportResponse> list, AccountReportFilter filter)
         {
+            
+            //both 2 varibale has value
             if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue && filter.CreateAtStart != null && filter.CreateAtStart.HasValue)
             {
                 //set all time to mid night
@@ -150,6 +153,26 @@ namespace SupFAmof.Service.Service
 
                 //filter here
                 list = list.Where(post => post.CreateAt >= startDate && post.CreateAt <= endDate);
+            }
+
+            //only date start has value
+            else if(filter.CreateAtStart != null && filter.CreateAtStart.HasValue && !filter.CreateAtEnd.HasValue)
+            {
+                //set start time to mid night
+                var startDate = filter.CreateAtStart.Value.Date;
+
+                //filter here
+                list = list.Where(post => post.CreateAt <= startDate);
+            }
+
+            //only date end has value
+            else if (filter.CreateAtEnd != null && filter.CreateAtEnd.HasValue && !filter.CreateAtStart.HasValue)
+            {
+                //set start time to mid night
+                var endDate = filter.CreateAtEnd.Value.Date;
+
+                //filter here
+                list = list.Where(post => post.CreateAt <= endDate);
             }
 
             //int size = list.Count();

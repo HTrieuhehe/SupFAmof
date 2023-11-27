@@ -13,6 +13,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         {
             RegisterAmount = 0;
             TotalAmountPosition = 0;
+            TotalUpdateRegisterAmount = 0;
         }
 
         public int? Id { get; set; }
@@ -35,6 +36,8 @@ namespace SupFAmof.Service.DTO.Response.Admission
 
         public int? TotalAmountPosition;
         //public  int? TotalAmountPosition { get => totalAmountPosition ?? 0; set => totalAmountPosition = value; }
+
+        public int? TotalUpdateRegisterAmount;
 
         public AccountResponse? Account { get; set; }
         public PostCategoryResponse? PostCategory { get; set; }

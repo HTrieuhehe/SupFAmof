@@ -495,7 +495,11 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                                 }
-                                updateEntity.UpdateAt = Ultils.GetCurrentDatetime();
+                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
+                                        PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
+                                }
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(updateEntity);
                                 await _unitOfWork.CommitAsync();
 
@@ -534,22 +538,17 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
                                                    PostRegistrationErrorEnum.DUPLICATE_PENDING.GetDisplayName());
                                 }
-                                if (!await CheckCertificate(updateEntity))
+                                if (!await CheckCertificateConfirmUpdate((int)postTgupdate.PositionId,accountId))
                                 {
                                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                                         PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
-                                //if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
-                                //{
-                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
-                                //                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
-                                //}
-                                //if (!await CheckDuplicatePostRgUpdate(postTgupdate))
-                                //{
-                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
-                                //                       PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
-                                //}
-                                if (!await CheckPostPositionBus(updateEntity))
+                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
+                                        PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
+                                }
+                                if (!await CheckPostPositionBusConfirmUpdate((int)postTgupdate.PositionId, (bool)postTgupdate.BusOption))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
@@ -758,6 +757,26 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
+        private async Task<bool> CheckPostPositionBusConfirmUpdate(int positionId,bool SchoolsBusOptions)
+        {
+            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.Id == positionId);
+            switch (entityMatching.IsBusService)
+            {
+                case true:
+                    return true;
+                case false:
+                    if (!SchoolsBusOptions)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+
+            return true;
+        }
 
         public async Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId, List<int> postRegistrationIds, bool approve)
         {
@@ -942,6 +961,27 @@ namespace SupFAmof.Service.Service
             return false;
 
         }
+        private async Task<bool> CheckCertificateConfirmUpdate(int positionId,int accountId)
+        {
+            var userCertificate = _unitOfWork.Repository<AccountCertificate>()
+                .GetAll().Where(x => x.AccountId == accountId && x.Status == (int)AccountCertificateStatusEnum.Complete).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
+            var positionCertificate = await _unitOfWork.Repository<PostPosition>()
+                                                        .FindAsync(x => x.Id == positionId);
+            if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if (userCertificate.Count() == 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if (userCertificate.Contains((int)positionCertificate.TrainingCertificateId))
+            {
+                return true;
+            }
+            return false;
+
+        }
 
         private async Task<bool> CheckDatePost(PostRegistration request)
         {
@@ -996,6 +1036,40 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
+        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId)
+        {
+            var postsAttended = _unitOfWork.Repository<PostRegistration>()
+                                    .GetAll()
+                                    .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                    .ToList();
+
+            if (postsAttended != null && postsAttended.Any())
+            {
+                var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
+                    .GetAll()
+                    .Where(x => x.Id == positionId)
+                    .FirstOrDefault();
+
+                if (positionTimeFromPostRegistered != null)
+                {
+                    foreach (var attendedPost in postsAttended)
+                    {
+                        if (attendedPost.Position.Date.Date == positionTimeFromPostRegistered.Date.Date)
+                        {
+                            // Use Any() with a lambda expression to check for overlaps
+                            if (IsTimeSpanOverlap(attendedPost.Position.TimeFrom, attendedPost.Position.TimeTo,
+                                positionTimeFromPostRegistered.TimeFrom, positionTimeFromPostRegistered.TimeTo))
+                            {
+                                return false; // If there is an overlap, return false
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
         //private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
         //{
         //    var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);

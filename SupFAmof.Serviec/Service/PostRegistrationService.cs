@@ -538,17 +538,17 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
                                                    PostRegistrationErrorEnum.DUPLICATE_PENDING.GetDisplayName());
                                 }
-                                if (!await CheckCertificate(updateEntity))
+                                if (!await CheckCertificateConfirmUpdate((int)postTgupdate.PositionId,accountId))
                                 {
                                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                                         PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
-                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                                         PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
                                 }
-                                if (!await CheckPostPositionBus(updateEntity))
+                                if (!await CheckPostPositionBusConfirmUpdate((int)postTgupdate.PositionId, (bool)postTgupdate.BusOption))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
@@ -757,6 +757,26 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
+        private async Task<bool> CheckPostPositionBusConfirmUpdate(int positionId,bool SchoolsBusOptions)
+        {
+            var entityMatching = await _unitOfWork.Repository<PostPosition>().GetAll().SingleOrDefaultAsync(x => x.Id == positionId);
+            switch (entityMatching.IsBusService)
+            {
+                case true:
+                    return true;
+                case false:
+                    if (!SchoolsBusOptions)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+
+            return true;
+        }
 
         public async Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId, List<int> postRegistrationIds, bool approve)
         {
@@ -926,6 +946,27 @@ namespace SupFAmof.Service.Service
                 .GetAll().Where(x => x.AccountId == request.AccountId &&x.Status == (int)AccountCertificateStatusEnum.Complete).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
             var positionCertificate = await _unitOfWork.Repository<PostPosition>()
                                                         .FindAsync(x => x.Id == request.PositionId);
+            if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if (userCertificate.Count() == 0 && positionCertificate.TrainingCertificateId == null)
+            {
+                return true;
+            }
+            if (userCertificate.Contains((int)positionCertificate.TrainingCertificateId))
+            {
+                return true;
+            }
+            return false;
+
+        }
+        private async Task<bool> CheckCertificateConfirmUpdate(int positionId,int accountId)
+        {
+            var userCertificate = _unitOfWork.Repository<AccountCertificate>()
+                .GetAll().Where(x => x.AccountId == accountId && x.Status == (int)AccountCertificateStatusEnum.Complete).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
+            var positionCertificate = await _unitOfWork.Repository<PostPosition>()
+                                                        .FindAsync(x => x.Id == positionId);
             if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)
             {
                 return true;

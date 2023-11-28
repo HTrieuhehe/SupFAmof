@@ -299,7 +299,7 @@ namespace SupFAmof.Service.Service
                     }
 
                     //validate date in range
-                    if (request.DateFrom > position.Date || request.DateTo < position.Date)
+                    if (request.DateFrom > position.Date || request.DateTo.Value.Date.AddDays(1).AddSeconds(-1) < position.Date)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_POSITION_DATE,
                                          PostErrorEnum.INVALID_POSITION_DATE.GetDisplayName());

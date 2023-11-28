@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using System.Net;
-using System.Linq;
 using ServiceStack;
 using OfficeOpenXml;
 using Service.Commons;
@@ -12,17 +11,12 @@ using Path = System.IO.Path;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
-using Org.BouncyCastle.Asn1.Ocsp;
-using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Wordprocessing;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SupFAmof.Service.Service
 {
@@ -305,12 +299,12 @@ namespace SupFAmof.Service.Service
             var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month
                                                                     && x.PostCategoryId == 1
                                                                     && x.AccountId == accountId);
-            if(posts.Count()<=0)
+            if (posts.Count() <= 0)
             {
                 throw new Exceptions.ErrorResponse(400, 400, "Does not have post or account to generate in that month of the year");
             }
             HashSet<DateTime> uniqueDates = new HashSet<DateTime>();
-            Dictionary<string, Tuple<string, string>> collumJob = new Dictionary<string, Tuple<string, string>>();
+            Dictionary<ExcelRange, Tuple<string, string>> collumJob = new Dictionary<ExcelRange, Tuple<string, string>>();
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 using (ExcelPackage xlPackage = new ExcelPackage(memoryStream))
@@ -324,15 +318,14 @@ namespace SupFAmof.Service.Service
                     };
                     foreach (var index in keyValuePairs)
                     {
-                        char columnLetter = (char)('A' + index.Key - 1);
-                        string cellAddress = $"{columnLetter}{nameRow}";
-                        string cellmerge = $"{columnLetter}{mergeRow}";
+                        var cellAddress = worksheet.Cells[nameRow,index.Key];
+                        var  cellmerge = worksheet.Cells[mergeRow, index.Key];
                         worksheet.Cells[$"{cellAddress}:{cellmerge}"].Merge = true;
                         worksheet.Cells[$"{cellAddress}"].Value = "STT";
-                        worksheet.Cells[cellAddress].Value = index.Value;
-                        worksheet.Cells[cellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        worksheet.Cells[cellAddress].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        worksheet.Cells[cellAddress].Style.Font.Bold = true;
+                        worksheet.Cells[$"{cellAddress}"].Value = index.Value;
+                        worksheet.Cells[$"{cellAddress}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[$"{cellAddress}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        worksheet.Cells[$"{cellAddress}"].Style.Font.Bold = true;
 
                     }
                     foreach (var post in posts)
@@ -343,31 +336,30 @@ namespace SupFAmof.Service.Service
                     }
                     int postCollumn = 6;
                     foreach (var date in uniqueDates)
-                    {
-                        char columnLetter = (char)('A' + postCollumn - 1);
-                        string cellAddress = $"{columnLetter}{mergeRow}";
+                    { 
+                        var cellAddress = worksheet.Cells[mergeRow,postCollumn];
                         worksheet.Cells[$"{cellAddress}"].Value =  $"{date.ToString("dd/MM")}";
-                        worksheet.Cells[cellAddress].Style.Font.Bold = true;
-                        collumJob.Add(cellAddress, new Tuple<string, string>("OPEN DAY", $"{date.ToString("dd/MM")}"));
+                        worksheet.Cells[$"{cellAddress}"].Style.Font.Bold = true;
+                        collumJob.Add(cellAddress, new Tuple<string, string>("OPEN DAY", $"{date:dd/MM}"));
                         postCollumn++;
                     }
                     int postCollumn1 = 6;
-                    char mercell1 = (char)('A' + postCollumn1 - 1);
                     int count = uniqueDates.Count();
-                    char mercell2 = (char)('A' + (count + postCollumn1) - 2);
-                    string cellAddress1 = $"{mercell1}{nameRow}";
-                    string cellAddress2 = $"{mercell2}{nameRow}";
+                    var cellAddress1 = worksheet.Cells[nameRow, postCollumn1];
+                    var cellAddress2 = worksheet.Cells[nameRow,postCollumn1+ count-1];
                     worksheet.Cells[$"{cellAddress1}:{cellAddress2}"].Merge = true;
                     worksheet.Cells[$"{cellAddress1}"].Value = "Nội dung công việc";
-                    worksheet.Cells[cellAddress1].Style.Font.Bold = true;
-                    worksheet.Cells[cellAddress1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[$"{cellAddress1}"].Style.Font.Bold = true;
+                    worksheet.Cells[$"{cellAddress1}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     // Thành Tiền
-                    var columnLetter3 = (char)('A' + count + postCollumn1 - 1);
-                    string cellAddress3 = $"{columnLetter3}{nameRow}";
-                    string cellmerge3 = $"{columnLetter3}{mergeRow}";
+                    var columnLetter3 =  count + 5;
+                    var  cellAddress3 = worksheet.Cells[2,columnLetter3+1];
+                    var cellmerge3 = worksheet.Cells[ 3, columnLetter3+1];
                     worksheet.Cells[$"{cellAddress3}:{cellmerge3}"].Merge = true;
                     worksheet.Cells[$"{cellAddress3}"].Value = "Thành Tiền";
-                    worksheet.Cells[cellAddress3].Style.Font.Bold = true;
+                    worksheet.Cells[$"{cellAddress3}"].Style.Font.Bold = true;
+                    worksheet.Cells[$"{cellAddress3}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[$"{cellAddress3}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     int valueRow = 4;
                     foreach (var account in accounts)
                     {
@@ -382,7 +374,7 @@ namespace SupFAmof.Service.Service
                         if (account.AccountReports.Any())
                         {
                             Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
-                            foreach (var report in account.AccountReports.Where(x=>x.Position.Post.PostCategoryId ==1 ))
+                            foreach (var report in account.AccountReports.Where(x => x.Position.Post.PostCategoryId == 1))
                             {
                                 combinedSalary += report.Salary;
                                 DateTime dateToWork = report.Position.Date.Date;
@@ -404,7 +396,7 @@ namespace SupFAmof.Service.Service
 
                                 foreach (var KVP in collumJob)
                                 {
-                                    string columnLetter = KVP.Key.Substring(0, 1);
+                                    string columnLetter = KVP.Key.ToString().Substring(0, 1);
                                     string matchedCellAddress = $"{columnLetter}{valueRow}";
                                     Tuple<string, string> cellValues = KVP.Value;
 
@@ -419,8 +411,8 @@ namespace SupFAmof.Service.Service
                                         if (parsedDate == dateToWork)
                                         {
                                             Console.WriteLine($"Match found for cell: {matchedCellAddress}");
-                                            worksheet.Cells[matchedCellAddress].Value = totalSalary;
-                                            worksheet.Cells[matchedCellAddress].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                                            worksheet.Cells[$"{matchedCellAddress}"].Value = totalSalary;
+                                            worksheet.Cells[$"{matchedCellAddress}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                                             break;
                                         }
                                     }
@@ -431,11 +423,10 @@ namespace SupFAmof.Service.Service
                         worksheet.Cells[valueRow, collumJob.Count + 6].Value = combinedSalary;
                         valueRow++;
                     }
-                    string lastCell = cellAddress3.Substring(0, 1);
-                    worksheet.Cells[$"A1:{lastCell}1"].Merge = true;
-                    worksheet.Cells[$"A1"].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
-                    worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    worksheet.Cells["A1"].Style.Font.Bold = true;
+                    worksheet.Cells[$"{worksheet.Cells[1,1]}:{worksheet.Cells[1, columnLetter3 + 1]}"].Merge = true;
+                    worksheet.Cells[1,1].Value = $"DANH SÁCH CỘNG TÁC VIÊN HỖ TRỢ TUYỂN SINH THÁNG {request.Month}/{request.Year}";
+                    worksheet.Cells[$"{worksheet.Cells[1, 1]}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[$"{worksheet.Cells[1, 1]}"].Style.Font.Bold = true;
                     await xlPackage.SaveAsync();
                 }
                 byte[] array = memoryStream.ToArray();

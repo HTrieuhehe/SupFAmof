@@ -71,6 +71,7 @@ namespace SupFAmof.Service.Service
                 //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
 
+
                 // Get active position IDs
                 var positionIds = await postRegistration
                     .Where(x => x.Status != (int)PostRegistrationStatusEnum.Cancel)

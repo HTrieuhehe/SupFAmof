@@ -196,7 +196,6 @@ namespace SupFAmof.Service.DTO.Response
         public virtual CollabRegistrationUpdatePostResponse? Post { get; set; }
         public virtual PostPositionResponse? PostPosition { get; set; }
         public virtual ICollection<CheckAttendanceResponse>? CheckAttendances { get; set; }
-
     }
 
     public class CollabRegistrationUpdatePostResponse

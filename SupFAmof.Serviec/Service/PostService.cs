@@ -289,7 +289,7 @@ namespace SupFAmof.Service.Service
 
                     if (position.DocumentId == null)
                     {
-                        continue;
+                        
                     }
 
                     else if (checkdocument == null)

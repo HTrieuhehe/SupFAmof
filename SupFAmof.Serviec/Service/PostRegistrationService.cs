@@ -397,7 +397,7 @@ namespace SupFAmof.Service.Service
                             Status = new StatusViewModel()
                             {
                                 Success = true,
-                                Message = "Cancel Successfully",
+                                Message = "Send Application to Admission",
                                 ErrorCode = 200
                             }
                             ,
@@ -517,6 +517,11 @@ namespace SupFAmof.Service.Service
                                     Status = (int)PostRGUpdateHistoryEnum.Pending,
 
                                 };
+                                if (!CheckConfirmPostRegistration(postTgupdate, accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
+                                                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                }
                                 if (!CheckDuplicatePostRgUpdateSendPending(postTgupdate, accountId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
@@ -1007,7 +1012,18 @@ namespace SupFAmof.Service.Service
         {
             var duplicate = _unitOfWork.Repository<PostRgupdateHistory>().GetAll().Where(x => x.PostRegistration.AccountId == accountId
                                                                                          && x.PostRegistrationId == request.PostRegistrationId
-                                                                                         && x.Status == 1 );
+                                                                                         && x.Status == (int)PostRegistrationStatusEnum.Pending);
+            if (duplicate.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool CheckConfirmPostRegistration(PostRgupdateHistory request, int accountId)
+        {
+            var duplicate = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.AccountId == accountId
+                                                                                         && x.PositionId == request.PositionId
+                                                                                         && x.Status == (int)PostRegistrationStatusEnum.Confirm);
             if (duplicate.Any())
             {
                 return false;
@@ -1326,7 +1342,7 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckDuplicateUpdate(PostRegistration update)
         {
             var duplicate = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.AccountId == update.AccountId
-                                                                                           && x.PositionId == update.PositionId);
+                                                                                           && x.PositionId == update.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
             if (duplicate != null)
             {
                 return false;

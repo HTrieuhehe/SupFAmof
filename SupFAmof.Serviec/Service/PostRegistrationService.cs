@@ -38,6 +38,8 @@ namespace SupFAmof.Service.Service
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
                                            .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                #region Check Banned
+
                 if (accountBanned.Any())
                 {
                     var currentDateTime = Ultils.GetCurrentDatetime();
@@ -50,6 +52,9 @@ namespace SupFAmof.Service.Service
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
+
+                #endregion
+
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
 
@@ -66,7 +71,7 @@ namespace SupFAmof.Service.Service
                 //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
 
-                var positionIds = await postRegistration.Select(x => x.PositionId).ToListAsync();
+                var positionIds = await list.Item2.Select(x => x.PositionId).ToListAsync();
 
                 foreach (var registration in postRegistrationResponse)
                 {

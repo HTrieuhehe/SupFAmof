@@ -205,7 +205,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, AdmissionPostResponse>().ReverseMap();
             CreateMap<Post, PostPositionResponse>().ReverseMap();
 
-            CreateMap<PostPosition, PostPositionResponse>().ReverseMap();
+            CreateMap<PostPosition, PostPositionResponse>()
+                .ForMember(x => x.CertificateName, opt => opt.MapFrom(src => src.TrainingCertificate.CertificateName))
+                .ReverseMap();
 
             CreateMap<CreatePostRequest, Post>();
 

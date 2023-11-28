@@ -87,23 +87,23 @@ namespace SupFAmof.Service.Service
                                        ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE.GetDisplayName());
                 }
 
-                //else if (request.EndDate < request.StartDate)
-                //{
-                //    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE,
-                //                       ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE.GetDisplayName());
-                //}
+                else if (request.EndDate < request.StartDate)
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE,
+                                       ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE.GetDisplayName());
+                }
 
-                //else if (request.EndDate < request.StartDate.AddDays(30) || request.EndDate > request.StartDate.AddDays(30) )
-                //{
-                //    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID,
-                //                       ContractErrorEnum.END_DATE_INVALID.GetDisplayName() + request.StartDate.AddDays(30));
-                //}
+                else if (request.EndDate < request.StartDate.AddDays(30) || request.EndDate > request.StartDate.AddDays(30))
+                {
+                    throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID,
+                                       ContractErrorEnum.END_DATE_INVALID.GetDisplayName() + request.StartDate.AddDays(30));
+                }
 
                 var contract = _mapper.Map<CreateAdmissionContractRequest, Contract>(request);
 
                 contract.CreatePersonId = accountId;
                 contract.IsActive = true;
-                contract.EndDate = contract.StartDate.AddDays(30);
+                //contract.EndDate = contract.StartDate.AddDays(30);
                 contract.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Contract>().InsertAsync(contract);

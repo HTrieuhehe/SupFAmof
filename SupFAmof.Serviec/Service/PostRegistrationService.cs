@@ -38,6 +38,8 @@ namespace SupFAmof.Service.Service
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
                                            .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                #region Check Banned
+
                 if (accountBanned.Any())
                 {
                     var currentDateTime = Ultils.GetCurrentDatetime();
@@ -50,6 +52,9 @@ namespace SupFAmof.Service.Service
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
+
+                #endregion
+
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
 
@@ -66,16 +71,21 @@ namespace SupFAmof.Service.Service
                 //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
 
-                var positionIds = await postRegistration.Select(x => x.PositionId).ToListAsync();
+                // Get active position IDs
+                var positionIds = await postRegistration
+                    .Where(x => x.Status != (int)PostRegistrationStatusEnum.Cancel)
+                    .Select(x => x.PositionId)
+                    .Distinct()
+                    .ToListAsync();
 
                 foreach (var registration in postRegistrationResponse)
                 {
                     //tìm ra các position đã đăng ký của bạn í
                     var unregisteredPositions = registration.PostPositionsUnregistereds
-                                            .Where(x => positionIds.Contains(x.Id))
-                                            .ToList();
+                        .Where(x => positionIds.Contains(x.Id))
+                        .ToList();
 
-                    var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();   
+                    var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();
 
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
@@ -90,6 +100,8 @@ namespace SupFAmof.Service.Service
                     {
                         registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
                     }
+
+                    #region Count Registration Amount
 
                     foreach (var postPosition in registration.PostPositionsUnregistereds)
                     {
@@ -111,6 +123,8 @@ namespace SupFAmof.Service.Service
 
                     // Reset temp variable
                     totalAmountPosition = 0;
+
+                    #endregion
                 }
 
                 return new BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>()
@@ -273,7 +287,7 @@ namespace SupFAmof.Service.Service
                     }
                     if (!await CheckCertificate(postRegistration))
                     {
-                        throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                             PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                     }
                     //if (!await CheckDatePost(postRegistration))
@@ -361,6 +375,7 @@ namespace SupFAmof.Service.Service
                 {
                     case PostRegistrationStatusEnum.Pending:
                         postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                        postRegistration.UpdateAt = Ultils.GetCurrentDatetime();
                         await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -1079,6 +1094,7 @@ namespace SupFAmof.Service.Service
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
+
                 var list = _unitOfWork.Repository<PostRgupdateHistory>()
                                                       .GetAll()
                                                       .Where(pr => pr.PostRegistration.AccountId == accountId)

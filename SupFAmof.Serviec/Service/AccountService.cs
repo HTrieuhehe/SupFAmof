@@ -252,8 +252,8 @@ namespace SupFAmof.Service.Service
 
                 if (checkStuId == false)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
-                                        AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
                 }
 
                 var accountInfo = _mapper.Map<AccountInformation>(request);

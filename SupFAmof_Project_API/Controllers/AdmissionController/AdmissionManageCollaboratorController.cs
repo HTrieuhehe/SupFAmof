@@ -80,7 +80,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpPut("reject-request")]
-        public async Task<ActionResult<ApplicationResponse>> RejectProblemRequest(int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<ActionResult<ApplicationResponse>> RejectProblemRequest([FromQuery] int reportId, [FromBody] UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         [HttpPut("approve-request")]
-        public async Task<ActionResult<ApplicationResponse>> ApproveProblemRequest(int reportId, UpdateAdmissionAccountApplicationRequest request)
+        public async Task<ActionResult<ApplicationResponse>> ApproveProblemRequest([FromQuery] int reportId, [FromBody] UpdateAdmissionAccountApplicationRequest request)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
         }
         [HttpGet("admission-replied-application")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> AdmissionReplyApplication([FromQuery] AdmissionApplicationResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<ApplicationResponse>>> AdmissionGetApplication([FromQuery] AdmissionApplicationResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {

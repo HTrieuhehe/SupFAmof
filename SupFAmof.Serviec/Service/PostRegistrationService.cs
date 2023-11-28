@@ -287,7 +287,7 @@ namespace SupFAmof.Service.Service
                     }
                     if (!await CheckCertificate(postRegistration))
                     {
-                        throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                             PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                     }
                     //if (!await CheckDatePost(postRegistration))
@@ -375,6 +375,7 @@ namespace SupFAmof.Service.Service
                 {
                     case PostRegistrationStatusEnum.Pending:
                         postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                        postRegistration.UpdateAt = Ultils.GetCurrentDatetime();
                         await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -494,6 +495,7 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                                 }
+                                updateEntity.UpdateAt = Ultils.GetCurrentDatetime();
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(updateEntity);
                                 await _unitOfWork.CommitAsync();
 

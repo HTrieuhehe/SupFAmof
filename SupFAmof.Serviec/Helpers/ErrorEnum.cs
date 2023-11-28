@@ -192,11 +192,11 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cant not approve the same id twice")]
             DUPLICATE_IDS = 4010,
 
-            //404
+            //400
             [Display(Name = "No registration need to be update")]
             NOT_FOUND_UPDATE_REGISTRATION_REQUEST = 4011,
 
-            //404
+            //400
             [Display(Name = "Need certificate to register this position")]
             NOT_FOUND_CERTIFICATE = 4012,
 
@@ -476,13 +476,13 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cannot disable contract because there are one or more accounts confirm your contract")]
             DISABLE_CONTRACT_INVALID = 4006,
 
-            ////400
-            //[Display(Name = "End Date cannot be less than Start Date")]
-            //END_DATE_INVALID_WITH_START_DATE = 4007,
+            //400
+            [Display(Name = "End Date cannot be less than Start Date")]
+            END_DATE_INVALID_WITH_START_DATE = 4007,
 
-            ////400
-            //[Display(Name = "End Date must be within 30 days: ")]
-            //END_DATE_INVALID = 4008,
+            //400
+            [Display(Name = "End Date must be within 30 days: ")]
+            END_DATE_INVALID = 4008,
 
             //404
             [Display(Name = "Contract not found")]

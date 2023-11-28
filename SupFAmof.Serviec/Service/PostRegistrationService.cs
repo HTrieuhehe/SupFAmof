@@ -58,7 +58,6 @@ namespace SupFAmof.Service.Service
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
 
-                    
                 //find registration base on collaborator based on their accountId
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
                                                   .Where(x => x.AccountId == accountId)

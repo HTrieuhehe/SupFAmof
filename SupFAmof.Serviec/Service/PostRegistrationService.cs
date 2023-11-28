@@ -123,7 +123,7 @@ namespace SupFAmof.Service.Service
 
                     // Reset temp variable
                     totalAmountPosition = 0;
-
+                   
                     #endregion
                 }
 

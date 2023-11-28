@@ -460,12 +460,6 @@ namespace SupFAmof.Service.Service
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
                         case PostRegistrationStatusEnum.Pending:
-
-                            if (!await CheckCertificate(updateEntity))
-                            {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
-                                    PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
-                            }
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 updateEntity.PositionId = request.PositionId;
@@ -475,6 +469,11 @@ namespace SupFAmof.Service.Service
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
                                                    PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                }
+                                if (!await CheckCertificate(updateEntity))
+                                {
+                                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                                        PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
                                 if (!await CheckPostPositionBus(updateEntity))
                                 {
@@ -493,11 +492,6 @@ namespace SupFAmof.Service.Service
                             break;
 
                         case PostRegistrationStatusEnum.Confirm:
-                            if (!await CheckCertificate(updateEntity))
-                            {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
-                                    PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
-                            }
                             PostRgupdateHistory entityPostTgupdate = new PostRgupdateHistory();
 
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
@@ -518,6 +512,11 @@ namespace SupFAmof.Service.Service
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_PENDING,
                                                    PostRegistrationErrorEnum.DUPLICATE_PENDING.GetDisplayName());
+                                }
+                                if (!await CheckCertificate(updateEntity))
+                                {
+                                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
+                                        PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
                                 //if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
                                 //{
@@ -904,7 +903,7 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckCertificate(PostRegistration request)
         {
             var userCertificate = _unitOfWork.Repository<AccountCertificate>()
-                .GetAll().Where(x => x.AccountId == request.AccountId).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
+                .GetAll().Where(x => x.AccountId == request.AccountId &&x.Status == (int)AccountCertificateStatusEnum.Complete).Select(x => x.TrainingCertificateId).ToList() ?? new List<int>();
             var positionCertificate = await _unitOfWork.Repository<PostPosition>()
                                                         .FindAsync(x => x.Id == request.PositionId);
             if (userCertificate.Count() > 0 && positionCertificate.TrainingCertificateId == null)

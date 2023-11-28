@@ -71,8 +71,13 @@ namespace SupFAmof.Service.Service
                 //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
 
-                var positionIds = await postRegistration.Select(x => x.PositionId).ToListAsync();
-                
+                // Get active position IDs
+                var positionIds = await postRegistration
+                    .Where(x => x.Status != (int)PostRegistrationStatusEnum.Cancel)
+                    .Select(x => x.PositionId)
+                    .Distinct()
+                    .ToListAsync();
+
                 foreach (var registration in postRegistrationResponse)
                 {
                     //tìm ra các position đã đăng ký của bạn í

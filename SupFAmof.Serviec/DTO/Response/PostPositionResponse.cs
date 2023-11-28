@@ -34,6 +34,14 @@ namespace SupFAmof.Service.DTO.Response
         public double? Salary { get; set; }
 
         public int? PositionRegisterAmount { get; set; }
+        public virtual PostPositionTrainingCertificateResponse? TrainingCertificate { get; set; }
 
+    }
+
+    public class PostPositionTrainingCertificateResponse
+    {
+        public int? Id { get; set; }
+        public string? TrainingTypeId { get; set; }
+        public string? CertificateName { get; set; }
     }
 }

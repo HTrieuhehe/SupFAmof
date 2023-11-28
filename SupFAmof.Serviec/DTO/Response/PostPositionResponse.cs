@@ -18,6 +18,7 @@ namespace SupFAmof.Service.DTO.Response
         public int Id { get; set; }
         public int? PostId { get; set; }
         public int? TrainingCertificateId { get; set; }
+        public string? CertificateName { get; set; }
         public int? DocumentId { get; set; }
         public string? PositionName { get; set; }
         public string? PositionDescription { get; set; }
@@ -34,14 +35,5 @@ namespace SupFAmof.Service.DTO.Response
         public double? Salary { get; set; }
 
         public int? PositionRegisterAmount { get; set; }
-        public virtual PostPositionTrainingCertificateResponse? TrainingCertificate { get; set; }
-
-    }
-
-    public class PostPositionTrainingCertificateResponse
-    {
-        public int? Id { get; set; }
-        public string? TrainingTypeId { get; set; }
-        public string? CertificateName { get; set; }
     }
 }

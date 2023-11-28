@@ -1029,6 +1029,7 @@ namespace SupFAmof.Service.Service
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
+
                 var list = _unitOfWork.Repository<PostRgupdateHistory>()
                                                       .GetAll()
                                                       .Where(pr => pr.PostRegistration.AccountId == accountId)

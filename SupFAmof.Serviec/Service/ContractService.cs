@@ -93,7 +93,7 @@ namespace SupFAmof.Service.Service
                                        ContractErrorEnum.END_DATE_INVALID_WITH_START_DATE.GetDisplayName());
                 }
 
-                else if (request.EndDate < request.StartDate.AddDays(30) || request.EndDate > request.StartDate.AddDays(30))
+                else if (request.EndDate > request.StartDate.AddDays(30))
                 {
                     throw new ErrorResponse(400, (int)ContractErrorEnum.END_DATE_INVALID,
                                        ContractErrorEnum.END_DATE_INVALID.GetDisplayName() + request.StartDate.AddDays(30));

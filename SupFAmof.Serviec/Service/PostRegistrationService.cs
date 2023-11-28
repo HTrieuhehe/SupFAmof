@@ -480,6 +480,11 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                                 }
+                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
+                                        PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
+                                }
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(updateEntity);
                                 await _unitOfWork.CommitAsync();
 
@@ -523,16 +528,11 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                                         PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
-                                //if (!await CheckDuplicatePostRgUpdateSend(postTgupdate,accountId))
-                                //{
-                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
-                                //                   PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
-                                //}
-                                //if (!await CheckDuplicatePostRgUpdate(postTgupdate))
-                                //{
-                                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE,
-                                //                       PostRegistrationErrorEnum.DUPLICATED_REQUEST_UPDATE.GetDisplayName());
-                                //}
+                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                {
+                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
+                                        PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
+                                }
                                 if (!await CheckPostPositionBus(updateEntity))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -980,6 +980,40 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
+        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId)
+        {
+            var postsAttended = _unitOfWork.Repository<PostRegistration>()
+                                    .GetAll()
+                                    .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                    .ToList();
+
+            if (postsAttended != null && postsAttended.Any())
+            {
+                var positionTimeFromPostRegistered = _unitOfWork.Repository<PostPosition>()
+                    .GetAll()
+                    .Where(x => x.Id == positionId)
+                    .FirstOrDefault();
+
+                if (positionTimeFromPostRegistered != null)
+                {
+                    foreach (var attendedPost in postsAttended)
+                    {
+                        if (attendedPost.Position.Date.Date == positionTimeFromPostRegistered.Date.Date)
+                        {
+                            // Use Any() with a lambda expression to check for overlaps
+                            if (IsTimeSpanOverlap(attendedPost.Position.TimeFrom, attendedPost.Position.TimeTo,
+                                positionTimeFromPostRegistered.TimeFrom, positionTimeFromPostRegistered.TimeTo))
+                            {
+                                return false; // If there is an overlap, return false
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
         //private async Task<bool> CheckDuplicatePostRgUpdate(PostRgupdateHistory request)
         //{
         //    var duplicate = await _unitOfWork.Repository<PostRgupdateHistory>().FindAsync(x => x.PostRegistrationId == request.PostRegistrationId && x.PositionId == request.PositionId);

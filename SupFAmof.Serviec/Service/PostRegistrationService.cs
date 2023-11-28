@@ -71,16 +71,16 @@ namespace SupFAmof.Service.Service
                 //convert it into a list
                 var postRegistrationResponse = await list.Item2.ToListAsync();
 
-                var positionIds = await list.Item2.Select(x => x.PositionId).ToListAsync();
-
+                var positionIds = await postRegistration.Select(x => x.PositionId).ToListAsync();
+                
                 foreach (var registration in postRegistrationResponse)
                 {
                     //tìm ra các position đã đăng ký của bạn í
                     var unregisteredPositions = registration.PostPositionsUnregistereds
-                                            .Where(x => positionIds.Contains(x.Id))
-                                            .ToList();
+                        .Where(x => positionIds.Contains(x.Id))
+                        .ToList();
 
-                    var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();   
+                    var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();
 
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
@@ -95,6 +95,8 @@ namespace SupFAmof.Service.Service
                     {
                         registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
                     }
+
+                    #region Count Registration Amount
 
                     foreach (var postPosition in registration.PostPositionsUnregistereds)
                     {
@@ -116,6 +118,8 @@ namespace SupFAmof.Service.Service
 
                     // Reset temp variable
                     totalAmountPosition = 0;
+
+                    #endregion
                 }
 
                 return new BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>()

@@ -1445,7 +1445,7 @@ namespace SupFAmof.Service.Service
                                                 .GetAll()
                                                 .Where(x => x.Position.Date == positionWorkTime.Date
                                                             && x.AccountId == accountId
-                                                            && (x.Status == 1 || x.Status == 2)
+                                                            && (x.Status != (int)PostRegistrationStatusEnum.Cancel && x.Status != (int)PostRegistrationStatusEnum.Reject)
                                                             && x.Position.TimeFrom < positionWorkTime.TimeTo
                                                             && x.Position.TimeTo > positionWorkTime.TimeFrom);
             return !postRegistrations.Any();

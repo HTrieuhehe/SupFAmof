@@ -832,7 +832,7 @@ namespace SupFAmof.Service.Service
 
         public async Task Logout(string expoToken, int accountId, int status)
         {
-            if (expoToken != null && !expoToken.Trim().Equals("") && !await _accountExpoTokenService.ValidExpoToken(expoToken, accountId))
+            if (expoToken != null && !expoToken.Trim().Equals("") && await _accountExpoTokenService.ValidExpoToken(expoToken, accountId))
             {
                 await _accountExpoTokenService.RemoveExpoTokens(new List<string> { expoToken }, accountId, status);
             }

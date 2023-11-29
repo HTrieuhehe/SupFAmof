@@ -9,6 +9,7 @@ using SupFAmof.Service.Utilities;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.Service.ServiceInterface;
+using Microsoft.EntityFrameworkCore;
 
 namespace SupFAmof.Service.Service
 {
@@ -233,15 +234,20 @@ namespace SupFAmof.Service.Service
                 {
                     case 1:
                         //remove only token (Casual Logout)
-                        var tokens = _unitOfWork.Repository<ExpoPushToken>().GetAll().Where(x => x.Token.Equals(expoTokens) && x.AccountId == accountId);
+                        
 
-                        if (tokens == null)
-                            return 0;
+                        foreach (var token in expoTokens)
+                        {
+                            var findToken = await _unitOfWork.Repository<ExpoPushToken>().FindAsync(x => x.AccountId == accountId && x.Token.Equals(token));
 
-                        _unitOfWork.Repository<ExpoPushToken>().DeleteRange(tokens);
+                            if (findToken == null)
+                                return 0;
+
+                            _unitOfWork.Repository<ExpoPushToken>().Delete(findToken);
+                        }
+
                         _unitOfWork.Commit();
-
-                        return tokens.Count();
+                        return 1;
 
                     case 2:
                         //remove all token (When client disable there account

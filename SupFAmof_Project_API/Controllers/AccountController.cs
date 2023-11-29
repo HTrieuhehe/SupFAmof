@@ -218,7 +218,7 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpPut("logout")]
-        public async Task<ActionResult> Logout(string? expoToken)
+        public async Task<ActionResult> Logout([FromBody] ExpoTokenLogoutRequest expoPushToken)
         {
             try
             {
@@ -228,7 +228,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                await _accountService.Logout(expoToken, account.Id, 1);
+                await _accountService.Logout(expoPushToken, account.Id, 1);
                 return Ok();
             }
             catch (ErrorResponse ex)

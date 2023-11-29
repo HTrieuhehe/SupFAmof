@@ -11,4 +11,9 @@ namespace SupFAmof.Service.DTO.Request
         public string? IdToken { get; set; }
         public string ExpoPushToken { get; set; } = "";
     }
+
+    public class ExpoTokenLogoutRequest
+    {
+        public string? ExpoPushToken { get; set; }
+    }
 }

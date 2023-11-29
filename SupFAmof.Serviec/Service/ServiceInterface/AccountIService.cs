@@ -18,7 +18,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccount(int accountId, UpdateAdmissionAccountRequest request);
         Task<BaseResponseViewModel<AdmissionAccountResponse>> UpdateAdmissionAccountAvatart(int accountId, UpdateAccountAvatar request);
         Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId);
-        Task Logout(string expoToken, int accountId, int status);
+        Task Logout(ExpoTokenLogoutRequest expoToken, int accountId, int status);
         Task<BaseResponseViewModel<LoginResponse>> AdmissionLogin(ExternalAuthRequest data);
         Task<BaseResponseViewModel<dynamic>> InputVerifycationCode(int accountId, int code, int roleId);
         Task<BaseResponseViewModel<LoginResponse>> Login(ExternalAuthRequest data);

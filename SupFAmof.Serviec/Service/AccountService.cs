@@ -336,7 +336,12 @@ namespace SupFAmof.Service.Service
 
                 if (expoToken != null)
                 {
-                    await Logout(expoToken.Token, accountId, 2);
+                    ExpoTokenLogoutRequest token = new()
+                    { 
+                        ExpoPushToken = expoToken.Token
+                    };
+
+                    await Logout(token, accountId, 2);
 
                     return new BaseResponseViewModel<AccountResponse>()
                     {
@@ -375,7 +380,12 @@ namespace SupFAmof.Service.Service
 
             if (expoToken != null)
             {
-                await Logout(expoToken.Token, accountId, 2);
+                ExpoTokenLogoutRequest token = new()
+                {
+                    ExpoPushToken = expoToken.Token
+                };
+
+                await Logout(token, accountId, 2);
 
                 return new BaseResponseViewModel<AccountResponse>()
                 {
@@ -830,11 +840,11 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task Logout(string expoToken, int accountId, int status)
+        public async Task Logout(ExpoTokenLogoutRequest expoToken, int accountId, int status)
         {
-            if (expoToken != null && !expoToken.Trim().Equals("") && await _accountExpoTokenService.ValidExpoToken(expoToken, accountId))
+            if (expoToken != null && !expoToken.ExpoPushToken.Trim().Equals("") && await _accountExpoTokenService.ValidExpoToken(expoToken.ExpoPushToken, accountId))
             {
-                await _accountExpoTokenService.RemoveExpoTokens(new List<string> { expoToken }, accountId, status);
+                await _accountExpoTokenService.RemoveExpoTokens(new List<string> { expoToken.ExpoPushToken }, accountId, status);
             }
         }
 

@@ -184,7 +184,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <returns></returns>
         /// 
         [HttpDelete("logout")]
-        public async Task<ActionResult> Logout([FromQuery] string expoToken)
+        public async Task<ActionResult> Logout([FromBody] ExpoTokenLogoutRequest expoToken)
         {
             try
             {

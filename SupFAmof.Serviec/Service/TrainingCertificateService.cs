@@ -128,6 +128,7 @@ namespace SupFAmof.Service.Service
                 var result = _mapper.Map<CreateTrainingCertificateRequest, TrainingCertificate>(request);
 
                 result.TrainingTypeId = result.TrainingTypeId.ToUpper();
+                result.IsActive = true;
                 result.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<TrainingCertificate>().InsertAsync(result);

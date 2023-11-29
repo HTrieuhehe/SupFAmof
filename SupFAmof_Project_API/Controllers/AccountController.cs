@@ -217,7 +217,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpPut("logout")]
+        [HttpDelete("logout")]
         public async Task<ActionResult> Logout([FromBody] ExpoTokenLogoutRequest expoPushToken)
         {
             try

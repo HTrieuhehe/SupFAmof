@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.Entity;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
+using SupFAmof.Service.Utilities;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using AutoMapper.QueryableExtensions;
+using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response.Admission;
-using SupFAmof.Service.Exceptions;
+using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
-using SupFAmof.Service.Utilities;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -78,7 +80,109 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+        public async Task<BaseResponseViewModel<dynamic>> AdmissionConfirmAttendance(int accountId, int positionId, List<AdmissionConfirmAttendanceRequest> requests)
+        {
+            try
+            {
+                var position = await _unitOfWork.Repository<PostPosition>().FindAsync(x => x.Id == positionId && x.Post.AccountId == accountId);
+                var requestStatusMap = requests.ToDictionary(request => request.Id, request => request.Status);
+                var requestIds = requests.Select(x=>x.Id);
+                var filteredList = _unitOfWork.Repository<CheckAttendance>()
+                      .GetAll().Where(attendance => requestIds.Contains(attendance.Id)&&attendance.PostRegistration.PositionId == positionId);
 
+                //check if list has the same position Id
+                 if(!filteredList.Any(x=>x.PostRegistration.PositionId == positionId)) {
+                    throw new ErrorResponse(400, (int)CheckAttendanceErrorEnum.CANT_UPDATE_WRONG_POSITION,
+                                       CheckAttendanceErrorEnum.CANT_UPDATE_WRONG_POSITION.GetDisplayName());
+                }
+                if (position == null)
+                {
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                                        PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
+                }
+                if (!await MinumumTimeToConfirm((DateTime)(position.Date + position.TimeTo)))
+                {
+                    throw new ErrorResponse(400, (int)CheckAttendanceErrorEnum.CONFIRM_TIME_NOT_BEGIN,
+                                       CheckAttendanceErrorEnum.CONFIRM_TIME_NOT_BEGIN.GetDisplayName());
+                }
+                if (!await MaximumTimeToConfirm((DateTime)(position.Date + position.TimeTo), 1))
+                {
+                    throw new ErrorResponse(400, (int)CheckAttendanceErrorEnum.CONFIRM_TIME_EXPIRED,
+                                       CheckAttendanceErrorEnum.CONFIRM_TIME_EXPIRED.GetDisplayName());
+                }
+                foreach (var item in filteredList)
+                {
+                    item.Status = requestStatusMap[item.Id].Value;
+                    await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
+                    if (item.Status == (int)CheckAttendanceEnum.Approved)
+                    {
+                        CreateAccountReportRequest request = new CreateAccountReportRequest
+                        {
+                            AccountId = item.PostRegistration.AccountId,
+                            PositionId = item.PostRegistration.PositionId,
+                            Salary = item.PostRegistration.Salary,
+                        };
+                        if (!await CheckDuplicateAccountReport(request))
+                        {
+                            continue;
+                        }else
+                        {
+                            await CreateAccountReport(request);
+                        }
+                    }
+                }
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Update success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private async Task<bool> MaximumTimeToConfirm(DateTime timeOfCurrentPosition, int day)
+        {
+            DateTime timeMaximum = timeOfCurrentPosition.AddDays(day);
+            DateTime currentTime = GetCurrentDatetime();
+            if (currentTime > timeMaximum)
+            {
+                return false;
+            }
+            return true;
+        }
+        private async Task<bool> MinumumTimeToConfirm(DateTime timeOfCurrentPosition)
+        {
+            DateTime currentTime = GetCurrentDatetime();
+            if (currentTime > timeOfCurrentPosition)
+            {
+                return true;
+            }
+            return false ;
+        }
         #endregion
+        private async Task<bool> CheckDuplicateAccountReport(CreateAccountReportRequest request)
+        {
+                var accountReport = await _unitOfWork.Repository<AccountReport>().FindAsync(x=>x.AccountId == request.AccountId && x.PositionId == request.PositionId);
+                if (accountReport == null)
+                {
+                    return true;
+                }
+                return false;
+        }
+        private async Task CreateAccountReport(CreateAccountReportRequest request)
+        {
+            var accountReport = _mapper.Map<CreateAccountReportRequest, AccountReport>(request);
+
+            accountReport.CreateAt = Ultils.GetCurrentDatetime();
+
+            await _unitOfWork.Repository<AccountReport>().InsertAsync(accountReport);
+        }
     }
 }

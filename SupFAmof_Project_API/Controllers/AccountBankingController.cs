@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Request.AccounBanking;
-using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.Service.ServiceInterface;
+using SupFAmof.Service.DTO.Request.AccounBanking;
 
 namespace SupFAmof.API.Controllers
 {

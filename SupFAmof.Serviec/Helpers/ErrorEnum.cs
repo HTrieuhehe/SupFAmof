@@ -562,6 +562,15 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Attendance Not Found")]
             ATTENDANCE_NOT_FOUND = 4041,
+            //400
+            [Display(Name = "Confirm time expired")]
+            CONFIRM_TIME_EXPIRED = 4001,
+            //400
+            [Display(Name = "You cant update status because wrong position ")]
+            CANT_UPDATE_WRONG_POSITION = 4002,
+            //400
+            [Display(Name = "Confirm time not begin")]
+            CONFIRM_TIME_NOT_BEGIN = 4003,
         }
 
         public enum AdminSystemManagementErrorEnum

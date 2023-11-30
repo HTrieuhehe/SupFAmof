@@ -19,6 +19,8 @@ namespace SupFAmof.Data.Entity
         public double Salary { get; set; }
         public int Status { get; set; }
         public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

@@ -38,6 +38,8 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostRgupdateHistory> PostRgupdateHistories { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
+        public virtual DbSet<TrainingEventDay> TrainingEventDays { get; set; } = null!;
+        public virtual DbSet<TrainingRegistration> TrainingRegistrations { get; set; } = null!;
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //        {
@@ -268,6 +270,10 @@ namespace SupFAmof.Data.Entity
 
                 entity.Property(e => e.CheckOutTime).HasColumnType("datetime");
 
+                entity.Property(e => e.ConfirmTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Note).HasMaxLength(100);
+
                 entity.HasOne(d => d.PostRegistration)
                     .WithMany(p => p.CheckAttendances)
                     .HasForeignKey(d => d.PostRegistrationId)
@@ -419,6 +425,10 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("PostRegistration");
 
+                entity.Property(e => e.CancelTime).HasColumnType("datetime");
+
+                entity.Property(e => e.ConfirmTime).HasColumnType("datetime");
+
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Note).HasMaxLength(256);
@@ -489,6 +499,45 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<TrainingEventDay>(entity =>
+            {
+                entity.ToTable("TrainingEventDay");
+
+                entity.Property(e => e.Class).HasMaxLength(100);
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.Updateat).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<TrainingRegistration>(entity =>
+            {
+                entity.ToTable("TrainingRegistration");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.TrainingRegistrations)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainingRegistration_Account");
+
+                entity.HasOne(d => d.EventDay)
+                    .WithMany(p => p.TrainingRegistrations)
+                    .HasForeignKey(d => d.EventDayId)
+                    .HasConstraintName("FK_TrainingRegistration_TrainingEventDay");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.TrainingRegistrations)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainingRegistration_TrainingCertificate");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -21,6 +21,7 @@ namespace SupFAmof.Data.Entity
             NotificationHistories = new HashSet<NotificationHistory>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
+            TrainingRegistrations = new HashSet<TrainingRegistration>();
         }
 
         public int Id { get; set; }
@@ -53,5 +54,6 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<TrainingRegistration> TrainingRegistrations { get; set; }
     }
 }

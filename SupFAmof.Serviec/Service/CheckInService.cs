@@ -174,14 +174,14 @@ namespace SupFAmof.Service.Service
 
                 registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
 
-                CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
-                {
-                    AccountId = accountId,
-                    PositionId = registration.PositionId,
-                    Salary = registration.Salary,
-                };
+                //CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
+                //{
+                //    AccountId = accountId,
+                //    PositionId = registration.PositionId,
+                //    Salary = registration.Salary,
+                //};
 
-                await CreateAccountReport(accountReport);
+                //await CreateAccountReport(accountReport);
 
                 //notification
                 List<int> accountIds = new List<int>(accountId);
@@ -189,7 +189,7 @@ namespace SupFAmof.Service.Service
                 {
                     Ids = accountIds,
                     Title = NotificationTypeEnum.Check_out_complete.GetDisplayName(),
-                    Body = "Check your bucket to see your salary!",
+                    Body = "Please wait for admission officer confirm your check out!",
                     NotificationsType = (int)NotificationTypeEnum.Post_Created
                 };
 

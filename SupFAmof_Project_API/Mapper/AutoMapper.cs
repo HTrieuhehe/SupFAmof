@@ -268,6 +268,13 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
             CreateMap<CheckAttendance, CheckAttendanceAdmission>()
                 .ReverseMap();
+
+            CreateMap<AdmissionConfirmAttendanceRequest, CheckAttendance>().ReverseMap();
+            CreateMap<CheckAttendance, AdmissionAttendanceResponse>()
+                .ForMember(x=>x.PostRegistration,opt=>opt.MapFrom(src=>src.PostRegistration))
+                .ReverseMap();
+            CreateMap<PostRegistration, AttendancePostRegistrationResponse>().ReverseMap();
+
             #endregion
 
             #region Mail

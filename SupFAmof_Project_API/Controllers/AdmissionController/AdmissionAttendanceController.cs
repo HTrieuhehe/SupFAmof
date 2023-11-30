@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SupFAmof.Service.Service;
+using Microsoft.AspNetCore.Http;
+using SupFAmof.Service.Exceptions;
 using ServiceStack.DataAnnotations;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Response.Admission;
-using SupFAmof.Service.Exceptions;
-using SupFAmof.Service.Service;
-using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -40,6 +40,31 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return await _attendanceService.GetAttendanceHistoryByPositionId(account.Id, positionId, paging);
             }
             catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+
+
+        [HttpPut("confirm-attendance/{positionId}")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> AdmissionConfirmAttendance(int positionId,List<AdmissionConfirmAttendanceRequest> requests)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _attendanceService.AdmissionConfirmAttendance(account.Id, positionId, requests);
+            }
+            catch(ErrorResponse ex)
             {
                 if (ex.Error.StatusCode == 404)
                 {

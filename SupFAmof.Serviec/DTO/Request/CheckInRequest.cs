@@ -37,4 +37,10 @@ namespace SupFAmof.Service.DTO.Request
         [Range(1, int.MaxValue, ErrorMessage = "PositionId must be greater than 0.")]
         public int PositionId { get; set; }
     }
+
+    public class AdmissionConfirmAttendanceRequest
+    {
+       public int Id { get; set; }
+        public int? Status {  get; set; } 
+    }
 }

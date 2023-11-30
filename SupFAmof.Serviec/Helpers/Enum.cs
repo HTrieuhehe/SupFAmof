@@ -57,6 +57,15 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Approve")]
             Approved = 2
         }
+        public enum CheckAttendanceEnum
+        {
+            [Display(Name = "Pending")]
+            Pending = 1,
+            [Display(Name = "Reject")]
+            Rejected = 3,
+            [Display(Name = "Approve")]
+            Approved = 2
+        }
 
         public enum PostStatusEnum
         {

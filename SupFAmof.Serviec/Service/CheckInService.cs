@@ -10,11 +10,10 @@ using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
-using System.Net.NetworkInformation;
 using AutoMapper.QueryableExtensions;
 using SixLabors.ImageSharp.Formats.Png;
 using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Response.Admission;
+using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
@@ -23,7 +22,7 @@ namespace SupFAmof.Service.Service
     public class CheckInService : ICheckInService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly INotificationService _notificationService; 
+        private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
         public CheckInService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
@@ -84,7 +83,7 @@ namespace SupFAmof.Service.Service
                     }
 
                     registration.Status = (int)PostRegistrationStatusEnum.CheckIn;
-
+                    checkAttendance.Status = (int)CheckAttendanceEnum.Pending;
                     await _unitOfWork.Repository<CheckAttendance>().InsertAsync(checkAttendance);
                     await _unitOfWork.CommitAsync();
 
@@ -364,5 +363,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
+
+       
     }
 }

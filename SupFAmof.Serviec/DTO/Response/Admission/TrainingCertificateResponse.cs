@@ -36,6 +36,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
     public class TrainingRegistrationResponse
     {
         public int Id { get; set; }
+        public int? Status { get; set; }
         public virtual AccountCertificateRegistrationResponse Account { get; set; }
         public virtual TrainingCertificateRegistrationResponse TrainingCertificate { get; set; }
 

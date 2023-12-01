@@ -24,5 +24,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId, int eventDayId, PagingRequest paging);
         Task<BaseResponseViewModel<dynamic>> UpdateDaysForCertificateInterview(int accountId, int evenDayId, UpdateDaysCertifcate request);
         Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, int certificateId, PagingRequest paging);
+        Task<BaseResponseViewModel<dynamic>> ReviewInterviewProcess(int accountId, int eventDayId, List<UpdateStatusRegistrationRequest> requests);
     }
 }

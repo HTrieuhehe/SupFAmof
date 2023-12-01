@@ -60,4 +60,14 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public string CertificateName { get; set; } = null!;
         public bool IsActive { get; set; }
     }
+
+    public class AdmissionGetCertificateRegistrationResponse
+    {
+        public int Id { get; set; }
+        public string TrainingTypeId { get; set; } = null!;
+        public string CertificateName { get; set; } = null!;
+        public bool IsActive { get; set; }
+        public virtual ICollection<AccountCertificateRegistrationResponse>? Registrations { get; set; }
+    }
+
 }

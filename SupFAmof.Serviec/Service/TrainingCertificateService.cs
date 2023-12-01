@@ -1,23 +1,19 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LAK.Sdk.Core.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Service.Commons;
+using System.Drawing.Text;
 using SupFAmof.Data.Entity;
+using Org.BouncyCastle.Tls;
+using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
-using SupFAmof.Service.DTO.Request;
-using SupFAmof.Service.DTO.Request.Admission;
-using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Response.Admission;
-using SupFAmof.Service.Exceptions;
-using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
+using Microsoft.EntityFrameworkCore;
+using SupFAmof.Service.DTO.Response;
+using AutoMapper.QueryableExtensions;
+using SupFAmof.Service.DTO.Request.Admission;
+using SupFAmof.Service.DTO.Response.Admission;
+using static SupFAmof.Service.Utilities.Ultils;
+using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -309,5 +305,249 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+
+        #region Manh
+        public async Task<BaseResponseViewModel<dynamic>> CreateDaysForCertificateInterview(int accountId,EventDaysCertificate request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var eventDay = _mapper.Map<TrainingEventDay>(request);
+                if(!await CheckTimeAvailability((DateTime)eventDay.Date,eventDay.TimeFrom,eventDay.TimeTo))
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.OVERLAP_EVENTS,
+                                            TrainingCertificateErrorEnum.OVERLAP_EVENTS.GetDisplayName());
+                }
+                await _unitOfWork.Repository<TrainingEventDay>().InsertAsync(eventDay);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Create success ",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<BaseResponseViewModel<dynamic>> UpdateDaysForCertificateInterview(int accountId,int evenDayId, UpdateDaysCertifcate request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var eventDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == evenDayId);
+                if(eventDay==null)
+                {
+                    throw new ErrorResponse(401, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST, TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST.GetDisplayName());
+
+                }
+                eventDay.Updateat = request.Updateat;
+                if (!string.IsNullOrEmpty(request.Class))
+                {
+                    eventDay.Class = request.Class;
+                }
+                if (!string.IsNullOrEmpty(request.Date.ToString()))
+                {
+                    eventDay.Date = request.Date;
+                }
+
+                if (!string.IsNullOrEmpty(request.TimeFrom.ToString()))
+                {
+                    eventDay.TimeFrom = request.TimeFrom;
+                }
+
+                if (!string.IsNullOrEmpty(request.TimeTo.ToString()))
+                {
+                    eventDay.TimeTo = request.TimeTo;
+                }
+                await _unitOfWork.Repository<TrainingEventDay>().UpdateDetached(eventDay);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Update success ",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private async Task<bool> CheckTimeAvailability(DateTime timeOfClass, TimeSpan? timeFrom, TimeSpan? timeTo)
+        {
+            var positions = await _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.Date == timeOfClass.Date)
+                .OrderByDescending(x=>x.Id)
+                .ToListAsync();
+
+            foreach (var position in positions)
+            {
+                if (IsTimeSpanOverlapPostion(position.TimeFrom, position.TimeTo, timeFrom, timeTo))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1, TimeSpan? start2, TimeSpan? end2)
+        {
+            return (start1 < end2 && end1 > start2);
+        }
+
+
+        public async Task<BaseResponseViewModel<dynamic>> TrainingCertificateRegistration(int accountId,TrainingCertificateRegistration request)
+        {
+            try
+            {
+                var registration = _mapper.Map<TrainingRegistration>(request);
+                registration.AccountId = accountId;
+                if(registration==null)
+                {
+                    throw new ErrorResponse(400,(int)TrainingCertificateErrorEnum.REGISTER_FAILED,TrainingCertificateErrorEnum.REGISTER_FAILED.GetDisplayName());
+                }
+                if(!await CheckDuplicateTrainingCertificateRegistration(registration))
+                    {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION, TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION.GetDisplayName());
+
+                }
+                await _unitOfWork.Repository<TrainingRegistration>().InsertAsync(registration);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Create success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        private async Task<bool> CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
+        {
+            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != 3);
+            if(duplicates.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<BaseResponseViewModel<dynamic>> AssignDayToRegistration(int accountId, List<AssignEventDayToAccount> requests)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var requestStatusMap = requests.ToDictionary(request => request.TrainingRegistrationId, request => request.EventDayId);
+                var requestIds = requests.Select(x => x.TrainingRegistrationId);
+                var filteredList = _unitOfWork.Repository<TrainingRegistration>()
+                      .GetAll().Where(registration => requestIds.Contains(registration.Id) && registration.Status != 3);
+                if (!filteredList.Any())
+                {
+                    throw new ErrorResponse(400, 4001,
+                                       "Nothing");
+                }
+                foreach (var registration in filteredList)
+                {
+                    registration.EventDayId = requestStatusMap[registration.Id].Value;
+                    registration.UpdateAt = GetCurrentDatetime();
+                    if (!await AssignDuplicateTime(registration, registration.AccountId))
+                        {
+                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.OVERLAP_INTERVIEW,
+                                                                    TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
+                    }
+                    await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
+                }
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Assign success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private async Task<bool> AssignDuplicateTime(TrainingRegistration request,int accountId)
+        {
+            var day = await _unitOfWork.Repository<TrainingEventDay>().GetAll().FirstOrDefaultAsync(x => x.Id == request.EventDayId);
+            var check = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.EventDayId.HasValue);
+                foreach (var registration in check)
+            {
+                if (registration.EventDayId == request.EventDayId)
+                {
+                    return false;
+                }
+                if (day.Date == registration.EventDay.Date && IsTimeSpanOverlapPostion( day.TimeFrom, day.TimeTo, registration.EventDay.TimeFrom, registration.EventDay.TimeTo))
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+
+        public async Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId,int eventDayId,PagingRequest paging)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var list = _unitOfWork.Repository<TrainingEventDay>().GetAll()
+                           .Where(x => x.Id == eventDayId)
+                           .ProjectTo<ViewCollabInterviewClassResponse>(_mapper.ConfigurationProvider)
+                           .PagingQueryable(paging.Page, paging.PageSize);
+                return new BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

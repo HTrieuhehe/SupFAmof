@@ -279,6 +279,21 @@ namespace SupFAmof.Service.Helpers
             //404
             [Display(Name = "Training Certificate not found!")]
             NOT_FOUND_ID = 4041,
+            //400
+            [Display(Name = "Overlap with post")]
+            OVERLAP_EVENTS = 4003,
+            //400
+            [Display(Name = "Cant register")]
+            REGISTER_FAILED = 4004,
+            //400
+            [Display(Name = "Duplicate registration")]
+            DUPLICATE_REGISTRATION = 4006,
+            //400
+            [Display(Name = "Overlap with diffent interview")]
+            OVERLAP_INTERVIEW = 4007,
+            //400
+            [Display(Name = "Training Day does not exist")]
+            TRAINING_DAY_DOES_NOT_EXIST = 4008,
         }
 
         public enum AccountCertificateErrorEnum

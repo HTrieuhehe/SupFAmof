@@ -1358,7 +1358,6 @@ namespace SupFAmof.Service.Service
             }
         }
 
-
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request)
         {
             var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
@@ -1370,6 +1369,34 @@ namespace SupFAmof.Service.Service
             }
 
             var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformation);
+
+
+            await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+            await _unitOfWork.CommitAsync();
+
+            return new BaseResponseViewModel<AccountInformationResponse>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Message = "Success",
+                    Success = true,
+                    ErrorCode = 0
+                },
+                Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+            };
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation2(int accountId, UpdateCitizenIdentification2 request)
+        {
+            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+            if (accountInformation == null)
+            {
+                throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                    AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformation);
 
 
             await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);

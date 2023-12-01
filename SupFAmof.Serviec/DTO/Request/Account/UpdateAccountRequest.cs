@@ -45,6 +45,11 @@ namespace SupFAmof.Service.DTO.Request.Account
     {
         public string? IdentityNumber { get; set; }
         public string? Address { get; set; }
+        
+    }
+
+    public class UpdateCitizenIdentification2
+    {
         public DateTime? IdentityIssueDate { get; set; }
         public string? PlaceOfIssue { get; set; }
     }

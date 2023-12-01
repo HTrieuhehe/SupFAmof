@@ -33,6 +33,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImg(int accountId, UpdateCitizenIdentificationFrontImg request);
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImg(int accountId, UpdateCitizenIdentificationBackImg request);
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request);
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation2(int accountId, UpdateCitizenIdentification2 request);
 
         #endregion
     }

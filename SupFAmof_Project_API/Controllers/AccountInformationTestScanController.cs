@@ -79,7 +79,7 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Update Account Imformation IMG
+        /// Update Account Imformation 1
         /// </summary>
         /// <returns></returns>
         [HttpPatch("updateAccountInformationCitizen")]
@@ -95,6 +95,34 @@ namespace SupFAmof.API.Controllers
                     return Unauthorized();
                 }
                 return await _accountService.UpdateCitizenIdentificationInformation(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Account Imformation 2
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("updateAccountInformationCitizen2")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification2([FromBody] UpdateCitizenIdentification2 data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateCitizenIdentificationInformation2(account.Id, data);
             }
             catch (ErrorResponse ex)
             {

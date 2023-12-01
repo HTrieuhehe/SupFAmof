@@ -31,9 +31,13 @@ namespace SupFAmof.Service.DTO.Request.Account
         public string? ImgUrl { get; set; }
     }
 
-    public class UpdateCitizenIdentificationImg
+    public class UpdateCitizenIdentificationFrontImg
     {
         public string? IdentityFrontImg { get; set; }
+    }
+
+    public class UpdateCitizenIdentificationBackImg
+    {
         public string? IdentityBackImg { get; set; }
     }
 

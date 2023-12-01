@@ -23,11 +23,11 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Update Account Imformation IMG
+        /// Update Account Imformation Front IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenImg")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationImg([FromBody] UpdateCitizenIdentificationImg data)
+        [HttpPatch("updateAccountInformationCitizenFrontImg")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationFrontImg([FromBody] UpdateCitizenIdentificationFrontImg data)
         {
             try
             {
@@ -38,7 +38,35 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateCitizenIdentificationImg(account.Id, data);
+                return await _accountService.UpdateCitizenIdentificationFrontImg(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Account Imformation Back IMG
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("updateAccountInformationCitizenFrontImg")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationBackImg([FromBody] UpdateCitizenIdentificationBackImg data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateCitizenIdentificationBackImg(account.Id, data);
             }
             catch (ErrorResponse ex)
             {

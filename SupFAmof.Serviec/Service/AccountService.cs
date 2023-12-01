@@ -1288,7 +1288,7 @@ namespace SupFAmof.Service.Service
 
         #region Khu vực test quét CCCD
 
-        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationImg(int accountId, UpdateCitizenIdentificationImg request)
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImg(int accountId, UpdateCitizenIdentificationFrontImg request)
         {
             try
             {
@@ -1300,7 +1300,7 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationImg, AccountInformation>(request, accountInformation);
+                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationFrontImg, AccountInformation>(request, accountInformation);
 
 
                 await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
@@ -1322,6 +1322,42 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImg(int accountId, UpdateCitizenIdentificationBackImg request)
+        {
+            try
+            {
+                var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (accountInformation == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationBackImg, AccountInformation>(request, accountInformation);
+
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
 
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request)
         {

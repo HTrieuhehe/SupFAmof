@@ -30,7 +30,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         #region interface dùng để quét CCCD
 
-        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationImg(int accountId, UpdateCitizenIdentificationImg request);
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImg(int accountId, UpdateCitizenIdentificationFrontImg request);
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImg(int accountId, UpdateCitizenIdentificationBackImg request);
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request);
 
         #endregion

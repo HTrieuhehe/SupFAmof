@@ -54,7 +54,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation Back IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenFrontImg")]
+        [HttpPatch("updateAccountInformationCitizenBacImg")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationBackImg([FromBody] UpdateCitizenIdentificationBackImg data)
         {
             try

@@ -66,4 +66,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public int? TrainingRegistrationId { get; set; }
         public int? EventDayId { get; set; }
     }
+    public class UpdateStatusRegistrationRequest
+    {
+        public int TrainingRegistrationId { get; set; }
+        public int Status { get; set; } = 1;
+    }
 }

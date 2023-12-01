@@ -375,7 +375,7 @@ namespace SupFAmof.Service.Service
                 {
                     case PostRegistrationStatusEnum.Pending:
                         postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
-                        postRegistration.UpdateAt = Ultils.GetCurrentDatetime();
+                        postRegistration.CancelTime = Ultils.GetCurrentDatetime();
                         await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -392,6 +392,11 @@ namespace SupFAmof.Service.Service
                         {
                             ProblemNote = $"Request for cancellation for Position {postRegistration.Position.PositionName} from Post {postRegistration.Position.Post.PostCode}",
                         };
+                        if (!await DuplicatePendingApplication(application))
+                        {
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND,
+                     PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND.GetDisplayName());
+                        }
                         var report = _mapper.Map<CreateAccountApplicationRequest, Application>(application);
                         report.AccountId = accountId;
                         report.ReportDate = Ultils.GetCurrentDatetime();
@@ -1451,6 +1456,18 @@ namespace SupFAmof.Service.Service
                                                             && x.Position.TimeFrom < positionWorkTime.TimeTo
                                                             && x.Position.TimeTo > positionWorkTime.TimeFrom);
             return !postRegistrations.Any();
+        }
+
+
+        private async Task<bool> DuplicatePendingApplication(CreateAccountApplicationRequest application)
+        {
+            var duplicate = await _unitOfWork.Repository<Application>().FindAsync(x => x.ProblemNote.Trim() == application.ProblemNote.Trim()&&x.Status == (int)PostRegistrationStatusEnum.Pending);
+            if(duplicate!=null)
+            {
+                return false;
+            }
+            return true;
+
         }
     }
 

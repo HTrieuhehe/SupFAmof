@@ -17,5 +17,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         Task<BaseResponseViewModel<AdmissionApplicationResponse>> ApproveApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
         Task<BaseResponseViewModel<AdmissionApplicationResponse>> RejectApplication(int accountId, int reportId, UpdateAdmissionAccountApplicationRequest request);
+
+        Task<BaseResponseViewModel<bool>> DeleteApplication(int reportId);
     }
 }

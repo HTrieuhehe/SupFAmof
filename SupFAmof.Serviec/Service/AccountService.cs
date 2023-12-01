@@ -94,7 +94,7 @@ namespace SupFAmof.Service.Service
 
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
-                    
+
                     //Add expo token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
                         _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
@@ -337,7 +337,7 @@ namespace SupFAmof.Service.Service
                 if (expoToken != null)
                 {
                     ExpoTokenLogoutRequest token = new()
-                    { 
+                    {
                         ExpoPushToken = expoToken.Token
                     };
 
@@ -1077,7 +1077,7 @@ namespace SupFAmof.Service.Service
 
                 account = _mapper.Map<UpdateAdmissionAccountRequest, Account>(request, account);
 
-                account.UpdateAt = DateTime.Now;
+                account.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();
@@ -1199,7 +1199,7 @@ namespace SupFAmof.Service.Service
                     Data = totalCollaborator,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -1249,18 +1249,16 @@ namespace SupFAmof.Service.Service
                 }
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-
-
-        public async  Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId, PagingRequest paging)
         {
-                try
-                {
+            try
+            {
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
                 if (!account.PostPermission)
                 {
@@ -1271,21 +1269,88 @@ namespace SupFAmof.Service.Service
                                               .ProjectTo<ManageCollabAccountResponse>(_mapper.ConfigurationProvider)
                                               .PagingQueryable(paging.Page, paging.PageSize,
                                                                Constants.LimitPaging, Constants.DefaultPaging);
-                    return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
+                return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
+                {
+                    Metadata = new PagingsMetadata()
                     {
-                        Metadata = new PagingsMetadata()
-                        {
-                            Page = paging.Page,
-                            Size = paging.PageSize,
-                            Total = list.Item1
-                        },
-                        Data = list.Item2.ToList()
-                    };
-                }
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
             catch (Exception ex)
             {
                 throw;
             }
         }
+
+        #region Khu vực test quét CCCD
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationImg(int accountId, UpdateCitizenIdentificationImg request)
+        {
+            try
+            {
+                var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (accountInformation == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationImg, AccountInformation>(request, accountInformation);
+
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request)
+        {
+            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+            if (accountInformation == null)
+            {
+                throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                    AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformation);
+
+
+            await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+            await _unitOfWork.CommitAsync();
+
+            return new BaseResponseViewModel<AccountInformationResponse>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Message = "Success",
+                    Success = true,
+                    ErrorCode = 0
+                },
+                Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+            };
+        }
+
+        #endregion
     }
 }

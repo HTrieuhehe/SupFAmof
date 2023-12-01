@@ -27,5 +27,12 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountResponse>> UpdateAccountAvatar(int accountId, UpdateAccountAvatar request);
         Task<BaseResponseViewModel<TotalAccountResponse>> ViewCollaborator();
         Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId,PagingRequest paging);
+
+        #region interface dùng để quét CCCD
+
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationImg(int accountId, UpdateCitizenIdentificationImg request);
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationInformation(int accountId, UpdateCitizenIdentification request);
+
+        #endregion
     }
 }

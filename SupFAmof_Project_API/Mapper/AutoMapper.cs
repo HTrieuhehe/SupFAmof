@@ -12,6 +12,7 @@ using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
+using SupFAmof.API.Controllers.AdmissionController;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
 
 namespace SupFAmof.API.Mapper
@@ -208,6 +209,19 @@ namespace SupFAmof.API.Mapper
             CreateMap<UpdateAccountCertificateRequest, AccountCertificate>();
 
             CreateMap<TrainingCertificateRegistration, TrainingRegistration>().ReverseMap();
+            CreateMap<TrainingCertificate, AdmissionGetCertificateRegistrationResponse>()
+                .ForMember(dest=>dest.Registrations,opt=>opt.MapFrom(src=>src.TrainingRegistrations))
+                .ReverseMap();
+
+            CreateMap<TrainingRegistration, AccountCertificateRegistrationResponse>()
+                .ForMember(x=>x.Email,opt=>opt.MapFrom(src=>src.Account.Email))
+                .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Account.Name))
+                .ForMember(x => x.ImgUrl, opt => opt.MapFrom(src => src.Account.ImgUrl))
+                .ForMember(x => x.IsPremium, opt => opt.MapFrom(src => src.Account.IsPremium))
+                .ForMember(x => x.Phone, opt => opt.MapFrom(src => src.Account.Phone))
+                .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.Account.AccountInformation.IdStudent))
+
+                ;
             #endregion
 
             #region Admission Post

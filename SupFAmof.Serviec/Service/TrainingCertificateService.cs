@@ -3,6 +3,7 @@ using System.Drawing.Text;
 using SupFAmof.Data.Entity;
 using Org.BouncyCastle.Tls;
 using LAK.Sdk.Core.Utilities;
+using NetTopologySuite.Noding;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
@@ -475,13 +476,16 @@ namespace SupFAmof.Service.Service
                 }
                 foreach (var registration in filteredList)
                 {
-                    registration.EventDayId = requestStatusMap[registration.Id].Value;
-                    registration.UpdateAt = GetCurrentDatetime();
-                    if (!await AssignDuplicateTime(registration, registration.AccountId))
-                        {
+
+                    if (!await AssignDuplicateTime(registration, requestStatusMap[registration.Id].Value,registration.AccountId))
+                    {
                         throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.OVERLAP_INTERVIEW,
                                                                     TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
                     }
+                    registration.EventDayId = requestStatusMap[registration.Id].Value;
+                 
+                    registration.UpdateAt = GetCurrentDatetime();
+                 
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
                 }
                 await _unitOfWork.CommitAsync();
@@ -500,17 +504,16 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        private async Task<bool> AssignDuplicateTime(TrainingRegistration request,int accountId)
+        private async Task<bool> AssignDuplicateTime(TrainingRegistration request,int? eventDayNeedUpdate,int accountId)
         {
-            var day = await _unitOfWork.Repository<TrainingEventDay>().GetAll().FirstOrDefaultAsync(x => x.Id == request.EventDayId);
-            var check = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.EventDayId.HasValue);
-                foreach (var registration in check)
+            var day = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == eventDayNeedUpdate);
+            var listOfRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.Id != request.Id);
+            if (!listOfRegistration.Any(x=>x.EventDayId.HasValue)) {
+                return true;
+            }
+            foreach(var registration in listOfRegistration)
             {
-                if (registration.EventDayId == request.EventDayId)
-                {
-                    return false;
-                }
-                if (day.Date == registration.EventDay.Date && IsTimeSpanOverlapPostion( day.TimeFrom, day.TimeTo, registration.EventDay.TimeFrom, registration.EventDay.TimeTo))
+                if(registration.EventDay.Date == day.Date&& IsTimeSpanOverlapPostion(registration.EventDay.TimeFrom, registration.EventDay.TimeTo,day.TimeFrom,day.TimeTo))
                 {
                     return false;
                 }
@@ -548,6 +551,38 @@ namespace SupFAmof.Service.Service
             }
         }
 
+
+        public async Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId,int certificateId,PagingRequest paging)
+        {
+            try
+            {
+
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var list = _unitOfWork.Repository<TrainingCertificate>().GetAll()
+                           .Where(x => x.Id == certificateId)
+                           .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
+                           .PagingQueryable(paging.Page, paging.PageSize);
+                return new BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

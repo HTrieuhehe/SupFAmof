@@ -249,6 +249,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cancel Failed")]
             CANCEL_FAILED = 4026,
+            //400
+            [Display(Name = "MUST WAIT FOR THE PREVIOUS BE REVIEWED ")]
+            OVERLAP_APPLICATION_SEND = 4027,
         }
 
         public enum PostCategoryErrorEnum

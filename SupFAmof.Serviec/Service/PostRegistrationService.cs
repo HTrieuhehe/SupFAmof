@@ -842,6 +842,7 @@ namespace SupFAmof.Service.Service
                                     if (checkMatching.Contains(postRegis))
                                     {
                                         postRegis.Status = (int)PostRegistrationStatusEnum.Confirm;
+                                        postRegis.ConfirmTime = Ultils.GetCurrentDatetime();
                                         updatedEntities.Add(postRegis);
                                         listToUpdate.Add(postRegis);
                                     }
@@ -1397,6 +1398,7 @@ namespace SupFAmof.Service.Service
                                 PostRegistrationErrorEnum.ALREADY_CANCELLED.GetDisplayName());
                         default:
                             findRequest.Status = (int)PostRegistrationStatusEnum.Cancel;
+                            findRequest.CancelTime = Ultils.GetCurrentDatetime();
                             await _unitOfWork.Repository<PostRegistration>().UpdateDetached(findRequest);
                             await _unitOfWork.CommitAsync();
                             break;

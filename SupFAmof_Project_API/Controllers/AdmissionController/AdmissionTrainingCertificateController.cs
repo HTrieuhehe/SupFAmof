@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SupFAmof.Service.DTO.Request.Admission;
-using SupFAmof.Service.DTO.Request;
-using SupFAmof.Service.DTO.Response.Admission;
+﻿using Microsoft.AspNetCore.Mvc;
 using SupFAmof.Service.Service;
-using SupFAmof.Service.Service.ServiceInterface;
+using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Exceptions;
+using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
+using FirebaseAdmin.Auth.Multitenancy;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Request.Admission;
+using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
@@ -175,6 +176,112 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _certificateService.DisableTrainingCertificate(account.Id, trainingCertificateId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+
+        [HttpPost("create-class-interview")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CreateDaysForCertificateInterview([FromBody] EventDaysCertificate request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.CreateDaysForCertificateInterview(account.Id, request);
+                return Ok(result);
+            }
+            catch(ErrorResponse ex)
+            {
+                throw;
+            }
+        }
+        [HttpPost("register-certificate-interview")]
+        public async Task<ActionResult> TrainingCertificateRegistration( [FromBody] TrainingCertificateRegistration request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.TrainingCertificateRegistration(account.Id, request);
+                return Ok(result); 
+            }
+            catch (ErrorResponse ex)
+            {
+                throw;
+            }
+        }
+        [HttpPost("assign-eventDay-account")]
+        public async Task<ActionResult> AssignDayToRegistration( [FromBody] List<AssignEventDayToAccount> requests)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.AssignDayToRegistration(account.Id, requests);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("view-collaborator-class")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>>> GetCollabInClass
+          ([FromQuery]int eventDayId,[FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.GetCollabInClass(account.Id,eventDayId, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+        [HttpPut("update-event-day")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> UpdateDaysForCertificateInterview
+        ([FromQuery] int eventDayId, [FromBody] UpdateDaysCertifcate request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.UpdateDaysForCertificateInterview(account.Id, eventDayId, request);
             }
             catch (ErrorResponse ex)
             {

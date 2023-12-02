@@ -317,5 +317,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+
+        [HttpPut("update-registration-in-even-day")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> ReviewInterviewProcess
+ ( [FromQuery]int eventDayId, [FromBody]List<UpdateStatusRegistrationRequest> requests)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.ReviewInterviewProcess(account.Id, eventDayId, requests);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

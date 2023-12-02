@@ -297,6 +297,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Training Day does not exist")]
             TRAINING_DAY_DOES_NOT_EXIST = 4008,
+            //400
+            [Display(Name = "Only check attedance on the day of the interview and on time")]
+            CANT_CHECK_ATTEDANCE = 4009,
         }
 
         public enum AccountCertificateErrorEnum

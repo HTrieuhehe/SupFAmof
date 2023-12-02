@@ -2,6 +2,7 @@
 using System.Drawing.Text;
 using SupFAmof.Data.Entity;
 using Org.BouncyCastle.Tls;
+using Org.BouncyCastle.Ocsp;
 using LAK.Sdk.Core.Utilities;
 using NetTopologySuite.Noding;
 using SupFAmof.Data.UnitOfWork;
@@ -582,6 +583,65 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+
+
+        public async Task<BaseResponseViewModel<dynamic>> ReviewInterviewProcess(int accountId,int eventDayId,List<UpdateStatusRegistrationRequest> requests)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                if (!await UpdateMinAndMax(eventDayId))
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.CANT_CHECK_ATTEDANCE, TrainingCertificateErrorEnum.CANT_CHECK_ATTEDANCE.GetDisplayName());
+                }
+                var requestStatusMap = requests.ToDictionary(request => request.TrainingRegistrationId, request => request.Status);
+                var listRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.EventDayId == eventDayId);
+                foreach(var registration in listRegistration )
+                {
+                    if (requestStatusMap.ContainsKey(registration.Id))
+                        {
+                        registration.Status = requestStatusMap[registration.Id];
+                        registration.UpdateAt = GetCurrentDatetime();
+                      
+                    }
+                    await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
+
+                }
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Update status success ",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+
+            } catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private async Task<bool> UpdateMinAndMax(int eventDayId)
+        {
+            var eventDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == eventDayId);
+            var current = GetCurrentDatetime();
+            if (eventDay == null)
+            {
+                throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST, TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST.GetDisplayName());
+            }
+            if(eventDay.Date == current.Date&& eventDay.TimeFrom<= current.TimeOfDay) {
+                return true;
+             
+            }
+            return false;
         }
         #endregion
     }

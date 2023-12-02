@@ -45,7 +45,7 @@ namespace SupFAmof.Service.DTO.Request.Account
     {
         public string? IdentityNumber { get; set; }
         public string? Address { get; set; }
-        
+
     }
 
     public class UpdateCitizenIdentification2

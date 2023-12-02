@@ -82,7 +82,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation 1
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizen")]
+        [HttpPatch("updateAccountCitizenFrontImgInformation")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification([FromBody] UpdateCitizenIdentification data)
         {
             try
@@ -94,7 +94,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateCitizenIdentificationInformation(account.Id, data);
+                return await _accountService.UpdateCitizenIdentificationFrontImgInformation(account.Id, data);
             }
             catch (ErrorResponse ex)
             {
@@ -107,10 +107,10 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Update Account Imformation 2
+        /// update Account Citizen Front Img Information
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizen2")]
+        [HttpPatch("updateAccountCitizenBackImgInformation")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification2([FromBody] UpdateCitizenIdentification2 data)
         {
             try
@@ -122,7 +122,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateCitizenIdentificationInformation2(account.Id, data);
+                return await _accountService.UpdateCitizenIdentificationBackImgInformation(account.Id, data);
             }
             catch (ErrorResponse ex)
             {

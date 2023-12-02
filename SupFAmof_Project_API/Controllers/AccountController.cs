@@ -102,36 +102,6 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// Create Account Information
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [HttpPost("createAccountInformation")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> CreateAccountInformation([FromBody] CreateAccountInformationRequest request)
-        {
-            try
-            {
-
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                var result = await _accountService.CreateAccountInformation(account.Id, request);
-                return Ok(result);
-            }
-            catch(ErrorResponse ex)
-            {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
-            }
-        }
-
-        /// <summary>
         /// Google Login
         /// </summary>
         /// <param name="data"></param>
@@ -298,10 +268,38 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
+        /// Update Account Imformation
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("updateAccountInforamtion")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequest data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateAccountInforamtion(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Update Account Imformation Front IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenFrontImg")]
+        [HttpPatch("updateFrontImg")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationFrontImg([FromBody] UpdateCitizenIdentificationFrontImg data)
         {
             try
@@ -329,7 +327,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation Back IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenBacImg")]
+        [HttpPatch("updateBackImg")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationBackImg([FromBody] UpdateCitizenIdentificationBackImg data)
         {
             try
@@ -357,7 +355,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation 1
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizen")]
+        [HttpPatch("updateFrontAccountInformationCitizen")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification([FromBody] UpdateCitizenIdentification data)
         {
             try
@@ -369,7 +367,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateCitizenIdentificationInformation(account.Id, data);
+                return await _accountService.UpdateCitizenIdentificationFrontImgInformation(account.Id, data);
             }
             catch (ErrorResponse ex)
             {
@@ -385,7 +383,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation 2
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizen2")]
+        [HttpPatch("updateBackAccountInformationCitizen")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification2([FromBody] UpdateCitizenIdentification2 data)
         {
             try
@@ -397,7 +395,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateCitizenIdentificationInformation2(account.Id, data);
+                return await _accountService.UpdateCitizenIdentificationBackImgInformation(account.Id, data);
             }
             catch (ErrorResponse ex)
             {

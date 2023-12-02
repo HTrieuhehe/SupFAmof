@@ -1444,19 +1444,19 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
+                //var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                //var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
-                if (checkStuId == false)
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
-                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
-                }
+                //if (checkStuId == false)
+                //{
+                //    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                //                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
+                //}
 
-                if (!string.IsNullOrEmpty(request.PlaceOfIssue))
-                {
-                    request.PlaceOfIssue = request.PlaceOfIssue.ToUpper();
-                }
+                //if (!string.IsNullOrEmpty(request.PlaceOfIssue))
+                //{
+                //    request.PlaceOfIssue = request.PlaceOfIssue.ToUpper();
+                //}
 
                 account = _mapper.Map<UpdateAccountInformationRequestTest, AccountInformation>(request, account);
 

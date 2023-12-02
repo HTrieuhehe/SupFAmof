@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("updateAccountInformation")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequest data)
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequestTest data)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountService.UpdateAccountInforamtion(account.Id, data);
+                return await _accountService.UpdateAccountInformationTest(account.Id, data);
             }
             catch (ErrorResponse ex)
             {

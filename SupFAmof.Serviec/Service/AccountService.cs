@@ -1383,7 +1383,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.Id == accountId);
+                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
 
                 if (account == null)
                 {

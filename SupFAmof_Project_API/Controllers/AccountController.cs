@@ -271,7 +271,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation
         /// </summary>
         /// <returns></returns>
-        [HttpPut("updateAccountInforamtion")]
+        [HttpPut("updateAccountInformation")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequest data)
         {
             try

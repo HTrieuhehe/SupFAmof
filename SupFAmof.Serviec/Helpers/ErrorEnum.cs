@@ -300,6 +300,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Only check attedance on the day of the interview and on time")]
             CANT_CHECK_ATTEDANCE = 4009,
+            //400
+            [Display(Name = "Certificate registration not found")]
+            CERTIFICATE_REGISTRATION_NOT_FOUND = 4010,
         }
 
         public enum AccountCertificateErrorEnum

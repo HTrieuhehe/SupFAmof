@@ -207,25 +207,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 throw;
             }
         }
-        [HttpPost("register-certificate-interview")]
-        public async Task<ActionResult> TrainingCertificateRegistration( [FromBody] TrainingCertificateRegistration request)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                var result = await _certificateService.TrainingCertificateRegistration(account.Id, request);
-                return Ok(result); 
-            }
-            catch (ErrorResponse ex)
-            {
-                throw;
-            }
-        }
+
         [HttpPost("assign-eventDay-account")]
         public async Task<ActionResult> AssignDayToRegistration( [FromBody] List<AssignEventDayToAccount> requests)
         {
@@ -248,7 +230,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         [HttpGet("view-collaborator-class")]
         public async Task<ActionResult<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>>> GetCollabInClass
-          ([FromQuery]int eventDayId,[FromQuery] PagingRequest paging)
+          ([FromQuery] ViewCollabInterviewClassResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -258,7 +240,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetCollabInClass(account.Id,eventDayId, paging);
+                return await _certificateService.GetCollabInClass(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -296,7 +278,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         [HttpGet("view-certificate-registration")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>>> GetCertificateRegistration
-       ([FromQuery] int certificateId, [FromQuery] PagingRequest paging)
+       ([FromQuery] AdmissionGetCertificateRegistrationResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -306,7 +288,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetCertificateRegistration(account.Id, certificateId, paging);
+                return await _certificateService.GetCertificateRegistration(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {
@@ -319,7 +301,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
 
-        [HttpPut("update-registration-in-even-day")]
+        [HttpPut("confirm-registration-in-event-day")]
         public async Task<ActionResult<BaseResponseViewModel<dynamic>>> ReviewInterviewProcess
  ( [FromQuery]int eventDayId, [FromBody]List<UpdateStatusRegistrationRequest> requests)
         {
@@ -342,5 +324,32 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+     
+        [HttpDelete("cancel-registration-admission")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> CancelCertificateRegistrationAdmission
+      ([FromQuery] int certificateRegistrationId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                await _certificateService.CancelCertificateRegistrationAdmission(account.Id, certificateRegistrationId);
+                return Ok();
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+        
     }
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SupFAmof.Service.Service;
+using Microsoft.AspNetCore.Http;
+using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using SupFAmof.Service.DTO.Response.Admission;
@@ -7,6 +9,9 @@ using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.Enum;
+using SupFAmof.Service.DTO.Request.Admission;
+using SupFAmof.Service.DTO.Response.Admission;
+using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
 {
@@ -49,6 +54,73 @@ namespace SupFAmof.API.Controllers
                     return NotFound(ex.Error);
                 }
                 return BadRequest(ex.Error);
+            }
+        }
+        [HttpGet("collab-view-registration")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationsResponse>>> GetRegistrationByCollabId
+     ( [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _certificateService.GetRegistrationByCollabId(account.Id, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+        [HttpDelete("cancel-registration-collab")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> CancelCertificateRegistration
+       (int certificateRegistrationId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                await _certificateService.CancelCertificateRegistration(account.Id, certificateRegistrationId);
+                return Ok();
+            }
+
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+        [HttpPost("register-certificate-interview")]
+        public async Task<ActionResult> TrainingCertificateRegistration([FromBody] TrainingCertificateRegistration request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.TrainingCertificateRegistration(account.Id, request);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                throw;
             }
         }
 

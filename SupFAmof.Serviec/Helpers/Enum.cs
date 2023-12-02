@@ -177,5 +177,25 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Application Request")]
             Application = 6,
         }
+        public enum TrainingCertificateEnum
+        {
+            [Display(Name = "Pending")]
+            Pending = 1,
+
+            [Display(Name = "Confirm")]
+            Confirm = 2,
+
+            [Display(Name = "Reject")]
+            Reject = 3,
+
+            [Display(Name = "Cancel")]
+            Cancel = 4,
+            [Display(Name = "Check-in")]
+            CheckIn = 5,
+            [Display(Name = "Check-out")]
+            CheckOut = 6,
+            [Display(Name = "Quit")]
+            Quit = 7
+        }
     }
 }

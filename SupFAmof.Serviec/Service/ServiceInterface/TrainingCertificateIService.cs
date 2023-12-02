@@ -21,9 +21,12 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> CreateDaysForCertificateInterview(int accountId, EventDaysCertificate request);
         Task<BaseResponseViewModel<dynamic>> TrainingCertificateRegistration(int accountId, TrainingCertificateRegistration request);
         Task<BaseResponseViewModel<dynamic>> AssignDayToRegistration(int accountId, List<AssignEventDayToAccount> requests);
-        Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId, int eventDayId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId, ViewCollabInterviewClassResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<dynamic>> UpdateDaysForCertificateInterview(int accountId, int evenDayId, UpdateDaysCertifcate request);
-        Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, int certificateId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, AdmissionGetCertificateRegistrationResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<dynamic>> ReviewInterviewProcess(int accountId, int eventDayId, List<UpdateStatusRegistrationRequest> requests);
+        Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistration(int accountId, int certificateRegistrationId);
+        Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistrationAdmission(int accountId, int certificateRegistrationId);
+        Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId, PagingRequest paging);
     }
 }

@@ -12,6 +12,8 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
+using SixLabors.ImageSharp.ColorSpaces;
+using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
@@ -419,6 +421,20 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                     .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
                 var registration = _mapper.Map<TrainingRegistration>(request);
                 registration.AccountId = accountId;
                 if(registration==null)
@@ -523,7 +539,7 @@ namespace SupFAmof.Service.Service
 
         }
 
-        public async Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId,int eventDayId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId, ViewCollabInterviewClassResponse filter, PagingRequest paging)
         {
             try
             {
@@ -533,8 +549,9 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingEventDay>().GetAll()
-                           .Where(x => x.Id == eventDayId)
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingCertificateEnum.Cancel))
                            .ProjectTo<ViewCollabInterviewClassResponse>(_mapper.ConfigurationProvider)
+                           .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>()
                 {
@@ -553,7 +570,7 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId,int certificateId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, AdmissionGetCertificateRegistrationResponse filter, PagingRequest paging)
         {
             try
             {
@@ -564,8 +581,9 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingCertificate>().GetAll()
-                           .Where(x => x.Id == certificateId)
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingCertificateEnum.Cancel))
                            .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
+                           .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>()
                 {
@@ -643,6 +661,158 @@ namespace SupFAmof.Service.Service
             }
             return false;
         }
+
+        public async Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistration(int accountId, int certificateRegistrationId)
+        {
+            try
+            {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
+                if (certificateRegistrationId == 0)
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND,
+                                            TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
+                }
+
+                var certificateRegistration = _unitOfWork.Repository<TrainingRegistration>()
+                                                .GetAll()
+                                                .FirstOrDefault(x => x.Id == certificateRegistrationId && x.AccountId == accountId);
+
+                if (certificateRegistration == null)
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND,
+                                          TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
+                }
+
+                switch ((TrainingCertificateEnum)certificateRegistration.Status)
+                {
+                    case TrainingCertificateEnum.Cancel:
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                           PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+                    default:
+                        certificateRegistration.Status = (int)TrainingCertificateEnum.Cancel;
+                        await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
+                        await _unitOfWork.CommitAsync();
+                        break;
+                }
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Success = true,
+                        Message = "Cancel Successfully",
+                        ErrorCode = 200
+                    }
+                };
+            }catch(Exception ex)
+            {
+                throw;
+            }
+            }
+        public async Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistrationAdmission(int accountId, int certificateRegistrationId)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if(account == null||!account.PostPermission)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                       AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+            if (certificateRegistrationId == 0)
+            {
+                throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND,
+                                        TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
+            }
+
+            var certificateRegistration = _unitOfWork.Repository<TrainingRegistration>()
+                                            .GetAll()
+                                            .FirstOrDefault(x => x.Id == certificateRegistrationId);
+
+            if (certificateRegistration == null)
+            {
+                throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND,
+                                      TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
+            }
+
+            switch ((TrainingCertificateEnum)certificateRegistration.Status)
+            {
+                case TrainingCertificateEnum.Cancel:
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                       PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+                default:
+                    certificateRegistration.Status = (int)TrainingCertificateEnum.Cancel;
+                    await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
+                    await _unitOfWork.CommitAsync();
+                    break;
+            }
+            return new BaseResponseViewModel<dynamic>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Success = true,
+                    Message = "Cancel Successfully",
+                    ErrorCode = 200
+                }
+            };
+        }catch(Exception ex)
+            {
+                throw;
+            }
+            }
+
         #endregion
+        //to do :getRegistrationByCollabId
+
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId,PagingRequest paging)
+        {
+            try
+            {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                             .Where(x => x.AccountIdBanned == collabId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
+                var list = _unitOfWork.Repository<TrainingRegistration>().GetAll()
+                           .ProjectTo<CollabRegistrationsResponse>(_mapper.ConfigurationProvider)
+                           .PagingQueryable(paging.Page, paging.PageSize);
+                return new BaseResponsePagingViewModel<CollabRegistrationsResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

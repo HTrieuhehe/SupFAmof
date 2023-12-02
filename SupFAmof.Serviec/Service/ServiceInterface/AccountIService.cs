@@ -38,5 +38,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImgInformation(int accountId, UpdateCitizenIdentification2 request);
 
         #endregion
+
+        Task<BaseResponseViewModel<AccountInformationResponse>> UpdateAccountInformationTest(int accountId, UpdateAccountInformationRequestTest request);
+
     }
 }

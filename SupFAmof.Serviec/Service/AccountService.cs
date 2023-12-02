@@ -1430,6 +1430,59 @@ namespace SupFAmof.Service.Service
             }
         }
 
+
+        //test 
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateAccountInformationTest(int accountId, UpdateAccountInformationRequestTest request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
+
+                if (checkStuId == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
+                }
+
+                if (!string.IsNullOrEmpty(request.PlaceOfIssue))
+                {
+                    request.PlaceOfIssue = request.PlaceOfIssue.ToUpper();
+                }
+
+                account = _mapper.Map<UpdateAccountInformationRequestTest, AccountInformation>(request, account);
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(account)
+                };
+            }
+            catch (Exception ex)
+            {
+                //throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                //                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+
+                throw;
+            }
+        }
+
         #endregion
     }
 }

@@ -23,10 +23,38 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
+        /// Update Account Imformation
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("updateAccountInformation")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequest data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateAccountInforamtion(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Update Account Imformation Front IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenFrontImg")]
+        [HttpPatch("updateFrontImg")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationFrontImg([FromBody] UpdateCitizenIdentificationFrontImg data)
         {
             try
@@ -54,7 +82,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation Back IMG
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountInformationCitizenBacImg")]
+        [HttpPatch("updateBackImg")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationBackImg([FromBody] UpdateCitizenIdentificationBackImg data)
         {
             try
@@ -82,7 +110,7 @@ namespace SupFAmof.API.Controllers
         /// Update Account Imformation 1
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountCitizenFrontImgInformation")]
+        [HttpPatch("updateFrontAccountInformationCitizen")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification([FromBody] UpdateCitizenIdentification data)
         {
             try
@@ -107,10 +135,10 @@ namespace SupFAmof.API.Controllers
         }
 
         /// <summary>
-        /// update Account Citizen Front Img Information
+        /// Update Account Imformation 2
         /// </summary>
         /// <returns></returns>
-        [HttpPatch("updateAccountCitizenBackImgInformation")]
+        [HttpPatch("updateBackAccountInformationCitizen")]
         public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification2([FromBody] UpdateCitizenIdentification2 data)
         {
             try

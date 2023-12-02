@@ -833,8 +833,8 @@ namespace SupFAmof.Service.Service
 
                     if (stuIdCheck == false)
                     {
-                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
-                                            AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                            AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
                     }
 
                     //if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
@@ -901,8 +901,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
-                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+                throw;
             }
         }
 
@@ -973,8 +972,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
-                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+                throw; 
             }
         }
 
@@ -1393,14 +1391,13 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-
                 var checkStuId = Ultils.CheckStudentId(request.IdStudent);
                 var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
                 if (checkStuId == false)
                 {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
-                                        AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
                 }
 
                 if (!string.IsNullOrEmpty(request.PlaceOfIssue))
@@ -1426,8 +1423,10 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
-                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+                //throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                //                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+
+                throw;
             }
         }
 

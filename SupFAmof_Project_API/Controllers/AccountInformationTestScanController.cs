@@ -1,100 +1,45 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SupFAmof.Service.Service;
-using Microsoft.AspNetCore.Http;
-using SupFAmof.Service.Exceptions;
-using SupFAmof.Service.DTO.Request;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SupFAmof.Service.DTO.Request.Account;
 using SupFAmof.Service.DTO.Response;
-using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.Enum;
-using SupFAmof.Service.DTO.Request.Admission;
-using SupFAmof.Service.DTO.Response.Admission;
-using SupFAmof.Service.Service.ServiceInterface;
 
 namespace SupFAmof.API.Controllers
 {
     [Route(Helpers.SettingVersionAPI.ApiVersion)]
     [ApiController]
-    public class AccountCertificateController : ControllerBase
+    public class AccountInformationTestScanController : ControllerBase
     {
-        private readonly IAccountCertificateService _accountCertificateService;
-        private readonly ITrainingCertificateService _certificateService;
+        private readonly IAccountService _accountService;
+        private readonly IApplicationService _applicationService;
 
-        public AccountCertificateController(IAccountCertificateService accountCertificateService, ITrainingCertificateService certificateService)
+        public AccountInformationTestScanController(IAccountService accountService, IApplicationService applicationService)
         {
-            _accountCertificateService = accountCertificateService;
-            _certificateService = certificateService;
+            _accountService = accountService;
+            _applicationService = applicationService;
         }
 
         /// <summary>
-        /// Get Account Certificate by Token 
+        /// Update Account Imformation
         /// </summary>
         /// <returns></returns>
-        /// 
-        [HttpGet("getbyToken")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AccountCertificateResponse>>> GetAccountCertificateById
-        ([FromQuery] AccountCertificateResponse filter, [FromQuery] PagingRequest paging)
+        [HttpPut("updateAccountInformation")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateAccountInformation([FromBody] UpdateAccountInformationRequestTest data)
         {
             try
             {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _accountCertificateService.GetAccountCertificateByAccountId(account.Id, filter, paging);
-            }
-            catch (ErrorResponse ex)
-            {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
-            }
-        }
-        [HttpGet("collab-view-registration")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationsResponse>>> GetRegistrationByCollabId
-     ( [FromQuery] PagingRequest paging)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _certificateService.GetRegistrationByCollabId(account.Id, paging);
-            }
-            catch (ErrorResponse ex)
-            {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
-            }
-        }
-        [HttpDelete("cancel-registration-collab")]
-        public async Task<ActionResult<BaseResponseViewModel<bool>>> CancelCertificateRegistration
-       (int certificateRegistrationId)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                await _certificateService.CancelCertificateRegistration(account.Id, certificateRegistrationId);
-                return Ok();
-            }
 
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateAccountInformationTest(account.Id, data);
+            }
             catch (ErrorResponse ex)
             {
                 if (ex.Error.StatusCode == 404)
@@ -102,46 +47,26 @@ namespace SupFAmof.API.Controllers
                     return NotFound(ex.Error);
                 }
                 return BadRequest(ex.Error);
-            }
-        }
-        [HttpPost("register-certificate-interview")]
-        public async Task<ActionResult> TrainingCertificateRegistration([FromBody] TrainingCertificateRegistration request)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                var result = await _certificateService.TrainingCertificateRegistration(account.Id, request);
-                return Ok(result);
-            }
-            catch (ErrorResponse ex)
-            {
-                throw;
             }
         }
 
         /// <summary>
-        /// Get Account Certificate by Token 
+        /// Update Account Imformation Front IMG
         /// </summary>
         /// <returns></returns>
-        /// 
-        [HttpGet("getAllCertificateFromAdmission")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<TrainingCertificateResponse>>> GetCertificates
-        ([FromQuery] TrainingCertificateResponse filter, [FromQuery] PagingRequest paging)
+        [HttpPatch("updateFrontImg")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationFrontImg([FromBody] UpdateCitizenIdentificationFrontImg data)
         {
             try
             {
+
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetTrainingCertificates(filter, paging);
+                return await _accountService.UpdateCitizenIdentificationFrontImg(account.Id, data);
             }
             catch (ErrorResponse ex)
             {
@@ -153,5 +78,105 @@ namespace SupFAmof.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Update Account Imformation Back IMG
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("updateBackImg")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentificationBackImg([FromBody] UpdateCitizenIdentificationBackImg data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateCitizenIdentificationBackImg(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Account Imformation 1
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("updateFrontAccountInformationCitizen")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification([FromBody] UpdateCitizenIdentification data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateCitizenIdentificationFrontImgInformation(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Account Imformation 2
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("updateBackAccountInformationCitizen")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountInformationResponse>>> UpdateCitizenIdentification2([FromBody] UpdateCitizenIdentification2 data)
+        {
+            try
+            {
+
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountService.UpdateCitizenIdentificationBackImgInformation(account.Id, data);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        [HttpDelete("deleteApplication")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> DeleteApplication([FromQuery] int applicationId)
+        {
+            try
+            {
+                return await _applicationService.DeleteApplication(applicationId);
+            }
+            catch(ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

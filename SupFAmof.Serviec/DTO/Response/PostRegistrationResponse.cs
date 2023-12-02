@@ -9,6 +9,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public int? PositionId { get; set; }
@@ -67,6 +69,8 @@ namespace SupFAmof.Service.DTO.Response
         public double Salary { get; set; }
         public int Status { get; set; }
         public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
@@ -167,6 +171,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public int? PositionId { get; set; }
@@ -184,6 +190,8 @@ namespace SupFAmof.Service.DTO.Response
         public string? RegistrationCode { get; set; }
         public int? Status { get; set; }
         public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public int? PositionId { get; set; }

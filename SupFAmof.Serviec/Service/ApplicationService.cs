@@ -311,5 +311,38 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        public async Task<BaseResponseViewModel<bool>> DeleteApplication(int reportId)
+        {
+            try
+            {
+                var report = await _unitOfWork.Repository<Application>().FindAsync(r => r.Id == reportId);
+
+                if (report == null)
+                {
+                    throw new ErrorResponse(404, (int)ComplaintErrorEnum.NOT_FOUND_REPORT,
+                                        ComplaintErrorEnum.NOT_FOUND_REPORT.GetDisplayName());
+                }
+
+                _unitOfWork.Repository<Application>().Delete(report);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<bool>
+                {
+                    Status = new StatusViewModel
+                    {
+                        Message = "Delete Success",
+                        ErrorCode = 0,
+                        Success = true,
+                    },
+                    Data = true,
+
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

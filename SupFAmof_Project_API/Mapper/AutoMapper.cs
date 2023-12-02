@@ -51,6 +51,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<CreateAccountRequest, Account>();
             CreateMap<CreateAccountInformationRequest, AccountInformation>().ReverseMap();
             CreateMap<UpdateAccountInformationRequest, AccountInformation>();
+            CreateMap<UpdateAccountInformationRequestTest, AccountInformation>();
             CreateMap<UpdateAccountRequest, Account>();
             CreateMap<UpdateAccountAvatar, Account>();
 
@@ -63,6 +64,12 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
 
             CreateMap<Account, AttendanceAccountResponse>();
+
+
+            CreateMap<UpdateCitizenIdentification, AccountInformation>().ReverseMap();
+            CreateMap<UpdateCitizenIdentification2, AccountInformation>().ReverseMap();
+            CreateMap<UpdateCitizenIdentificationFrontImg, AccountInformation>().ReverseMap();
+            CreateMap<UpdateCitizenIdentificationBackImg, AccountInformation>().ReverseMap();
 
             #region Admission Manage Admission Account 
 

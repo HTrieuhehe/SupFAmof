@@ -94,7 +94,7 @@ namespace SupFAmof.Service.Service
 
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
-                    
+
                     //Add expo token 
                     if (data.ExpoPushToken != null && data.ExpoPushToken.Trim().Length > 0)
                         _accountExpoTokenService.AddExpoToken(data.ExpoPushToken, account.Id);
@@ -218,84 +218,6 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, CreateAccountInformationRequest request)
-        {
-            try
-            {
-                var account = _unitOfWork.Repository<Account>().GetAll()
-                                        .FirstOrDefault(x => x.Id == accountId);
-
-                if (account == null)
-                {
-                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
-                                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
-                }
-
-                //check account Information
-
-                var accountInfoCheck = _unitOfWork.Repository<AccountInformation>().GetAll().FirstOrDefault(x => x.AccountId == accountId);
-
-                if (accountInfoCheck != null)
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED,
-                                                          AccountErrorEnums.ACCOUNT_INFOMRATION_EXISTED.GetDisplayName());
-                }
-
-                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
-                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
-
-                if (checkPersonalId == false)
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_INVALID_PERSONAL_ID,
-                                        AccountErrorEnums.ACCOUNT_INVALID_PERSONAL_ID.GetDisplayName());
-                }
-
-                if (checkStuId == false)
-                {
-                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
-                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
-                }
-
-                var accountInfo = _mapper.Map<AccountInformation>(request);
-
-                accountInfo.AccountId = account.Id;
-                accountInfo.PlaceOfIssue = accountInfo.PlaceOfIssue.ToUpper();
-
-                await _unitOfWork.Repository<AccountInformation>().InsertAsync(accountInfo);
-                await _unitOfWork.CommitAsync();
-
-                //update AccountInformationId to Account Table
-                var updateAccount = _unitOfWork.Repository<AccountInformation>().GetAll().FirstOrDefault(x => x.AccountId == accountId);
-
-                account.AccountInformationId = updateAccount.Id;
-
-                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(updateAccount);
-                await _unitOfWork.CommitAsync();
-
-                //response new Infomation
-                var finalInfo = _unitOfWork.Repository<Account>().GetAll()
-                                       .FirstOrDefault(x => x.Id == accountId);
-
-                var result = _mapper.Map<AccountResponse>(finalInfo);
-
-                return new BaseResponseViewModel<AccountResponse>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<AccountResponse>(result)
-                };
-
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
         public async Task<BaseResponseViewModel<AccountResponse>> DisableAccount(int accountId)
         {
             Account account = _unitOfWork.Repository<Account>()
@@ -337,7 +259,7 @@ namespace SupFAmof.Service.Service
                 if (expoToken != null)
                 {
                     ExpoTokenLogoutRequest token = new()
-                    { 
+                    {
                         ExpoPushToken = expoToken.Token
                     };
 
@@ -704,6 +626,9 @@ namespace SupFAmof.Service.Service
                     account = _unitOfWork.Repository<Account>().GetAll()
                                 .FirstOrDefault(x => x.Email.Contains(userRecord.Email));
 
+                    //create account information
+                    await CreateAccountInformation(account.Id, account);
+
                     //generate token
                     var newToken = AccessTokenManager.GenerateJwtToken(string.IsNullOrEmpty(account.Name) ? "" : account.Name, account.RoleId, account.Id, _configuration);
 
@@ -908,14 +833,14 @@ namespace SupFAmof.Service.Service
 
                     if (stuIdCheck == false)
                     {
-                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_PHONE_INVALID,
-                                            AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
+                        throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                            AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
                     }
 
-                    if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
-                    {
-                        request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
-                    }
+                    //if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
+                    //{
+                    //    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
+                    //}
 
                     account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
                     account.UpdateAt = Ultils.GetCurrentDatetime();
@@ -951,10 +876,10 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_PHONE_INVALID.GetDisplayName());
                 }
 
-                if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
-                {
-                    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
-                }
+                //if (!string.IsNullOrEmpty(request.AccountInformation.PlaceOfIssue))
+                //{
+                //    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
+                //}
 
                 account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
 
@@ -976,8 +901,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
-                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+                throw;
             }
         }
 
@@ -1048,8 +972,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
-                                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+                throw; 
             }
         }
 
@@ -1077,7 +1000,7 @@ namespace SupFAmof.Service.Service
 
                 account = _mapper.Map<UpdateAdmissionAccountRequest, Account>(request, account);
 
-                account.UpdateAt = DateTime.Now;
+                account.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();
@@ -1199,7 +1122,7 @@ namespace SupFAmof.Service.Service
                     Data = totalCollaborator,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -1249,18 +1172,16 @@ namespace SupFAmof.Service.Service
                 }
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-
-
-        public async  Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<ManageCollabAccountResponse>> GetAllCollabAccount(int accountId, PagingRequest paging)
         {
-                try
-                {
+            try
+            {
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
                 if (!account.PostPermission)
                 {
@@ -1271,21 +1192,297 @@ namespace SupFAmof.Service.Service
                                               .ProjectTo<ManageCollabAccountResponse>(_mapper.ConfigurationProvider)
                                               .PagingQueryable(paging.Page, paging.PageSize,
                                                                Constants.LimitPaging, Constants.DefaultPaging);
-                    return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
+                return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
+                {
+                    Metadata = new PagingsMetadata()
                     {
-                        Metadata = new PagingsMetadata()
-                        {
-                            Page = paging.Page,
-                            Size = paging.PageSize,
-                            Total = list.Item1
-                        },
-                        Data = list.Item2.ToList()
-                    };
-                }
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = list.Item1
+                    },
+                    Data = list.Item2.ToList()
+                };
+            }
             catch (Exception ex)
             {
                 throw;
             }
         }
+
+        #region Khu vực test quét CCCD
+
+        public async Task<BaseResponseViewModel<AccountResponse>> CreateAccountInformation(int accountId, Account account)
+        {
+            try
+            {
+
+                AccountInformation accountInformation = new AccountInformation()
+                {
+                    AccountId = accountId
+                };
+
+                await _unitOfWork.Repository<AccountInformation>().InsertAsync(accountInformation);
+                await _unitOfWork.CommitAsync();
+
+                //get account information
+                accountInformation = await _unitOfWork.Repository<AccountInformation>().GetAll()
+                                         .FirstOrDefaultAsync(x => x.AccountId == accountId);
+
+                account.AccountInformationId = accountInformation.Id;
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(accountInformation)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImg(int accountId, UpdateCitizenIdentificationFrontImg request)
+        {
+            try
+            {
+                var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (accountInformation == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationFrontImg, AccountInformation>(request, accountInformation);
+
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImg(int accountId, UpdateCitizenIdentificationBackImg request)
+        {
+            try
+            {
+                var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (accountInformation == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var accountInformationMapping = _mapper.Map<UpdateCitizenIdentificationBackImg, AccountInformation>(request, accountInformation);
+
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImgInformation(int accountId, UpdateCitizenIdentification request)
+        {
+            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+            if (accountInformation == null)
+            {
+                throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                    AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformation);
+
+            await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+            await _unitOfWork.CommitAsync();
+
+            return new BaseResponseViewModel<AccountInformationResponse>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Message = "Success",
+                    Success = true,
+                    ErrorCode = 0
+                },
+                Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+            };
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImgInformation(int accountId, UpdateCitizenIdentification2 request)
+        {
+            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+            if (accountInformation == null)
+            {
+                throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                    AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformation);
+
+            if (accountInformationMapping.PlaceOfIssue != "" || accountInformationMapping.PlaceOfIssue != null)
+            {
+                accountInformationMapping.PlaceOfIssue = accountInformationMapping.PlaceOfIssue.ToUpper();
+            }
+
+            await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
+            await _unitOfWork.CommitAsync();
+
+            return new BaseResponseViewModel<AccountInformationResponse>()
+            {
+                Status = new StatusViewModel()
+                {
+                    Message = "Success",
+                    Success = true,
+                    ErrorCode = 0
+                },
+                Data = _mapper.Map<AccountInformationResponse>(accountInformationMapping)
+            };
+        }
+
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateAccountInforamtion(int accountId, UpdateAccountInformationRequest request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
+
+                if (checkStuId == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
+                }
+
+                if (!string.IsNullOrEmpty(request.PlaceOfIssue))
+                {
+                    request.PlaceOfIssue = request.PlaceOfIssue.ToUpper();
+                }
+
+                account = _mapper.Map<UpdateAccountInformationRequest, AccountInformation>(request, account);
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(account)
+                };
+            }
+            catch (Exception ex)
+            {
+                //throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                //                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+
+                throw;
+            }
+        }
+
+
+        //test 
+        public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateAccountInformationTest(int accountId, UpdateAccountInformationRequestTest request)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //var checkStuId = Ultils.CheckStudentId(request.IdStudent);
+                //var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
+
+                //if (checkStuId == false)
+                //{
+                //    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
+                //                        AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
+                //}
+
+                //if (!string.IsNullOrEmpty(request.PlaceOfIssue))
+                //{
+                //    request.PlaceOfIssue = request.PlaceOfIssue.ToUpper();
+                //}
+
+                account = _mapper.Map<UpdateAccountInformationRequestTest, AccountInformation>(request, account);
+
+                await _unitOfWork.Repository<AccountInformation>().UpdateDetached(account);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountInformationResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountInformationResponse>(account)
+                };
+            }
+            catch (Exception ex)
+            {
+                //throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
+                //                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
+
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

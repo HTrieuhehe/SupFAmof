@@ -16,5 +16,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? ProblemNote { get; set; }
         public string? ReplyNote { get; set; }
         public int? Status { get; set; }
+
+        public virtual AccountResponse? Account { get; set; }
     }
 }

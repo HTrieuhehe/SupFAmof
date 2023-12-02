@@ -1334,11 +1334,6 @@ namespace SupFAmof.Service.Service
 
             var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformation);
 
-            if (accountInformationMapping.PlaceOfIssue != "" || accountInformationMapping.PlaceOfIssue != null)
-            {
-                accountInformationMapping.PlaceOfIssue = accountInformationMapping.PlaceOfIssue.ToUpper();
-            }
-
             await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
             await _unitOfWork.CommitAsync();
 
@@ -1366,6 +1361,10 @@ namespace SupFAmof.Service.Service
 
             var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformation);
 
+            if (accountInformationMapping.PlaceOfIssue != "" || accountInformationMapping.PlaceOfIssue != null)
+            {
+                accountInformationMapping.PlaceOfIssue = accountInformationMapping.PlaceOfIssue.ToUpper();
+            }
 
             await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
             await _unitOfWork.CommitAsync();

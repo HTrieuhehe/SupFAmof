@@ -245,13 +245,13 @@ namespace SupFAmof.Service.Helpers
             DUPLICATE_PENDING = 4025,
             //400
             [Display(Name = "Account banned")]
-            ACCOUNT_BANNED = 4025,
+            ACCOUNT_BANNED = 4026,
             //400
             [Display(Name = "Cancel Failed")]
-            CANCEL_FAILED = 4026,
+            CANCEL_FAILED = 4027,
             //400
             [Display(Name = "MUST WAIT FOR THE PREVIOUS BE REVIEWED ")]
-            OVERLAP_APPLICATION_SEND = 4027,
+            OVERLAP_APPLICATION_SEND = 4028,
         }
 
         public enum PostCategoryErrorEnum

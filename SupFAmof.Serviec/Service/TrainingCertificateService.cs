@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using System.Drawing.Text;
 using SupFAmof.Data.Entity;
-using Org.BouncyCastle.Tls;
-using Org.BouncyCastle.Ocsp;
 using LAK.Sdk.Core.Utilities;
-using NetTopologySuite.Noding;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
@@ -12,7 +8,6 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
-using SixLabors.ImageSharp.ColorSpaces;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
@@ -417,7 +412,7 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponseViewModel<dynamic>> TrainingCertificateRegistration(int accountId,TrainingCertificateRegistration request)
+        public async Task<BaseResponseViewModel<CollabRegistrationsResponse>> TrainingCertificateRegistration(int accountId,TrainingCertificateRegistration request)
         {
             try
             {
@@ -435,27 +430,34 @@ namespace SupFAmof.Service.Service
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
+                if (request == null)
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.REGISTER_FAILED, TrainingCertificateErrorEnum.REGISTER_FAILED.GetDisplayName());
+                }
                 var registration = _mapper.Map<TrainingRegistration>(request);
                 registration.AccountId = accountId;
-                if(registration==null)
-                {
-                    throw new ErrorResponse(400,(int)TrainingCertificateErrorEnum.REGISTER_FAILED,TrainingCertificateErrorEnum.REGISTER_FAILED.GetDisplayName());
-                }
                 if(!await CheckDuplicateTrainingCertificateRegistration(registration))
                     {
-                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION, TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION.GetDisplayName());
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION,
+                        TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION.GetDisplayName());
 
                 }
                 await _unitOfWork.Repository<TrainingRegistration>().InsertAsync(registration);
                 await _unitOfWork.CommitAsync();
-                return new BaseResponseViewModel<dynamic>()
+
+                var result = await _unitOfWork.Repository<TrainingRegistration>()
+                    .GetAll()
+                    .Include(x=>x.TrainingCertificate)
+                    .FirstOrDefaultAsync(x=>x.Id == registration.Id);
+                return new BaseResponseViewModel<CollabRegistrationsResponse>()
                 {
                     Status = new StatusViewModel()
                     {
                         Message = "Create success",
                         Success = true,
                         ErrorCode = 0
-                    }
+                    },
+                    Data = _mapper.Map<CollabRegistrationsResponse>(result)
                 };
             }
             catch(Exception ex)

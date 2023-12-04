@@ -21,11 +21,14 @@ namespace SupFAmof.Service.Service
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
-        public TrainingCertificateService(IMapper mapper, IUnitOfWork unitOfWork)
+
+        public TrainingCertificateService(IMapper mapper, IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging)
@@ -506,7 +509,16 @@ namespace SupFAmof.Service.Service
                     registration.UpdateAt = GetCurrentDatetime();
                  
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
+
                 }
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = filteredList.Select(x=>x.AccountId).ToList(),
+                    Title = NotificationTypeEnum.Interview_Day.GetDisplayName(),
+                    Body = "Your interview is set up ! Check it now!",
+                    NotificationsType = (int)NotificationTypeEnum.Interview_Day
+                };
+                await _notificationService.PushNotification(notificationRequest);
                 await _unitOfWork.CommitAsync();
                 return new BaseResponseViewModel<dynamic>()
                 {

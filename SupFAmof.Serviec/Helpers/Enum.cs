@@ -176,6 +176,9 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Application Request")]
             Application = 6,
+
+            [Display(Name = "Your interview day is here ")]
+            Interview_Day = 7,
         }
         public enum TrainingRegistrationStatusEnum
         {

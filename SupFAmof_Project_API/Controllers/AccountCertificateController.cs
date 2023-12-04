@@ -105,17 +105,17 @@ namespace SupFAmof.API.Controllers
             }
         }
         [HttpPost("register-certificate-interview")]
-        public async Task<ActionResult<BaseResponseViewModel<CollabRegistrationsResponse>>> TrainingCertificateRegistration(int accountId ,[FromBody] TrainingCertificateRegistration request)
+        public async Task<ActionResult<BaseResponseViewModel<CollabRegistrationsResponse>>> TrainingCertificateRegistration([FromBody] TrainingCertificateRegistration request)
         {
             try
             {
-                //var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                //if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                //{
-                //    return Unauthorized();
-                //}
-                var result = await _certificateService.TrainingCertificateRegistration(accountId, request);
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.TrainingCertificateRegistration(account.Id, request);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

@@ -177,7 +177,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Application Request")]
             Application = 6,
         }
-        public enum TrainingCertificateEnum
+        public enum TrainingRegistrationStatusEnum
         {
             [Display(Name = "Pending")]
             Pending = 1,
@@ -190,12 +190,6 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Cancel")]
             Cancel = 4,
-            [Display(Name = "Check-in")]
-            CheckIn = 5,
-            [Display(Name = "Check-out")]
-            CheckOut = 6,
-            [Display(Name = "Quit")]
-            Quit = 7
         }
     }
 }

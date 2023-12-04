@@ -551,7 +551,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingEventDay>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingCertificateEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
                            .ProjectTo<ViewCollabInterviewClassResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -583,7 +583,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingCertificate>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingCertificateEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
                            .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -698,13 +698,13 @@ namespace SupFAmof.Service.Service
                                           TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
                 }
 
-                switch ((TrainingCertificateEnum)certificateRegistration.Status)
+                switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
                 {
-                    case TrainingCertificateEnum.Cancel:
+                    case TrainingRegistrationStatusEnum.Cancel:
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                            PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                     default:
-                        certificateRegistration.Status = (int)TrainingCertificateEnum.Cancel;
+                        certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
                         await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -750,13 +750,13 @@ namespace SupFAmof.Service.Service
                                       TrainingCertificateErrorEnum.CERTIFICATE_REGISTRATION_NOT_FOUND.GetDisplayName());
             }
 
-            switch ((TrainingCertificateEnum)certificateRegistration.Status)
+            switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
             {
-                case TrainingCertificateEnum.Cancel:
+                case TrainingRegistrationStatusEnum.Cancel:
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                 default:
-                    certificateRegistration.Status = (int)TrainingCertificateEnum.Cancel;
+                    certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                     await _unitOfWork.CommitAsync();
                     break;

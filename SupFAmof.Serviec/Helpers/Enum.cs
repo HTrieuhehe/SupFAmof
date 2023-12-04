@@ -185,14 +185,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Pending")]
             Pending = 1,
 
+            [Display(Name = "Assigned")]
+            Assigned = 2,
+
             [Display(Name = "Confirm")]
-            Confirm = 2,
-
-            [Display(Name = "Reject")]
-            Reject = 3,
-
+            Confirm = 3,
             [Display(Name = "Cancel")]
-            Cancel = 4,
+            Cancel = 3,
+
         }
         public enum TrainingEventDayStatusEnum
         {

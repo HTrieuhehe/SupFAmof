@@ -500,7 +500,7 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                                 }
-                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId,updateEntity.Id))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                                         PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
@@ -548,7 +548,7 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                                         PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
-                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId))
+                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId,postTgupdate.PostRegistrationId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                                         PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
@@ -1042,11 +1042,11 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
-        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId)
+        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId,int postRegistrationId)
         {
             var postsAttended = _unitOfWork.Repository<PostRegistration>()
                                     .GetAll()
-                                    .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                    .Where(x => x.AccountId == accountId &&x.Id != postRegistrationId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
                                     .ToList();
 
             if (postsAttended != null && postsAttended.Any())

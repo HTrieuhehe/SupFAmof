@@ -283,7 +283,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Training Certificate not found!")]
             NOT_FOUND_ID = 4041,
             //400
-            [Display(Name = "Overlap with post")]
+            [Display(Name = "Same time  with post")]
             OVERLAP_EVENTS = 4003,
             //400
             [Display(Name = "Cant register")]

@@ -41,7 +41,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentDatetime();
         [JsonIgnore]
-        public int? Status { get; set; } = (int)TrainingRegistrationStatusEnum.Pending;
+        public int? Status { get; set; } = (int)TrainingEventDayStatusEnum.Create;
 
     }
     public class UpdateDaysCertifcate

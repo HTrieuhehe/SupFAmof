@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ServiceStack;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -14,6 +15,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
 
 namespace SupFAmof.Service.Service
 {
@@ -538,11 +540,8 @@ namespace SupFAmof.Service.Service
         private async Task<bool> AssignDuplicateTime(TrainingRegistration request,int? eventDayNeedUpdate,int accountId)
         {
             var day = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == eventDayNeedUpdate);
-            var listOfRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.Id != request.Id);
-            if (!listOfRegistration.Any(x=>x.EventDayId.HasValue)) {
-                return true;
-            }
-            foreach(var registration in listOfRegistration)
+            var listOfRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.Id != request.Id&&x.EventDayId.HasValue);
+            foreach (var registration in listOfRegistration)
             {
                 if(registration.EventDay.Date == day.Date&& IsTimeSpanOverlapPostion(registration.EventDay.TimeFrom, registration.EventDay.TimeTo,day.TimeFrom,day.TimeTo))
                 {

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using static SupFAmof.Service.Helpers.Enum;
 using System.ComponentModel.DataAnnotations;
 using static SupFAmof.Service.Utilities.Ultils;
 
@@ -40,7 +41,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentDatetime();
         [JsonIgnore]
-        public int? Status { get; set; } = 1;
+        public int? Status { get; set; } = (int)TrainingRegistrationStatusEnum.Pending;
 
     }
     public class UpdateDaysCertifcate
@@ -57,7 +58,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         public int TrainingCertificateId { get; set; }
         [JsonIgnore]
-        public int Status { get; set; } = 1;
+        public int Status { get; set; } = (int)TrainingRegistrationStatusEnum.Pending;
         [JsonIgnore]
         public DateTime CreateAt { get; set; } = GetCurrentDatetime();
     }
@@ -69,6 +70,6 @@ namespace SupFAmof.Service.DTO.Request.Admission
     public class UpdateStatusRegistrationRequest
     {
         public int TrainingRegistrationId { get; set; }
-        public int Status { get; set; } = 1;
+        public int Status { get; set; } = (int)TrainingRegistrationStatusEnum.Pending;
     }
 }

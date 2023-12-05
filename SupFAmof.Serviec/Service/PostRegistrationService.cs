@@ -848,15 +848,14 @@ namespace SupFAmof.Service.Service
                     switch (approve)
                     {
                         case true:
-                            var checkPostPosition =await _unitOfWork.Repository<PostPosition>()
+                            var checkPostPosition = await _unitOfWork.Repository<PostPosition>()
                               .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId);
 
                             if (checkPostPosition != null)
                             {
 
-                                var availableSlot = checkPostPosition.Amount - _unitOfWork.Repository<PostRegistration>()
-                                    .GetAll()
-                                    .Count(x => x.PositionId == postRegis.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                                var availableSlot =  checkPostPosition.Amount - (await _unitOfWork.Repository<PostRegistration>()
+                                    .GetAll().CountAsync(x => x.PositionId == postRegis.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm));
 
                                 if (availableSlot > 0 && listPr.Count <= availableSlot)
                                 {

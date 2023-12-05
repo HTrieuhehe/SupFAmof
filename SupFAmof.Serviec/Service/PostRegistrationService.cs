@@ -848,10 +848,8 @@ namespace SupFAmof.Service.Service
                     switch (approve)
                     {
                         case true:
-                            var checkPostPosition = _unitOfWork.Repository<PostPosition>()
-                              .GetAll()
-                              .Where(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId)
-                              .FirstOrDefault();
+                            var checkPostPosition =await _unitOfWork.Repository<PostPosition>()
+                              .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId);
 
                             if (checkPostPosition != null)
                             {

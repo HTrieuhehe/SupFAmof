@@ -22,6 +22,7 @@ namespace SupFAmof.Service.Service
         private readonly IMapper _mapper;
         private readonly ISendMailService sendMailService;
         private readonly INotificationService _notificationService;
+        private static readonly Object obj = new Object();
 
         public PostRegistrationService(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService sendMailService, INotificationService notificationService)
         {
@@ -803,134 +804,136 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<dynamic>> ApprovePostRegistrationRequest(int accountId, List<int> postRegistrationIds, bool approve)
         {
-            try
+            lock (obj)
             {
-                var updatedEntities = new List<PostRegistration>();
-                var notUpdatedEntities = new List<PostRegistration>();
-                var listPr = await _unitOfWork.Repository<PostRegistration>()
-                                            .GetAll()
-                                            .Where(x => postRegistrationIds.Contains(x.Id) && x.Position.Post.AccountId == accountId)
-                                            .ToListAsync();
-
-                if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
+                try
                 {
-                    throw new ErrorResponse(400,
-                        (int)PostRegistrationErrorEnum.DUPLICATE_IDS,
-                        PostRegistrationErrorEnum.DUPLICATE_IDS.GetDisplayName());
-                }
+                    var updatedEntities = new List<PostRegistration>();
+                    var notUpdatedEntities = new List<PostRegistration>();
+                    var listPr =  _unitOfWork.Repository<PostRegistration>()
+                                                .GetAll()
+                                                .Where(x => postRegistrationIds.Contains(x.Id) && x.Position.Post.AccountId == accountId);
 
-                if (listPr.Count == 0)
-                {
-                    throw new ErrorResponse(404,
-                        (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                }
-
-                var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
-                var listToUpdate = new List<PostRegistration>();
-
-                foreach (var postRegis in listPr)
-                {
-                    switch (postRegis.Status)
+                    if (postRegistrationIds.Distinct().Count() != postRegistrationIds.Count)
                     {
-                        case (int)PostRegistrationStatusEnum.Confirm:
-                            notUpdatedEntities.Add(postRegis);
-                            continue;
-                        // Add more cases here if needed
-                        case (int)PostRegistrationStatusEnum.Reject:
-                            notUpdatedEntities.Add(postRegis);
-                            continue;
-
-                        default:
-                            break;
+                        throw new ErrorResponse(400,
+                            (int)PostRegistrationErrorEnum.DUPLICATE_IDS,
+                            PostRegistrationErrorEnum.DUPLICATE_IDS.GetDisplayName());
                     }
 
-                    switch (approve)
+                    if (listPr.Count() == 0)
                     {
-                        case true:
-                            var checkPostPosition = await _unitOfWork.Repository<PostPosition>()
-                              .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId);
+                        throw new ErrorResponse(404,
+                            (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                            PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                    }
 
-                            if (checkPostPosition != null)
-                            {
+                    var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
+                    var listToUpdate = new List<PostRegistration>();
 
-                                var availableSlot =  checkPostPosition.Amount - (await _unitOfWork.Repository<PostRegistration>()
-                                    .GetAll().CountAsync(x => x.PositionId == postRegis.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm));
+                    foreach (var postRegis in listPr)
+                    {
+                        switch (postRegis.Status)
+                        {
+                            case (int)PostRegistrationStatusEnum.Confirm:
+                                notUpdatedEntities.Add(postRegis);
+                                continue;
+                            // Add more cases here if needed
+                            case (int)PostRegistrationStatusEnum.Reject:
+                                notUpdatedEntities.Add(postRegis);
+                                continue;
 
-                                if (availableSlot > 0 && listPr.Count <= availableSlot)
+                            default:
+                                break;
+                        }
+
+                        switch (approve)
+                        {
+                            case true:
+                                var checkPostPosition = _unitOfWork.Repository<PostPosition>()
+                                  .GetAll().FirstOrDefault(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId);
+
+                                if (checkPostPosition != null)
                                 {
-                                    if (checkMatching.Contains(postRegis))
+
+                                    var availableSlot = checkPostPosition.Amount - ( _unitOfWork.Repository<PostRegistration>()
+                                        .GetAll().Count(x => x.PositionId == postRegis.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm));
+
+                                    if (availableSlot > 0 && listPr.Count() <= availableSlot)
                                     {
-                                        postRegis.Status = (int)PostRegistrationStatusEnum.Confirm;
-                                        postRegis.ConfirmTime = Ultils.GetCurrentDatetime();
-                                        updatedEntities.Add(postRegis);
-                                        listToUpdate.Add(postRegis);
+                                        if (checkMatching.Contains(postRegis))
+                                        {
+                                            postRegis.Status = (int)PostRegistrationStatusEnum.Confirm;
+                                            postRegis.ConfirmTime = Ultils.GetCurrentDatetime();
+                                            updatedEntities.Add(postRegis);
+                                            listToUpdate.Add(postRegis);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
+                                            PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
                                     }
                                 }
                                 else
                                 {
-                                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
-                                        PostRegistrationErrorEnum.FULL_SLOT.GetDisplayName());
+                                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                        PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
                                 }
-                            }
-                            else
-                            {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                            }
-                            break;
+                                break;
 
-                        case false:
-                            postRegis.Status = (int)PostRegistrationStatusEnum.Reject;
-                            listToUpdate.Add(postRegis);
-                            break;
+                            case false:
+                                postRegis.Status = (int)PostRegistrationStatusEnum.Reject;
+                                listToUpdate.Add(postRegis);
+                                break;
 
-                        default:
-                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
+                            default:
+                                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
 
+                        }
                     }
-                }
 
-                // Update the range of entities in your repository
-                _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
+                    // Update the range of entities in your repository
+                    _unitOfWork.Repository<PostRegistration>().UpdateRange(listToUpdate.AsQueryable());
 
-                var accountIds = listPr.Select(x => x.AccountId).ToList();
+                    var accountIds = listPr.Select(x => x.AccountId).ToList();
 
-                //create notification request 
-                PushNotificationRequest notificationRequest = new PushNotificationRequest()
-                {
-                    Ids = accountIds,
-                    Title = NotificationTypeEnum.PostRegistration_Confirm.GetDisplayName(),
-                    Body = "Your Post Registration is confirmed! Check it now!",
-                    NotificationsType = (int)NotificationTypeEnum.PostRegistration_Confirm
-                };
+                    //create notification request 
+                    PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                    {
+                        Ids = accountIds,
+                        Title = NotificationTypeEnum.PostRegistration_Confirm.GetDisplayName(),
+                        Body = "Your Post Registration is confirmed! Check it now!",
+                        NotificationsType = (int)NotificationTypeEnum.PostRegistration_Confirm
+                    };
 
-                await _notificationService.PushNotification(notificationRequest);
+                    _notificationService.PushNotification(notificationRequest);
 
-                await _unitOfWork.CommitAsync();
+                    _unitOfWork.CommitAsync();
 
-                await sendMailService.SendEmailBooking(MailEntity(listToUpdate));
-                var resultMap = new Dictionary<int, List<PostRegistration>>
+                    sendMailService.SendEmailBooking(MailEntity(listToUpdate));
+                    var resultMap = new Dictionary<int, List<PostRegistration>>
         {
             { 1, updatedEntities },
             { 2, notUpdatedEntities }
         };
-                var flattenedList = resultMap.Values.SelectMany(x => x).ToList();
+                    var flattenedList = resultMap.Values.SelectMany(x => x).ToList();
 
-                return new BaseResponseViewModel<dynamic>
-                {
-                    Status = new StatusViewModel()
+                    return new BaseResponseViewModel<dynamic>
                     {
-                        Message = "Confirm success",
-                        Success = true,
-                        ErrorCode = 0
-                    },
-                    Data = _mapper.Map<List<PostRegistrationResponse>>(flattenedList)
-                };
-            }
-            catch (Exception ex)
-            {
-                throw;
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Confirm success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<List<PostRegistrationResponse>>(flattenedList)
+                    };
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
         }
         private List<MailBookingRequest> MailEntity(List<PostRegistration> request) 

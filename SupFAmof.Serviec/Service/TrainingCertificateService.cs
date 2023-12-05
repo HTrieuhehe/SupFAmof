@@ -9,6 +9,7 @@ using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
+using System.Runtime.InteropServices;
 using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
@@ -657,6 +658,7 @@ namespace SupFAmof.Service.Service
                         registration.UpdateAt = GetCurrentDatetime();
                       
                     }
+                    await AddCertificateToAccount(registration);
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
 
                 }
@@ -675,6 +677,35 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+        private async Task AddCertificateToAccount(TrainingRegistration request)
+        {
+            var check = await _unitOfWork.Repository<AccountCertificate>().FindAsync(x => x.AccountId == request.AccountId && x.Status == (int)AccountCertificateStatusEnum.Complete && x.TrainingCertificateId == request.TrainingCertificateId);
+            switch (request.Status)
+            {
+                case (int)TrainingRegistrationStatusEnum.Passed:
+              
+                    if(check == null)
+                    {
+                        AccountCertificate accountCertificate = new AccountCertificate
+                        {
+                            AccountId = request.AccountId,
+                            TrainingCertificateId = request.TrainingCertificateId,
+                            Status = (int)AccountCertificateStatusEnum.Complete,
+                            CreateAt = GetCurrentDatetime()
+                        };
+                        await _unitOfWork.Repository<AccountCertificate>().InsertAsync(accountCertificate);    
+                    }
+                    break;
+                case (int)TrainingRegistrationStatusEnum.Not_Passed:
+                    if (check != null)
+                    {
+                        check.Status = (int)AccountCertificateStatusEnum.Reject;
+                        await _unitOfWork.Repository<AccountCertificate>().UpdateDetached(check);
+                    }
+                    break;
+            }
+            await _unitOfWork.CommitAsync();
         }
         private async Task<bool> UpdateMinAndMax(int eventDayId)
         {
@@ -852,6 +883,7 @@ namespace SupFAmof.Service.Service
             }
             return list;
         }
+       
     }
  
 }

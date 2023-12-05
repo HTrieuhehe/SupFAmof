@@ -275,6 +275,11 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_NOT_AVAILABLE,
                            PostRegistrationErrorEnum.POST_NOT_AVAILABLE.GetDisplayName());
                     }
+                    if (!await CheckOverLapTimeWithTrainingCertificateRegistration(postRegistration))
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY,
+                           PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY.GetDisplayName());
+                    }
                     if (!await CheckPostPositionBus(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -290,18 +295,12 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                             PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                     }
-                    //if (!await CheckDatePost(postRegistration))
-                    //{
-                    //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_OUTDATED,
-                    //        PostRegistrationErrorEnum.POST_OUTDATED.GetDisplayName());
-                    //}
 
                     if (!await CheckTimePosition(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                             PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
                     }
-
                     if (postPosition.Amount - countAllRegistrationForm <= 0)
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
@@ -328,12 +327,31 @@ namespace SupFAmof.Service.Service
                     },
                     Data = _mapper.Map<CollabRegistrationResponse>(postRegistration)
                 };
-
             }
             catch (Exception ex)
             {
                 throw;
             }
+        }
+        private async Task<bool> CheckOverLapTimeWithTrainingCertificateRegistration(PostRegistration request)
+        {
+            var positionTime = await _unitOfWork.Repository<PostPosition>().FindAsync(x=>x.Id == request.PositionId);
+            var AllCertificateRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == request.AccountId && x.EventDayId.HasValue && x.Status == (int)TrainingRegistrationStatusEnum.Assigned);
+            if(AllCertificateRegistration.Any())
+            {
+                foreach(var certificateRegistration in AllCertificateRegistration)
+                {
+                    if (certificateRegistration.EventDay.Date == positionTime.Date.Date)
+                    {
+                        if (IsTimeSpanOverlap(certificateRegistration.EventDay.TimeFrom, certificateRegistration.EventDay.TimeTo,positionTime.TimeFrom,positionTime.TimeTo))
+                        {
+                            return false;
+                        }
+
+                    }
+                }
+            }
+            return true;
         }
 
 
@@ -500,7 +518,7 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
                                                    PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS.GetDisplayName());
                                 }
-                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId))
+                                if (!await CheckTimePositionUpdate(updateEntity.PositionId,accountId,updateEntity.Id))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                                         PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
@@ -548,7 +566,7 @@ namespace SupFAmof.Service.Service
                                     throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                                         PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                                 }
-                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId))
+                                if (!await CheckTimePositionUpdate((int)postTgupdate.PositionId,accountId,postTgupdate.PostRegistrationId))
                                 {
                                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                                         PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
@@ -1042,11 +1060,11 @@ namespace SupFAmof.Service.Service
 
             return true;
         }
-        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId)
+        private async Task<bool> CheckTimePositionUpdate(int positionId,int accountId,int postRegistrationId)
         {
             var postsAttended = _unitOfWork.Repository<PostRegistration>()
                                     .GetAll()
-                                    .Where(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                    .Where(x => x.AccountId == accountId &&x.Id != postRegistrationId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
                                     .ToList();
 
             if (postsAttended != null && postsAttended.Any())

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ServiceStack;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -14,6 +15,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
 
 namespace SupFAmof.Service.Service
 {
@@ -21,11 +23,14 @@ namespace SupFAmof.Service.Service
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
-        public TrainingCertificateService(IMapper mapper, IUnitOfWork unitOfWork)
+
+        public TrainingCertificateService(IMapper mapper, IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging)
@@ -436,6 +441,11 @@ namespace SupFAmof.Service.Service
                 }
                 var registration = _mapper.Map<TrainingRegistration>(request);
                 registration.AccountId = accountId;
+                if(!await CheckIfAccountHasCertificate(request,accountId))
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE,
+                        TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE.GetDisplayName());
+                }
                 if(!await CheckDuplicateTrainingCertificateRegistration(registration))
                     {
                     throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION,
@@ -467,8 +477,19 @@ namespace SupFAmof.Service.Service
         }
         private async Task<bool> CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
         {
-            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != 3);
+            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed && x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
             if(duplicates.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+        private async Task<bool> CheckIfAccountHasCertificate(TrainingCertificateRegistration request,int accountId)
+        {
+            var accountCertificates = await _unitOfWork.Repository<AccountCertificate>().FindAsync(x => x.TrainingCertificateId == request.TrainingCertificateId
+                                                                                                    && x.AccountId == accountId && x.Status == (int)                                                                            AccountCertificateStatusEnum.Complete
+                                                                                                    );
+            if(accountCertificates!=null)
             {
                 return false;
             }
@@ -502,11 +523,20 @@ namespace SupFAmof.Service.Service
                                                                     TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
                     }
                     registration.EventDayId = requestStatusMap[registration.Id].Value;
-                 
+                    registration.Status = (int)TrainingRegistrationStatusEnum.Assigned;
                     registration.UpdateAt = GetCurrentDatetime();
                  
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
+
                 }
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = filteredList.Select(x=>x.AccountId).ToList(),
+                    Title = NotificationTypeEnum.Interview_Day.GetDisplayName(),
+                    Body = "Your interview is set up ! Check it now!",
+                    NotificationsType = (int)NotificationTypeEnum.Interview_Day
+                };
+                await _notificationService.PushNotification(notificationRequest);
                 await _unitOfWork.CommitAsync();
                 return new BaseResponseViewModel<dynamic>()
                 {
@@ -526,11 +556,8 @@ namespace SupFAmof.Service.Service
         private async Task<bool> AssignDuplicateTime(TrainingRegistration request,int? eventDayNeedUpdate,int accountId)
         {
             var day = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == eventDayNeedUpdate);
-            var listOfRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.Id != request.Id);
-            if (!listOfRegistration.Any(x=>x.EventDayId.HasValue)) {
-                return true;
-            }
-            foreach(var registration in listOfRegistration)
+            var listOfRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == accountId&&x.Id != request.Id&&x.EventDayId.HasValue);
+            foreach (var registration in listOfRegistration)
             {
                 if(registration.EventDay.Date == day.Date&& IsTimeSpanOverlapPostion(registration.EventDay.TimeFrom, registration.EventDay.TimeTo,day.TimeFrom,day.TimeTo))
                 {
@@ -551,7 +578,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingEventDay>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Canceled))
                            .ProjectTo<ViewCollabInterviewClassResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -583,7 +610,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingCertificate>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Canceled))
                            .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -700,11 +727,11 @@ namespace SupFAmof.Service.Service
 
                 switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
                 {
-                    case TrainingRegistrationStatusEnum.Cancel:
+                    case TrainingRegistrationStatusEnum.Canceled:
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                            PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                     default:
-                        certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
+                        certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Canceled;
                         await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -752,11 +779,11 @@ namespace SupFAmof.Service.Service
 
             switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
             {
-                case TrainingRegistrationStatusEnum.Cancel:
+                case TrainingRegistrationStatusEnum.Canceled:
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                 default:
-                    certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
+                    certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Canceled;
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                     await _unitOfWork.CommitAsync();
                     break;
@@ -777,9 +804,8 @@ namespace SupFAmof.Service.Service
             }
 
         #endregion
-        //to do :getRegistrationByCollabId
 
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId,PagingRequest paging, FilterStatusRegistrationResponse filter)
         {
             try
             {
@@ -798,7 +824,9 @@ namespace SupFAmof.Service.Service
                     }
                 }
                 var list = _unitOfWork.Repository<TrainingRegistration>().GetAll()
-                           .ProjectTo<CollabRegistrationsResponse>(_mapper.ConfigurationProvider)
+                           .ProjectTo<CollabRegistrationsResponse>(_mapper.ConfigurationProvider);
+
+                var listAfterFilter = FilterStatusRegistration(list,filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<CollabRegistrationsResponse>()
                 {
@@ -806,9 +834,9 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = list.Item1
+                        Total = listAfterFilter.Item1
                     },
-                    Data = list.Item2.ToList()
+                    Data = listAfterFilter.Item2.ToList()
                 };
             }
             catch(Exception ex)
@@ -816,5 +844,14 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+        private static IQueryable<CollabRegistrationsResponse> FilterStatusRegistration(IQueryable<CollabRegistrationsResponse> list, FilterStatusRegistrationResponse filter)
+        {
+            if (filter.Status != null)
+            {
+                list = list.Where(d => d.Status == filter.Status);
+            }
+            return list;
+        }
     }
+ 
 }

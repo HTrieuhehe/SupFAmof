@@ -93,6 +93,10 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public virtual TrainingEventDayResponse? EventDay { get; set; }
 
     }
+    public class FilterStatusRegistrationResponse
+    {
+        public int? Status { get; set; }
+    }
 
 
 }

@@ -118,6 +118,8 @@ namespace SupFAmof.API
             services.AddScoped<ScheduleClosePost>();
             services.AddScoped<ScheduleNotificationPostReOpen>();
             services.AddScoped<SchedulePositionWorkCancelled>();
+            services.AddScoped<ScheduleEndPost>();
+
             #endregion
         }
 
@@ -173,14 +175,17 @@ namespace SupFAmof.API
             provider.UseScheduler(scheduler =>
             {
                 scheduler.OnWorker("Notification");
-                scheduler.Schedule<SchedulePushNotification>().EveryThirtyMinutes().Once();
-                scheduler.Schedule<ScheduleNotificationPostReOpen>().Hourly().Once();
+                scheduler.Schedule<SchedulePushNotification>().EveryThirtyMinutes();
+                scheduler.Schedule<ScheduleNotificationPostReOpen>().Hourly();
                 scheduler.OnWorker("Post");
                 scheduler.Schedule<ScheduleClosePost>()
                    .Daily()
                    .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+                scheduler.Schedule<ScheduleEndPost>()
+              .EveryThirtyMinutes()
+              .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 scheduler.OnWorker("CheckAttendance");
-                scheduler.Schedule<SchedulePositionWorkCancelled>().EveryMinute().Once();
+                scheduler.Schedule<SchedulePositionWorkCancelled>().EveryThirtyMinutes();
 
             });
             //app.ConfigMigration<>();

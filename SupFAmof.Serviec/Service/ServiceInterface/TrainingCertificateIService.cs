@@ -27,6 +27,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> ReviewInterviewProcess(int accountId, int eventDayId, List<UpdateStatusRegistrationRequest> requests);
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistration(int accountId, int certificateRegistrationId);
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistrationAdmission(int accountId, int certificateRegistrationId);
-        Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId, PagingRequest paging, FilterStatusRegistrationResponse filter);
     }
 }

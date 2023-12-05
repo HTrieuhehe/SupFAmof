@@ -176,20 +176,25 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Application Request")]
             Application = 6,
+
+            [Display(Name = "Your interview day is here ")]
+            Interview_Day = 7,
         }
         public enum TrainingRegistrationStatusEnum
         {
             [Display(Name = "Pending")]
             Pending = 1,
 
-            [Display(Name = "Confirm")]
-            Confirm = 2,
+            [Display(Name = "Assigned")]
+            Assigned = 2,
 
-            [Display(Name = "Reject")]
-            Reject = 3,
+            [Display(Name = "Passed")]
+            Passed = 3,
+            [Display(Name = "Not Passed")]
+            Not_Passed = 4,
+            [Display(Name = "Canceled")]
+            Canceled = 5,
 
-            [Display(Name = "Cancel")]
-            Cancel = 4,
         }
         public enum TrainingEventDayStatusEnum
         {

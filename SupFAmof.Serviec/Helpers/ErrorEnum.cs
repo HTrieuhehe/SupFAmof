@@ -252,6 +252,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "MUST WAIT FOR THE PREVIOUS BE REVIEWED ")]
             OVERLAP_APPLICATION_SEND = 4028,
+            //400
+            [Display(Name = "Same time with the training day")]
+            OVERLAP_TRAINING_EVENT_DAY = 4029,
         }
 
         public enum PostCategoryErrorEnum
@@ -283,7 +286,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Training Certificate not found!")]
             NOT_FOUND_ID = 4041,
             //400
-            [Display(Name = "Overlap with post")]
+            [Display(Name = "Same time  with post")]
             OVERLAP_EVENTS = 4003,
             //400
             [Display(Name = "Cant register")]
@@ -292,7 +295,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Duplicate registration")]
             DUPLICATE_REGISTRATION = 4006,
             //400
-            [Display(Name = "Overlap with diffent interview")]
+            [Display(Name = "Same time with different training  day")]
             OVERLAP_INTERVIEW = 4007,
             //400
             [Display(Name = "Training Day does not exist")]
@@ -303,6 +306,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Certificate registration not found")]
             CERTIFICATE_REGISTRATION_NOT_FOUND = 4010,
+            //400
+            [Display(Name = "Already have this certificate")]
+            ALREADY_HAVE_CERTIFICATE = 4011,
         }
 
         public enum AccountCertificateErrorEnum

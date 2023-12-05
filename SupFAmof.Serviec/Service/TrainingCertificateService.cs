@@ -477,7 +477,7 @@ namespace SupFAmof.Service.Service
         }
         private async Task<bool> CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
         {
-            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != (int)TrainingRegistrationStatusEnum.Confirm && x.Status != (int)TrainingRegistrationStatusEnum.Cancel);
+            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed && x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
             if(duplicates.Any())
             {
                 return false;
@@ -578,7 +578,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingEventDay>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Canceled))
                            .ProjectTo<ViewCollabInterviewClassResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -610,7 +610,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID, AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var list = _unitOfWork.Repository<TrainingCertificate>().GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Cancel))
+                        .Where(x => !x.TrainingRegistrations.Any(y => y.Status == (int)TrainingRegistrationStatusEnum.Canceled))
                            .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
                            .DynamicFilter(filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
@@ -727,11 +727,11 @@ namespace SupFAmof.Service.Service
 
                 switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
                 {
-                    case TrainingRegistrationStatusEnum.Cancel:
+                    case TrainingRegistrationStatusEnum.Canceled:
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                            PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                     default:
-                        certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
+                        certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Canceled;
                         await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                         await _unitOfWork.CommitAsync();
                         break;
@@ -779,11 +779,11 @@ namespace SupFAmof.Service.Service
 
             switch ((TrainingRegistrationStatusEnum)certificateRegistration.Status)
             {
-                case TrainingRegistrationStatusEnum.Cancel:
+                case TrainingRegistrationStatusEnum.Canceled:
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
                 default:
-                    certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Cancel;
+                    certificateRegistration.Status = (int)TrainingRegistrationStatusEnum.Canceled;
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(certificateRegistration);
                     await _unitOfWork.CommitAsync();
                     break;

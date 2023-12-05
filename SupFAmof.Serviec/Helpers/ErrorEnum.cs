@@ -261,7 +261,7 @@ namespace SupFAmof.Service.Helpers
             POST_CATEGORY_TYPE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Post Category Type is duplication!")]
+            [Display(Name = "Post Category Type is duplicate!")]
             POST_CATEGORY_TYPE_DUPLICATE = 4002,
 
             //404

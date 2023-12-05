@@ -60,17 +60,17 @@ namespace SupFAmof.Service.DTO.Response
     }
 
     public class ManageCollabAccountResponse
-    { 
-          public int Id { get; set; }
-          public string? Name { get; set; }
-          public string? ImgUrl { get; set; }
-          public bool? IsPremium { get; set; }
-          public string? Email { get; set; }
-          public string? Phone { get; set; }
-          public string? IdStudent { get; set; }
-          public virtual ICollection<CertificateResponse>? certificates { get; set; }
-
-
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? ImgUrl { get; set; }
+        public bool? IsActive { get; set; }
+        public bool? IsPremium { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string? IdStudent { get; set; }
+        
+        public virtual ICollection<CertificateResponse>? certificates { get; set; }
     }
     public class CertificateResponse
     {

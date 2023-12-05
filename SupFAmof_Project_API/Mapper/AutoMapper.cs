@@ -305,7 +305,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<CheckAttendance, AdmissionAttendanceResponse>()
                 .ForMember(x=>x.PostRegistration,opt=>opt.MapFrom(src=>src.PostRegistration))
                 .ReverseMap();
-            CreateMap<PostRegistration, AttendancePostRegistrationResponse>().ReverseMap();
+            CreateMap<PostRegistration, AttendancePostRegistrationResponse>()
+                .ForMember(x => x.Post, opt => opt.MapFrom(src => src.Position.Post))
+                .ReverseMap();
 
             #endregion
 

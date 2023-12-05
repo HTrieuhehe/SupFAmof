@@ -191,7 +191,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Confirm")]
             Confirm = 3,
             [Display(Name = "Cancel")]
-            Cancel = 3,
+            Cancel = 4,
 
         }
         public enum TrainingEventDayStatusEnum

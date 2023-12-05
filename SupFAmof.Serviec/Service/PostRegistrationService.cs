@@ -275,6 +275,11 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_NOT_AVAILABLE,
                            PostRegistrationErrorEnum.POST_NOT_AVAILABLE.GetDisplayName());
                     }
+                    if (!await CheckOverLapTimeWithTrainingCertificateRegistration(postRegistration))
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY,
+                           PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY.GetDisplayName());
+                    }
                     if (!await CheckPostPositionBus(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_QUALIFIED_SCHOOLBUS,
@@ -290,18 +295,12 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE,
                             PostRegistrationErrorEnum.NOT_FOUND_CERTIFICATE.GetDisplayName());
                     }
-                    //if (!await CheckDatePost(postRegistration))
-                    //{
-                    //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_OUTDATED,
-                    //        PostRegistrationErrorEnum.POST_OUTDATED.GetDisplayName());
-                    //}
 
                     if (!await CheckTimePosition(postRegistration))
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION,
                             PostRegistrationErrorEnum.DUPLICATE_TIME_POSTION.GetDisplayName());
                     }
-
                     if (postPosition.Amount - countAllRegistrationForm <= 0)
                     {
                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.FULL_SLOT,
@@ -328,12 +327,31 @@ namespace SupFAmof.Service.Service
                     },
                     Data = _mapper.Map<CollabRegistrationResponse>(postRegistration)
                 };
-
             }
             catch (Exception ex)
             {
                 throw;
             }
+        }
+        private async Task<bool> CheckOverLapTimeWithTrainingCertificateRegistration(PostRegistration request)
+        {
+            var positionTime = await _unitOfWork.Repository<PostPosition>().FindAsync(x=>x.Id == request.PositionId);
+            var AllCertificateRegistration = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.AccountId == request.AccountId && x.EventDayId.HasValue && x.Status == (int)TrainingRegistrationStatusEnum.Assigned);
+            if(AllCertificateRegistration.Any())
+            {
+                foreach(var certificateRegistration in AllCertificateRegistration)
+                {
+                    if (certificateRegistration.EventDay.Date == positionTime.Date.Date)
+                    {
+                        if (IsTimeSpanOverlap(certificateRegistration.EventDay.TimeFrom, certificateRegistration.EventDay.TimeTo,positionTime.TimeFrom,positionTime.TimeTo))
+                        {
+                            return false;
+                        }
+
+                    }
+                }
+            }
+            return true;
         }
 
 

@@ -87,6 +87,10 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_ID_NOT_NULL = 4013,
 
             //403
+            [Display(Name = "CCCD Duplicate")]
+            IDENTIFICATION_DUPLICATE = 4013,
+
+            //403
             [Display(Name = "You did not have permission to use this function")]
             PERMISSION_NOT_ALLOW = 4032,
 

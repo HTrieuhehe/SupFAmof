@@ -50,6 +50,7 @@ namespace SupFAmof.Service.DTO.Request.Account
 
     public class UpdateCitizenIdentification2
     {
+        public string? IdentityNumber { get; set; }
         public DateTime? IdentityIssueDate { get; set; }
         public string? PlaceOfIssue { get; set; }
     }

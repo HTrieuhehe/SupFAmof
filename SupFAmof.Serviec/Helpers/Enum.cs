@@ -188,10 +188,12 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Assigned")]
             Assigned = 2,
 
-            [Display(Name = "Confirm")]
-            Confirm = 3,
-            [Display(Name = "Cancel")]
-            Cancel = 4,
+            [Display(Name = "Passed")]
+            Passed = 3,
+            [Display(Name = "Not Passed")]
+            Not_Passed = 4,
+            [Display(Name = "Canceled")]
+            Canceled = 5,
 
         }
         public enum TrainingEventDayStatusEnum

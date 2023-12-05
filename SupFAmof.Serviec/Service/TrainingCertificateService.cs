@@ -477,7 +477,7 @@ namespace SupFAmof.Service.Service
         }
         private async Task<bool> CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
         {
-            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&(x.Status != (int)TrainingRegistrationStatusEnum.Confirm || x.Status == (int)TrainingRegistrationStatusEnum.Cancel));
+            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != (int)TrainingRegistrationStatusEnum.Confirm && x.Status != (int)TrainingRegistrationStatusEnum.Cancel);
             if(duplicates.Any())
             {
                 return false;

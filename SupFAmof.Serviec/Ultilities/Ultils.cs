@@ -6,6 +6,8 @@ using Service.Commons;
 using System.Collections;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using SupFAmof.Data.Entity;
+using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Utilities
 {
@@ -264,6 +266,16 @@ namespace SupFAmof.Service.Utilities
             result = result.Trim();
             if (isNegative) result = "Âm " + result;
             return result;
+        }
+
+        public static bool CheckAccountBanned(ICollection<AccountBanned> accountBanneds)
+        {
+            if (accountBanneds.Any(x => x.IsActive == true) && accountBanneds.Max(x => x.DayEnd >= Ultils.GetCurrentDatetime()))
+            {
+                //account in banned process
+                return true;
+            }
+            return false;
         }
 
     }

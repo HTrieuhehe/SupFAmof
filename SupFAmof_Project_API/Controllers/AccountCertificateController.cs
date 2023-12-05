@@ -58,7 +58,7 @@ namespace SupFAmof.API.Controllers
         }
         [HttpGet("collab-view-registration")]
         public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationsResponse>>> GetRegistrationByCollabId
-     ( [FromQuery] PagingRequest paging)
+     ( [FromQuery] PagingRequest paging, [FromQuery] FilterStatusRegistrationResponse filter)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetRegistrationByCollabId(account.Id, paging);
+                return await _certificateService.GetRegistrationByCollabId(account.Id, paging,filter);
             }
             catch (ErrorResponse ex)
             {

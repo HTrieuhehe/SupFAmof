@@ -441,6 +441,11 @@ namespace SupFAmof.Service.Service
                 }
                 var registration = _mapper.Map<TrainingRegistration>(request);
                 registration.AccountId = accountId;
+                if(!await CheckIfAccountHasCertificate(request,accountId))
+                {
+                    throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE,
+                        TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE.GetDisplayName());
+                }
                 if(!await CheckDuplicateTrainingCertificateRegistration(registration))
                     {
                     throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION,
@@ -472,8 +477,19 @@ namespace SupFAmof.Service.Service
         }
         private async Task<bool> CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
         {
-            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&x.Status != 3);
+            var duplicates = await _unitOfWork.Repository<TrainingRegistration>().GetWhere(x => x.TrainingCertificateId == request.TrainingCertificateId && x.AccountId == request.AccountId&&(x.Status != (int)TrainingRegistrationStatusEnum.Confirm || x.Status == (int)TrainingRegistrationStatusEnum.Cancel));
             if(duplicates.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+        private async Task<bool> CheckIfAccountHasCertificate(TrainingCertificateRegistration request,int accountId)
+        {
+            var accountCertificates = await _unitOfWork.Repository<AccountCertificate>().FindAsync(x => x.TrainingCertificateId == request.TrainingCertificateId
+                                                                                                    && x.AccountId == accountId && x.Status == (int)                                                                            AccountCertificateStatusEnum.Complete
+                                                                                                    );
+            if(accountCertificates!=null)
             {
                 return false;
             }
@@ -507,7 +523,7 @@ namespace SupFAmof.Service.Service
                                                                     TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
                     }
                     registration.EventDayId = requestStatusMap[registration.Id].Value;
-                 
+                    registration.Status = (int)TrainingRegistrationStatusEnum.Assigned;
                     registration.UpdateAt = GetCurrentDatetime();
                  
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(registration);
@@ -788,9 +804,8 @@ namespace SupFAmof.Service.Service
             }
 
         #endregion
-        //to do :getRegistrationByCollabId
 
-        public async Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId,PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId,PagingRequest paging, FilterStatusRegistrationResponse filter)
         {
             try
             {
@@ -809,7 +824,9 @@ namespace SupFAmof.Service.Service
                     }
                 }
                 var list = _unitOfWork.Repository<TrainingRegistration>().GetAll()
-                           .ProjectTo<CollabRegistrationsResponse>(_mapper.ConfigurationProvider)
+                           .ProjectTo<CollabRegistrationsResponse>(_mapper.ConfigurationProvider);
+
+                var listAfterFilter = FilterStatusRegistration(list,filter)
                            .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<CollabRegistrationsResponse>()
                 {
@@ -817,9 +834,9 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = list.Item1
+                        Total = listAfterFilter.Item1
                     },
-                    Data = list.Item2.ToList()
+                    Data = listAfterFilter.Item2.ToList()
                 };
             }
             catch(Exception ex)
@@ -827,5 +844,14 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+        private static IQueryable<CollabRegistrationsResponse> FilterStatusRegistration(IQueryable<CollabRegistrationsResponse> list, FilterStatusRegistrationResponse filter)
+        {
+            if (filter.Status != null)
+            {
+                list = list.Where(d => d.Status == filter.Status);
+            }
+            return list;
+        }
     }
+ 
 }

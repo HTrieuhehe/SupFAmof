@@ -8,7 +8,8 @@ namespace SupFAmof.Data.Entity
         public int Id { get; set; }
         public int ContractId { get; set; }
         public int AccountId { get; set; }
-        public byte[]? SubmittedFile { get; set; }
+        public byte[]? SubmittedBinaryFile { get; set; }
+        public string? SubmittedFile { get; set; }
         public int Status { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }

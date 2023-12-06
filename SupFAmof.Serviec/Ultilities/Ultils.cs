@@ -270,7 +270,7 @@ namespace SupFAmof.Service.Utilities
 
         public static bool CheckAccountBanned(ICollection<AccountBanned> accountBanneds)
         {
-            if (accountBanneds.Any(x => x.IsActive == true) && accountBanneds.Max(x => x.DayEnd >= Ultils.GetCurrentDatetime()))
+            if (accountBanneds.Any(x => x.IsActive == true) && accountBanneds.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime())
             {
                 //account in banned process
                 return true;

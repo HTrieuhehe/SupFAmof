@@ -1200,6 +1200,20 @@ namespace SupFAmof.Service.Service
                                               .ProjectTo<ManageCollabAccountResponse>(_mapper.ConfigurationProvider)
                                               .PagingQueryable(paging.Page, paging.PageSize,
                                                                Constants.LimitPaging, Constants.DefaultPaging);
+
+                var accountToList = list.Item2.ToList();
+                foreach (var item in accountToList)
+                {
+                    var accountCheckBan = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == item.Id);
+
+                    if (accountCheckBan.Any(x => x.IsActive == true) && accountCheckBan.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime())
+                    {
+                        item.IsBanned = true;
+                        item.EndTime = accountCheckBan.Max(x => x.DayEnd).ToString();
+                        item.StartTime = accountCheckBan.Max(x => x.DayStart).ToString();
+                    }
+                }
+
                 return new BaseResponsePagingViewModel<ManageCollabAccountResponse>()
                 {
                     Metadata = new PagingsMetadata()
@@ -1208,7 +1222,7 @@ namespace SupFAmof.Service.Service
                         Size = paging.PageSize,
                         Total = list.Item1
                     },
-                    Data = list.Item2.ToList()
+                    Data = accountToList
                 };
             }
             catch (Exception ex)

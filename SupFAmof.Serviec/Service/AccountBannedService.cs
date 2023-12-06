@@ -83,7 +83,7 @@ namespace SupFAmof.Service.Service
                     var accountBannedMappingAfter = _mapper.Map<AccountBanned>(request);
                     accountBannedMappingAfter.BannedPersonId = accountId;
                     accountBannedMappingAfter.DayStart = currentTime;
-                    //accountBannedMappingAfter.IsActive = true;
+                    accountBannedMappingAfter.IsActive = true;
 
                     await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMappingAfter);
                     await _unitOfWork.CommitAsync();
@@ -110,7 +110,7 @@ namespace SupFAmof.Service.Service
                 var accountBannedMapping = _mapper.Map<AccountBanned>(request);
                 accountBannedMapping.BannedPersonId = accountId;
                 accountBannedMapping.DayStart = currentTime;
-                //accountBannedMapping.IsActive = true;
+                accountBannedMapping.IsActive = true;
 
                 await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMapping);
                 await _unitOfWork.CommitAsync();

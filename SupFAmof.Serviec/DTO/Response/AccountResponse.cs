@@ -61,6 +61,13 @@ namespace SupFAmof.Service.DTO.Response
 
     public class ManageCollabAccountResponse
     {
+        public ManageCollabAccountResponse()
+        {
+            IsBanned = false;
+            StartTime = "";
+            EndTime = "";
+        }
+
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? ImgUrl { get; set; }
@@ -69,6 +76,10 @@ namespace SupFAmof.Service.DTO.Response
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? IdStudent { get; set; }
+
+        public bool? IsBanned { get; set; }
+        public string? StartTime { get; set; }
+        public string? EndTime { get; set; }
         
         public virtual ICollection<CertificateResponse>? certificates { get; set; }
     }

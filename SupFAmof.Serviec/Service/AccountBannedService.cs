@@ -198,7 +198,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == accountBannedId);
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == accountBannedId && x.IsActive == true);
 
                 if (accountBanned == null)
                 {
@@ -206,7 +206,7 @@ namespace SupFAmof.Service.Service
                                                     AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
                 }
 
-                if (accountBanned.Any(x => x.BannedPersonId == accountId))
+                if (accountBanned.Any(x => x.BannedPersonId != accountId))
                 {
                     throw new ErrorResponse(403, (int)AccountBannedErrorEnum.ADMISSION_INVALID,
                                                     AccountBannedErrorEnum.ADMISSION_INVALID.GetDisplayName());

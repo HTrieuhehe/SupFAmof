@@ -786,7 +786,7 @@ namespace SupFAmof.Service.Service
 
                         var fileDocByte = await FillingDocTransfer(account, accountContract.Contract);
 
-                        accountContract.SubmittedFile = fileDocByte;
+                        accountContract.SubmittedBinaryFile = fileDocByte;
                         accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);

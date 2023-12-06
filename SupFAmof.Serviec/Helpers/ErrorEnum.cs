@@ -88,7 +88,7 @@ namespace SupFAmof.Service.Helpers
 
             //403
             [Display(Name = "CCCD Duplicate")]
-            IDENTIFICATION_DUPLICATE = 4013,
+            IDENTIFICATION_DUPLICATE = 4014,
 
             //403
             [Display(Name = "You did not have permission to use this function")]

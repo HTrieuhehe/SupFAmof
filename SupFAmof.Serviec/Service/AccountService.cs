@@ -1322,15 +1322,23 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImgInformation(int accountId, UpdateCitizenIdentification request)
         {
-            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+            var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
+            var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
-            if (accountInformation == null)
+            if (accountInformationCheck == null)
             {
                 throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformation);
+            //check duplicate CCCD
+            if (accountInformation.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.IDENTIFICATION_DUPLICATE,
+                                    AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification, AccountInformation>(request, accountInformationCheck);
 
             await _unitOfWork.Repository<AccountInformation>().UpdateDetached(accountInformationMapping);
             await _unitOfWork.CommitAsync();
@@ -1349,15 +1357,23 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImgInformation(int accountId, UpdateCitizenIdentification2 request)
         {
-            var accountInformation = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+            var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
+            var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
-            if (accountInformation == null)
+            if (accountInformationCheck == null)
             {
                 throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                     AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
             }
 
-            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformation);
+            //check duplicate CCCD
+            if (accountInformation.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.IDENTIFICATION_DUPLICATE,
+                                    AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
+            }
+
+            var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformationCheck);
 
             if (accountInformationMapping.PlaceOfIssue != "" || accountInformationMapping.PlaceOfIssue != null)
             {

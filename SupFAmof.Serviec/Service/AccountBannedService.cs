@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LAK.Sdk.Core.Utilities;
+using Microsoft.EntityFrameworkCore;
 using Service.Commons;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
@@ -197,7 +198,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().Find(x => x.Id == accountBannedId && x.BannedPersonId == accountId);
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.Id == accountBannedId && x.BannedPersonId == accountId);
 
                 if (accountBanned == null)
                 {
@@ -205,7 +206,15 @@ namespace SupFAmof.Service.Service
                                                     AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
                 }
 
-                var updateBanned = _mapper.Map<UpdateAccountBannedRequest, AccountBanned>(request, accountBanned);
+                var currentBanned = await accountBanned.FirstOrDefaultAsync(x => x.IsActive == true && accountBanned.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime());
+
+                if(currentBanned == null)
+                {
+                    throw new ErrorResponse(400, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
+                                                    AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
+                }
+
+                var updateBanned = _mapper.Map<UpdateAccountBannedRequest, AccountBanned>(request, currentBanned);
 
                 await _unitOfWork.Repository<AccountBanned>().UpdateDetached(updateBanned);
                 await _unitOfWork.CommitAsync();

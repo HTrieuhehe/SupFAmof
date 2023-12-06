@@ -30,7 +30,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? Note { get; set; }
 
         [Required]
-        [Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
+        //[Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
         public bool IsActive { get; set; }
     }
 }

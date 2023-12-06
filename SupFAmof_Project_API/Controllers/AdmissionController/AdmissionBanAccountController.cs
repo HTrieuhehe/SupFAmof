@@ -12,7 +12,7 @@ using static SupFAmof.Service.Helpers.Enum;
 
 namespace SupFAmof.API.Controllers.AdmissionController
 {
-    [Route(Helpers.SettingVersionAPI.ApiAdminVersion)]
+    [Route(Helpers.SettingVersionAPI.ApiAdmisionVersion)]
     [ApiController]
     public class AdmissionBanAccountController : ControllerBase
     {

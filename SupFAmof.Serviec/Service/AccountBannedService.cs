@@ -198,7 +198,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.Id == accountBannedId && x.BannedPersonId == accountId);
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == accountBannedId && x.BannedPersonId == accountId);
 
                 if (accountBanned == null)
                 {

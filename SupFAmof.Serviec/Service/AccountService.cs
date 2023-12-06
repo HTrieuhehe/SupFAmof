@@ -805,17 +805,25 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                var accounts = _unitOfWork.Repository<Account>().GetAll().Where(x => x.RoleId == (int)SystemRoleEnum.Collaborator);
+                var differentAccount = accounts.Where(x => x.Id != accountId);
+                var collabAccount = await accounts.FirstOrDefaultAsync(x => x.Id == accountId);
 
-                if (account == null)
+                if (collabAccount == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                if (account.UpdateAt.HasValue)
+                if (differentAccount.Any(x => x.Phone.Equals(request.Phone)))
                 {
-                    if (account.UpdateAt == account.UpdateAt.Value.AddMinutes(5))
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.PHONE_NUM_DUPLICATE,
+                                        AccountErrorEnums.PHONE_NUM_DUPLICATE.GetDisplayName());
+                }
+
+                if (collabAccount.UpdateAt.HasValue)
+                {
+                    if (collabAccount.UpdateAt == collabAccount.UpdateAt.Value.AddMinutes(5))
                     {
                         throw new ErrorResponse(404, (int)AccountErrorEnums.UPDATE_INVALUD,
                                             AccountErrorEnums.UPDATE_INVALUD.GetDisplayName());
@@ -842,10 +850,10 @@ namespace SupFAmof.Service.Service
                     //    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
                     //}
 
-                    account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
-                    account.UpdateAt = Ultils.GetCurrentDatetime();
+                    collabAccount = _mapper.Map<UpdateAccountRequest, Account>(request, collabAccount);
+                    collabAccount.UpdateAt = Ultils.GetCurrentDatetime();
 
-                    await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                    await _unitOfWork.Repository<Account>().UpdateDetached(collabAccount);
                     await _unitOfWork.CommitAsync();
 
                     return new BaseResponseViewModel<AccountResponse>()
@@ -856,7 +864,7 @@ namespace SupFAmof.Service.Service
                             Success = true,
                             ErrorCode = 0
                         },
-                        Data = _mapper.Map<AccountResponse>(account)
+                        Data = _mapper.Map<AccountResponse>(collabAccount)
                     };
                 }
 
@@ -881,11 +889,11 @@ namespace SupFAmof.Service.Service
                 //    request.AccountInformation.PlaceOfIssue = request.AccountInformation.PlaceOfIssue.ToUpper();
                 //}
 
-                account = _mapper.Map<UpdateAccountRequest, Account>(request, account);
+                collabAccount = _mapper.Map<UpdateAccountRequest, Account>(request, collabAccount);
 
-                account.UpdateAt = Ultils.GetCurrentDatetime();
+                collabAccount.UpdateAt = Ultils.GetCurrentDatetime();
 
-                await _unitOfWork.Repository<Account>().UpdateDetached(account);
+                await _unitOfWork.Repository<Account>().UpdateDetached(collabAccount);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountResponse>()
@@ -896,7 +904,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AccountResponse>(account)
+                    Data = _mapper.Map<AccountResponse>(collabAccount)
                 };
             }
             catch (Exception ex)
@@ -1323,6 +1331,7 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImgInformation(int accountId, UpdateCitizenIdentification request)
         {
             var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
+            var differentAccount = accountInformation.Where(x => x.AccountId != accountId);
             var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
             if (accountInformationCheck == null)
@@ -1332,7 +1341,7 @@ namespace SupFAmof.Service.Service
             }
 
             //check duplicate CCCD
-            if (accountInformation.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
+            if (differentAccount.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
             {
                 throw new ErrorResponse(400, (int)AccountErrorEnums.IDENTIFICATION_DUPLICATE,
                                     AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
@@ -1358,6 +1367,7 @@ namespace SupFAmof.Service.Service
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImgInformation(int accountId, UpdateCitizenIdentification2 request)
         {
             var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
+            var differentAccount = accountInformation.Where(x => x.AccountId != accountId);
             var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
             if (accountInformationCheck == null)
@@ -1367,7 +1377,7 @@ namespace SupFAmof.Service.Service
             }
 
             //check duplicate CCCD
-            if (accountInformation.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
+            if (differentAccount.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
             {
                 throw new ErrorResponse(400, (int)AccountErrorEnums.IDENTIFICATION_DUPLICATE,
                                     AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
@@ -1399,14 +1409,16 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = await _unitOfWork.Repository<AccountInformation>().FindAsync(x => x.AccountId == accountId);
+                var accountCheck =  _unitOfWork.Repository<AccountInformation>().GetAll();
+                var differentAccount = accountCheck.Where(x => x.AccountId != accountId);
+                var account = await accountCheck.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
                 if (account == null)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
-
+                
                 var checkStuId = Ultils.CheckStudentId(request.IdStudent);
                 var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
@@ -1414,6 +1426,26 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_STUDENTID_INVALID,
                                         AccountErrorEnums.ACCOUNT_STUDENTID_INVALID.GetDisplayName());
+                }
+
+                //check CCCD, phone number, tax number, id Student duplicate or not
+
+                if (differentAccount.Any(x => x.IdentityNumber.Equals(request.IdentityNumber)))
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.IDENTIFICATION_DUPLICATE,
+                                        AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
+                }
+
+                if (differentAccount.Any(x => x.IdStudent.Equals(request.IdStudent)))
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.STUDENT_ID_DUPLICATE,
+                                        AccountErrorEnums.STUDENT_ID_DUPLICATE.GetDisplayName());
+                }
+
+                if (differentAccount.Any(x => x.TaxNumber.Equals(request.TaxNumber)))
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.TAX_NUM_DUPLICATE,
+                                        AccountErrorEnums.TAX_NUM_DUPLICATE.GetDisplayName());
                 }
 
                 if (!string.IsNullOrEmpty(request.PlaceOfIssue))

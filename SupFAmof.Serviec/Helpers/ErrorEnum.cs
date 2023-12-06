@@ -87,8 +87,20 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_ID_NOT_NULL = 4013,
 
             //403
-            [Display(Name = "CCCD Duplicate")]
+            [Display(Name = "CCCD is duplicated")]
             IDENTIFICATION_DUPLICATE = 4014,
+
+            //403
+            [Display(Name = "Student is duplicated")]
+            STUDENT_ID_DUPLICATE = 4015,
+
+            //403
+            [Display(Name = "Phone number is duplicated")]
+            PHONE_NUM_DUPLICATE = 4016,
+
+            //403
+            [Display(Name = "Tax number is duplicated")]
+            TAX_NUM_DUPLICATE = 4017,
 
             //403
             [Display(Name = "You did not have permission to use this function")]

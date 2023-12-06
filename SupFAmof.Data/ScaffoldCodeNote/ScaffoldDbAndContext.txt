@@ -75,3 +75,15 @@ https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contrac
   "endDate": "2023-12-16",
   "totalSalary": 5000000
 }
+
+{
+  "identityNumber": null,
+  "idStudent": null,
+  "fbUrl": null,
+  "address": null,
+  "identityIssueDate": null,
+  "placeOfIssue": null,
+  "identityFrontImg": null,
+  "identityBackImg": null,
+  "taxNumber": null
+}

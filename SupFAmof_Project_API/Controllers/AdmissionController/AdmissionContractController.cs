@@ -199,5 +199,65 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        /// <summary>
+        /// Update Contract
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("disable")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> DisableAdmissionContract
+            ([FromQuery] int contractId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+
+                return await _contractService.DisableAdmissionContract(account.Id, contractId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update Contract
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpPut("complete")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> AdmissionCompleteContract
+            ([FromQuery] int contractId, [FromBody] UpdateAdmissionContractRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+
+                return await _contractService.AdmissionCompleteContract(account.Id, contractId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

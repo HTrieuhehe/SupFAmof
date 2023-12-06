@@ -171,12 +171,12 @@ namespace SupFAmof.Service.Service
                                     {
                                         frontImage.Mutate(x => x.Resize(new ResizeOptions
                                         {
-                                            Size = new SixLabors.ImageSharp.Size(80, 80),
+                                            Size = new SixLabors.ImageSharp.Size(frontImage.Width, frontImage.Height),
                                             Mode = ResizeMode.Max
                                         }));
 
                                         // Save the resized front image to a temporary file with a specific extension
-                                        string tempFrontFileName = Path.ChangeExtension(Path.GetTempFileName(), "png");
+                                        string tempFrontFileName = Path.ChangeExtension(Path.GetTempFileName(), "jpeg");
                                         frontImage.Save(tempFrontFileName);
 
                                         // Add the front image to the worksheet using the temporary file
@@ -204,12 +204,12 @@ namespace SupFAmof.Service.Service
                                     {
                                         backImage.Mutate(x => x.Resize(new ResizeOptions
                                         {
-                                            Size = new SixLabors.ImageSharp.Size(80, 80),
+                                            Size = new SixLabors.ImageSharp.Size(backImage.Width, backImage.Height),
                                             Mode = ResizeMode.Max
                                         }));
 
                                         // Save the resized back image to a temporary file with a specific extension
-                                        string tempBackFileName = Path.ChangeExtension(Path.GetTempFileName(), "png");
+                                        string tempBackFileName = Path.ChangeExtension(Path.GetTempFileName(), "jpeg");
                                         backImage.Save(tempBackFileName);
 
                                         // Add the back image to the worksheet using the temporary file

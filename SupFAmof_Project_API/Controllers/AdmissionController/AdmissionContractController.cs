@@ -237,7 +237,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpPut("complete")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> AdmissionCompleteContract
-            ([FromQuery] int contractId, [FromBody] UpdateAdmissionContractRequest request)
+            ([FromQuery] int accountContractId, [FromBody] UpdateAdmissionContractRequest request)
         {
             try
             {
@@ -248,7 +248,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
 
-                return await _contractService.AdmissionCompleteContract(account.Id, contractId);
+                return await _contractService.AdmissionCompleteContract(account.Id, accountContractId);
             }
             catch (ErrorResponse ex)
             {

@@ -81,7 +81,7 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public string? CertificateName { get; set; }
-
+    
     }
 
 

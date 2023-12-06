@@ -82,25 +82,29 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cannot update multiple time! Try after 5 minutes")]
             UPDATE_INVALUD = 4012,
 
-            //403
+            //400
             [Display(Name = "AccountId cannot null or empty")]
             ACCOUNT_ID_NOT_NULL = 4013,
 
-            //403
+            //400
             [Display(Name = "CCCD is duplicated")]
             IDENTIFICATION_DUPLICATE = 4014,
 
-            //403
+            //400
             [Display(Name = "Student is duplicated")]
             STUDENT_ID_DUPLICATE = 4015,
 
-            //403
+            //400
             [Display(Name = "Phone number is duplicated")]
             PHONE_NUM_DUPLICATE = 4016,
 
-            //403
+            //400
             [Display(Name = "Tax number is duplicated")]
             TAX_NUM_DUPLICATE = 4017,
+
+            //400
+            [Display(Name = "Back side of of your card is not belong to the front side")]
+            WRONG_BACK_CARD = 4018,
 
             //403
             [Display(Name = "You did not have permission to use this function")]

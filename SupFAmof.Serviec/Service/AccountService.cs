@@ -1383,6 +1383,12 @@ namespace SupFAmof.Service.Service
                                     AccountErrorEnums.IDENTIFICATION_DUPLICATE.GetDisplayName());
             }
 
+            if (!accountInformationCheck.IdentityNumber.Equals(request.IdentityNumber))
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.WRONG_BACK_CARD,
+                                    AccountErrorEnums.WRONG_BACK_CARD.GetDisplayName());
+            }
+
             var accountInformationMapping = _mapper.Map<UpdateCitizenIdentification2, AccountInformation>(request, accountInformationCheck);
 
             if (accountInformationMapping.PlaceOfIssue != "" || accountInformationMapping.PlaceOfIssue != null)

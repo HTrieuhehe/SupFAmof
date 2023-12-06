@@ -481,6 +481,9 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Only Admission Officer have permission to post can ban account")]
             ADMISSION_FORBIDDEN = 4031,
 
+            //403
+            [Display(Name = "Collaborator is not banned by you")]
+            ADMISSION_INVALID = 4032,
 
             //403
             [Display(Name = "Account has been ban until")]
@@ -490,6 +493,8 @@ namespace SupFAmof.Service.Helpers
             //403
             [Display(Name = "Ending Day must equal or higher than")]
             DAY_END_INVALID = 4002,
+
+            
 
         }
 

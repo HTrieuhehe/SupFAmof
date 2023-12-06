@@ -198,12 +198,18 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == accountBannedId && x.BannedPersonId == accountId);
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == accountBannedId);
 
                 if (accountBanned == null)
                 {
                     throw new ErrorResponse(400, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
                                                     AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
+                }
+
+                if (accountBanned.Any(x => x.BannedPersonId == accountId))
+                {
+                    throw new ErrorResponse(403, (int)AccountBannedErrorEnum.ADMISSION_INVALID,
+                                                    AccountBannedErrorEnum.ADMISSION_INVALID.GetDisplayName());
                 }
 
                 var currentBanned = await accountBanned.FirstOrDefaultAsync(x => x.IsActive == true && accountBanned.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime());

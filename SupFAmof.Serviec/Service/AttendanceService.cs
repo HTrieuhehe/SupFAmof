@@ -113,6 +113,7 @@ namespace SupFAmof.Service.Service
                 foreach (var item in filteredList)
                 {
                     item.Status = requestStatusMap[item.Id].Value;
+                    item.ConfirmTime = GetCurrentDatetime();
                     await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
                     if (item.Status == (int)CheckAttendanceEnum.Approved)
                     {
@@ -122,10 +123,7 @@ namespace SupFAmof.Service.Service
                             PositionId = item.PostRegistration.PositionId,
                             Salary = item.PostRegistration.Salary,
                         };
-                        if (!await CheckDuplicateAccountReport(request))
-                        {
-                            continue;
-                        }else
+                        if (await CheckDuplicateAccountReport(request))
                         {
                             await CreateAccountReport(request);
                         }

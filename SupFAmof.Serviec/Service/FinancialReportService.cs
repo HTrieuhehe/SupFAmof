@@ -14,6 +14,7 @@ using SupFAmof.Service.Utilities;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
+using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
@@ -282,7 +283,7 @@ namespace SupFAmof.Service.Service
                 }
 
 
-                var data = await OpenDayMonthlyReportGenerator(request, accountId);
+                var data = await OpenDayMonthlyReportGenerator(request);
                 return data;
 
             }
@@ -292,13 +293,13 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        private async Task<byte[]> OpenDayMonthlyReportGenerator(FinancialReportRequest request, int accountId)
+        private async Task<byte[]> OpenDayMonthlyReportGenerator(FinancialReportRequest request)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var openDayId = await _unitOfWork.Repository<PostCategory>().FindAsync(x => x.PostCategoryType == PostCategoryStatusEnum.OPD.GetDisplayName().ToUpper().Trim());
             var accounts = _unitOfWork.Repository<Account>().GetAll().Where(x => x.Email.EndsWith("@fpt.edu.vn"));
             var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.DateFrom.Year == request.Year && x.DateFrom.Month == request.Month
-                                                                    && x.PostCategoryId == 1
-                                                                    && x.AccountId == accountId);
+                                                                    && x.PostCategoryId == openDayId.Id);
             if (posts.Count() <= 0)
             {
                 throw new Exceptions.ErrorResponse(400, 400, "Does not have post or account to generate in that month of the year");
@@ -374,7 +375,7 @@ namespace SupFAmof.Service.Service
                         if (account.AccountReports.Any())
                         {
                             Dictionary<DateTime, double?> dateTotalSalary = new Dictionary<DateTime, double?>();
-                            foreach (var report in account.AccountReports.Where(x => x.Position.Post.PostCategoryId == 1))
+                            foreach (var report in account.AccountReports.Where(x => x.Position.Post.PostCategoryId == openDayId.Id))
                             {
                                 combinedSalary += report.Salary;
                                 DateTime dateToWork = report.Position.Date.Date;
@@ -445,7 +446,7 @@ namespace SupFAmof.Service.Service
                 }
 
 
-                var data = await TuyenSinhMonthlyReportGenerator(request, accountId);
+                var data = await TuyenSinhMonthlyReportGenerator(request);
                 return data;
 
             }
@@ -455,14 +456,9 @@ namespace SupFAmof.Service.Service
             }
 
         }
-        private async Task<byte[]> TuyenSinhMonthlyReportGenerator(FinancialReportRequest request, int accountId)
+        private async Task<byte[]> TuyenSinhMonthlyReportGenerator(FinancialReportRequest request)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            var posts = _unitOfWork.Repository<Post>().GetAll()
-                                   .Where(x => x.DateFrom.Year == request.Year
-                                            && x.DateFrom.Month == request.Month
-                                            && x.PostCategoryId == 2
-                                            && x.AccountId == accountId);
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 using (ExcelPackage xlPackage = new ExcelPackage(memoryStream))
@@ -527,10 +523,13 @@ namespace SupFAmof.Service.Service
 
         private void SetTuyenSinhData(ExcelWorksheet worksheet, int nameRow, FinancialReportRequest request)
         {
+            var tuyenSinhId = _unitOfWork.Repository<PostCategory>().Find(x => x.PostCategoryType == PostCategoryStatusEnum.TVL.GetDisplayName().ToUpper().Trim());
             var accountsWithReports = _unitOfWork.Repository<Account>()
                                                             .GetAll()
-                                                            .Where(x => x.Email.EndsWith("@fpt.edu.vn")&&
-                                                                   x.AccountReports.Any(report => report.Position.Date.Month == request.Month&&report.Position.Date.Year==request.Year));
+                                                            .Where(x => x.Email.EndsWith("@fpt.edu.vn") &&
+                                                                   x.AccountReports.Any(report => report.Position.Date.Month == request.Month
+                                                                   && report.Position.Post.PostCategoryId == tuyenSinhId.Id
+                                                                   && report.Position.Date.Year == request.Year));
 
             foreach (var account in accountsWithReports)
             {
@@ -541,7 +540,7 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 5].Value = account.AccountInformation?.TaxNumber;
                 Dictionary<DateTime, int> dateCountDictionary = new Dictionary<DateTime, int>();
                 double? sum = 0;
-                foreach (var report in account.AccountReports.Where(x=>x.Position.Post.PostCategoryId == 2))
+                foreach (var report in account.AccountReports.Where(x => x.Position.Post.PostCategoryId == tuyenSinhId.Id))
                 {
                     sum += report.Salary;
                     if (dateCountDictionary.TryGetValue(report.Position.Date, out var count))
@@ -555,7 +554,7 @@ namespace SupFAmof.Service.Service
                         dateCountDictionary.Add(report.Position.Date, 1);
                     }
                 }
-                var cellF3 =worksheet.Cells[nameRow, 6];
+                var cellF3 = worksheet.Cells[nameRow, 6];
                 var cellG3 = worksheet.Cells[nameRow, 7];
 
                 foreach (var kvp in dateCountDictionary)

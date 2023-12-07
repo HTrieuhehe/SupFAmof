@@ -44,7 +44,7 @@ namespace SupFAmof.Service.TaskSchedule
 
                 foreach (var position in post.PostPositions)
                 {
-                    if (position.TimeFrom < checkTimeOfDay)
+                    if (position.TimeFrom < checkTimeOfDay&&position.Date <= checkTimeCheckIn.Date)
                     {
                         var postRegistrationsConfirm = allPostRegistrations
                             .Where(x => x.PositionId == position.Id);

@@ -91,6 +91,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public int? Status { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+        public DateTime? ConfirmedAt { get; set; }
 
         public virtual TrainingCertificateRegistrationResponse? TrainingCertificate { get; set; }
         public virtual TrainingEventDayResponse? EventDay { get; set; }

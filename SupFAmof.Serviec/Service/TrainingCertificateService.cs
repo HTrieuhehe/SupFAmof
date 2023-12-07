@@ -800,7 +800,7 @@ namespace SupFAmof.Service.Service
                     if (requestStatusMap.ContainsKey(registration.Id))
                     {
                         registration.Status = requestStatusMap[registration.Id];
-                        registration.UpdateAt = GetCurrentDatetime();
+                        registration.ConfirmedAt = GetCurrentDatetime();
                     }
                     await AddCertificateToAccount(registration);
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(

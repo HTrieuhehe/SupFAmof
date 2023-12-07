@@ -10,6 +10,7 @@ namespace SupFAmof.Data.Entity
         public int? EventDayId { get; set; }
         public int AccountId { get; set; }
         public int Status { get; set; }
+        public DateTime? ConfirmedAt { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

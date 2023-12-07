@@ -518,6 +518,8 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("TrainingRegistration");
 
+                entity.Property(e => e.ConfirmedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");

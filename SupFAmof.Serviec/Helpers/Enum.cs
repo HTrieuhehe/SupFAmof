@@ -204,6 +204,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cancel")]
             Cancel = 2,
         }
+        public enum PostCategoryStatusEnum
+        {
+            [Display(Name = "TVL")]
+            TVL = 1,
+
+            [Display(Name = "OPD")]
+            OPD = 2,
+        }
 
     }
 }

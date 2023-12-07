@@ -933,6 +933,7 @@ namespace SupFAmof.Service.Service
                     default:
                         certificateRegistration.Status =
                             (int)TrainingRegistrationStatusEnum.Canceled;
+                        certificateRegistration.UpdateAt = GetCurrentDatetime();
                         await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(
                             certificateRegistration);
                         await _unitOfWork.CommitAsync();

@@ -62,7 +62,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AttendanceErrorEnum.MISSING_INFORMATION_POSITION,
                                        AttendanceErrorEnum.MISSING_INFORMATION_POSITION.GetDisplayName());
                 }
-                double distance = 0.1; // kilometer 
+                double distance = 0.5; // kilometer 
 
                 double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longitude, checkin.Latitude, checkin.Longtitude));
 

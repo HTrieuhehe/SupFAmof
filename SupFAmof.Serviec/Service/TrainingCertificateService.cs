@@ -1054,7 +1054,8 @@ namespace SupFAmof.Service.Service
                                    _mapper.ConfigurationProvider);
 
                 var listAfterFilter = FilterStatusRegistration(list, filter)
-                                          .PagingQueryable(paging.Page, paging.PageSize);
+                                      .DynamicSort(paging.Sort,paging.Order)
+                                      .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<CollabRegistrationsResponse>()
                 {
                     Metadata =

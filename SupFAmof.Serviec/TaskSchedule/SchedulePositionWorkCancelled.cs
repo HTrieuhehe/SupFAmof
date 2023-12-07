@@ -61,7 +61,7 @@ namespace SupFAmof.Service.TaskSchedule
                         {
                             if (!checkedPostRegistration.IsCheckedIn)
                             {
-                                checkedPostRegistration.PostRegistration.Status = (int)PostRegistrationStatusEnum.Quit;
+                                checkedPostRegistration.PostRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
                                 await _unitOfWork.Repository<PostRegistration>().UpdateDetached(checkedPostRegistration.PostRegistration);
                             }
                         }

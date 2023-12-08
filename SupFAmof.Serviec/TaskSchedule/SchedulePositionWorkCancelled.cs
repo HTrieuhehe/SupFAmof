@@ -35,7 +35,7 @@ namespace SupFAmof.Service.TaskSchedule
 
             var allPostRegistrations = _unitOfWork.Repository<PostRegistration>()
                 .GetAll()
-                .Where(x => x.Status == 2);
+                .Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm || x.Status == (int)PostRegistrationStatusEnum.CheckIn);
 
             foreach (var post in posts)
             {

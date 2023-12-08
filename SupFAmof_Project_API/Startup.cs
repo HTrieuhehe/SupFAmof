@@ -185,7 +185,7 @@ namespace SupFAmof.API
               .EveryThirtyMinutes()
               .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 scheduler.OnWorker("CheckAttendance");
-                scheduler.Schedule<SchedulePositionWorkCancelled>().EveryThirtyMinutes();
+                scheduler.Schedule<SchedulePositionWorkCancelled>().EveryFifteenMinutes();
 
             });
             //app.ConfigMigration<>();

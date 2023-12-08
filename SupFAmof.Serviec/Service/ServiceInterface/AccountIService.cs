@@ -41,5 +41,11 @@ namespace SupFAmof.Service.Service.ServiceInterface
 
         Task<BaseResponseViewModel<AccountInformationResponse>> UpdateAccountInformationTest(int accountId, UpdateAccountInformationRequestTest request);
 
+
+        #region update Collaborator Credential
+
+        Task<BaseResponseViewModel<AccountResponse>> UpdateCollaboratorCredential(int accountId, int collaboratorAccountId);
+
+        #endregion
     }
 }

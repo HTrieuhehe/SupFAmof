@@ -118,6 +118,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Not Found Account")]
             ACCOUNT_NOT_FOUND = 4041,
 
+            //404
+            [Display(Name = "Not Found Account")]
+            COLLABORATOR_NOT_FOUND = 4042,
+
             //500
             [Display(Name = "Server are busy")]
             SERVER_BUSY = 5001,

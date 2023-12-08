@@ -175,5 +175,32 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         }
 
+
+        ///<summary>
+        /// Update Collaborator Credential (Premium)
+        /// </summary>
+        /// 
+        [HttpPut("update-collab-credential")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> ApproveProblemRequest([FromQuery] int collaboratorAccountId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _admissionAccountService.UpdateCollaboratorCredential(account.Id, collaboratorAccountId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
     }
 }

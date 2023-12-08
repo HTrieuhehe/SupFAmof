@@ -741,14 +741,9 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID,
                                             AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
-                var list =
-                    _unitOfWork.Repository<TrainingCertificate>()
+                var list = _unitOfWork.Repository<TrainingCertificate>()
                         .GetAll()
-                        .Where(x => !x.TrainingRegistrations.Any(
-                                   y => y.Status ==
-                                        (int)TrainingRegistrationStatusEnum.Canceled))
-                        .ProjectTo<AdmissionGetCertificateRegistrationResponse>(
-                            _mapper.ConfigurationProvider)
+                        .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
                         .DynamicFilter(filter)
                         .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<

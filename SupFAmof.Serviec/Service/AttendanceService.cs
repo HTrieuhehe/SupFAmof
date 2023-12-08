@@ -3,6 +3,7 @@ using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.Utilities;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Response;
@@ -114,7 +115,6 @@ namespace SupFAmof.Service.Service
                 {
                     item.Status = requestStatusMap[item.Id].Value;
                     item.ConfirmTime = GetCurrentDatetime();
-                    await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
                     if (item.Status == (int)CheckAttendanceEnum.Approved)
                     {
                         CreateAccountReportRequest request = new CreateAccountReportRequest
@@ -128,6 +128,22 @@ namespace SupFAmof.Service.Service
                             await CreateAccountReport(request);
                         }
                     }
+                    if(item.Status == (int)CheckAttendanceEnum.Rejected)
+                    {
+                        CreateAccountReportRequest reject = new CreateAccountReportRequest
+                        {
+                            AccountId = item.PostRegistration.AccountId,
+                            PositionId = item.PostRegistration.PositionId,
+                            Salary = item.PostRegistration.Salary,
+                        };
+                        if (!await CheckDuplicateAccountReport(reject))
+                        {
+                            await RemoveAccountReport(reject);
+                        }
+                    }
+                    await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
+
+
                 }
                 await _unitOfWork.CommitAsync();
                 return new BaseResponseViewModel<dynamic>()
@@ -173,6 +189,7 @@ namespace SupFAmof.Service.Service
                     return true;
                 }
                 return false;
+
         }
         private async Task CreateAccountReport(CreateAccountReportRequest request)
         {
@@ -181,6 +198,11 @@ namespace SupFAmof.Service.Service
             accountReport.CreateAt = Ultils.GetCurrentDatetime();
 
             await _unitOfWork.Repository<AccountReport>().InsertAsync(accountReport);
+        }
+        private async Task RemoveAccountReport(CreateAccountReportRequest request)
+        {
+            var getAccountReport = await _unitOfWork.Repository<AccountReport>().FindAsync(x => x.AccountId == request.AccountId && x.PositionId == request.PositionId);
+            await _unitOfWork.Repository<AccountReport>().HardDelete(getAccountReport.Id);
         }
     }
 }

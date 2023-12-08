@@ -47,6 +47,18 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+                if (string.IsNullOrEmpty(request.ProblemNote) || request.ProblemNote == null)
+                {
+                    throw new ErrorResponse(400, (int)ApplicationErrorEnum.PROBLEM_NOTE_EMPTY,
+                                        ApplicationErrorEnum.PROBLEM_NOTE_EMPTY.GetDisplayName());
+                }
+
+                if (!string.IsNullOrEmpty(request.ProblemNote) && request.ProblemNote.Length > 500)
+                {
+                    throw new ErrorResponse(400, (int)ApplicationErrorEnum.PROBLEM_NOTE_EXEED,
+                                        ApplicationErrorEnum.PROBLEM_NOTE_EXEED.GetDisplayName());
+                }
+
                 var report = _mapper.Map<CreateAccountApplicationRequest, Application>(request);
 
                 report.AccountId = accountId;

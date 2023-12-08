@@ -14,8 +14,8 @@ namespace SupFAmof.Service.DTO.Request
         //public DateTime ReportDate { get; set; }
         //public DateTime? ReplyDate { get; set; }
 
-        [Required(ErrorMessage = "Problem Note is required.")]
-        [MaxLength(500, ErrorMessage = "Problem Note cannot exceed 500 characters.")]
+        //[Required(ErrorMessage = "")]
+        //[MaxLength(500, ErrorMessage = "Problem Note cannot exceed 500 characters.")]
         public string? ProblemNote { get; set; }
 
         //public string? ReplyNote { get; set; }

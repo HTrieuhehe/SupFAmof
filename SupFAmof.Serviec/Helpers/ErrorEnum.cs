@@ -494,7 +494,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Ending Day must equal or higher than")]
             DAY_END_INVALID = 4002,
 
-            
+
 
         }
 
@@ -637,6 +637,17 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Role email is not necessary to have @ character")]
             SYSTEM_ROLE_NOT_FOUND = 4041,
+        }
+
+        public enum ApplicationErrorEnum
+        {
+            //400
+            [Display(Name = "Problem Note is required.")]
+            PROBLEM_NOTE_EMPTY = 4001,
+
+            //400
+            [Display(Name = "Problem Note exeed 500 characters")]
+            PROBLEM_NOTE_EXEED = 4002,
         }
     }
 }

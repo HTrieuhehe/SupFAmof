@@ -19,6 +19,7 @@ using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.Admission.AccountRequest;
+using DocumentFormat.OpenXml.VariantTypes;
 
 namespace SupFAmof.Service.Service
 {
@@ -1547,6 +1548,56 @@ namespace SupFAmof.Service.Service
                 //throw new ErrorResponse(500, (int)AccountErrorEnums.SERVER_BUSY,
                 //                            AccountErrorEnums.SERVER_BUSY.GetDisplayName());
 
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountResponse>> UpdateCollaboratorCredential(int accountId, int collaboratorAccountId)
+        {
+            try
+            {
+                var admissionAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId && x.RoleId == (int)SystemRoleEnum.AdmissionManager);
+
+                if (admissionAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                       AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                if (admissionAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                       AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var collaboratorAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collaboratorAccountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                if (collaboratorAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.COLLABORATOR_NOT_FOUND,
+                                       AccountErrorEnums.COLLABORATOR_NOT_FOUND.GetDisplayName());
+                }
+
+                collaboratorAccount.IsPremium = true;
+                collaboratorAccount.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(collaboratorAccount);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(collaboratorAccount)
+                };
+
+            }
+            catch(Exception ex)
+            {
                 throw;
             }
         }

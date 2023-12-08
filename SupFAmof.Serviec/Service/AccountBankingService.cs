@@ -19,6 +19,7 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.Service.ServiceInterface;
 using LAK.Sdk.Core.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace SupFAmof.Service.Service
 {
@@ -39,7 +40,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanking = await _unitOfWork.Repository<AccountBanking>().GetById(id);
+                var accountBanking = await _unitOfWork.Repository<AccountBanking>().FindAsync(x => x.Id == id);
                 if (accountBanking == null)
                 {
                     throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
@@ -70,7 +71,7 @@ namespace SupFAmof.Service.Service
                     .ProjectTo<AccountBankingResponse>(_mapper.ConfigurationProvider)
                     .DynamicFilter(filter)
                     .DynamicSort(paging.Sort, paging.Order)
-                    .PagingQueryable(paging.Page, paging.PageSize, Constants.LimitPaging, Constants.DefaultPaging);
+                    .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<AccountBankingResponse>
                 {
                     Metadata = new PagingsMetadata
@@ -94,7 +95,7 @@ namespace SupFAmof.Service.Service
             {
                 //check banking information first
 
-                var checkBankingInfo = _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefault(x => x.AccountId == accountId);
+                var checkBankingInfo = await _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
 
                 #region checking validation
 
@@ -153,8 +154,11 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var account = _unitOfWork.Repository<AccountBanking>()
-                                         .Find(x => x.Id == accountBankingId && x.AccountId == accountId);
+                var account = await _unitOfWork.Repository<AccountBanking>()
+                                         .FindAsync(x => x.Id == accountBankingId && x.AccountId == accountId);
+
+                //check banking existed or not
+                var bankingCheck = _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
 
                 #region checking validation
 
@@ -180,12 +184,45 @@ namespace SupFAmof.Service.Service
 
                 #endregion
 
+                //create if accountBanking not have any data
+                if (bankingCheck == null)
+                {
+                    request.Beneficiary = Ultils.RemoveDiacritics(request.Beneficiary).ToUpper();
+                    request.Branch = Ultils.RemoveDiacritics(request.Branch).ToUpper();
+
+                    CreateAccountBankingRequest createAccountBanking = new()
+                    {
+                        Beneficiary = request.Beneficiary,
+                        Branch = request.Branch,
+                        AccountNumber = request.AccountNumber,
+                        BankName = request.BankName,
+                    };
+
+                    var bankingMapping = _mapper.Map<AccountBanking>(createAccountBanking);
+                    bankingMapping.IsActive = true;
+                    bankingMapping.CreateAt = Ultils.GetCurrentDatetime();
+
+                    await _unitOfWork.Repository<AccountBanking>().InsertAsync(bankingMapping);
+                    await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AccountBankingResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AccountBankingResponse>(account)
+                    };
+                }
+
                 account = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, account);
 
                 //loại bỏ các dấu thanh âm => Ví dụ (HỒ hố hô -> Ho ho ho)
                 account.Beneficiary = Ultils.RemoveDiacritics(account.Beneficiary).ToUpper();
                 account.Branch = Ultils.RemoveDiacritics(account.Branch).ToUpper();
-                account.UpdateAt = DateTime.Now;
+                account.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<AccountBanking>().UpdateDetached(account);
                 await _unitOfWork.CommitAsync();

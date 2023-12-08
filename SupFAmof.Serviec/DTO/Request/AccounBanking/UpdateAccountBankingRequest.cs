@@ -27,8 +27,8 @@ namespace SupFAmof.Service.DTO.Request.AccounBanking
         [MaxLength(50, ErrorMessage = "BankName cannot exceed 50 characters.")]
         public string? BankName { get; set; }
 
-        [Required]
-        [Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
+        //[Required]
+        //[Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
         public bool IsActive { get; set; }
     }
 }

@@ -51,6 +51,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? IdStudent { get; set; }
+        public int? Status { get; set; }
     }
     public class TrainingCertificateRegistrationResponse
     {

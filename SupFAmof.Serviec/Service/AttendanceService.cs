@@ -128,7 +128,7 @@ namespace SupFAmof.Service.Service
                             await CreateAccountReport(request);
                         }
                     }
-                    if(item.Status == (int)CheckAttendanceEnum.Rejected)
+                    if(item.Status == (int)CheckAttendanceEnum.Pending)
                     {
                         CreateAccountReportRequest reject = new CreateAccountReportRequest
                         {

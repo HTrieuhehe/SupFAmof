@@ -992,7 +992,7 @@ namespace SupFAmof.Service.Service
                         // tìm post Registration có position Id trung với các bài post
                         var premiumPostRegistrations = await _unitOfWork.Repository<PostRegistration>()
                             .GetAll()
-                            .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
+                            .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
                             .ToListAsync();
 
                         // tính tổng các registration đã được confirm
@@ -1022,8 +1022,6 @@ namespace SupFAmof.Service.Service
                         // Reset temp variable
                         totalAmountPosition = 0;
                     }
-
-
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -1067,9 +1065,8 @@ namespace SupFAmof.Service.Service
                         // tìm post Registration có position Id trung với các bài post
                         var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                             .GetAll()
-                                                            .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
-                                                            //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                            //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                                                            .Where(reg => postPositionIds.Contains(reg.PositionId) 
+                                                            && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
                                                             .ToListAsync();
 
                         // tính tổng các registration đã được confirm
@@ -1130,9 +1127,8 @@ namespace SupFAmof.Service.Service
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                         .GetAll()
-                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
-                                                        //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                        //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) 
+                                                        && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
                                                         .ToListAsync();
 
                     // tính tổng các registration đã được confirm
@@ -1173,8 +1169,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw new ErrorResponse(408, (int)PostErrorEnum.REQUEST_TIME_OUT,
-                                         PostErrorEnum.REQUEST_TIME_OUT.GetDisplayName());
+                throw; 
             }
         }
 
@@ -1218,9 +1213,8 @@ namespace SupFAmof.Service.Service
                 // tìm post Registration có position Id trung với các bài post
                 var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                     .GetAll()
-                                                    .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
-                                                    //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                    //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                                                    .Where(reg => postPositionIds.Contains(reg.PositionId) 
+                                                    && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
                                                     .ToListAsync();
 
                 // tính tổng các registration đã được confirm
@@ -1395,10 +1389,10 @@ namespace SupFAmof.Service.Service
                             var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                             // tìm post Registration có position Id trung với các bài post
-                            var premiumPostRegistrations = _unitOfWork.Repository<PostRegistration>()
+                            var premiumPostRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
                                 .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                .ToList();
+                                .ToListAsync();
 
                             // tính tổng các registration đã được confirm
                             item.RegisterAmount = premiumPostRegistrations.Count;
@@ -1461,10 +1455,10 @@ namespace SupFAmof.Service.Service
                         var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                         // tìm post Registration có position Id trung với các bài post
-                        var premiumPostRegistrations = _unitOfWork.Repository<PostRegistration>()
+                        var premiumPostRegistrations = await _unitOfWork.Repository<PostRegistration>()
                             .GetAll()
                             .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                            .ToList();
+                            .ToListAsync();
 
                         // tính tổng các registration đã được confirm
                         item.RegisterAmount = premiumPostRegistrations.Count;
@@ -1535,10 +1529,11 @@ namespace SupFAmof.Service.Service
                         var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                         // tìm post Registration có position Id trung với các bài post
-                        var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                        var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                             .GetAll()
-                                                            .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                                            .ToList();
+                                                            .Where(reg => postPositionIds.Contains(reg.PositionId) 
+                                                            && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                            .ToListAsync();
 
                         // tính tổng các registration đã được confirm
                         item.RegisterAmount = postRegistrations.Count;
@@ -1596,10 +1591,11 @@ namespace SupFAmof.Service.Service
                     var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                     // tìm post Registration có position Id trung với các bài post
-                    var postRegistrations = _unitOfWork.Repository<PostRegistration>()
+                    var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                         .GetAll()
-                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                                        .ToList();
+                                                        .Where(reg => postPositionIds.Contains(reg.PositionId) 
+                                                        && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                        .ToListAsync();
 
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrations.Count;

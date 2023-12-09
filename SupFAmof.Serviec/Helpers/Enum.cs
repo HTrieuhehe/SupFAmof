@@ -24,7 +24,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cộng tác viên")]
             Collaborator = 2,
 
-            [Display(Name = "Những con báo kỳ 9")]
+            [Display(Name = "Administratior")]
             SystemAdmin = 3,
         }
 

@@ -213,7 +213,9 @@ namespace SupFAmof.API.Mapper
             #region Admission Account Certificate
             CreateMap<AccountCertificate, AccountCertificateResponse>().ReverseMap();
             CreateMap<CreateAccountCertificateRequest, AccountCertificate>();
-            CreateMap<UpdateAccountCertificateRequest, AccountCertificate>();
+            CreateMap<UpdateAccountCertificateRequest, AccountCertificate>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AccountCertificateId))
+                .ReverseMap(); 
 
             CreateMap<TrainingCertificateRegistration, TrainingRegistration>().ReverseMap();
             CreateMap<TrainingCertificate, AdmissionGetCertificateRegistrationResponse>()

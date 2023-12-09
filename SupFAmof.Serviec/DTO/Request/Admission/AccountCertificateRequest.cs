@@ -31,7 +31,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         [Required]
         [RegularExpression("^[0-9]+$", ErrorMessage = "Traning Certificate Id must contain only numeric characters.")]
-        public int TrainingCertificateId { get; set; }
+        public int AccountCertificateId { get; set; }
 
         [Required]
         [RegularExpression("^[0-9]+$", ErrorMessage = "Status must containt only numeric character")]

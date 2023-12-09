@@ -353,6 +353,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "List of Certificates has no data")]
             CERTIFICATE_LIST_EMPTY = 4004,
 
+            //400
+            [Display(Name = "You are not the issuer! ")]
+            WRONG_ISSUER_PERSON = 4005,
+
             //404
             [Display(Name = "Account Certificate not found!")]
             NOT_FOUND_ID = 4041,

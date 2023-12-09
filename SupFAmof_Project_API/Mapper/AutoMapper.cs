@@ -221,7 +221,8 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest=>dest.RegisterAmount,opt=>opt.MapFrom(src=>src.TrainingRegistrations.Count()))
                 .ReverseMap();
             CreateMap<TrainingEventDay, TrainingEventDayResponse>().ReverseMap();
-            CreateMap<TrainingRegistration, CollabRegistrationsResponse>();
+            CreateMap<TrainingRegistration, CollabRegistrationsResponse>()
+                .ForMember(x=>x.ConfirmAt,opt=>opt.MapFrom(src=>src.ConfirmedAt));
             CreateMap<TrainingRegistration, AccountCertificateRegistrationResponse>()
                 .ForMember(x=>x.Email,opt=>opt.MapFrom(src=>src.Account.Email))
                 .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Account.Name))

@@ -405,7 +405,13 @@ namespace SupFAmof.Service.Service
                         }
                         CreateAccountApplicationRequest application = new CreateAccountApplicationRequest
                         {
-                            ProblemNote = $"Request for cancellation for Position {postRegistration.Position.PositionName} from Post {postRegistration.Position.Post.PostCode}",
+                            ProblemNote = 
+                            $"Cộng tác viên {postRegistration.Account.Name}" +
+                            $"xin phép được gửi đơn hủy vị trí\n" +
+                            $"{postRegistration.Position.PositionName}\n" +
+                            $"ở sự kiện {postRegistration.Position.Post.PostCode}\n" +
+                            $"Mã đăng ki là {postRegistration.RegistrationCode}\n" +
+                            $"Người đăng bài này là {postRegistration.Position.Post.Account.Name}",
                         };
                         if (!await DuplicatePendingApplication(application))
                         {

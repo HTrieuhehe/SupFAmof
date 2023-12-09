@@ -40,17 +40,10 @@ namespace SupFAmof.Service.Service
                                            .Where(x => x.AccountIdBanned == accountId && x.IsActive);
                 #region Check Banned
 
-                if (accountBanned.Any())
+                if (accountBanned.Any(x => x.IsActive == true) && accountBanned.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime())
                 {
-                    var currentDateTime = Ultils.GetCurrentDatetime();
-
-                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                    if (maxDayEnd > currentDateTime)
-                    {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
                                                        PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
-                    }
                 }
 
                 #endregion
@@ -102,6 +95,10 @@ namespace SupFAmof.Service.Service
                     }
 
                     #region Count Registration Amount
+
+                    //lấy thời gian min max
+                    registration.Post.TimeFrom = registration.PostPositionsUnregistereds.Min(p => p.TimeFrom).ToString();
+                    registration.Post.TimeTo = registration.PostPositionsUnregistereds.Max(p => p.TimeTo).ToString();
 
                     foreach (var postPosition in registration.PostPositionsUnregistereds)
                     {

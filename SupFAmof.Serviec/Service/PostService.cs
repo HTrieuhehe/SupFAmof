@@ -30,6 +30,7 @@ using static SupFAmof.Service.Helpers.ErrorEnum;
 using static ServiceStack.Diagnostics;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using DocumentFormat.OpenXml.VariantTypes;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace SupFAmof.Service.Service
 {
@@ -289,7 +290,7 @@ namespace SupFAmof.Service.Service
 
                     if (position.DocumentId == null)
                     {
-                        
+
                     }
 
                     else if (checkdocument == null)
@@ -1022,7 +1023,7 @@ namespace SupFAmof.Service.Service
                         totalAmountPosition = 0;
                     }
 
-                   
+
 
                     return new BaseResponsePagingViewModel<PostResponse>()
                     {
@@ -1130,8 +1131,8 @@ namespace SupFAmof.Service.Service
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                         .GetAll()
                                                         .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
-                                                                                                               //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                                               //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                                                        //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                        //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
                                                         .ToListAsync();
 
                     // tính tổng các registration đã được confirm
@@ -1181,6 +1182,8 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                int totalCount = 0;
+                int? totalAmountPosition = 0;
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -1193,12 +1196,56 @@ namespace SupFAmof.Service.Service
 
                 if (post == null)
                 {
-                    if (post == null)
-                    {
-                        throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
-                                             PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
-                    }
+                    throw new ErrorResponse(404, (int)PostErrorEnum.NOT_FOUND_ID,
+                                         PostErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
+
+                if (post.IsPremium == true && checkAccount.IsPremium == false)
+                {
+                    throw new ErrorResponse(403, (int)PostErrorEnum.PREMIUM_REQUIRED,
+                                         PostErrorEnum.PREMIUM_REQUIRED.GetDisplayName());
+                }
+
+                var postMapping = _mapper.Map<PostResponse>(post);
+
+                //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
+                postMapping.TimeFrom = post.PostPositions.Min(p => p.TimeFrom).ToString();
+                postMapping.TimeTo = post.PostPositions.Max(p => p.TimeTo).ToString();
+
+                // lấy tất cả các position Id của bài post hiện tại
+                var postPositionIds = postMapping.PostPositions.Select(p => p.Id).ToList();
+
+                // tìm post Registration có position Id trung với các bài post
+                var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
+                                                    .GetAll()
+                                                    .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel)
+                                                    //&& reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                    //&& reg.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                                                    .ToListAsync();
+
+                // tính tổng các registration đã được confirm
+                postMapping.RegisterAmount = postRegistrations.Count;
+
+                foreach (var itemDetail in postMapping.PostPositions)
+                {
+                    //count register amount in post attendee based on position
+                    totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+
+                    //transafer data to field in post position
+                    itemDetail.PositionRegisterAmount = totalCount;
+
+                    //add number of amount required to total amount of a specific post
+                    totalAmountPosition += itemDetail.Amount;
+
+                    //reset temp count
+                    totalCount = 0;
+                }
+                //transfer data from position after add to field in post
+                postMapping.TotalAmountPosition = totalAmountPosition;
+
+                // Reset temp variable
+                totalAmountPosition = 0;
+
 
                 return new BaseResponseViewModel<PostResponse>()
                 {
@@ -1208,7 +1255,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<PostResponse>(post)
+                    Data = postMapping
                 };
             }
             catch (Exception ex)
@@ -1339,7 +1386,7 @@ namespace SupFAmof.Service.Service
                                                                                     || x.PostDescription.Contains(search)
                                                                                     || x.PostPositions.Any(x => x.SchoolName.Contains(search))
                                                                                     || x.PostPositions.Any(x => x.Location.Contains(search)));
-                        
+
                         var postPremiumSearchResponses = await filterStatus.ToListAsync();
 
                         foreach (var item in postPremiumSearchResponses)
@@ -1534,7 +1581,7 @@ namespace SupFAmof.Service.Service
                                         .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                         .DynamicFilter(filter)
                                         .DynamicSort(paging.Sort, paging.Order);
-                                        //.PagingQueryable(paging.Page, paging.PageSize);
+                //.PagingQueryable(paging.Page, paging.PageSize);
 
                 var dateFilter = FilterPostDateFrom(posts, timeFromFilter).PagingQueryable(paging.Page, paging.PageSize);
                 var responses = await dateFilter.Item2.ToListAsync();

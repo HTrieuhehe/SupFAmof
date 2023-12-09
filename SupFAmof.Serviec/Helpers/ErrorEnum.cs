@@ -404,6 +404,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "New position cannot be null")]
             INVALID_NEW_POSITION = 40010,
 
+            //403
+            [Display(Name = "You are not premium to see this post!")]
+            PREMIUM_REQUIRED = 4031,
+
             //404
             [Display(Name = "Post Not Found")]
             NOT_FOUND_ID = 4041,

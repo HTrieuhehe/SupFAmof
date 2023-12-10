@@ -17,7 +17,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
         public string? ContractName { get; set; }
 
         [Required (ErrorMessage = "Contract Description is required.")]
-        [MaxLength(225, ErrorMessage = "Contract Description cannot exceed 225 characters.")]
+        //[MaxLength(225, ErrorMessage = "Contract Description cannot exceed 225 characters.")]
         public string? ContractDescription { get; set; }
 
         [Required(ErrorMessage = "Sample File cannot empty")]

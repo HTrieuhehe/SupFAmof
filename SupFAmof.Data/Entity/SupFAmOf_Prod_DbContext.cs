@@ -285,8 +285,6 @@ namespace SupFAmof.Data.Entity
             {
                 entity.ToTable("Contract");
 
-                entity.Property(e => e.ContractDescription).HasMaxLength(225);
-
                 entity.Property(e => e.ContractName).HasMaxLength(100);
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");

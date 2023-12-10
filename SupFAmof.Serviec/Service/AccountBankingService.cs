@@ -20,6 +20,7 @@ using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.Service.ServiceInterface;
 using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace SupFAmof.Service.Service
 {
@@ -242,6 +243,89 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0
                     },
                     Data = _mapper.Map<AccountBankingResponse>(accountBanking)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountBankingResponse>> DisableAccountBanking(int accountId)
+        {
+            try
+            {
+                //check banking existed or not
+                var accountBanking = await _unitOfWork.Repository<AccountBanking>()
+                                                       .GetAll()
+                                                       .FirstOrDefaultAsync(x => x.AccountId == accountId && x.IsActive == true);
+
+                #region checking validation
+
+                if (accountBanking == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
+                                        AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
+                }
+
+                #endregion
+
+                accountBanking.IsActive = false;
+                accountBanking.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<AccountBanking>().UpdateDetached(accountBanking);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountBankingResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountBankingResponse>(accountBanking)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<bool>> DeleteAccountBanking(int accountId)
+        {
+            try
+            {
+                //check banking existed or not
+                var accountBanking = await _unitOfWork.Repository<AccountBanking>()
+                                                       .GetAll()
+                                                       .FirstOrDefaultAsync(x => x.AccountId == accountId && x.IsActive == true);
+
+                #region checking validation
+
+                if (accountBanking == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
+                                        AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
+                }
+
+                #endregion
+
+                accountBanking.IsActive = false;
+
+                 _unitOfWork.Repository<AccountBanking>().Delete(accountBanking);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<bool>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Delete Successfully",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = true,
                 };
             }
             catch (Exception ex)

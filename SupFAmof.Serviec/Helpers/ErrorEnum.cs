@@ -596,7 +596,7 @@ namespace SupFAmof.Service.Helpers
             CONTRACT_ACCOUNT_ALREADY_UPDATE = 4001,
 
             //400
-            [Display(Name = "Collaborator has confirm one contract before")]
+            [Display(Name = "Right now you already have a contract! Cannot confirm more!")]
             CONTRACT_ALREADY_CONFIRM = 4002,
 
             //400

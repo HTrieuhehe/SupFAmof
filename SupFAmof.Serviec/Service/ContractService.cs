@@ -707,6 +707,8 @@ namespace SupFAmof.Service.Service
 
             try
             {
+                var currentTime = Ultils.GetCurrentDatetime();
+
                 //check Account
                 var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
 
@@ -745,15 +747,28 @@ namespace SupFAmof.Service.Service
 
                         if (accountContract == null)
                         {
-                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
-                                                                 AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT,
+                                                                 AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT.GetDisplayName());
                         }
 
                         //account contract has been confirm or reject before
                         if (accountContract.Status != (int)AccountContractStatusEnum.Pending)
                         {
-                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE,
+                            throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE,
                                                                  AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE.GetDisplayName());
+                        }
+
+                        //validate Signing time with currentDateTime
+
+                        var signingTimeCheck = accountContract.Contract.SigningDate;
+
+                        //cannot confirm if currentTime pass 5PM of SigningDate
+                        if (signingTimeCheck.AddHours(5) <= currentTime)
+                        {
+                            //reject that contract request
+
+                            throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONFIRM_INVALID,
+                                                                 AccountContractErrorEnum.CONFIRM_INVALID.GetDisplayName());
                         }
 
                         // validate if there is any contract in range of this collaborator
@@ -814,8 +829,8 @@ namespace SupFAmof.Service.Service
 
                         if (accountContractCheck == null)
                         {
-                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
-                                                                 AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                            throw new ErrorResponse(404, (int)AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT,
+                                                                 AccountContractErrorEnum.NOT_FOUND_ACCOUNT_CONTRACT.GetDisplayName());
                         }
 
                         //account contract has been confirm or reject before
@@ -844,12 +859,10 @@ namespace SupFAmof.Service.Service
                     #endregion
 
                     default:
-                        //nothing gonna happen
-                        break;
-                }
 
-                throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
+                        throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION,
                                                           AccountContractErrorEnum.CONTRACT_REMOVED_ADMISSION.GetDisplayName());
+                }
             }
             catch (Exception)
             {

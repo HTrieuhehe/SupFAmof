@@ -29,6 +29,6 @@ namespace SupFAmof.Service.DTO.Request.AccounBanking
 
         //[Required]
         //[Range(typeof(bool), "true", "false", ErrorMessage = "IsActive must be either true or false.")]
-        public bool IsActive { get; set; }
+        //public bool IsActive { get; set; }
     }
 }

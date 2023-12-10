@@ -112,6 +112,17 @@ namespace SupFAmof.Service.Service
                                         AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED.GetDisplayName());
                 }
 
+                #region validate fields
+
+                else if (string.IsNullOrEmpty(request.Beneficiary))
+                {
+                    //change field name to string 
+                    var beneficiary = nameof(request.Beneficiary);
+
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
+                                   $"{beneficiary}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
+                }
+
                 else if (string.IsNullOrEmpty(request.AccountNumber))
                 {
                     //change field name to string 
@@ -121,22 +132,11 @@ namespace SupFAmof.Service.Service
                                    $"{accountNumber}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
 
-                else if (string.IsNullOrEmpty(request.Branch))
+                //check Account Number is number or contain char
+                else if (!Ultils.CheckIsOnlyNumber(request.AccountNumber))
                 {
-                    //change field name to string 
-                    var branch = nameof(request.Branch);
-
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
-                                   $"{branch}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
-                }
-
-                else if (string.IsNullOrEmpty(request.Beneficiary))
-                {
-                    //change field name to string 
-                    var beneficiary = nameof(request.Beneficiary);
-
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
-                                   $"{beneficiary}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID,
+                                        AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID.GetDisplayName());
                 }
 
                 else if (string.IsNullOrEmpty(request.BankName))
@@ -148,12 +148,16 @@ namespace SupFAmof.Service.Service
                                    $"{bankNumber}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
 
-                //check Account Number is number or contain char
-                else if (!Ultils.CheckIsOnlyNumber(request.AccountNumber))
+                else if (string.IsNullOrEmpty(request.Branch))
                 {
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID,
-                                        AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID.GetDisplayName());
+                    //change field name to string 
+                    var branch = nameof(request.Branch);
+
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
+                                   $"{branch}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
+
+                #endregion
 
                 #endregion
 
@@ -204,6 +208,17 @@ namespace SupFAmof.Service.Service
                                         AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
                 }
 
+                #region validate fields
+
+                else if (string.IsNullOrEmpty(request.Beneficiary))
+                {
+                    //change field name to string 
+                    var beneficiary = nameof(request.Beneficiary);
+
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
+                                   $"{beneficiary}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
+                }
+
                 else if (string.IsNullOrEmpty(request.AccountNumber))
                 {
                     //change field name to string 
@@ -213,22 +228,11 @@ namespace SupFAmof.Service.Service
                                    $"{accountNumber}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
 
-                else if (string.IsNullOrEmpty(request.Branch))
+                //check Account Number is number or contain char
+                else if (!Ultils.CheckIsOnlyNumber(request.AccountNumber))
                 {
-                    //change field name to string 
-                    var branch = nameof(request.Branch);
-
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
-                                   $"{branch}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
-                }
-
-                else if (string.IsNullOrEmpty(request.Beneficiary))
-                {
-                    //change field name to string 
-                    var beneficiary = nameof(request.Beneficiary);
-
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
-                                   $"{beneficiary}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID,
+                                        AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID.GetDisplayName());
                 }
 
                 else if (string.IsNullOrEmpty(request.BankName))
@@ -240,13 +244,16 @@ namespace SupFAmof.Service.Service
                                    $"{bankNumber}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
 
-                //check Account Number is number or contain char
-                else if (!Ultils.CheckIsOnlyNumber(request.AccountNumber))
+                else if (string.IsNullOrEmpty(request.Branch))
                 {
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID,
-                                        AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_INVALID.GetDisplayName());
+                    //change field name to string 
+                    var branch = nameof(request.Branch);
+
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.FIELD_REQUIRED,
+                                   $"{branch}" + AccountBankingErrorEnums.FIELD_REQUIRED.GetDisplayName());
                 }
 
+                #endregion
 
                 #endregion
 

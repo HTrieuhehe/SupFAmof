@@ -142,8 +142,8 @@ namespace SupFAmof.Service.Helpers
             ACCOUNT_BAKING_NUMBER_INVALID = 4003,
 
             //400
-            [Display(Name = "Account Number cannot null")]
-            ACCOUNT_BANKING_NUMBER_NOT_NULL = 4004,
+            [Display(Name = " is required!")]
+            FIELD_REQUIRED = 4004,
 
             //404
             [Display(Name = "Not Found Account")]
@@ -614,6 +614,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Account Contract is not available to complete")]
             COMPLETE_INVALID = 4006,
+
+            //400
+            [Display(Name = "Cannot confirm Contract after 5pm of signing date")]
+            CONFIRM_INVALID = 4007,
 
             //404
             [Display(Name = "Error occur when collaborator do wrong")]

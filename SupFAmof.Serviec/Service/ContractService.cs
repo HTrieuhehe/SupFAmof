@@ -81,7 +81,7 @@ namespace SupFAmof.Service.Service
                                         ContractErrorEnum.SIGNING_DATE_INVALID_WITH_CURRENT_DATE.GetDisplayName() + $": {timeRequired}");
                 }
 
-                else if(request.StartDate < request.SigningDate)
+                else if (request.StartDate < request.SigningDate)
                 {
                     throw new ErrorResponse(400, (int)ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE,
                                        ContractErrorEnum.START_DATE_INVALID_WITH_SIGNING_DATE.GetDisplayName());
@@ -208,7 +208,7 @@ namespace SupFAmof.Service.Service
 
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -269,7 +269,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        
+
         public async Task<BaseResponsePagingViewModel<AdmissionAccountContractResponse>> AdmisionSearchContract(int accountId, string search, PagingRequest paging)
         {
             //Search by Name
@@ -521,12 +521,12 @@ namespace SupFAmof.Service.Service
                                        AccountContractErrorEnum.OVER_COLLABORATOR.GetDisplayName());
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
         }
-    
+
         private async Task<byte[]> FillingDocTransfer(Account account, Contract contract)
         {
             //khởi tạo các biến liên quan
@@ -603,7 +603,7 @@ namespace SupFAmof.Service.Service
         }
 
         #region Collab Contract
-        
+
         public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging)
         {
             try
@@ -750,24 +750,13 @@ namespace SupFAmof.Service.Service
                         }
 
                         //account contract has been confirm or reject before
-                        if(accountContract.Status != (int)AccountContractStatusEnum.Pending)
+                        if (accountContract.Status != (int)AccountContractStatusEnum.Pending)
                         {
                             throw new ErrorResponse(404, (int)AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE,
                                                                  AccountContractErrorEnum.CONTRACT_ACCOUNT_ALREADY_UPDATE.GetDisplayName());
                         }
 
                         // validate if there is any contract in range of this collaborator
-
-                        #region Obsolete
-
-                        //var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
-                        //            .GetAll()
-                        //            .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && x.Contract.StartDate <= Ultils.GetCurrentDatetime()
-                        //                                                                            && x.Contract.EndDate >= Ultils.GetCurrentDatetime()
-                        //                                                                            && x.AccountId == accountId);
-
-                        #endregion
-
                         var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
                                                                     .GetAll()
                                                                     .FirstOrDefaultAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm &&
@@ -780,24 +769,19 @@ namespace SupFAmof.Service.Service
                                                                  AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
                         }
 
-                        //filling data in 
 
-                        //var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == accountContract);
-
-                        var fileDocByte = await FillingDocTransfer(account, accountContract.Contract);
-
-                        accountContract.SubmittedBinaryFile = fileDocByte;
+                        accountContract.Status = (int)AccountContractStatusEnum.Confirm;
                         accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
 
-                        List<int> admissionIds = new List<int>();
-                        admissionIds.Add(accountContract.Contract.CreatePersonId);
+                        List<int> collaboratorIds = new List<int>();
+                        collaboratorIds.Add(accountId);
 
                         //create notification request 
                         PushNotificationRequest notificationRequest = new PushNotificationRequest()
                         {
-                            Ids = admissionIds,
+                            Ids = collaboratorIds,
                             Title = NotificationTypeEnum.Contract_Request.GetDisplayName(),
                             Body = "Congratulation! You are confirmed your contract!",
                             NotificationsType = (int)NotificationTypeEnum.Contract_Request
@@ -818,7 +802,7 @@ namespace SupFAmof.Service.Service
 
                         };
 
-                        #endregion
+                    #endregion
 
                     case (int)AccountContractStatusEnum.Reject:
 
@@ -857,7 +841,7 @@ namespace SupFAmof.Service.Service
                             },
                             Data = _mapper.Map<AccountContractResponse>(accountContractCheck)
                         };
-                        #endregion
+                    #endregion
 
                     default:
                         //nothing gonna happen
@@ -910,6 +894,21 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+
+        #region Unsed Code in Confirm Contract
+
+        /*
+            //filling data in 
+
+            //var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == accountContract);
+
+            var fileDocByte = await FillingDocTransfer(account, accountContract.Contract);
+
+            accountContract.SubmittedBinaryFile = fileDocByte;
+         */
+
+        #endregion
 
         #endregion
     }

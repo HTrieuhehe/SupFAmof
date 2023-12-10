@@ -36,11 +36,13 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingById(int id)
+        public async Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingByToken(int accountId)
         {
             try
             {
-                var accountBanking = await _unitOfWork.Repository<AccountBanking>().FindAsync(x => x.Id == id);
+                var accountBanking = await _unitOfWork.Repository<AccountBanking>()
+                                                      .GetAll()
+                                                      .FirstOrDefaultAsync(x => x.AccountId == accountId && x.IsActive == true);
                 if (accountBanking == null)
                 {
                     throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
@@ -63,6 +65,7 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
         public async Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse filter, PagingRequest paging)
         {
             try
@@ -89,13 +92,16 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
         public async Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(int accountId, CreateAccountBankingRequest request)
         {
             try
             {
                 //check banking information first
 
-                var checkBankingInfo = await _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
+                var checkBankingInfo = await _unitOfWork.Repository<AccountBanking>()
+                                                        .GetAll()
+                                                        .FirstOrDefaultAsync(x => x.AccountId == accountId && x.IsActive == true);
 
                 #region checking validation
 
@@ -105,11 +111,11 @@ namespace SupFAmof.Service.Service
                                         AccountBankingErrorEnums.ACCOUNT_BANKING_EXISTED.GetDisplayName());
                 }
 
-                else if (request.AccountNumber == null || request.AccountNumber == "")
+                else if (string.IsNullOrEmpty(request.AccountNumber))
                 {
 
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_NOT_NULL,
-                                    AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_NOT_NULL.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BANKING_NUMBER_NOT_NULL,
+                                    AccountBankingErrorEnums.ACCOUNT_BANKING_NUMBER_NOT_NULL.GetDisplayName());
                 }
 
                 //check Account Number is number or contain char
@@ -129,7 +135,7 @@ namespace SupFAmof.Service.Service
                 account.Beneficiary = Ultils.RemoveDiacritics(account.Beneficiary).ToUpper();
                 account.Branch = Ultils.RemoveDiacritics(account.Branch).ToUpper();
                 account.IsActive = true;
-                account.CreateAt = DateTime.Now;
+                account.CreateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<AccountBanking>().InsertAsync(account);
                 await _unitOfWork.CommitAsync();
@@ -150,19 +156,19 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        public async Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, int accountBankingId, UpdateAccountBankingRequest request)
+
+        public async Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, UpdateAccountBankingRequest request)
         {
             try
             {
-                var account = await _unitOfWork.Repository<AccountBanking>()
-                                         .FindAsync(x => x.Id == accountBankingId && x.AccountId == accountId);
-
                 //check banking existed or not
-                var bankingCheck = _unitOfWork.Repository<AccountBanking>().GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId);
+                var checkBankingInfo = await _unitOfWork.Repository<AccountBanking>()
+                                                       .GetAll()
+                                                       .FirstOrDefaultAsync(x => x.AccountId == accountId && x.IsActive == true);
 
                 #region checking validation
 
-                if (account == null)
+                if (checkBankingInfo == null)
                 {
                     throw new ErrorResponse(404, (int)AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND,
                                         AccountBankingErrorEnums.ACCOUNTBANKING_NOT_FOUND.GetDisplayName());
@@ -171,8 +177,8 @@ namespace SupFAmof.Service.Service
                 else if (request.AccountNumber == null || request.AccountNumber == "")
                 {
 
-                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_NOT_NULL,
-                                    AccountBankingErrorEnums.ACCOUNT_BAKING_NUMBER_NOT_NULL.GetDisplayName());
+                    throw new ErrorResponse(400, (int)AccountBankingErrorEnums.ACCOUNT_BANKING_NUMBER_NOT_NULL,
+                                    AccountBankingErrorEnums.ACCOUNT_BANKING_NUMBER_NOT_NULL.GetDisplayName());
                 }
 
                 //check Account Number is number or contain char
@@ -185,46 +191,46 @@ namespace SupFAmof.Service.Service
                 #endregion
 
                 //create if accountBanking not have any data
-                if (bankingCheck == null)
-                {
-                    request.Beneficiary = Ultils.RemoveDiacritics(request.Beneficiary).ToUpper();
-                    request.Branch = Ultils.RemoveDiacritics(request.Branch).ToUpper();
+                //if (bankingCheck == null)
+                //{
+                //    request.Beneficiary = Ultils.RemoveDiacritics(request.Beneficiary).ToUpper();
+                //    request.Branch = Ultils.RemoveDiacritics(request.Branch).ToUpper();
 
-                    CreateAccountBankingRequest createAccountBanking = new()
-                    {
-                        Beneficiary = request.Beneficiary,
-                        Branch = request.Branch,
-                        AccountNumber = request.AccountNumber,
-                        BankName = request.BankName,
-                    };
+                //    CreateAccountBankingRequest createAccountBanking = new()
+                //    {
+                //        Beneficiary = request.Beneficiary,
+                //        Branch = request.Branch,
+                //        AccountNumber = request.AccountNumber,
+                //        BankName = request.BankName,
+                //    };
 
-                    var bankingMapping = _mapper.Map<AccountBanking>(createAccountBanking);
-                    bankingMapping.IsActive = true;
-                    bankingMapping.CreateAt = Ultils.GetCurrentDatetime();
+                //    var bankingMapping = _mapper.Map<AccountBanking>(createAccountBanking);
+                //    bankingMapping.IsActive = true;
+                //    bankingMapping.CreateAt = Ultils.GetCurrentDatetime();
 
-                    await _unitOfWork.Repository<AccountBanking>().InsertAsync(bankingMapping);
-                    await _unitOfWork.CommitAsync();
+                //    await _unitOfWork.Repository<AccountBanking>().InsertAsync(bankingMapping);
+                //    await _unitOfWork.CommitAsync();
 
-                    return new BaseResponseViewModel<AccountBankingResponse>()
-                    {
-                        Status = new StatusViewModel()
-                        {
-                            Message = "Success",
-                            Success = true,
-                            ErrorCode = 0
-                        },
-                        Data = _mapper.Map<AccountBankingResponse>(account)
-                    };
-                }
+                //    return new BaseResponseViewModel<AccountBankingResponse>()
+                //    {
+                //        Status = new StatusViewModel()
+                //        {
+                //            Message = "Success",
+                //            Success = true,
+                //            ErrorCode = 0
+                //        },
+                //        Data = _mapper.Map<AccountBankingResponse>(account)
+                //    };
+                //}
 
-                account = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, account);
+                var accountBanking = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, checkBankingInfo);
 
                 //loại bỏ các dấu thanh âm => Ví dụ (HỒ hố hô -> Ho ho ho)
-                account.Beneficiary = Ultils.RemoveDiacritics(account.Beneficiary).ToUpper();
-                account.Branch = Ultils.RemoveDiacritics(account.Branch).ToUpper();
-                account.UpdateAt = Ultils.GetCurrentDatetime();
+                accountBanking.Beneficiary = Ultils.RemoveDiacritics(accountBanking.Beneficiary).ToUpper();
+                accountBanking.Branch = Ultils.RemoveDiacritics(accountBanking.Branch).ToUpper();
+                accountBanking.UpdateAt = Ultils.GetCurrentDatetime();
 
-                await _unitOfWork.Repository<AccountBanking>().UpdateDetached(account);
+                await _unitOfWork.Repository<AccountBanking>().UpdateDetached(accountBanking);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountBankingResponse>()
@@ -235,7 +241,7 @@ namespace SupFAmof.Service.Service
                         Success = true,
                         ErrorCode = 0
                     },
-                    Data = _mapper.Map<AccountBankingResponse>(account)
+                    Data = _mapper.Map<AccountBankingResponse>(accountBanking)
                 };
             }
             catch (Exception ex)

@@ -143,7 +143,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "Account Number cannot null")]
-            ACCOUNT_BAKING_NUMBER_NOT_NULL = 4004,
+            ACCOUNT_BANKING_NUMBER_NOT_NULL = 4004,
 
             //404
             [Display(Name = "Not Found Account")]

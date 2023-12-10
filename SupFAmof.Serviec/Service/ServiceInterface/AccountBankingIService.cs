@@ -11,9 +11,9 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface IAccountBankingService
     {
-        Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingById(int id);
+        Task<BaseResponseViewModel<AccountBankingResponse>> GetAccountBankingByToken(int accountId);
         Task<BaseResponsePagingViewModel<AccountBankingResponse>> GetAccountBankings(AccountBankingResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountBankingResponse>> CreateAccountBanking(int accountId, CreateAccountBankingRequest request);
-        Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, int accountBankingId, UpdateAccountBankingRequest request);
+        Task<BaseResponseViewModel<AccountBankingResponse>> UpdateAccountBanking(int accountId, UpdateAccountBankingRequest request);
     }
 }

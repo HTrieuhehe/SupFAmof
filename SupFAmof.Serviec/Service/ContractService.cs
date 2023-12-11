@@ -20,8 +20,10 @@ using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Xml;
 using System.Xml.Linq;
 using static SupFAmof.Service.Helpers.Enum;
@@ -694,7 +696,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountContractResponse>> ConfirmContract(int accountId, int accountContractId, int status)
+        public async Task<BaseResponsePagingViewModel<AccountContractResponse>> ConfirmContract(int accountId, int accountContractId, int status)
         {
             /*
             
@@ -823,16 +825,15 @@ namespace SupFAmof.Service.Service
                         await _notificationService.PushNotification(notificationRequest);
                         await _unitOfWork.CommitAsync();
 
-                        return new BaseResponseViewModel<AccountContractResponse>
-                        {
-                            Status = new StatusViewModel
-                            {
-                                Message = "Success",
-                                ErrorCode = 0,
-                                Success = true,
-                            },
-                            Data = _mapper.Map<AccountContractResponse>(accountContract)
+                        var accountContractResponse = await _unitOfWork.Repository<AccountContract>()
+                                                                 .GetAll()
+                                                                 .Where(x => x.AccountId == accountId)
+                                                                 .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                                                 .ToListAsync();
 
+                        return new BaseResponsePagingViewModel<AccountContractResponse>
+                        {
+                            Data = accountContractResponse,
                         };
 
                     #endregion
@@ -864,15 +865,15 @@ namespace SupFAmof.Service.Service
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContractCheck);
                         await _unitOfWork.CommitAsync();
 
-                        return new BaseResponseViewModel<AccountContractResponse>
+                        var accountContractResponses = await _unitOfWork.Repository<AccountContract>()
+                                                                 .GetAll()
+                                                                 .Where(x => x.AccountId == accountId)
+                                                                 .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                                                 .ToListAsync();
+
+                        return new BaseResponsePagingViewModel<AccountContractResponse>
                         {
-                            Status = new StatusViewModel
-                            {
-                                Message = "Success",
-                                ErrorCode = 0,
-                                Success = true,
-                            },
-                            Data = _mapper.Map<AccountContractResponse>(accountContractCheck)
+                            Data = accountContractResponses,
                         };
                     #endregion
 

@@ -763,10 +763,12 @@ namespace SupFAmof.Service.Service
                         var signingTimeCheck = accountContract.Contract.SigningDate;
 
                         //cannot confirm if currentTime pass 5PM of SigningDate
-                        if (signingTimeCheck.AddHours(5) <= currentTime)
+                        if (signingTimeCheck.AddHours(17) <= currentTime)
                         {
                             //reject that contract request
-
+                            accountContract.Status = (int)AccountContractStatusEnum.Reject;
+                            await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
+                            await _unitOfWork.CommitAsync();
                             throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONFIRM_INVALID,
                                                                  AccountContractErrorEnum.CONFIRM_INVALID.GetDisplayName());
                         }
@@ -780,6 +782,22 @@ namespace SupFAmof.Service.Service
 
                         if (checkCurrentContract != null)
                         {
+                            //reject all contract have overlap time
+
+                            var overlapContract = _unitOfWork.Repository<AccountContract>()
+                                                             .GetAll()
+                                                             .Where(x => x.Status == (int)AccountContractStatusEnum.Pending &&
+                                                                                              x.Contract.EndDate >= checkCurrentContract.Contract.StartDate &&
+                                                                                              x.AccountId == accountId);
+                            foreach(var item in overlapContract)
+                            {
+                                item.Status = (int)AccountContractStatusEnum.Reject;
+
+                                await _unitOfWork.Repository<AccountContract>().UpdateDetached(item);
+                            }
+
+                            await _unitOfWork.CommitAsync();
+
                             throw new ErrorResponse(400, (int)AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM,
                                                                  AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
                         }

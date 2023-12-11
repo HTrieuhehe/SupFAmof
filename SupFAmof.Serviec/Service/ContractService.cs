@@ -841,6 +841,7 @@ namespace SupFAmof.Service.Service
                                                                  .GetAll()
                                                                  .Where(x => x.AccountId == accountId)
                                                                  .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                                                 .OrderBy(x => x.Status)
                                                                  .ToListAsync();
 
                         return new BaseResponsePagingViewModel<AccountContractResponse>

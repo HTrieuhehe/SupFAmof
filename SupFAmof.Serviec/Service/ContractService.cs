@@ -809,12 +809,12 @@ namespace SupFAmof.Service.Service
 
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
 
-                        var overlapContract = _unitOfWork.Repository<AccountContract>()
+                        var overlapContracts = _unitOfWork.Repository<AccountContract>()
                                                              .GetAll()
                                                              .Where(x => x.Status == (int)AccountContractStatusEnum.Pending &&
                                                                                               x.Contract.EndDate >= checkCurrentContract.Contract.StartDate &&
                                                                                               x.AccountId == accountId);
-                        foreach (var item in overlapContract)
+                        foreach (var item in overlapContracts)
                         {
                             item.Status = (int)AccountContractStatusEnum.Reject;
 

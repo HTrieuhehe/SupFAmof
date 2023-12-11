@@ -98,36 +98,9 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-        
-        /// <summary>
-        /// Cancel Post Registration By Id.
-        /// </summary>
-        /// <param name="postRegistrationId">Id need to be submitted.</param>
-        /// <response code="200">Cancel success</response>
-        /// <response code="400">Failed to Cancel</response>
-        [HttpDelete("cancel")]
-        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
-        {
-            try
-            {
-                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
-                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
-                {
-                    return Unauthorized();
-                }
-                return await _postRegistrationService.CancelPostregistration(account.Id, postRegistrationId);
-            }
-            catch (ErrorResponse ex)
-            {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
-            }
-        }
-        
+
+      
+
         /// <summary>
         /// Update Post Registration By Id.
         /// </summary>
@@ -271,6 +244,34 @@ namespace SupFAmof.API.Controllers
                 }
                 var result = await _postRegistrationService.UpdateSchoolBus(account.Id, request);
                 return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+        /// <summary>
+        /// Cancel Post Registration By Id.
+        /// </summary>
+        /// <param name="postRegistrationId">Id need to be submitted.</param>
+        /// <response code="200">Cancel success</response>
+        /// <response code="400">Failed to Cancel</response>
+        [HttpDelete("cancel")]
+        public async Task<ActionResult<BaseResponseViewModel<dynamic>>> CancelPostRegistration(int postRegistrationId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.CancelPostregistration(account.Id, postRegistrationId);
             }
             catch (ErrorResponse ex)
             {

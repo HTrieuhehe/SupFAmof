@@ -1078,6 +1078,60 @@ namespace SupFAmof.Service.Service
             }
             return list;
         }
+
+
+
+
+        public async Task<BaseResponseViewModel<dynamic>> UnAssignClass(int accountId,int trainingRegistrationId)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(
+                   x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID,
+                                            AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var trainingRegistration = await _unitOfWork.Repository<TrainingRegistration>().FindAsync(x => x.Id == trainingRegistrationId);
+                if (trainingRegistration == null)
+                {
+                    throw new ErrorResponse(404, 404, "No registration");
+                }
+                if(!trainingRegistration.EventDayId.HasValue)
+                {
+                    throw new ErrorResponse(404, 404, "Nothing to unassign");
+
+                }
+                if (trainingRegistration.EventDay.Date < GetCurrentDatetime().Date)
+                {
+                    throw new ErrorResponse(400, 400, "Cant unassign because overdue");
+
+                }
+                if (trainingRegistration.EventDay.Date == GetCurrentDatetime().Date && trainingRegistration.EventDay.TimeFrom < GetCurrentDatetime().Date.TimeOfDay)
+                {
+                    throw new ErrorResponse(400, 400, "Cant unassign because overdue");
+                }
+
+                trainingRegistration.EventDayId = null;
+                trainingRegistration.Status = (int)TrainingRegistrationStatusEnum.Pending;
+                await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(trainingRegistration);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "UnAssign success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
     }
 
 }

@@ -26,6 +26,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> UpdateSchoolBus(int accountId, UpdateSchoolBusRequest request);
         Task<BaseResponseViewModel<List<PostRegistrationResponse>>> CancelPostRegistrationAdmission(List<int> Ids, int accountId);
         Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, FilterUpdateRequestResponse IdFilter);
+        Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetRegistrationByPositionIdAdmission(int admissionAccountId, PagingRequest paging, int? positionId);
     }
 
 }

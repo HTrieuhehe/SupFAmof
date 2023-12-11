@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ServiceStack;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
@@ -13,6 +14,7 @@ using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
 
 namespace SupFAmof.Service.Service
 {
@@ -352,111 +354,7 @@ namespace SupFAmof.Service.Service
         }
 
 
-        public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId, int postRegistrationId)
-        {
-            try
-            {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
-                if (accountBanned.Any())
-                {
-                    var currentDateTime = Ultils.GetCurrentDatetime();
-
-                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
-
-                    if (maxDayEnd > currentDateTime)
-                    {
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
-                    }
-                }
-                if (postRegistrationId == 0)
-                {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY,
-                                            PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY.GetDisplayName());
-                }
-
-                var postRegistration = _unitOfWork.Repository<PostRegistration>()
-                                                .GetAll()
-                                                .FirstOrDefault(x => x.Id == postRegistrationId && x.AccountId == accountId);
-
-                if (postRegistration == null)
-                {
-                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                            PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
-                }
-
-                switch ((PostRegistrationStatusEnum)postRegistration.Status)
-                {
-                    case PostRegistrationStatusEnum.Pending:
-                        postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
-                        postRegistration.CancelTime = Ultils.GetCurrentDatetime();
-                        await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
-                        await _unitOfWork.CommitAsync();
-                        break;
-                    case PostRegistrationStatusEnum.Confirm:
-                        DateTime combinedDateTime = postRegistration.Position.Date.Add(postRegistration.Position.TimeFrom);
-                        DateTime currentTime = GetCurrentDatetime();
-                        var timeDifference = combinedDateTime - currentTime;
-                        if (timeDifference.TotalHours < 6)
-                        {
-                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
-                      PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
-                        }
-                        CreateAccountApplicationRequest application = new CreateAccountApplicationRequest
-                        {
-                            ProblemNote = 
-                            $"Cộng tác viên {postRegistration.Account.Name}" +
-                            $"xin phép được gửi đơn hủy vị trí\n" +
-                            $"{postRegistration.Position.PositionName}\n" +
-                            $"ở sự kiện {postRegistration.Position.Post.PostCode}\n" +
-                            $"Mã đăng ki là {postRegistration.RegistrationCode}\n" +
-                            $"Người đăng bài này là {postRegistration.Position.Post.Account.Name}",
-                        };
-                        if (!await DuplicatePendingApplication(application))
-                        {
-                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND,
-                     PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND.GetDisplayName());
-                        }
-                        var report = _mapper.Map<CreateAccountApplicationRequest, Application>(application);
-                        report.AccountId = accountId;
-                        report.ReportDate = Ultils.GetCurrentDatetime();
-                        report.Status = (int)ReportProblemStatusEnum.Pending;
-                        await _unitOfWork.Repository<Application>().InsertAsync(report);
-                        await _unitOfWork.CommitAsync();
-                        return new BaseResponseViewModel<dynamic>()
-                        {
-                            Status = new StatusViewModel()
-                            {
-                                Success = true,
-                                Message = "Send Application to Admission",
-                                ErrorCode = 200
-                            }
-                            ,
-                            Data = report
-                        };
-                    default:
-                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
-                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
-
-                }
-
-
-                return new BaseResponseViewModel<dynamic>()
-                {
-                    Status = new StatusViewModel()
-                    {
-                        Success = true,
-                        Message = "Cancel Successfully",
-                        ErrorCode = 200
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        
 
         public async Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId, PostRegistrationUpdateRequest request)
         {
@@ -1487,6 +1385,148 @@ namespace SupFAmof.Service.Service
             }
             return true;
 
+        }
+        public async Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId, int postRegistrationId)
+        {
+            try
+            {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
+                if (postRegistrationId == 0)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY,
+                                            PostRegistrationErrorEnum.POST_REGISTRATION_CANNOT_NULL_OR_EMPTY.GetDisplayName());
+                }
+
+                var postRegistration = await _unitOfWork.Repository<PostRegistration>()
+                                                .FindAsync(x => x.Id == postRegistrationId && x.AccountId == accountId);
+
+                if (postRegistration == null)
+                {
+                    throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
+                                            PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                }
+
+                switch ((PostRegistrationStatusEnum)postRegistration.Status)
+                {
+                    case PostRegistrationStatusEnum.Pending:
+                        postRegistration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                        postRegistration.CancelTime = GetCurrentDatetime();
+                        await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
+                        await _unitOfWork.CommitAsync();
+                        break;
+                    case PostRegistrationStatusEnum.Confirm:
+                        DateTime combinedDateTime = postRegistration.Position.Date.Add(postRegistration.Position.TimeFrom);
+                        DateTime currentTime = GetCurrentDatetime();
+                        var timeDifference = combinedDateTime - currentTime;
+                        if (timeDifference.TotalHours < 6)
+                        {
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                      PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+                        }
+                        CreateAccountApplicationRequest application = new CreateAccountApplicationRequest
+                        {
+                            ProblemNote = $"Request cancellation at event {postRegistration.Position.Post.PostCode}. Registration code: {postRegistration.RegistrationCode}. Author: {postRegistration.Position.Post.Account.Name}."
+
+,
+                        };
+                        if (!await DuplicatePendingApplication(application))
+                        {
+                            throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND,
+                     PostRegistrationErrorEnum.OVERLAP_APPLICATION_SEND.GetDisplayName());
+                        }
+                        var report = _mapper.Map<CreateAccountApplicationRequest, Application>(application);
+                        report.AccountId = accountId;
+                        report.ReportDate = GetCurrentDatetime();
+                        report.Status = (int)ReportProblemStatusEnum.Pending;
+                        await _unitOfWork.Repository<Application>().InsertAsync(report);
+                        await _unitOfWork.CommitAsync();
+                        return new BaseResponseViewModel<dynamic>()
+                        {
+                            Status = new StatusViewModel()
+                            {
+                                Success = true,
+                                Message = "Send Application to Admission",
+                                ErrorCode = 200
+                            }
+                            ,
+                            Data = report
+                        };
+                    default:
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.CANCEL_FAILED,
+                        PostRegistrationErrorEnum.CANCEL_FAILED.GetDisplayName());
+
+                }
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Success = true,
+                        Message = "Cancel Successfully",
+                        ErrorCode = 200
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+
+        public async Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetRegistrationByPositionIdAdmission(int admissionAccountId, PagingRequest paging,int? positionId)
+        {
+
+            try
+            {
+
+                var list = _unitOfWork.Repository<PostRegistration>()
+                                                      .GetAll()
+                                                      .Where(pr => pr.Position.Post.AccountId == admissionAccountId
+                                                      &&(pr.Status!=(int)PostRegistrationStatusEnum.Reject&& pr.Status != (int)PostRegistrationStatusEnum.Cancel
+                                                      && pr.Status != (int)PostRegistrationStatusEnum.Pending))
+                                                      .ProjectTo<PostRegistrationResponse>(_mapper.ConfigurationProvider);
+                var listAfterFilter = FilterPostRegisByPositionId(list,positionId)
+                                        .DynamicSort(paging.Sort, paging.Order)
+                                        .PagingQueryable(paging.Page, paging.PageSize);
+
+
+                return new BaseResponsePagingViewModel<PostRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = listAfterFilter.Item1
+                    },
+                    Data = listAfterFilter.Item2.ToList()
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private static IQueryable<PostRegistrationResponse> FilterPostRegisByPositionId(IQueryable<PostRegistrationResponse> list,int? positionId)
+        {
+            if (positionId !=null)
+            {
+                list = list.Where(x=>x.PositionId == positionId);
+            }
+            return list;
         }
 
     }

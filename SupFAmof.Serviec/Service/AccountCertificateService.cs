@@ -241,12 +241,6 @@ namespace SupFAmof.Service.Service
                                          AccountCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                if (accountCertificate.CertificateIssuerId != certificateIssuerId)
-                {
-                    throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.WRONG_ISSUER_PERSON,
-                                         AccountCertificateErrorEnum.WRONG_ISSUER_PERSON.GetDisplayName() + $"Contact {accountCertificate.CertificateIssuer.Name} to remove!");
-                }
-
                 if (accountCertificate.Status == request.Status)
                 {
                     throw new ErrorResponse(400, (int)AccountCertificateErrorEnum.STATUS_ALREADY_SAME,

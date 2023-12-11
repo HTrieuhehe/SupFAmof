@@ -59,7 +59,7 @@ namespace SupFAmof.Service.DTO.Response
         public string? UpdateAt { get; set; }
 
         public virtual CollabReportPostResponse? Post { get; set; }
-        public virtual ReportPostPositionResponse? Position { get; set; }
+        public virtual ReportPostPositionResponse? PostPosition { get; set; }
         public virtual ICollection<CheckAttendanceResponse>? CheckAttendances { get; set; }
     }
 
@@ -78,6 +78,8 @@ namespace SupFAmof.Service.DTO.Response
         public int? Status { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+
+        public virtual AccountResponse? Account { get; set; }
 
     }
 

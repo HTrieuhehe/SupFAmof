@@ -808,11 +808,12 @@ namespace SupFAmof.Service.Service
                         accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
+                        await _unitOfWork.CommitAsync();
 
                         var overlapContracts = _unitOfWork.Repository<AccountContract>()
                                                              .GetAll()
                                                              .Where(x => x.Status == (int)AccountContractStatusEnum.Pending &&
-                                                                                              x.Contract.EndDate >= checkCurrentContract.Contract.StartDate &&
+                                                                                              x.Contract.EndDate >= accountContract.Contract.StartDate &&
                                                                                               x.AccountId == accountId);
                         foreach (var item in overlapContracts)
                         {

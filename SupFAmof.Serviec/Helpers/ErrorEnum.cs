@@ -620,7 +620,7 @@ namespace SupFAmof.Service.Helpers
             CONFIRM_INVALID = 4007,
 
             //404
-            [Display(Name = "Error occur when collaborator do wrong")]
+            [Display(Name = "Error occur when collaborator not confirm or reject")]
             CONTRACT_REMOVED_ADMISSION = 4041,
 
             //404

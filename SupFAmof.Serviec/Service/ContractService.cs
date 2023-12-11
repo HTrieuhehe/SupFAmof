@@ -20,7 +20,6 @@ using SupFAmof.Service.Service.ServiceInterface;
 using SupFAmof.Service.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;

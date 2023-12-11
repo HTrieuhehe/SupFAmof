@@ -120,7 +120,7 @@ namespace SupFAmof.Service.Service
                 //                                    .ToList();
                 //}
 
-                var postRegistration = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.Id == accountReport.PositionId && x.AccountId == accountId);
+                var postRegistration = await _unitOfWork.Repository<PostRegistration>().FindAsync(x => x.PositionId == accountReport.PositionId && x.AccountId == accountId);
 
                 return new BaseResponseViewModel<ReportPostRegistrationResponse>()
                 {

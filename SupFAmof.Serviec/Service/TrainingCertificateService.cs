@@ -191,7 +191,7 @@ namespace SupFAmof.Service.Service
                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                else if (checkAccount.PostPermission == false)
+                if (!checkAccount.PostPermission)
                 {
                     throw new ErrorResponse(
                         403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
@@ -222,7 +222,7 @@ namespace SupFAmof.Service.Service
 
                 var tranningCertificate =
                     await _unitOfWork.Repository<TrainingCertificate>().FindAsync(
-                        x => x.Id == trainingCertificateId && x.IsActive == true);
+                        x => x.Id == trainingCertificateId && x.IsActive);
 
                 if (tranningCertificate == null)
                 {
@@ -427,6 +427,13 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(
                         401, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST,
                         TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST
+                            .GetDisplayName());
+                }
+                if (eventDay.TrainingRegistrations.Any())
+                {
+                    throw new ErrorResponse(
+                        401, (int)TrainingCertificateErrorEnum.CANT_UPDATE,
+                        TrainingCertificateErrorEnum.CANT_UPDATE
                             .GetDisplayName());
                 }
                 eventDay.Updateat = request.Updateat;

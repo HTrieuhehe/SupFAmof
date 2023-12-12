@@ -333,6 +333,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Already have this certificate")]
             ALREADY_HAVE_CERTIFICATE = 4011,
+            //400
+            [Display(Name = "Cant update due to it having already assigned to collaborator")]
+            CANT_UPDATE = 4012,
         }
 
         public enum AccountCertificateErrorEnum

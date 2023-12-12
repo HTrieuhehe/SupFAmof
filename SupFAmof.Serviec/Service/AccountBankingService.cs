@@ -166,8 +166,8 @@ namespace SupFAmof.Service.Service
                 account.AccountId = accountId;
 
                 //loại bỏ các dấu thanh âm => Ví dụ (HỒ hố hô -> Ho ho ho)
-                account.Beneficiary = Ultils.RemoveDiacritics(account.Beneficiary).ToUpper();
-                account.Branch = Ultils.RemoveDiacritics(account.Branch).ToUpper();
+                account.Beneficiary = Ultils.RemoveDiacritics(account.Beneficiary).ToUpper().Trim();
+                account.Branch = Ultils.RemoveDiacritics(account.Branch).ToUpper().Trim();
                 account.IsActive = true;
                 account.CreateAt = Ultils.GetCurrentDatetime();
 
@@ -297,8 +297,10 @@ namespace SupFAmof.Service.Service
                 var accountBanking = _mapper.Map<UpdateAccountBankingRequest, AccountBanking>(request, checkBankingInfo);
 
                 //loại bỏ các dấu thanh âm => Ví dụ (HỒ hố hô -> Ho ho ho)
-                accountBanking.Beneficiary = Ultils.RemoveDiacritics(accountBanking.Beneficiary).ToUpper();
-                accountBanking.Branch = Ultils.RemoveDiacritics(accountBanking.Branch).ToUpper();
+                accountBanking.Beneficiary = Ultils.RemoveDiacritics(accountBanking.Beneficiary).ToUpper().Trim();
+                accountBanking.Branch = Ultils.RemoveDiacritics(accountBanking.Branch).ToUpper().Trim();
+
+                accountBanking.BankName.Trim();
                 accountBanking.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<AccountBanking>().UpdateDetached(accountBanking);

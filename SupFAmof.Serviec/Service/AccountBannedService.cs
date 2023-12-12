@@ -82,6 +82,7 @@ namespace SupFAmof.Service.Service
                     }
 
                     var accountBannedMappingAfter = _mapper.Map<AccountBanned>(request);
+
                     accountBannedMappingAfter.BannedPersonId = accountId;
                     accountBannedMappingAfter.DayStart = currentTime;
                     accountBannedMappingAfter.IsActive = true;

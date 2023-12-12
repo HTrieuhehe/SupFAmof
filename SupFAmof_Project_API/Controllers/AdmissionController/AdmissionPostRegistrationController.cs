@@ -176,6 +176,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
+
+        [HttpGet("get-work-list-position")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<PostRegistrationResponse>>> GetRegistrationByPositionIdAdmission
+        ([FromQuery] int? positionId ,[FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.GetRegistrationByPositionIdAdmission(account.Id, paging,positionId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
         [HttpDelete("cancel-post-registration")]
         public async Task<ActionResult<BaseResponseViewModel<List<PostRegistrationResponse>>>> CancelPostRegistrationAdmission
          ([FromBody] List<int> PostRegistrationIds)

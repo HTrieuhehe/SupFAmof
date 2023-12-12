@@ -28,5 +28,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistration(int accountId, int certificateRegistrationId);
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistrationAdmission(int accountId, int certificateRegistrationId);
         Task<BaseResponsePagingViewModel<CollabRegistrationsResponse>> GetRegistrationByCollabId(int collabId, PagingRequest paging, FilterStatusRegistrationResponse filter);
+        Task<BaseResponseViewModel<dynamic>> UnAssignClass(int accountId, int trainingRegistrationId);
     }
 }

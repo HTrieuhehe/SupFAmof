@@ -61,6 +61,7 @@ namespace SupFAmof.Service.Service
 
                 var report = _mapper.Map<CreateAccountApplicationRequest, Application>(request);
 
+                report.ProblemNote.Trim();
                 report.AccountId = accountId;
                 report.ReportDate = Ultils.GetCurrentDatetime();
                 report.Status = (int)ReportProblemStatusEnum.Pending;
@@ -208,6 +209,7 @@ namespace SupFAmof.Service.Service
 
                 var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
+                replyReport.ReplyNote.Trim();
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Reject;
 
@@ -285,6 +287,7 @@ namespace SupFAmof.Service.Service
 
                 var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
+                replyReport.ReplyNote.Trim();
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Approve;
 

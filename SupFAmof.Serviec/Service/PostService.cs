@@ -283,6 +283,9 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
+                //trim description
+                request.PostDescription = request.PostDescription.Trim();
+
                 //check document
                 foreach (var position in request.PostPositions)
                 {
@@ -349,10 +352,14 @@ namespace SupFAmof.Service.Service
                         }
                     }
                     item.Status = (int)PostPositionStatusEnum.Active;
+                    item.PositionName.Trim();
+                    item.PositionDescription.Trim();
+                    item.Location.Trim();
                 }
 
                 var post = _mapper.Map<Post>(request);
-
+                
+                
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.Status = (int)PostStatusEnum.Opening;

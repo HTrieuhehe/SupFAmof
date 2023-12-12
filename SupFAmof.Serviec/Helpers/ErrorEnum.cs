@@ -619,6 +619,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Cannot confirm Contract after 5pm of signing date")]
             CONFIRM_INVALID = 4007,
 
+            //400
+            [Display(Name = "Upload file failed")]
+            UPLOADED_FAILED = 4008,
+
             //404
             [Display(Name = "Error occur when collaborator not confirm or reject")]
             CONTRACT_REMOVED_ADMISSION = 4041,

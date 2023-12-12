@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Firebase.Auth;
+using Firebase.Storage;
+using FirebaseAdmin;
 using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -27,6 +31,7 @@ using System.Xml;
 using System.Xml.Linq;
 using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
+using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace SupFAmof.Service.Service
 {
@@ -528,81 +533,6 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        private async Task<byte[]> FillingDocTransfer(Account account, Contract contract)
-        {
-            //khởi tạo các biến liên quan
-            string fileName = "contract.docx";
-            var salaryInWord = Ultils.NumberToText(contract.TotalSalary);
-
-            //calculate vat tax
-            var salaryAfterVAT = contract.TotalSalary * (1 - 0.1);
-            var salaryAfterVATInWord = Ultils.NumberToText(salaryAfterVAT);
-
-
-            using (WebClient client = new WebClient())
-            {
-                client.DownloadFile(contract.SampleFile, fileName);
-            }
-
-            // Mở file DOCX để chỉnh sửa
-            using (WordprocessingDocument doc = WordprocessingDocument.Open(fileName, true))
-            {
-                // Lấy nội dung tài liệu
-                MainDocumentPart mainPart = doc.MainDocumentPart;
-                Document docContent = mainPart.Document;
-
-                // Duyệt qua các paragraph
-                foreach (Paragraph para in doc.MainDocumentPart.Document.Descendants<Paragraph>())
-                {
-                    // Thay thế từng biến
-                    string text = para.InnerText;
-                    text = text.Replace("{CurrentDate}", contract.SigningDate.Day.ToString())
-                               .Replace("{CurrentMonth}", contract.SigningDate.Month.ToString())
-                               .Replace("{CurrentYear}", contract.SigningDate.Year.ToString())
-                               .Replace("{Name}", account.Name.ToUpper().ToString())
-                               .Replace("{Address}", account.AccountInformation.Address.ToString())
-                               .Replace("{PhoneNumber}", account.Phone.ToString())
-                               .Replace("{IdentityNumber}", account.AccountInformation.IdentityNumber.ToString())
-                               .Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate.ToString())
-                               .Replace("{Email}", account.Email.ToString())
-                               .Replace("{IdentityIssuePlace}", account.AccountInformation.PlaceOfIssue.ToString())
-                               .Replace("{TaxNumber}", account.AccountInformation.TaxNumber.ToString())
-                               .Replace("{BankNumber}", account.Name.ToString())
-                               .Replace("{BankName}", account.Name.ToString())
-                               .Replace("{Branch}", account.Name.ToString())
-                               .Replace("{ContractDescription}", account.Name.ToString())
-                               .Replace("{StartDate}", contract.StartDate.ToString())
-                               .Replace("{EndDate}", contract.EndDate.ToString())
-                               .Replace("{SalaryInWord}", salaryInWord)
-                               .Replace("{SigningDate}", contract.SigningDate.Day.ToString())
-                               .Replace("{SigningMonth}", contract.SigningDate.Month.ToString())
-                               .Replace("{SigningYear}", contract.SigningDate.Year.ToString())
-                               .Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString())
-                               .Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord)
-                               .Replace("{TotalSalary}", salaryInWord)
-                               ;
-
-                    // Gán nội dung mới 
-                    para.RemoveAllChildren();
-
-                    DocumentFormat.OpenXml.Wordprocessing.Text newText = new DocumentFormat.OpenXml.Wordprocessing.Text(text);
-                    para.AppendChild(newText);
-                }
-
-                // Lưu lại nội dung đã thay đổi
-                mainPart.Document = docContent;
-                doc.Save();
-            }
-
-            // Chuyển đổi sang Base64
-            byte[] fileBytes = File.ReadAllBytes(fileName);
-
-            // Xóa file ban đầu
-            File.Delete(fileName);
-
-            return fileBytes;
-        }
-
         #region Collab Contract
 
         public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging)
@@ -790,7 +720,7 @@ namespace SupFAmof.Service.Service
                                                              .Where(x => x.Status == (int)AccountContractStatusEnum.Pending &&
                                                                                               x.Contract.EndDate >= checkCurrentContract.Contract.StartDate &&
                                                                                               x.AccountId == accountId);
-                            foreach(var item in overlapContract)
+                            foreach (var item in overlapContract)
                             {
                                 item.Status = (int)AccountContractStatusEnum.Reject;
 
@@ -803,7 +733,15 @@ namespace SupFAmof.Service.Service
                                                                  AccountContractErrorEnum.CONTRACT_ALREADY_CONFIRM.GetDisplayName());
                         }
 
+                        var uploadedFile = await FillingDocument(account, accountContract.Contract);
 
+                        if (string.IsNullOrEmpty(uploadedFile))
+                        {
+                            throw new ErrorResponse(400, (int)AccountContractErrorEnum.UPLOADED_FAILED,
+                                                                 AccountContractErrorEnum.UPLOADED_FAILED.GetDisplayName());
+                        }
+
+                        accountContract.SubmittedFile = uploadedFile.Trim();
                         accountContract.Status = (int)AccountContractStatusEnum.Confirm;
                         accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
@@ -939,6 +877,160 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+
+        private async Task<string> FillingDocument(Account account, Contract contract)
+        {
+            try
+            {
+                string fileName = $"Hợp đồng khoán gọn - {account.Name}.docx"; // Replace with the actual document ID or name
+
+                //calculate vat tax
+                double salaryAfterVAT = 0.0;
+
+                if (contract.TotalSalary >= 2000000)
+                {
+                    salaryAfterVAT = contract.TotalSalary * (1 - 0.1);
+                }
+
+                var salaryAfterVATInWord = Ultils.NumberToText(salaryAfterVAT);
+                var salaryInWord = Ultils.NumberToText(contract.TotalSalary);
+
+                //download
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(contract.SampleFile, fileName);
+                }
+
+                // Mở file DOCX để chỉnh sửa
+                using (WordprocessingDocument doc = WordprocessingDocument.Open(fileName, true))
+                {
+                    // 2. Lấy main document part
+                    MainDocumentPart mainPart = doc.MainDocumentPart;
+
+                    // 3. Tạo mới một Document rỗng
+                    Document newDoc = new Document();
+
+                    // 4. Copy toàn bộ nội dung hiện tại sang newDoc
+                    newDoc.Append(mainPart.Document);
+
+                    // Duyệt qua các paragraph
+                    foreach (Paragraph para in doc.MainDocumentPart.Document.Descendants<Paragraph>())
+                    {
+                        // Thay thế từng biến trong các Run của Paragraph
+                        foreach (Run run in para.Elements<Run>())
+                        {
+                            foreach (Text textElement in run.Elements<Text>())
+                            {
+                                // Clone node before modifying
+                                var newText = (Text)textElement.CloneNode(true);
+
+                                newText.Text = newText.Text.Replace("{CurrentDate}", contract.SigningDate.Day.ToString())
+                                   .Replace("{CurrentMonth}", contract.SigningDate.Month.ToString())
+                                   .Replace("{CurrentYear}", contract.SigningDate.Year.ToString())
+                                   .Replace("{Name}", account.Name.ToUpper().ToString())
+                                   .Replace("{Address}", account.AccountInformation.Address.ToString())
+                                   .Replace("{PhoneNumber}", account.Phone.ToString())
+                                   .Replace("{IdentityNumber}", account.AccountInformation.IdentityNumber.ToString())
+                                   .Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate.ToString())
+                                   .Replace("{Email}", account.Email.ToString())
+                                   .Replace("{IdentityIssuePlace}", account.AccountInformation.PlaceOfIssue.ToString())
+                                   .Replace("{TaxNumber}", account.AccountInformation.TaxNumber.ToString())
+                                   .Replace("{BankNumber}", account.Name.ToString())
+                                   .Replace("{BankName}", account.Name.ToString())
+                                   .Replace("{Branch}", account.Name.ToString())
+                                   .Replace("{ContractDescription}", account.Name.ToString())
+                                   .Replace("{StartDate}", contract.StartDate.ToString())
+                                   .Replace("{EndDate}", contract.EndDate.ToString())
+                                   .Replace("{SalaryInWord}", salaryInWord)
+                                   .Replace("{SigningDate}", contract.SigningDate.Day.ToString())
+                                   .Replace("{SigningMonth}", contract.SigningDate.Month.ToString())
+                                   .Replace("{SigningYear}", contract.SigningDate.Year.ToString())
+                                   .Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString())
+                                   .Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord)
+                                   .Replace("{TotalSalary}", salaryInWord);
+
+                                // Replace the original text node with the cloned and modified one
+                                run.ReplaceChild(newText, textElement);
+                            }
+                        }
+                    }
+
+                    // Lưu lại nội dung đã thay đổi
+                    mainPart.Document = newDoc;
+                    doc.Save();
+                }
+
+                string uploadURL = "";
+
+                // 3. Upload lên Firebase  
+                using (FileStream stream = File.Open(fileName, FileMode.Open))
+                {
+                    uploadURL = await UploadDocxFile(stream, fileName);
+                }
+
+                // Xóa file ban đầu
+                File.Delete(fileName);
+
+                return uploadURL;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        #region Upload File
+
+        private static readonly string ApiKey = "AIzaSyAVNIh-RA2rgMZh3zGvQsO2DIepWfVIGJ8";
+        private static readonly string Bucket = "supfamof-c8c84.appspot.com";
+        private static readonly string AuthEmail = "asdf@gmail.com";
+        private static readonly string AuthPassword = "asdf123";
+
+        public async Task<string> UploadDocxFile(Stream fileStream, string fileName)
+        {
+            try
+            {
+                // https://github.com/step-up-labs/firebase-storage-dotnet/blob/master/samples/SimpleConsole/SimpleConsole/Program.cs
+
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Referrer = new Uri("https://dev.supfamof.id.vn/");
+
+                FirebaseAuthProvider auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+
+                var cancellationToken = new CancellationTokenSource();
+
+                var uploadTask = new FirebaseStorage(
+                    Bucket,
+                    new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                        ThrowOnCancel = true
+                    })
+                    .Child("contract")
+                    .Child(fileName)  // Append ".docx" to the file name
+                    //.PutAsync(fileStream, cancellationToken.Token, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    .PutAsync(fileStream, cancellationToken.Token);
+
+
+                uploadTask.Progress.ProgressChanged += (s, e) =>
+                {
+                    Console.WriteLine($"Upload Progress: {e.Percentage} %");
+                };
+
+                return await uploadTask;
+            }
+            catch (FirebaseAuthException ex)
+            {
+                Console.WriteLine($"Firebase Authentication Error Message: {ex.Message}");
+                // Xử lý mã lỗi theo yêu cầu
+                throw;
+            }
+
+        }
+
+        #endregion
 
 
         #region Unsed Code in Confirm Contract

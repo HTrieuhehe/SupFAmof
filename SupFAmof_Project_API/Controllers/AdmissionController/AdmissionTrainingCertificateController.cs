@@ -309,7 +309,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
 
         [HttpGet("view-certificate-registration")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>>> GetCertificateRegistration
-       ([FromQuery] AdmissionGetCertificateRegistrationResponse filter, [FromQuery] PagingRequest paging)
+       ([FromQuery] AdmissionGetCertificateRegistrationResponse filter, [FromQuery] PagingRequest paging, [FromQuery]FilterStatusRegistrationResponse? statusFilter)
         {
             try
             {
@@ -319,7 +319,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetCertificateRegistration(account.Id, filter, paging);
+                return await _certificateService.GetCertificateRegistration(account.Id, filter, paging,statusFilter);
             }
             catch (ErrorResponse ex)
             {

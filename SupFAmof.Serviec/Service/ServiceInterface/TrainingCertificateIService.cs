@@ -23,7 +23,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<dynamic>> AssignDayToRegistration(int accountId, List<AssignEventDayToAccount> requests);
         Task<BaseResponsePagingViewModel<ViewCollabInterviewClassResponse>> GetCollabInClass(int accountId, ViewCollabInterviewClassResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<dynamic>> UpdateDaysForCertificateInterview(int accountId, int evenDayId, UpdateDaysCertifcate request);
-        Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, AdmissionGetCertificateRegistrationResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>> GetCertificateRegistration(int accountId, AdmissionGetCertificateRegistrationResponse filter, PagingRequest paging,FilterStatusRegistrationResponse? statusFilter);
         Task<BaseResponseViewModel<dynamic>> ReviewInterviewProcess(int accountId, int eventDayId, List<UpdateStatusRegistrationRequest> requests);
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistration(int accountId, int certificateRegistrationId);
         Task<BaseResponseViewModel<dynamic>> CancelCertificateRegistrationAdmission(int accountId, int certificateRegistrationId);

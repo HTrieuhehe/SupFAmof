@@ -736,7 +736,7 @@ namespace SupFAmof.Service.Service
             BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>>
         GetCertificateRegistration(int accountId,
                                    AdmissionGetCertificateRegistrationResponse filter,
-                                   PagingRequest paging)
+                                   PagingRequest paging,FilterStatusRegistrationResponse? statusFilter)
         {
             try
             {
@@ -751,6 +751,22 @@ namespace SupFAmof.Service.Service
                 var list = _unitOfWork.Repository<TrainingCertificate>()
                         .GetAll()
                         .ProjectTo<AdmissionGetCertificateRegistrationResponse>(_mapper.ConfigurationProvider)
+                         .Select(certificateResponse => new AdmissionGetCertificateRegistrationResponse
+                         {
+                             // Copy other properties from the original certificate
+                             Id = certificateResponse.Id,
+                             TrainingTypeId = certificateResponse.TrainingTypeId,
+                             CertificateName = certificateResponse.CertificateName,
+                             CreateAt = certificateResponse.CreateAt,
+                             IsActive = certificateResponse.IsActive,
+                             RegisterAmount = certificateResponse.Registrations
+            .Count(registration => registration.Status != (int)TrainingRegistrationStatusEnum.Canceled),
+                             Registrations = certificateResponse.Registrations
+            .Where(registration => registration.Status != (int)TrainingRegistrationStatusEnum.Canceled)
+            .ToList()
+                         });
+
+                var newList= FilterStatusRegistrationAdmission(list, statusFilter)
                         .DynamicFilter(filter)
                         .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<
@@ -761,9 +777,9 @@ namespace SupFAmof.Service.Service
                       {
                           Page = paging.Page,
                           Size = paging.PageSize,
-                          Total = list.Item1
+                          Total = newList.Item1
                       },
-                    Data = list.Item2.ToList()
+                    Data = newList.Item2.ToList()
                 };
 
             }
@@ -772,6 +788,30 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
+        private static IQueryable<AdmissionGetCertificateRegistrationResponse>
+      FilterStatusRegistrationAdmission(IQueryable<AdmissionGetCertificateRegistrationResponse> list,
+                               FilterStatusRegistrationResponse? filter)
+        {
+            if (filter.Status != null)
+            {
+                list = list
+           .Select(certificateResponse => new AdmissionGetCertificateRegistrationResponse
+           {
+               // Copy other properties from the original certificate
+               Id = certificateResponse.Id,
+               TrainingTypeId = certificateResponse.TrainingTypeId,
+               CertificateName = certificateResponse.CertificateName,
+               CreateAt = certificateResponse.CreateAt,
+               IsActive = certificateResponse.IsActive,
+               RegisterAmount = certificateResponse.Registrations.Count(registration => registration.Status == filter.Status),
+               Registrations = certificateResponse.Registrations
+                   .Where(registration => registration.Status == filter.Status)
+                   .ToList()
+           });
+            }
+            return list;
+        }
+
 
         public async Task<BaseResponseViewModel<dynamic>>
         ReviewInterviewProcess(int accountId, int eventDayId,

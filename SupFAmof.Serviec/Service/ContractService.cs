@@ -604,7 +604,7 @@ namespace SupFAmof.Service.Service
 
                 if (contracts.Item2 == null)
                 {
-                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT, 
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 

@@ -598,7 +598,7 @@ namespace SupFAmof.Service.Service
                 var contracts = _unitOfWork.Repository<AccountContract>()
                                           .GetAll()
                                           .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
-                                          .Where(x => x.AccountId == accountId && x.Status != (int)AccountContractStatusEnum.Reject)
+                                          .Where(x => x.AccountId == accountId && x.Status != (int)AccountContractStatusEnum.Fail)
                                           .DynamicSort(paging.Sort, paging.Order)
                                           .PagingQueryable(paging.Page, paging.PageSize);
 

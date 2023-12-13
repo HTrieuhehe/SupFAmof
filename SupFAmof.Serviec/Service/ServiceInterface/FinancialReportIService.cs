@@ -17,5 +17,6 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<byte[]> GenerateAccountWithIdentityExcel(int accountId);
         Task<byte[]> GenerateOpendayReportMonthly(int accountId, FinancialReportRequest request);
         Task<byte[]> GenerateTuyenSinhReportMonthly(int accountId, FinancialReportRequest request);
+        Task<BaseResponseViewModel<dynamic>> GetMoneyFrom12Months(int accountId, int year);
     }
 }

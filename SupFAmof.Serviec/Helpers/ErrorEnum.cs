@@ -310,8 +310,8 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Training Certificate not found!")]
             NOT_FOUND_ID = 4041,
             //400
-            [Display(Name = "Same time  with post")]
-            OVERLAP_EVENTS = 4003,
+            [Display(Name = "Cant create interview from the past")]
+            PAST_CLASS = 4003,
             //400
             [Display(Name = "Cant register")]
             REGISTER_FAILED = 4004,
@@ -336,6 +336,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cant update due to it having already assigned to collaborator")]
             CANT_UPDATE = 4012,
+            //400
+            [Display(Name = "Cant assign past interview date to collab")]
+            PAST_INTERVIEW = 4013,
         }
 
         public enum AccountCertificateErrorEnum

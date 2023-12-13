@@ -581,5 +581,62 @@ namespace SupFAmof.Service.Service
 
             }
         }
+
+
+
+        public async Task<BaseResponseViewModel<dynamic>> GetMoneyFrom12Months(int accountId,int year)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new Exceptions.ErrorResponse(401, (int)AccountReportErrorEnum.UNAUTHORIZED, AccountReportErrorEnum.UNAUTHORIZED.GetDisplayName());
+                }
+                var report = await _unitOfWork.Repository<AccountReport>().GetWhere(x => x.Position.Date.Year == year);
+
+                if (report == null || !report.Any())
+                {
+                    return new BaseResponseViewModel<dynamic>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Generate yearly report success",
+                            Success = true,
+                            ErrorCode = 0
+                        }
+               ,
+                        Data = Enumerable.Repeat(0.0, 12).ToList()
+                    };
+                }
+
+                var monthlySums = new List<double>();
+
+                for (int i = 1; i <= 12; i++)
+                {
+                    double sumForMonth = (double)report
+                        .Where(x => x.Position.Date.Month == i)
+                        .Sum(x => x.Salary);
+
+                    monthlySums.Add(sumForMonth);
+                }
+
+                return new BaseResponseViewModel<dynamic>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Generate yearly report success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
+                    ,Data = monthlySums
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -295,7 +295,7 @@ namespace SupFAmof.Service.Service
 
                 //create notification request 
 
-                List<int> accountIds = new List<int> { accountId };
+                List<int> accountIds = new List<int> { report.AccountId };
 
                 PushNotificationRequest notificationRequest = new PushNotificationRequest()
                 {

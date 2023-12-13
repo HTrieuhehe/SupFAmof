@@ -228,7 +228,7 @@ namespace SupFAmof.Service.Service
             TimeSpan timeDifference = checkInTime.TimeOfDay - postTime.Position.TimeFrom;
 
             // Check if the time difference is within a 2-hour range
-            if (timeDifference.TotalHours < -1 || timeDifference.TotalHours > 0.5)
+            if (timeDifference.TotalHours < -1 && timeDifference.TotalHours > 0.5)
             {
                 throw new ErrorResponse(400, 400, $"Check in is available in {postTime.Position.TimeFrom - TimeSpan.FromMinutes(30)}");
             }

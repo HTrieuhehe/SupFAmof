@@ -64,15 +64,14 @@ namespace SupFAmof.Service.Service
                 }
                 double distance = 0.2; // kilometer 
 
-                double userCurrentPosition = ((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longitude, checkin.Latitude, checkin.Longtitude));
+                double userCurrentPosition = Math.Round((double)Ultils.CalculateDistance(postVerification.Position.Latitude, postVerification.Position.Longitude, checkin.Latitude, checkin.Longtitude), 2);
 
-            
                 if (VerifyDateTimeCheckin(postVerification, checkAttendance.CheckInTime))
                 {
                     if (userCurrentPosition > distance)
                     {
                         throw new ErrorResponse(400, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
-                                            AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $": {userCurrentPosition} km");
+                                            AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $": {userCurrentPosition * 100} meter");
                     }
                     var registration = _unitOfWork.Repository<PostRegistration>()
                                                 .Find(x => x.AccountId == accountId && x.Id == checkin.PostRegistrationId);

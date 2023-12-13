@@ -473,7 +473,7 @@ namespace SupFAmof.Service.Helpers
             ALREADY_CHECK_IN = 4005,
 
             //400
-            [Display(Name = "Distance too far")]
+            [Display(Name = "You are far from check in location: ")]
             DISTANCE_TOO_FAR = 4006,
 
             //400

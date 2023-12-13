@@ -474,7 +474,7 @@ namespace SupFAmof.Service.Service
         private async Task<bool> CheckTimeAvailability(DateTime timeOfClass)
         {
             var currentDate = GetCurrentDatetime().Date;
-            if(timeOfClass.Date< currentDate)
+            if (timeOfClass.Date < currentDate)
             {
                 return false;
             }
@@ -628,6 +628,12 @@ namespace SupFAmof.Service.Service
                             400, (int)TrainingCertificateErrorEnum.PAST_INTERVIEW,
                             TrainingCertificateErrorEnum.PAST_INTERVIEW.GetDisplayName());
                     }
+                    if (!await CheckOverlapPostRegistration(dateTimeOfAssignDay,registration.AccountId))
+                    {
+                        throw new ErrorResponse(
+                            400, (int)TrainingCertificateErrorEnum.MATCHED_WORK_TIME,
+                            TrainingCertificateErrorEnum.MATCHED_WORK_TIME.GetDisplayName());
+                    }
                     registration.EventDayId = requestStatusMap[registration.Id].Value;
                     registration.Status = (int)TrainingRegistrationStatusEnum.Assigned;
                     registration.UpdateAt = GetCurrentDatetime();
@@ -659,6 +665,25 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+        private async Task<bool> CheckOverlapPostRegistration(TrainingEventDay request,int accountId)
+        {
+            var checkPostRegistration = await _unitOfWork.Repository<PostRegistration>().GetWhere(x=>x.AccountId == accountId&&x.Status == (int)PostRegistrationStatusEnum.Confirm);
+            // Check for overlap with each PostRegistration entry
+            foreach (var postRegistration in checkPostRegistration)
+            {
+                if (postRegistration.Position.Date == request.Date && DoTimeRangesOverlap(request.TimeFrom, request.TimeTo, postRegistration.Position.TimeFrom, postRegistration.Position.TimeTo))
+                {
+                    return false;
+                }
+
+            }
+            // No overlap found
+            return true;
+        }
+        private bool DoTimeRangesOverlap(TimeSpan? start1, TimeSpan? end1, TimeSpan? start2, TimeSpan? end2)
+        {
+            return (start1 < end2 && end1 > start2);
         }
         private async Task<bool> AssignDuplicateTime(TrainingRegistration request,
                                                      int? eventDayNeedUpdate,

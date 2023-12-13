@@ -71,7 +71,7 @@ namespace SupFAmof.Service.Service
                     if (userCurrentPosition > distance)
                     {
                         throw new ErrorResponse(400, (int)AttendanceErrorEnum.DISTANCE_TOO_FAR,
-                                            AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $": {userCurrentPosition * 100} meter");
+                                            AttendanceErrorEnum.DISTANCE_TOO_FAR.GetDisplayName() + $": {userCurrentPosition * 1000} meter");
                     }
                     var registration = _unitOfWork.Repository<PostRegistration>()
                                                 .Find(x => x.AccountId == accountId && x.Id == checkin.PostRegistrationId);

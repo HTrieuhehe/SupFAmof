@@ -383,12 +383,11 @@ namespace SupFAmof.Service.Service
                                             AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var eventDay = _mapper.Map<TrainingEventDay>(request);
-                if (!await CheckTimeAvailability((DateTime)eventDay.Date,
-                                                 eventDay.TimeFrom, eventDay.TimeTo))
+                if (!await CheckTimeAvailability((DateTime)eventDay.Date))
                 {
                     throw new ErrorResponse(
-                        400, (int)TrainingCertificateErrorEnum.OVERLAP_EVENTS,
-                        TrainingCertificateErrorEnum.OVERLAP_EVENTS.GetDisplayName());
+                        400, (int)TrainingCertificateErrorEnum.PAST_CLASS,
+                        TrainingCertificateErrorEnum.PAST_CLASS.GetDisplayName());
                 }
                 await _unitOfWork.Repository<TrainingEventDay>().InsertAsync(eventDay);
                 await _unitOfWork.CommitAsync();
@@ -472,25 +471,13 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        private async Task<bool> CheckTimeAvailability(DateTime timeOfClass,
-                                                       TimeSpan? timeFrom,
-                                                       TimeSpan? timeTo)
+        private async Task<bool> CheckTimeAvailability(DateTime timeOfClass)
         {
-            var positions = await _unitOfWork.Repository<PostPosition>()
-                                .GetAll()
-                                .Where(x => x.Date == timeOfClass.Date)
-                                .OrderByDescending(x => x.Id)
-                                .ToListAsync();
-
-            foreach (var position in positions)
+            var currentDate = GetCurrentDatetime().Date;
+            if(timeOfClass.Date< currentDate)
             {
-                if (IsTimeSpanOverlapPostion(position.TimeFrom, position.TimeTo, timeFrom,
-                                             timeTo))
-                {
-                    return false;
-                }
+                return false;
             }
-
             return true;
         }
         private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1,
@@ -633,6 +620,13 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(
                             400, (int)TrainingCertificateErrorEnum.OVERLAP_INTERVIEW,
                             TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
+                    }
+                    var dateTimeOfAssignDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == requestStatusMap[registration.Id].Value);
+                    if (!await CheckTimeAvailability((DateTime)dateTimeOfAssignDay.Date))
+                    {
+                        throw new ErrorResponse(
+                            400, (int)TrainingCertificateErrorEnum.PAST_INTERVIEW,
+                            TrainingCertificateErrorEnum.PAST_INTERVIEW.GetDisplayName());
                     }
                     registration.EventDayId = requestStatusMap[registration.Id].Value;
                     registration.Status = (int)TrainingRegistrationStatusEnum.Assigned;

@@ -578,7 +578,7 @@ namespace SupFAmof.Service.Service
                 worksheet.Cells[nameRow, 9].Value = "X";
                 worksheet.Cells[nameRow, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Cells[nameRow, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
+                nameRow++;
             }
         }
 

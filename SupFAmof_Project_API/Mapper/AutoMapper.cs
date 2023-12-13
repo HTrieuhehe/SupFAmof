@@ -158,6 +158,14 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.IsUpdated, opt => opt.MapFrom(src => src.UpdateAt.HasValue))
                 .ReverseMap();
 
+            CreateMap<PostRegistration, RegistrationMapResponse>()
+                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
+                .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
+                .ForMember(dest => dest.PositionDate, opt => opt.MapFrom(src => src.Position.Date))
+                .ForMember(dest => dest.PostCategoryId, opt => opt.MapFrom(src => src.Position.Post.PostCategoryId))
+                .ForMember(dest => dest.IsUpdated, opt => opt.MapFrom(src => src.UpdateAt.HasValue))
+                .ReverseMap();
+
             CreateMap<PostPosition, AdmissionPostPositionResponse>()
                 .ForMember(dest=>dest.CollabRequest ,opt=>opt.MapFrom(src=>src.PostRegistrations))
                 .ReverseMap();

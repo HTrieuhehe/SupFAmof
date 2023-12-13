@@ -206,6 +206,27 @@ namespace SupFAmof.Service.DTO.Response
         public virtual ICollection<CheckAttendanceResponse>? CheckAttendances { get; set; }
     }
 
+    public class RegistrationMapResponse
+    {
+        public int? Id { get; set; }
+        public string? RegistrationCode { get; set; }
+        public int? Status { get; set; }
+        public bool? SchoolBusOption { get; set; }
+        public DateTime? ConfirmTime { get; set; }
+        public DateTime? CancelTime { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+        public int? PositionId { get; set; }
+        public string? Note { get; set; }
+        public DateTime? PositionDate { get; set; }
+        public int? PostCategoryId { get; set; }
+        public bool? IsNearCheckIn { get; set; }
+        public bool? IsUpdated { get; set; }
+        public virtual CollabRegistrationUpdatePostResponse? Post { get; set; }
+        public virtual PostPositionResponse? PostPosition { get; set; }
+        public virtual ICollection<CheckAttendanceResponse>? CheckAttendances { get; set; }
+    }
+
     public class CollabRegistrationUpdatePostResponse
     {
         public CollabRegistrationUpdatePostResponse()

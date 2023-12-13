@@ -56,7 +56,42 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
-        
+
+        /// <summary>
+        /// This action method handles an HTTP GET request to retrieve a list of PostRegistrationResponse objects associated with a specific accountId.
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="filter"></param>
+        /// <param name="accountId">The id of the account for which to retrieve the PostRegistrationResponse objects.</param>
+        /// <returns>
+        /// - 200 OK: Returns a list of PostRegistrationResponse objects associated with the specified accountId.
+        /// - 400 Bad Request: If there is an error while processing the request, an ErrorResponse is thrown and returned as a BadRequest.Including there is no Post Registration.
+        /// </returns>
+        [HttpGet("getRegistrationMapByAccountId")]
+        public async Task<ActionResult<RegistrationMapResponse>> GetPostRegistrationGoogleMapByAccountId
+          ([FromQuery] PagingRequest paging, [FromQuery] RegistrationMapResponse filter)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result = await _postRegistrationService.GetPostRegistrationGoogleMapByAccountId(account.Id, paging, filter);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
         /// <summary>
         /// This action method handles an HTTP POST request to create a request a PostRegistration objects.
         /// </summary>

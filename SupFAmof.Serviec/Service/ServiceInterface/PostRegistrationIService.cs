@@ -12,6 +12,10 @@ namespace SupFAmof.Service.Service.ServiceInterface
     {
         Task<BaseResponsePagingViewModel<CollabRegistrationUpdateViewResponse>> GetPostRegistrationByAccountId
             (int accountId, PagingRequest paging, CollabRegistrationUpdateViewResponse filter, FilterPostRegistrationResponse statusFilter);
+
+        Task<BaseResponsePagingViewModel<RegistrationMapResponse>> GetPostRegistrationGoogleMapByAccountId
+            (int accountId, PagingRequest paging, RegistrationMapResponse filter);
+
         Task<BaseResponseViewModel<CollabRegistrationResponse>> CreatePostRegistration(int accountId,PostRegistrationRequest request);
         Task<BaseResponseViewModel<dynamic>> CancelPostregistration(int accountId,int postRegistrationId);
         Task<BaseResponseViewModel<dynamic>> UpdatePostRegistration(int accountId,PostRegistrationUpdateRequest request);

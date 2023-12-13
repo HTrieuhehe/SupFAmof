@@ -339,6 +339,9 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cant assign past interview date to collab")]
             PAST_INTERVIEW = 4013,
+            //400
+            [Display(Name = "Interview day matched with collab work time")]
+            MATCHED_WORK_TIME = 4014,
         }
 
         public enum AccountCertificateErrorEnum

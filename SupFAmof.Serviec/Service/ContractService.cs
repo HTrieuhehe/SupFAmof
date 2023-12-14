@@ -7,6 +7,7 @@ using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
+using ServiceStack.Script;
 using ServiceStack.Web;
 using Spire.Doc;
 using SupFAmof.Data.Entity;
@@ -600,7 +601,7 @@ namespace SupFAmof.Service.Service
 
                 if (contracts.Item2 == null)
                 {
-                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT, 
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
                                         ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
                 }
 
@@ -901,8 +902,8 @@ namespace SupFAmof.Service.Service
                 {
                     client.DownloadFile(contract.SampleFile, fileName);
                 }
-           
-               // tạo 1 object document mới
+
+                // tạo 1 object document mới
                 Document doc = new Document();
                 doc.LoadFromFile(fileName);
 
@@ -914,7 +915,7 @@ namespace SupFAmof.Service.Service
                 doc.Replace("{Address}", account.AccountInformation.Address.ToString(), true, true);
                 doc.Replace("{PhoneNumber}", account.Phone.ToString(), true, true);
                 doc.Replace("{IdentityNumber}", account.AccountInformation.IdentityNumber.ToString(), true, true);
-                doc.Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate.ToString(), true, true);
+                doc.Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate?.ToString("dd/MM/yyyy"), true, true);
                 doc.Replace("{Email}", account.Email.ToString(), true, true);
                 doc.Replace("{IdentityIssuePlace}", account.AccountInformation.PlaceOfIssue.ToString(), true, true);
                 doc.Replace("{TaxNumber}", account.AccountInformation.TaxNumber.ToString(), true, true);
@@ -922,8 +923,8 @@ namespace SupFAmof.Service.Service
                 doc.Replace("{BankName}", bankingInfo.BankName.ToString(), true, true);
                 doc.Replace("{Branch}", bankingInfo.Branch.ToString(), true, true);
                 doc.Replace("{ContractDescription}", account.Name.ToString(), true, true);
-                doc.Replace("{StartDate}", contract.StartDate.ToString(), true, true);
-                doc.Replace("{EndDate}", contract.EndDate.ToString(), true, true);
+                doc.Replace("{StartDate}", contract.StartDate.ToString("dd/MM/yyyy"), true, true);
+                doc.Replace("{EndDate}", contract.EndDate.ToString("dd/MM/yyyy"), true, true);
                 doc.Replace("{SalaryInWord}", salaryInWord, true, true);
                 doc.Replace("{SigningDate}", contract.SigningDate.Day.ToString(), true, true);
                 doc.Replace("{SigningMonth}", contract.SigningDate.Month.ToString(), true, true);
@@ -992,7 +993,7 @@ namespace SupFAmof.Service.Service
                         ThrowOnCancel = true
                     })
                     .Child("contract")
-                    .Child(fileName)  
+                    .Child(fileName)
                     //.PutAsync(fileStream, cancellationToken.Token, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
                     .PutAsync(fileStream, cancellationToken.Token, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 

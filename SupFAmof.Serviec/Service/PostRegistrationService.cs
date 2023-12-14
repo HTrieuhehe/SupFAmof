@@ -657,7 +657,6 @@ namespace SupFAmof.Service.Service
                     };
 
                     await _notificationService.PushNotification(notificationRequest);
-                    await _unitOfWork.CommitAsync();
                     await sendMailService.SendEmailBooking(MailEntity(listResponse));
                 }
                 // You can return a response for all processed entities if needed

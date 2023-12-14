@@ -285,12 +285,12 @@ namespace SupFAmof.Service.Service
 
                 //trim description
                 request.PostDescription = request.PostDescription.Trim();
-                var validatePositionMissing = request.PostPositions.Find(x => x.Date.Date >= request.DateTo);
-                if (validatePositionMissing == null)
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.VALID_POSITION_MISSING,
-                                         PostErrorEnum.VALID_POSITION_MISSING.GetDisplayName() + $": {request.DateTo?.ToString("dd/MM/yyyy")}");
-                }
+                //var validatePositionMissing = request.PostPositions.Find(x => x.Date.Date >= request.DateTo);
+                //if (validatePositionMissing == null)
+                //{
+                //    throw new ErrorResponse(400, (int)PostErrorEnum.VALID_POSITION_MISSING,
+                //                         PostErrorEnum.VALID_POSITION_MISSING.GetDisplayName() + $": {request.DateTo?.ToString("dd/MM/yyyy")}");
+                //}
 
                 //check document
                 foreach (var position in request.PostPositions)

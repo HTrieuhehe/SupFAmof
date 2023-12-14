@@ -642,7 +642,24 @@ namespace SupFAmof.Service.Service
                             throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
                     }
                 }
+                if(listResponse.Any())
+                {
 
+                    var accountIds = listResponse.Select(x => x.AccountId).ToList();
+
+                    //create notification request 
+                    PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                    {
+                        Ids = accountIds,
+                        Title = NotificationTypeEnum.PostRegistration_Confirm.GetDisplayName(),
+                        Body = "Your Post Registration is updated! Check it now!",
+                        NotificationsType = (int)NotificationTypeEnum.PostRegistration_Confirm
+                    };
+
+                    await _notificationService.PushNotification(notificationRequest);
+                    await _unitOfWork.CommitAsync();
+                    await sendMailService.SendEmailBooking(MailEntity(listResponse));
+                }
                 // You can return a response for all processed entities if needed
                 return new BaseResponseViewModel<List<PostRegistrationResponse>>()
                 {

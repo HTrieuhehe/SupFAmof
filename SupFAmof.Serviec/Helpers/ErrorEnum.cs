@@ -418,6 +418,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "New position cannot be null")]
             INVALID_NEW_POSITION = 40010,
 
+            //400
+            [Display(Name = "Missing position valid with post end time")]
+            VALID_POSITION_MISSING = 40011,
+
             //403
             [Display(Name = "You are not premium to see this post!")]
             PREMIUM_REQUIRED = 4031,

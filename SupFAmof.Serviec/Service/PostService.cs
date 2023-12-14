@@ -286,6 +286,12 @@ namespace SupFAmof.Service.Service
                 //trim description
                 request.PostDescription = request.PostDescription.Trim();
 
+                if (request.PostPositions.Any(x => x.Date == request.DateTo))
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.VALID_POSITION_MISSING,
+                                         PostErrorEnum.VALID_POSITION_MISSING.GetDisplayName());
+                }
+
                 //check document
                 foreach (var position in request.PostPositions)
                 {

@@ -16,6 +16,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public string? SampleFile { get; set; }
         public DateTime? SigningDate { get; set; }
         public DateTime? StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public double? TotalSalary { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreateAt { get; set; }

@@ -936,12 +936,12 @@ namespace SupFAmof.Service.Service
                 doc.SaveToFile(fileName, FileFormat.Docx2013);
 
 
-                //test copy file to desktop to test
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                string desktopFilePath = Path.Combine(desktopPath, fileName);
+                ////test copy file to desktop to test
+                //string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                //string desktopFilePath = Path.Combine(desktopPath, fileName);
 
-                // Save the modified file to the desktop for testing
-                File.Copy(fileName, desktopFilePath, true);
+                //// Save the modified file to the desktop for testing
+                //File.Copy(fileName, desktopFilePath, true);
 
                 string uploadURL = "";
 

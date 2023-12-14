@@ -922,7 +922,7 @@ namespace SupFAmof.Service.Service
                 doc.Replace("{BankNumber}", bankingInfo.AccountNumber.ToString(), true, true);
                 doc.Replace("{BankName}", bankingInfo.BankName.ToString(), true, true);
                 doc.Replace("{Branch}", bankingInfo.Branch.ToString(), true, true);
-                doc.Replace("{ContractDescription}", contract.ContractDescription.ToString(), true, true);
+                doc.Replace("{ContractDescription}", (contract.ContractDescription ?? "none").ToString(), true, true);
                 doc.Replace("{StartDate}", contract.StartDate.ToString("dd/MM/yyyy"), true, true);
                 doc.Replace("{EndDate}", contract.EndDate.ToString("dd/MM/yyyy"), true, true);
                 doc.Replace("{SalaryInWord}", salaryInWord, true, true);

@@ -285,11 +285,11 @@ namespace SupFAmof.Service.Service
 
                 //trim description
                 request.PostDescription = request.PostDescription.Trim();
-
-                if (request.PostPositions.Any(x => x.Date == request.DateTo))
+                var validatePositionMissing = request.PostPositions.Find(x => x.Date.Date >= request.DateTo);
+                if (validatePositionMissing == null)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.VALID_POSITION_MISSING,
-                                         PostErrorEnum.VALID_POSITION_MISSING.GetDisplayName());
+                                         PostErrorEnum.VALID_POSITION_MISSING.GetDisplayName() + $": {request.DateTo?.ToString("dd/MM/yyyy")}");
                 }
 
                 //check document

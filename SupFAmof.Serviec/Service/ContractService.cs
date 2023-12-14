@@ -932,7 +932,10 @@ namespace SupFAmof.Service.Service
                 doc.Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString(), true, true);
                 doc.Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord.ToString(), true, true);
                 doc.Replace("{TotalSalary}", contract.TotalSalary.ToString(), true, true);
-                
+                doc.Replace("</li><li>", Environment.NewLine, true, true);
+                doc.Replace("<ul><li>", "", true, true);
+                doc.Replace("</li></ul>", "", true, true);
+
                 //save
                 doc.SaveToFile(fileName, FileFormat.Docx2013);
 

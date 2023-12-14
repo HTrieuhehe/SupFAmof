@@ -930,9 +930,9 @@ namespace SupFAmof.Service.Service
                 doc.Replace("{SigningMonth}", contract.SigningDate.Month.ToString(), true, true);
                 doc.Replace("{SigningYear}", contract.SigningDate.Year.ToString(), true, true);
                 doc.Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString(), true, true);
-                doc.Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord, true, true);
-                doc.Replace("{TotalSalary}", salaryInWord, true, true);
-
+                doc.Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord.ToString(), true, true);
+                doc.Replace("{TotalSalary}", contract.TotalSalary.ToString(), true, true);
+                
                 //save
                 doc.SaveToFile(fileName, FileFormat.Docx2013);
 

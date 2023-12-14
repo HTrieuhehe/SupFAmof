@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Firebase.Auth;
 using Firebase.Storage;
 using FirebaseAdmin;
@@ -13,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Service.Commons;
 using ServiceStack.Web;
+using Spire.Doc;
 using SupFAmof.Data.Entity;
 using SupFAmof.Data.UnitOfWork;
 using SupFAmof.Service.DTO.Request;
@@ -882,6 +878,11 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //find accountBanking
+                var bankingInfo = account.AccountBankings.FirstOrDefault(x => x.AccountId == account.Id && x.IsActive == true);
+
+                // url tham khảo: https://www.c-sharpcorner.com/article/find-and-replace-text-on-word-document-using-c-sharp/
+
                 string fileName = $"Hợp đồng khoán gọn - {account.Name}.docx"; // Replace with the actual document ID or name
 
                 //calculate vat tax
@@ -900,65 +901,47 @@ namespace SupFAmof.Service.Service
                 {
                     client.DownloadFile(contract.SampleFile, fileName);
                 }
+           
+               // tạo 1 object document mới
+                Document doc = new Document();
+                doc.LoadFromFile(fileName);
 
-                // Mở file DOCX để chỉnh sửa
-                using (WordprocessingDocument doc = WordprocessingDocument.Open(fileName, true))
-                {
-                    // 2. Lấy main document part
-                    MainDocumentPart mainPart = doc.MainDocumentPart;
+                //chỉnh sửa
+                doc.Replace("{CurrentDate}", contract.SigningDate.Day.ToString(), true, true);
+                doc.Replace("{CurrentMonth}", contract.SigningDate.Month.ToString(), true, true);
+                doc.Replace("{CurrentYear}", contract.SigningDate.Year.ToString(), true, true);
+                doc.Replace("{Name}", account.Name.ToUpper().ToString(), true, true);
+                doc.Replace("{Address}", account.AccountInformation.Address.ToString(), true, true);
+                doc.Replace("{PhoneNumber}", account.Phone.ToString(), true, true);
+                doc.Replace("{IdentityNumber}", account.AccountInformation.IdentityNumber.ToString(), true, true);
+                doc.Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate.ToString(), true, true);
+                doc.Replace("{Email}", account.Email.ToString(), true, true);
+                doc.Replace("{IdentityIssuePlace}", account.AccountInformation.PlaceOfIssue.ToString(), true, true);
+                doc.Replace("{TaxNumber}", account.AccountInformation.TaxNumber.ToString(), true, true);
+                doc.Replace("{BankNumber}", bankingInfo.AccountNumber.ToString(), true, true);
+                doc.Replace("{BankName}", bankingInfo.BankName.ToString(), true, true);
+                doc.Replace("{Branch}", bankingInfo.Branch.ToString(), true, true);
+                doc.Replace("{ContractDescription}", account.Name.ToString(), true, true);
+                doc.Replace("{StartDate}", contract.StartDate.ToString(), true, true);
+                doc.Replace("{EndDate}", contract.EndDate.ToString(), true, true);
+                doc.Replace("{SalaryInWord}", salaryInWord, true, true);
+                doc.Replace("{SigningDate}", contract.SigningDate.Day.ToString(), true, true);
+                doc.Replace("{SigningMonth}", contract.SigningDate.Month.ToString(), true, true);
+                doc.Replace("{SigningYear}", contract.SigningDate.Year.ToString(), true, true);
+                doc.Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString(), true, true);
+                doc.Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord, true, true);
+                doc.Replace("{TotalSalary}", salaryInWord, true, true);
 
-                    // 3. Tạo mới một Document rỗng
-                    Document newDoc = new Document();
+                //save
+                doc.SaveToFile(fileName, FileFormat.Docx2013);
 
-                    // 4. Copy toàn bộ nội dung hiện tại sang newDoc
-                    newDoc.Append(mainPart.Document);
 
-                    // Duyệt qua các paragraph
-                    foreach (Paragraph para in doc.MainDocumentPart.Document.Descendants<Paragraph>())
-                    {
-                        // Thay thế từng biến trong các Run của Paragraph
-                        foreach (Run run in para.Elements<Run>())
-                        {
-                            foreach (Text textElement in run.Elements<Text>())
-                            {
-                                // Clone node before modifying
-                                var newText = (Text)textElement.CloneNode(true);
+                //test copy file to desktop to test
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string desktopFilePath = Path.Combine(desktopPath, fileName);
 
-                                newText.Text = newText.Text.Replace("{CurrentDate}", contract.SigningDate.Day.ToString())
-                                   .Replace("{CurrentMonth}", contract.SigningDate.Month.ToString())
-                                   .Replace("{CurrentYear}", contract.SigningDate.Year.ToString())
-                                   .Replace("{Name}", account.Name.ToUpper().ToString())
-                                   .Replace("{Address}", account.AccountInformation.Address.ToString())
-                                   .Replace("{PhoneNumber}", account.Phone.ToString())
-                                   .Replace("{IdentityNumber}", account.AccountInformation.IdentityNumber.ToString())
-                                   .Replace("{IdentityIssueDate}", account.AccountInformation.IdentityIssueDate.ToString())
-                                   .Replace("{Email}", account.Email.ToString())
-                                   .Replace("{IdentityIssuePlace}", account.AccountInformation.PlaceOfIssue.ToString())
-                                   .Replace("{TaxNumber}", account.AccountInformation.TaxNumber.ToString())
-                                   .Replace("{BankNumber}", account.Name.ToString())
-                                   .Replace("{BankName}", account.Name.ToString())
-                                   .Replace("{Branch}", account.Name.ToString())
-                                   .Replace("{ContractDescription}", account.Name.ToString())
-                                   .Replace("{StartDate}", contract.StartDate.ToString())
-                                   .Replace("{EndDate}", contract.EndDate.ToString())
-                                   .Replace("{SalaryInWord}", salaryInWord)
-                                   .Replace("{SigningDate}", contract.SigningDate.Day.ToString())
-                                   .Replace("{SigningMonth}", contract.SigningDate.Month.ToString())
-                                   .Replace("{SigningYear}", contract.SigningDate.Year.ToString())
-                                   .Replace("{SalaryAfterVAT}", salaryAfterVAT.ToString())
-                                   .Replace("{SalaryAfterVATInWord}", salaryAfterVATInWord)
-                                   .Replace("{TotalSalary}", salaryInWord);
-
-                                // Replace the original text node with the cloned and modified one
-                                run.ReplaceChild(newText, textElement);
-                            }
-                        }
-                    }
-
-                    // Lưu lại nội dung đã thay đổi
-                    mainPart.Document = newDoc;
-                    doc.Save();
-                }
+                // Save the modified file to the desktop for testing
+                File.Copy(fileName, desktopFilePath, true);
 
                 string uploadURL = "";
 
@@ -1009,9 +992,9 @@ namespace SupFAmof.Service.Service
                         ThrowOnCancel = true
                     })
                     .Child("contract")
-                    .Child(fileName)  // Append ".docx" to the file name
+                    .Child(fileName)  
                     //.PutAsync(fileStream, cancellationToken.Token, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    .PutAsync(fileStream, cancellationToken.Token);
+                    .PutAsync(fileStream, cancellationToken.Token, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
 
                 uploadTask.Progress.ProgressChanged += (s, e) =>

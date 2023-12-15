@@ -106,6 +106,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Back side of of your card is not belong to the front side")]
             WRONG_BACK_CARD = 4018,
 
+            //400
+            [Display(Name = "Collaborator is not currently premium")]
+            INVALID_CREDENTIAL = 4019,
+
             //403
             [Display(Name = "You did not have permission to use this function")]
             PERMISSION_NOT_ALLOW = 4032,

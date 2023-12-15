@@ -45,6 +45,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         #region update Collaborator Credential
 
         Task<BaseResponseViewModel<AccountResponse>> UpdateCollaboratorCredential(int accountId, int collaboratorAccountId);
+        Task<BaseResponseViewModel<AccountResponse>> DisableCollaboratorCredential(int accountId, int collaboratorAccountId);
 
         #endregion
     }

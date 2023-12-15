@@ -181,7 +181,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// 
         [HttpPut("update-collab-credential")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> ApproveProblemRequest([FromQuery] int collaboratorAccountId)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateCollaboratorCredential([FromQuery] int collaboratorAccountId)
         {
             try
             {
@@ -192,6 +192,33 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _admissionAccountService.UpdateCollaboratorCredential(account.Id, collaboratorAccountId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        ///<summary>
+        /// Disable Collaborator Credential (Premium)
+        /// </summary>
+        /// 
+        [HttpPut("disbale-collab-credential")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateCollaboratorCredential([FromQuery] int collaboratorAccountId)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _admissionAccountService.DisableCollaboratorCredential(account.Id, collaboratorAccountId);
             }
             catch (ErrorResponse ex)
             {

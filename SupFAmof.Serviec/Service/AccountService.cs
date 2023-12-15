@@ -1602,6 +1602,62 @@ namespace SupFAmof.Service.Service
             }
         }
 
+        public async Task<BaseResponseViewModel<AccountResponse>> DisableCollaboratorCredential(int accountId, int collaboratorAccountId)
+        {
+            try
+            {
+                var admissionAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId && x.RoleId == (int)SystemRoleEnum.AdmissionManager);
+
+                if (admissionAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                       AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                if (admissionAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                       AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var collaboratorAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collaboratorAccountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                if (collaboratorAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.COLLABORATOR_NOT_FOUND,
+                                       AccountErrorEnums.COLLABORATOR_NOT_FOUND.GetDisplayName());
+                }
+
+                if(collaboratorAccount.IsPremium == false)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.INVALID_CREDENTIAL,
+                                       AccountErrorEnums.INVALID_CREDENTIAL.GetDisplayName());
+                }
+
+                collaboratorAccount.IsPremium = false;
+                collaboratorAccount.UpdateAt = Ultils.GetCurrentDatetime();
+
+                await _unitOfWork.Repository<Account>().UpdateDetached(collaboratorAccount);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AccountResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountResponse>(collaboratorAccount)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         #endregion
     }
 }

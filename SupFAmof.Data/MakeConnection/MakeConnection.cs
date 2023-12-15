@@ -18,7 +18,9 @@ namespace SupFAmof.Data.MakeConnection
             });
             //services.AddDbContext<SupFAmOf_Stg_Db_Ver_2Context>(ServiceLifetime.Transient);
             //services.AddDbContext<SupFAmOf_Stg_DbContext>(ServiceLifetime.Scoped);
-            services.AddDbContext<SupFAmOf_Prod_DbContext>(ServiceLifetime.Scoped);
+
+            //services.AddDbContext<SupFAmOf_Prod_DbContext>(ServiceLifetime.Scoped);
+            services.AddTransient<SupFAmOf_Prod_DbContext>();
             return services;
         }
     }

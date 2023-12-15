@@ -14,6 +14,7 @@ namespace SupFAmof.Service.DTO.Response
         {
             RegisterAmount = 0;
             TotalAmountPosition = 0;
+            PendingRegisterAmount = 0;
         }
 
         public int? Id { get; set; }
@@ -31,6 +32,8 @@ namespace SupFAmof.Service.DTO.Response
         public DateTime? UpdateAt { get; set; }
 
         //The ?? operator is used to provide a default value in case the left-hand operand
+
+        public int? PendingRegisterAmount;
 
         public int? RegisterAmount;
         //public  int? RegisterAmount { get => registerAmount ?? 0; set => registerAmount = value; }

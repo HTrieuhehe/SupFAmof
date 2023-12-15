@@ -911,6 +911,7 @@ namespace SupFAmof.Service.Service
             {
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
+
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -945,13 +946,18 @@ namespace SupFAmof.Service.Service
                             var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                             // tìm post Registration có position Id trung với các bài post
-                            var premiumPostRegistrations = await _unitOfWork.Repository<PostRegistration>()
+                            // tìm post Registration có position Id trung với các bài post
+                            var premiumPostRegistrationsSearch = await _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
-                                .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                .Where(reg => premiumPostPositionIds.Contains(reg.PositionId))
                                 .ToListAsync();
 
+                            item.PendingRegisterAmount = premiumPostRegistrationsSearch.Count;
+
+                            var premiumPostRegistrationsFiltering = premiumPostRegistrationsSearch.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
+
                             // tính tổng các registration đã được confirm
-                            item.RegisterAmount = premiumPostRegistrations.Count;
+                            item.RegisterAmount = premiumPostRegistrationsFiltering.Count();
 
                             //lấy thời gian min max
                             item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -960,7 +966,7 @@ namespace SupFAmof.Service.Service
                             foreach (var itemDetail in item.PostPositions)
                             {
                                 //count register amount in post attendee based on position
-                                totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
+                                totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsFiltering);
 
                                 //transafer data to field in post position
                                 itemDetail.PositionRegisterAmount = totalCount;
@@ -1009,11 +1015,15 @@ namespace SupFAmof.Service.Service
                         // tìm post Registration có position Id trung với các bài post
                         var premiumPostRegistrations = await _unitOfWork.Repository<PostRegistration>()
                             .GetAll()
-                            .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                            .Where(reg => premiumPostPositionIds.Contains(reg.PositionId))
                             .ToListAsync();
 
+                        item.PendingRegisterAmount = premiumPostRegistrations.Count;
+
+                        var premiumPostRegistrationsFiltering = premiumPostRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
+
                         // tính tổng các registration đã được confirm
-                        item.RegisterAmount = premiumPostRegistrations.Count;
+                        item.RegisterAmount = premiumPostRegistrationsFiltering.Count();
 
                         //lấy thời gian min max
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
@@ -1022,7 +1032,7 @@ namespace SupFAmof.Service.Service
                         foreach (var itemDetail in item.PostPositions)
                         {
                             //count register amount in post attendee based on position
-                            totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrations);
+                            totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsFiltering);
 
                             //transafer data to field in post position
                             itemDetail.PositionRegisterAmount = totalCount;
@@ -1080,19 +1090,22 @@ namespace SupFAmof.Service.Service
                         var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
 
                         // tìm post Registration có position Id trung với các bài post
-                        var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
-                                                            .GetAll()
-                                                            .Where(reg => postPositionIds.Contains(reg.PositionId)
-                                                            && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                                            .ToListAsync();
+                        var postSearchRegistrations = await _unitOfWork.Repository<PostRegistration>()
+                            .GetAll()
+                            .Where(reg => postPositionIds.Contains(reg.PositionId))
+                            .ToListAsync();
+
+                        item.PendingRegisterAmount = postSearchRegistrations.Count;
+
+                        var postRegistrationsFiltering = postSearchRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                         // tính tổng các registration đã được confirm
-                        item.RegisterAmount = postRegistrations.Count;
+                        item.RegisterAmount = postRegistrationsFiltering.Count();
 
                         foreach (var itemDetail in item.PostPositions)
                         {
                             //count register amount in post attendee based on position
-                            totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+                            totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
 
                             //transafer data to field in post position
                             itemDetail.PositionRegisterAmount = totalCount;
@@ -1143,13 +1156,17 @@ namespace SupFAmof.Service.Service
 
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
-                                                        .GetAll()
-                                                        .Where(reg => postPositionIds.Contains(reg.PositionId)
-                                                        && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                                                        .ToListAsync();
+                            .GetAll()
+                            .Where(reg => postPositionIds.Contains(reg.PositionId))
+                            .ToListAsync();
+
+                    item.PendingRegisterAmount = postRegistrations.Count;
+
+                    var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
+
 
                     // tính tổng các registration đã được confirm
-                    item.RegisterAmount = postRegistrations.Count;
+                    item.RegisterAmount = postRegistrationsFiltering.Count();
 
                     foreach (var itemDetail in item.PostPositions)
                     {
@@ -1361,7 +1378,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        private static int CountRegisterAmount(int positionId, List<PostRegistration> postRegistrations)
+        private static int CountRegisterAmount(int positionId, IEnumerable<PostRegistration> postRegistrations)
         {
             return postRegistrations.Count(x => x.PositionId == positionId);
         }

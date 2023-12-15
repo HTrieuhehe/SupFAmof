@@ -208,7 +208,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// 
         [HttpPut("disbale-collab-credential")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> UpdateCollaboratorCredential([FromQuery] int collaboratorAccountId)
+        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> DisableCollaboratorCredential([FromQuery] int collaboratorAccountId)
         {
             try
             {

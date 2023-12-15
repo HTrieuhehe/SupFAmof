@@ -541,6 +541,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "You are not verified by Admin to allow to create contract")]
             ACCOUNT_CREATE_CONTRACT_INVALID = 4031,
 
+            //403
+            [Display(Name = "You are not the admission officer who create this contract")]
+            CONTRACT_CREATE_PERSON_NOT_ALLOW = 4032,
+
             //400
             [Display(Name = "Signing date cannot be greater than Start Date")]
             SIGNING_DATE_INVALID_WITH_START_DATE = 4002,

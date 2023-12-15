@@ -59,6 +59,7 @@ namespace SupFAmof.API.Mapper
                 .ForMember(x=>x.certificates,opt=>opt.MapFrom(src=>src.AccountCertificateAccounts))
                 .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.AccountInformation.IdStudent))
                 .ReverseMap();
+            CreateMap<Account, ContractCollaboratorResponse>().ReverseMap();
             CreateMap<AccountCertificate, CertificateResponse>()
                 .ForMember(x=>x.CertificateName,opt=>opt.MapFrom(src=>src.TrainingCertificate.CertificateName))
                 .ReverseMap();

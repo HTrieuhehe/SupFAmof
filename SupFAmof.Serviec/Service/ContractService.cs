@@ -395,7 +395,7 @@ namespace SupFAmof.Service.Service
                     var checkCollab = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == collab);
 
                     //if account banned or any contract confirmed. status will fail
-                    if (checkCollab == null || checkCollab.AccountBanneds.Any() && checkCollab.AccountBanneds.Max(x => x.DayEnd <= Ultils.GetCurrentDatetime()))
+                    if (checkCollab == null || Ultils.CheckAccountBanned(checkCollab.AccountBanneds))
                     {
                         //account is banned
                         CreateAccountContractRequest accountContractNew = new CreateAccountContractRequest()
@@ -523,6 +523,158 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(400, (int)AccountContractErrorEnum.OVER_COLLABORATOR,
                                        AccountContractErrorEnum.OVER_COLLABORATOR.GetDisplayName());
                 }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<ContractCollaboratorResponse>> GetCollaboratorContract
+            (int accountId, int contractId, string search, PagingRequest paging)
+        {
+            try
+            {
+                var admissionOfficer = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (admissionOfficer == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (admissionOfficer.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID,
+                                        ContractErrorEnum.ACCOUNT_CREATE_CONTRACT_INVALID.GetDisplayName());
+                }
+
+                //find contract
+                var contract = await _unitOfWork.Repository<Contract>().FindAsync(x => x.Id == contractId);
+
+                if (contract == null)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                        ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                }
+
+                else if(contract.CreatePersonId != accountId)
+                {
+                    throw new ErrorResponse(404, (int)ContractErrorEnum.CONTRACT_CREATE_PERSON_NOT_ALLOW,
+                                        ContractErrorEnum.CONTRACT_CREATE_PERSON_NOT_ALLOW.GetDisplayName());
+
+                }    
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var collaboratorsSearch = _unitOfWork.Repository<Account>()
+                                              .GetAll()
+                                              .Where(x => x.RoleId == (int)SystemRoleEnum.Collaborator 
+                                              && x.Email.Contains(search)                  
+                                              && x.IsActive == true)
+                                              .ProjectTo<ContractCollaboratorResponse>(_mapper.ConfigurationProvider)
+                                              .DynamicSort(paging.Sort, paging.Order)
+                                              .PagingQueryable(paging.Page, paging.PageSize);
+
+                    var collarboratorSearchResponseList = await collaboratorsSearch.Item2.ToListAsync();
+
+                    foreach (var collaborator in collarboratorSearchResponseList)
+                    {
+                        var accountBanned = await _unitOfWork.Repository<AccountBanned>()
+                                                        .FindAsync(x => x.IsActive == true && x.DayEnd >= Ultils.GetCurrentDatetime()
+                                                                                           && x.AccountIdBanned == collaborator.Id);
+
+                        if (accountBanned != null)
+                        {
+                            //check account banned or not
+                            collarboratorSearchResponseList.Remove(collaborator);
+                            continue;
+                        }
+
+                        //check valid to display to send email
+                        var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                                                                    .GetAll().Where(x => x.Contract.StartDate <= contract.EndDate
+                                                                    && x.Contract.EndDate >= contract.StartDate
+                                                                    && x.AccountId == collaborator.Id);
+
+                        if (checkCurrentContract.Any(x => x.Status == (int)AccountContractStatusEnum.Confirm))
+                        {
+                            //check collaborator has one contract in range
+                            collarboratorSearchResponseList.Remove(collaborator);
+                            continue;
+                        }
+
+                        //check if this contract are already send email to collaborator
+                        if (checkCurrentContract.Any(x => x.Contract.Id == contractId))
+                        {
+                            collarboratorSearchResponseList.Remove(collaborator);
+                            continue;
+                        }
+                    }
+
+                    return new BaseResponsePagingViewModel<ContractCollaboratorResponse>
+                    {
+                        Metadata = new PagingsMetadata
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = collaboratorsSearch.Item1
+                        },
+                        Data = collarboratorSearchResponseList,
+                    };
+                }
+
+                //get collaborator
+
+                var collaborators = _unitOfWork.Repository<Account>()
+                                              .GetAll()
+                                              .Where(x => x.RoleId == (int)SystemRoleEnum.Collaborator && x.IsActive == true)
+                                              .ProjectTo<ContractCollaboratorResponse>(_mapper.ConfigurationProvider)
+                                              .DynamicSort(paging.Sort, paging.Order)
+                                              .PagingQueryable(paging.Page, paging.PageSize);
+
+                List<ContractCollaboratorResponse> newCollaborator = new List<ContractCollaboratorResponse>();
+                var collarboratorResponseList = await collaborators.Item2.ToListAsync();
+
+                foreach (var collaborator in collarboratorResponseList)
+                {
+                    var accountBanned = await _unitOfWork.Repository<AccountBanned>()
+                                                         .FindAsync(x => x.IsActive == true && x.DayEnd >= Ultils.GetCurrentDatetime()
+                                                                                            && x.AccountIdBanned == collaborator.Id);
+
+                    if (accountBanned != null)
+                    {
+                        //check collaborator banned or not
+                        collarboratorResponseList.Remove(collaborator);
+                    }
+
+                    //check valid to display to send email
+                    var checkCurrentContract = _unitOfWork.Repository<AccountContract>()
+                                                                .GetAll().Where(x => x.Contract.StartDate <= contract.EndDate
+                                                                && x.Contract.EndDate >= contract.StartDate
+                                                                && x.AccountId == collaborator.Id);
+
+                    if (checkCurrentContract.Any(x => x.Status == (int)AccountContractStatusEnum.Confirm) || checkCurrentContract.Any(x => x.Contract.Id == contractId))
+                    {
+                        //check collaborator has one contract in range or already have this contract
+                        //collarboratorResponseList.Remove(collaborator);
+                        continue;
+                    }
+
+                    //add collaborator to the list
+                    newCollaborator.Add(collaborator);
+                }
+
+                return new BaseResponsePagingViewModel<ContractCollaboratorResponse>
+                {
+                    Metadata = new PagingsMetadata
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = collaborators.Item1
+                    },
+                    Data = newCollaborator,
+                };
             }
             catch (Exception ex)
             {

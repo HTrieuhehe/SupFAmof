@@ -53,6 +53,35 @@ namespace SupFAmof.API.Controllers.AdmissionController
         }
 
         /// <summary>
+        /// Get Collaborator by Contract Id
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("getCollaboratorContract")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<ContractCollaboratorResponse>>> GetCollaboratorContract
+            ([FromQuery] int contractId, string? search, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _contractService.GetCollaboratorContract(account.Id, contractId, search, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
         /// Get Contract By id
         /// </summary>
         /// <returns></returns>

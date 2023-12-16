@@ -605,10 +605,10 @@ namespace SupFAmof.Service.Service
                 var filteredList =
                     _unitOfWork.Repository<TrainingRegistration>().GetAll().Where(
                         registration => requestIds.Contains(registration.Id) &&
-                                        registration.Status != 3);
+                                        (registration.Status == (int)TrainingRegistrationStatusEnum.Pending||registration.Status == (int)TrainingRegistrationStatusEnum.Assigned));
                 if (!filteredList.Any())
                 {
-                    throw new ErrorResponse(400, 4001, "Nothing");
+                    throw new ErrorResponse(400, 4001, "Nothing to show");
                 }
                 foreach (var registration in filteredList)
                 {

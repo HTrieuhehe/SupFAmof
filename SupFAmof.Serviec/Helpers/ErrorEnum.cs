@@ -663,6 +663,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Upload file failed")]
             UPLOADED_FAILED = 4008,
 
+            //400
+            [Display(Name = "Cannot complete the contract until")]
+            CANNOT_COMPLETE_CONTRACT = 4009,
+
             //404
             [Display(Name = "Error occur when collaborator not confirm or reject")]
             CONTRACT_REMOVED_ADMISSION = 4041,

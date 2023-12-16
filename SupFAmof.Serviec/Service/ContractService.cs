@@ -1007,6 +1007,14 @@ namespace SupFAmof.Service.Service
                                         AccountContractErrorEnum.COMPLETE_INVALID.GetDisplayName());
                 }
 
+                var currentTime = Ultils.GetCurrentDatetime();
+
+                if(accountContract.Contract.EndDate > currentTime)
+                {
+                    throw new ErrorResponse(400, (int)AccountContractErrorEnum.CANNOT_COMPLETE_CONTRACT,
+                                        AccountContractErrorEnum.CANNOT_COMPLETE_CONTRACT.GetDisplayName() + $" {accountContract.Contract.EndDate}");
+                }
+
                 accountContract.Status = (int)AccountContractStatusEnum.Complete;
                 accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 

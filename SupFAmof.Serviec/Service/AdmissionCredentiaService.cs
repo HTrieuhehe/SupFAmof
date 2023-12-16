@@ -26,7 +26,7 @@ namespace SupFAmof.Service.Service
         {
             _unitOfWork = unitOfWork;
             _notificationService = notificationService;
-            _mapper = mapper;
+            _mapper = mapper;   
         }
 
         public async Task<BaseResponseViewModel<AccountResponse>> CreateAdmissionCredential(int administratorId, int accountId)

@@ -24,4 +24,16 @@ namespace SupFAmof.Service.DTO.Response.Admission
 
         public virtual ICollection<AccountContractResponse>? AccountContracts { get; set; }
     }
+
+    public class AdmissionAccountContractCompleteResponse
+    {
+        public int Id { get; set; }
+        public int ContractId { get; set; }
+        public int AccountId { get; set; }
+        public byte[]? SubmittedBinaryFile { get; set; }
+        public string? SubmittedFile { get; set; }
+        public int Status { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
+    }
 }

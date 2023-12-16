@@ -32,6 +32,24 @@ namespace SupFAmof.Service.Helpers
             ROLE_NOTE_FOUND = 4041,
         }
 
+        public enum AdminErrorEnums
+        {
+            //404
+            [Display(Name = "Administrator not found")]
+            ADMIN_NOT_FOUND = 4041,
+        }
+
+        public enum AdmissionCredentialErrorEnums
+        {
+            //400
+            [Display(Name = "Admission credential already upgrade")]
+            ALREADY_UPGRADE = 4001,
+
+            //400
+            [Display(Name = "Admission credential already disable")]
+            ALREADY_DISABLE = 4002,
+        }
+
         public enum AccountErrorEnums
         {
             //400

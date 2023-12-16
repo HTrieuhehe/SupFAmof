@@ -32,31 +32,70 @@ namespace SupFAmof.Service.Service
             _notificationService = notificationService;
         }
 
-        public async Task<BaseResponsePagingViewModel<TrainingCertificateResponse>>
-        GetTrainingCertificates(TrainingCertificateResponse filter,
+        public async Task<BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>>
+        GetTrainingCertificates(int accountId, CollaboratorTrainingCertificateResponse filter,
                                 PagingRequest paging)
         {
             try
             {
-                var role = _unitOfWork.Repository<TrainingCertificate>()
+                //check collaborator
+                var collaborator = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                if (collaborator == null)
+                {
+                    throw new ErrorResponse(
+                        404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                var trainingCertificates = _unitOfWork.Repository<TrainingCertificate>()
                                .GetAll()
-                               .ProjectTo<TrainingCertificateResponse>(
+                               .ProjectTo<CollaboratorTrainingCertificateResponse>(
                                    _mapper.ConfigurationProvider)
                                .DynamicFilter(filter)
                                .DynamicSort(paging.Sort, paging.Order)
                                .Where(x => x.IsActive == true)
                                .PagingQueryable(paging.Page, paging.PageSize);
 
-                return new BaseResponsePagingViewModel<TrainingCertificateResponse>()
+                var trainingCertificateResponses = await trainingCertificates.Item2.ToListAsync();
+
+                foreach (var trainingCertificate in trainingCertificateResponses)
+                {
+                    //check account has certi or not
+                    var accountCertificate = await _unitOfWork.Repository<AccountCertificate>()
+                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id
+                                                                                             && x.Status == (int)AccountCertificateStatusEnum.Complete);
+
+                    if (accountCertificate != null)
+                    {
+                        //if he/she has certificate, so it is not neccessary to register training
+                        trainingCertificate.IsRegistered = true;
+                        trainingCertificate.isHasThisCertificate = true;
+                        continue;
+                    }
+
+                    //check training Register
+                    var trainingRegister = await _unitOfWork.Repository<TrainingRegistration>()
+                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id
+                                                                                             && x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
+                                                                                             || x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
+
+                    if (trainingRegister != null)
+                    {
+                        trainingCertificate.IsRegistered = true;
+                    }
+                }
+
+                return new BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>()
                 {
                     Metadata =
                       new PagingsMetadata()
                       {
                           Page = paging.Page,
                           Size = paging.PageSize,
-                          Total = role.Item1
+                          Total = trainingCertificates.Item1
                       },
-                    Data = role.Item2.ToList()
+                    Data = trainingCertificateResponses
                 };
             }
             catch (Exception ex)
@@ -1194,6 +1233,37 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetAdmissionTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging)
+        {
+            try
+            {
+                var trainingCertificates = _unitOfWork.Repository<TrainingCertificate>()
+                               .GetAll()
+                               .ProjectTo<TrainingCertificateResponse>(
+                                   _mapper.ConfigurationProvider)
+                               .DynamicFilter(filter)
+                               .DynamicSort(paging.Sort, paging.Order)
+                               .Where(x => x.IsActive == true)
+                               .PagingQueryable(paging.Page, paging.PageSize);
+
+                return new BaseResponsePagingViewModel<TrainingCertificateResponse>()
+                {
+                    Metadata =
+                      new PagingsMetadata()
+                      {
+                          Page = paging.Page,
+                          Size = paging.PageSize,
+                          Total = trainingCertificates.Item1
+                      },
+                    Data = trainingCertificates.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
             {
                 throw;
             }

@@ -134,8 +134,8 @@ namespace SupFAmof.API.Controllers
         /// <returns></returns>
         /// 
         [HttpGet("getAllCertificateFromAdmission")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<TrainingCertificateResponse>>> GetCertificates
-        ([FromQuery] TrainingCertificateResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>>> GetCertificates
+        ([FromQuery] CollaboratorTrainingCertificateResponse filter, [FromQuery] PagingRequest paging)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetTrainingCertificates(filter, paging);
+                return await _certificateService.GetTrainingCertificates(account.Id, filter, paging);
             }
             catch (ErrorResponse ex)
             {

@@ -210,6 +210,7 @@ namespace SupFAmof.API.Mapper
 
             #region Admission Training Certificate
             CreateMap<TrainingCertificate, TrainingCertificateResponse>().ReverseMap();
+            CreateMap<TrainingCertificate, CollaboratorTrainingCertificateResponse>().ReverseMap();
             CreateMap<CreateTrainingCertificateRequest, TrainingCertificate>();
             CreateMap<UpdateTrainingCertificateRequest, TrainingCertificate>();
             CreateMap<EventDaysCertificate, TrainingEventDay>().ReverseMap();

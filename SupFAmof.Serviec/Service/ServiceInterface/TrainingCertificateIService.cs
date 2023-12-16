@@ -12,7 +12,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface ITrainingCertificateService
     {
-        Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetAdmissionTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>> GetTrainingCertificates(int accountId, CollaboratorTrainingCertificateResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> GetTrainingCertificateById(int trainingCertificateId);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> CreateTrainingCertificate(int accountId, CreateTrainingCertificateRequest request);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int accountId, int trainingCertificateId, UpdateTrainingCertificateRequest request);

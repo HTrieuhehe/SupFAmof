@@ -38,7 +38,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                return await _certificateService.GetTrainingCertificates(filter, paging);
+                return await _certificateService.GetAdmissionTrainingCertificates(filter, paging);
             }
             catch (ErrorResponse ex)
             {

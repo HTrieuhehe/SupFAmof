@@ -266,7 +266,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// 
         [HttpPut("complete")]
         public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountContractResponse>>> AdmissionCompleteContract
-            ([FromQuery] int accountContractId, [FromBody] UpdateAdmissionContractRequest request)
+            ([FromQuery] int accountContractId)
         {
             try
             {

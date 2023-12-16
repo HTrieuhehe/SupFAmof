@@ -989,7 +989,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AdmissionAccountContractResponse>> AdmissionCompleteContract(int accountId, int accountContractId)
+        public async Task<BaseResponseViewModel<AdmissionAccountContractCompleteResponse>> AdmissionCompleteContract(int accountId, int accountContractId)
         {
             try
             {
@@ -1010,7 +1010,10 @@ namespace SupFAmof.Service.Service
                 accountContract.Status = (int)AccountContractStatusEnum.Complete;
                 accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
-                return new BaseResponseViewModel<AdmissionAccountContractResponse>
+                await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
+                await _unitOfWork.CommitAsync();
+
+                return new BaseResponseViewModel<AdmissionAccountContractCompleteResponse>
                 {
                     Status = new StatusViewModel
                     {
@@ -1018,7 +1021,7 @@ namespace SupFAmof.Service.Service
                         ErrorCode = 0,
                         Success = true,
                     },
-                    Data = _mapper.Map<AdmissionAccountContractResponse>(accountContract)
+                    Data = _mapper.Map<AdmissionAccountContractCompleteResponse>(accountContract)
                 };
             }
             catch (Exception ex)

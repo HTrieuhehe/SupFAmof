@@ -1027,7 +1027,7 @@ namespace SupFAmof.Service.Service
                         var premiumPostRegistrationsFiltering = premiumPostRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                         // tính tổng các registration đã được confirm
-                        item.TotalRegisterAmount = premiumPostRegistrationsFiltering.Count();
+                        item.RegisterAmount = premiumPostRegistrationsFiltering.Count();
 
                         //lấy thời gian min max
                         item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();

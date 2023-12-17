@@ -13,6 +13,7 @@ namespace SupFAmof.Service.DTO.Response
         public PostPositionResponse()
         {
             PositionRegisterAmount = 0;
+            TotalPositionRegisterAmount = 0;
         }
 
         public int Id { get; set; }
@@ -35,5 +36,6 @@ namespace SupFAmof.Service.DTO.Response
         public double? Salary { get; set; }
 
         public int? PositionRegisterAmount { get; set; }
+        public int? TotalPositionRegisterAmount;
     }
 }

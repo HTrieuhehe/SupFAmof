@@ -1225,6 +1225,7 @@ namespace SupFAmof.Service.Service
             {
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
+                int? totalPositionRegister = 0; 
                 var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
 
                 if (checkAccount == null)
@@ -1260,16 +1261,21 @@ namespace SupFAmof.Service.Service
                 var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                     .GetAll()
                                                     .Where(reg => postPositionIds.Contains(reg.PositionId)
-                                                    && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                    && reg.Status != (int)PostRegistrationStatusEnum.Cancel || reg.Status != (int)PostRegistrationStatusEnum.Quit)
                                                     .ToListAsync();
 
+                postMapping.TotalRegisterAmount = postRegistrations.Count;
+
+                var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
+
                 // tính tổng các registration đã được confirm
-                postMapping.RegisterAmount = postRegistrations.Count;
+                postMapping.RegisterAmount = postRegistrationsFiltering.Count();
 
                 foreach (var itemDetail in postMapping.PostPositions)
                 {
                     //count register amount in post attendee based on position
-                    totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+                    totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
+                    totalPositionRegister += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                     //transafer data to field in post position
                     itemDetail.PositionRegisterAmount = totalCount;
@@ -1279,13 +1285,13 @@ namespace SupFAmof.Service.Service
 
                     //reset temp count
                     totalCount = 0;
+                    totalPositionRegister = 0;
                 }
                 //transfer data from position after add to field in post
                 postMapping.TotalAmountPosition = totalAmountPosition;
 
                 // Reset temp variable
                 totalAmountPosition = 0;
-
 
                 return new BaseResponseViewModel<PostResponse>()
                 {

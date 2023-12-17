@@ -156,7 +156,7 @@ namespace SupFAmof.API
             builder.RegisterType<AttendanceService>().As<IAttendanceService>();
             builder.RegisterType<SystemManagementService>().As<ISystemManagementService>();
             builder.RegisterType<ManageAdmissionProfileService>().As<IManageAdmissionProfileService>();
-
+            builder.RegisterType<AdmissionCredentialService>().As<IAdmissionCredentialService>();
 
 
             builder.Register<IRedisClientsManager>(c =>

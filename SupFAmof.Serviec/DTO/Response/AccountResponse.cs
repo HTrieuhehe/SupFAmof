@@ -108,6 +108,4 @@ namespace SupFAmof.Service.DTO.Response
         public string? CertificateName { get; set; }
     
     }
-
-
 }

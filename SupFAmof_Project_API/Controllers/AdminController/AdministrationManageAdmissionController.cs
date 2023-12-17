@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SupFAmof.Service.DTO.Request;
 using SupFAmof.Service.DTO.Request.AccounBanking;
 using SupFAmof.Service.DTO.Response;
+using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.Service;
 using SupFAmof.Service.Service.ServiceInterface;
@@ -24,8 +26,8 @@ namespace SupFAmof.API.Controllers.AdminController
         /// Upgrade Admission Credential
         /// </summary>
         /// 
-        [HttpPost("upgradeCredential")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountBankingResponse>>> CreateAdmissionCredential([FromBody] int admissionAccountId)
+        [HttpPut("upgradeCredential")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> CreateAdmissionCredential([FromQuery] int admissionAccountId)
         {
             try
             {
@@ -52,8 +54,8 @@ namespace SupFAmof.API.Controllers.AdminController
         /// Upgrade Admission Credential
         /// </summary>
         /// 
-        [HttpPost("disableCredential")]
-        public async Task<ActionResult<BaseResponseViewModel<AccountResponse>>> DisableAdmissionCredential([FromBody] int admissionAccountId)
+        [HttpPut("disableCredential")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> DisableAdmissionCredential([FromQuery] int admissionAccountId)
         {
             try
             {
@@ -64,6 +66,34 @@ namespace SupFAmof.API.Controllers.AdminController
                     return Unauthorized();
                 }
                 var result = await _admissionCredentialService.DisableAdmissionCredential(account.Id, admissionAccountId);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404) 
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        ///<summary>
+        /// Get Admission Profile
+        /// </summary>
+        /// 
+        [HttpGet("getAll")]
+        public async Task<ActionResult<BaseResponseViewModel<AdmissionAccountResponse>>> GetAdmissionProfiles([FromQuery] AdmissionAccountResponse filter, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.SystemAdmin)
+                {
+                    return Unauthorized();
+                }
+                var result = await _admissionCredentialService.GetAdmissionProfile(account.Id, filter, paging);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

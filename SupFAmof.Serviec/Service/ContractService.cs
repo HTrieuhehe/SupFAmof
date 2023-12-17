@@ -618,7 +618,7 @@ namespace SupFAmof.Service.Service
                         {
                             Page = paging.Page,
                             Size = paging.PageSize,
-                            Total = collaboratorsSearch.Item1
+                            Total = collarboratorSearchResponseList.Count
                         },
                         Data = collarboratorSearchResponseList,
                     };
@@ -671,7 +671,7 @@ namespace SupFAmof.Service.Service
                     {
                         Page = paging.Page,
                         Size = paging.PageSize,
-                        Total = collaborators.Item1
+                        Total = newCollaborator.Count
                     },
                     Data = newCollaborator,
                 };

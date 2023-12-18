@@ -44,7 +44,7 @@ namespace SupFAmof.Service.TaskSchedule
 
                 foreach (var position in post.PostPositions)
                 {
-                    TimeSpan positionCheckInTime = position.TimeFrom + TimeSpan.FromMinutes(5);
+                    TimeSpan positionCheckInTime = position.TimeFrom + TimeSpan.FromMinutes(15);
 
                     if (position.Date < checkTimeCheckIn.Date)
                     {

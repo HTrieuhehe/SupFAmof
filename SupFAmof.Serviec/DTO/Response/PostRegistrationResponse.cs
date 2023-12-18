@@ -296,7 +296,7 @@ namespace SupFAmof.Service.DTO.Response
         public int? PostRegistrationId { get; set; }
         public bool? BusOption { get; set; }
         public int? Status { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public virtual PostPositionResponse? PostPositionNeedToBeUpdated { get; set; }
 
         public virtual PostPositionResponse? OriginalPosition { get; set; }

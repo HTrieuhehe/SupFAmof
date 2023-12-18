@@ -219,18 +219,41 @@ namespace SupFAmof.Service.Service
 
         private static bool VerifyDateTimeCheckin(PostRegistration postTime, DateTime checkInTime)
         {
-            if (postTime.Position.Date != checkInTime.Date)
+            if (postTime.Position.TrainingCertificate != null)
             {
-                throw new ErrorResponse(400, 400, "Cant check in if you are not on the day of event");
-            }
+                if (postTime.Position.Date != checkInTime.Date)
+                {
+                    throw new ErrorResponse(400, 400, "Cant check in if you are not on the day of event");
+                }
 
-            // Calculate the time difference in hours between checkInTime and postTime.Position.TimeFrom
-            TimeSpan timeDifference = checkInTime.TimeOfDay - postTime.Position.TimeFrom;
+                // Calculate the time difference in hours between checkInTime and postTime.Position.TimeFrom
+                TimeSpan timeDifference = checkInTime.TimeOfDay - postTime.Position.TimeFrom;
 
-            // Check if the time difference is within a 2-hour range
-            if (timeDifference.TotalHours < -1 && timeDifference.TotalHours > 0.5)
+                // Check if the time difference is within a 2-hour range
+                if (timeDifference.TotalHours > -0.5)
+                {
+                    throw new ErrorResponse(400, 400, $"Check in is available in {postTime.Position.TimeFrom - TimeSpan.FromMinutes(30)}");
+                }
+            }else
             {
-                throw new ErrorResponse(400, 400, $"Check in is available in {postTime.Position.TimeFrom - TimeSpan.FromMinutes(30)}");
+                if (postTime.Position.Date != checkInTime.Date)
+                {
+                    throw new ErrorResponse(400, 400, "Cant check in if you are not on the day of event");
+                }
+
+                // Calculate the time difference in hours between checkInTime and postTime.Position.TimeFrom
+                TimeSpan timeDifference = checkInTime.TimeOfDay - postTime.Position.TimeFrom;
+
+                // Check if the time difference is within a 2-hour range
+                if (timeDifference.TotalHours > -0.5)
+                {
+                    throw new ErrorResponse(400, 400, $"Check in is available in {postTime.Position.TimeFrom - TimeSpan.FromMinutes(30)}");
+                }
+                if(timeDifference.TotalHours >= 0.0833333333)
+                {
+                    throw new ErrorResponse(400, 400, $"You are late");
+
+                }
             }
 
             return true;

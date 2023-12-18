@@ -176,7 +176,7 @@ namespace SupFAmof.Service.Service
 
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, FilterUpdateRequestResponse IdFilter)
+        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, AdmissionUpdateRequestResponse filter,  FilterUpdateRequestResponse IdFilter)
         {
             try
             {
@@ -188,6 +188,7 @@ namespace SupFAmof.Service.Service
 
 
                 var filteredList = FilterUpdateRequest(list, IdFilter)
+                                 .DynamicFilter(filter)
                                  .DynamicSort(paging.Sort, paging.Order)
                                  .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>()

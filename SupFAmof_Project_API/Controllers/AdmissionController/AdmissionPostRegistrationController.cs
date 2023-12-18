@@ -88,7 +88,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// <response code="200">Get success</response>
         /// <response code="400">Failed to get</response>
         [HttpGet("get-postRegistrationUpdateRequest-by-Admission-AccountId")]
-        public async Task<ActionResult<BaseResponseViewModel<List<AdmissionPostsResponse>>>> AdmissionUpdateRequests([FromQuery] PagingRequest paging, [FromQuery] FilterUpdateRequestResponse IdFilter)
+        public async Task<ActionResult<BaseResponseViewModel<List<AdmissionPostsResponse>>>> AdmissionUpdateRequests
+            ([FromQuery] PagingRequest paging, [FromQuery] AdmissionUpdateRequestResponse filter, [FromQuery] FilterUpdateRequestResponse IdFilter)
         {
             try
             {
@@ -99,7 +100,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
 
-                var result = await _postRegistrationService.AdmissionUpdateRequests(account.Id, paging,IdFilter);
+                var result = await _postRegistrationService.AdmissionUpdateRequests(account.Id, paging, filter, IdFilter);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

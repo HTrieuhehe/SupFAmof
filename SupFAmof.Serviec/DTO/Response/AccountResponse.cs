@@ -10,6 +10,7 @@ namespace SupFAmof.Service.DTO.Response
     public class TotalAccountResponse
     {
         public int TotalCollaborator { get; set; }
+        public int TotalPost { get; set; }
         public virtual List<NewCollaboratorResponse>? NewCollaborators { get; set; }
     }
 

@@ -66,7 +66,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 {
                     return Unauthorized();
                 }
-                var result = await _admissionAccountService.ViewCollaborator();
+                var result = await _admissionAccountService.ViewCollaborator(account.Id);
                 return Ok(result);
             }
             catch (ErrorResponse ex)

@@ -1102,7 +1102,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<TotalAccountResponse>> ViewCollaborator()
+        public async Task<BaseResponseViewModel<TotalAccountResponse>> ViewCollaborator(int accountId)
         {
             try
             {
@@ -1114,10 +1114,13 @@ namespace SupFAmof.Service.Service
 
                 var collaboratorMapper = _mapper.Map<List<NewCollaboratorResponse>>(newMember);
 
+                var posts = _unitOfWork.Repository<Post>().GetAll().Where(x => x.AccountId == accountId);
+
                 TotalAccountResponse totalCollaborator = new TotalAccountResponse()
                 {
                     TotalCollaborator = collaborator.Count(),
-                    NewCollaborators = collaboratorMapper
+                    NewCollaborators = collaboratorMapper,
+                    TotalPost = posts.Count()
                 };
 
                 return new BaseResponseViewModel<TotalAccountResponse>()

@@ -53,8 +53,8 @@ namespace SupFAmof.Service.Service
                                                     AccountBannedErrorEnum.ADMISSION_FORBIDDEN.GetDisplayName());
                 }
 
-                //check account has banned yet
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.Id == request.AccountIdBanned);
+                //check account has banned yet but not được tha bổng = cách set status thành false
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll().Where(x => x.AccountIdBanned == request.AccountIdBanned && x.IsActive == true);
 
                 //count how many banned time
                 int bannedAttempt = accountBanned.Count();

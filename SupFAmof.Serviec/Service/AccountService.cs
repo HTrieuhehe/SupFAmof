@@ -675,7 +675,7 @@ namespace SupFAmof.Service.Service
                         {
                             Status = new StatusViewModel()
                             {
-                                Message = "Account is not active",
+                                Message = "Account is banned",
                                 Success = false,
                                 ErrorCode = 4009
                             },
@@ -696,7 +696,7 @@ namespace SupFAmof.Service.Service
                         {
                             Message = "Account is not active",
                             Success = false,
-                            ErrorCode = 4009
+                            ErrorCode = 4010
                         },
                         Data = new LoginResponse()
                         {

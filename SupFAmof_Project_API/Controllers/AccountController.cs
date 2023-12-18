@@ -112,6 +112,12 @@ namespace SupFAmof.API.Controllers
             try
             {
                 var result = await _accountService.Login(data);
+
+                if (result.Status.Success == false && result.Status.ErrorCode == 4010)
+                {
+                    return BadRequest(result.Status.Message);
+                }
+
                 return Ok(result);
             }
             catch (ErrorResponse ex)

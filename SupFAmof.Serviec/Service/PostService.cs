@@ -1117,6 +1117,12 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+                if (checkAccount.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 var post = await _unitOfWork.Repository<Post>().GetAll().FirstOrDefaultAsync(x => x.Id == postId);
 
                 if (post == null)
@@ -1244,6 +1250,12 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                if (checkAccount.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
                 }
 
                 //check nếu tài khoảng premium mới cho coi post premium

@@ -161,7 +161,7 @@ namespace SupFAmof.Service.Service
 
                 var checkSendEmailContract = await _unitOfWork.Repository<AccountContract>()
                                                               .GetAll()
-                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id || x.Status == (int)AccountContractStatusEnum.Confirm);
+                                                              .FirstOrDefaultAsync(x => x.ContractId == contract.Id && x.Status == (int)AccountContractStatusEnum.Confirm);
 
                 if (checkSendEmailContract != null)
                 {
@@ -796,6 +796,12 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                if (account.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
                 }
 
                 //check account banned current or not

@@ -39,17 +39,33 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                           .Where(x => x.AccountIdBanned == accountId && x.IsActive);
-                #region Check Banned
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
 
-                if (accountBanned.Any(x => x.IsActive == true) && accountBanned.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime())
+                if (checkAccount == null)
                 {
-                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
-                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                #endregion
+                if (checkAccount.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
+                //#region Check Banned
+
+                ////check account banned current or not
+                //var accountBanned = Ultils.CheckAccountBanned(checkAccount.AccountBanneds);
+
+                ////if it true
+                //if (accountBanned)
+                //{
+                //    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                //                                         PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                //}
+
+                //#endregion
 
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
@@ -1107,6 +1123,20 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                var checkAccount = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(a => a.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                if (checkAccount.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
                 if (accountBanned.Any())

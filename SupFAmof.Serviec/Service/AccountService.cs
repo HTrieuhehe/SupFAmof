@@ -675,9 +675,9 @@ namespace SupFAmof.Service.Service
                         {
                             Status = new StatusViewModel()
                             {
-                                Message = "Account is banned",
+                                Message = PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName(),
                                 Success = false,
-                                ErrorCode = 4009
+                                ErrorCode = (int)PostRegistrationErrorEnum.ACCOUNT_BANNED
                             },
                             Data = new LoginResponse()
                             {
@@ -694,9 +694,9 @@ namespace SupFAmof.Service.Service
                     {
                         Status = new StatusViewModel()
                         {
-                            Message = "Account is not active",
+                            Message = AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName(),
                             Success = false,
-                            ErrorCode = 4010
+                            ErrorCode = (int)AccountErrorEnums.ACCOUNT_DISABLE
                         },
                         Data = new LoginResponse()
                         {

@@ -299,7 +299,7 @@ namespace SupFAmof.Service.Helpers
             DUPLICATE_PENDING = 4025,
 
             //403
-            [Display(Name = "Account banned")]
+            [Display(Name = "Account is banned")]
             ACCOUNT_BANNED = 4026,
             //400
             [Display(Name = "Cancel Failed")]

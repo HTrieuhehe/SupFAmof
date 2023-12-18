@@ -204,7 +204,7 @@ namespace SupFAmof.Service.Service
             try
             {
                 var currentDateTime = Ultils.GetCurrentDatetime();
-                var accountBanned = _unitOfWork.Repository<AccountBanned>().FindAsync(x => x.AccountIdBanned == accountId && x.DayEnd >= currentDateTime);
+                var accountBanned = await _unitOfWork.Repository<AccountBanned>().FindAsync(x => x.AccountIdBanned == accountId && x.DayEnd >= currentDateTime);
 
                 if (accountBanned == null)
                 {

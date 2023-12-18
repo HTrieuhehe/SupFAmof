@@ -1222,7 +1222,7 @@ namespace SupFAmof.Service.Service
 
         private static int CountRegisterAmount(int positionId, IEnumerable<PostRegistration> postRegistrations)
         {
-            return postRegistrations.Count(x => x.PositionId == positionId);
+            return postRegistrations.Count(x => x.PositionId == positionId && x.Status != (int)PostRegistrationStatusEnum.Cancel || x.Status != (int)PostRegistrationStatusEnum.Reject);
         }
 
         public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, string search, TimeFromFilter timeFromFilter, PagingRequest paging)
@@ -1260,53 +1260,7 @@ namespace SupFAmof.Service.Service
 
                         var postPremiumSearchResponses = await filterStatus.ToListAsync();
 
-                        foreach (var item in postPremiumSearchResponses)
-                        {
-                            // lấy tất cả các position Id của bài post hiện tại
-                            var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
-
-                            // tìm post Registration có position Id trung với các bài post
-                            var premiumPostRegistrationsSearch = await _unitOfWork.Repository<PostRegistration>()
-                                .GetAll()
-                                .Where(reg => premiumPostPositionIds.Contains(reg.PositionId))
-                                .ToListAsync();
-
-                            var premiumTotalSearch = premiumPostRegistrationsSearch.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel || reg.Status != (int)PostRegistrationStatusEnum.Quit);
-
-                            item.TotalRegisterAmount = premiumTotalSearch.Count();
-
-                            var premiumPostRegistrationsFiltering = premiumPostRegistrationsSearch.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
-
-                            // tính tổng các registration đã được confirm
-                            item.RegisterAmount = premiumPostRegistrationsFiltering.Count();
-
-                            //lấy thời gian min max
-                            item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
-                            item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
-
-                            foreach (var itemDetail in item.PostPositions)
-                            {
-                                //count register amount in post attendee based on position
-                                totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsFiltering);
-                                totalPositionCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsSearch);
-
-                                //transafer data to field in post position
-                                itemDetail.PositionRegisterAmount = totalCount;
-                                itemDetail.TotalPositionRegisterAmount = totalPositionCount;
-
-                                //add number of amount required to total amount of a specific post
-                                totalAmountPosition += itemDetail.Amount;
-
-                                // Reset temp variable
-                                totalCount = 0;
-                                totalPositionCount = 0;
-                            }
-                            //transfer data from position after add to field in post
-                            item.TotalAmountPosition = totalAmountPosition;
-
-                            // Reset temp variable
-                            totalAmountPosition = 0;
-                        }
+                        
 
                         return new BaseResponsePagingViewModel<PostResponse>()
                         {

@@ -1047,37 +1047,33 @@ namespace SupFAmof.Service.Service
 
             foreach (var item in listPosts)
             {
-                // lấy tất cả các position Id của bài post hiện tại
-                var premiumPostPositionIds = item.PostPositions.Select(p => p.Id).ToList();
-
-                // tìm post Registration có position Id trung với các bài post
-                // tìm post Registration có position Id trung với các bài post
-                var premiumPostRegistrationsSearch = await _unitOfWork.Repository<PostRegistration>()
-                    .GetAll()
-                    .Where(reg => premiumPostPositionIds.Contains(reg.PositionId) && reg.Status != (int)PostRegistrationStatusEnum.Cancel || reg.Status != (int)PostRegistrationStatusEnum.Quit)
-                    .ToListAsync();
-
-                var premiumTotalPostRegistrationSearch = premiumPostRegistrationsSearch.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
-                                           || reg.Status != (int)PostRegistrationStatusEnum.Quit);
-
-                item.TotalRegisterAmount = premiumTotalPostRegistrationSearch.Count();
-
-                item.TotalRegisterAmount = premiumPostRegistrationsSearch.Count();
-
-                var premiumPostRegistrationsFiltering = premiumPostRegistrationsSearch.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
-
-                // tính tổng các registration đã được confirm
-                item.RegisterAmount = premiumPostRegistrationsFiltering.Count();
-
-                //lấy thời gian min max
+                //lấy thời gian thấp nhất và cao nhất để hiển thị trên UI
                 item.TimeFrom = item.PostPositions.Min(p => p.TimeFrom).ToString();
                 item.TimeTo = item.PostPositions.Max(p => p.TimeTo).ToString();
+
+                // lấy tất cả các position Id của bài post hiện tại
+                var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
+
+                // tìm post Registration có position Id trung với các bài post
+                var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
+                        .GetAll()
+                        .Where(reg => postPositionIds.Contains(reg.PositionId))
+                        .ToListAsync();
+
+                var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel || reg.Status != (int)PostRegistrationStatusEnum.Quit);
+
+                item.TotalRegisterAmount = postRegistrationsTotal.Count();
+
+                var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm);
+
+                // tính tổng các registration đã được confirm
+                item.RegisterAmount = postRegistrationsFiltering.Count();
 
                 foreach (var itemDetail in item.PostPositions)
                 {
                     //count register amount in post attendee based on position
-                    totalCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsFiltering);
-                    totalPositionCount += CountRegisterAmount(itemDetail.Id, premiumPostRegistrationsSearch);
+                    totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
+                    totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
 
                     //transafer data to field in post position
                     itemDetail.PositionRegisterAmount = totalCount;
@@ -1086,15 +1082,15 @@ namespace SupFAmof.Service.Service
                     //add number of amount required to total amount of a specific post
                     totalAmountPosition += itemDetail.Amount;
 
-                    // Reset temp variable
+                    //reset temp count
                     totalCount = 0;
+                    totalPositionCount = 0;
                 }
                 //transfer data from position after add to field in post
                 item.TotalAmountPosition = totalAmountPosition;
 
                 // Reset temp variable
                 totalAmountPosition = 0;
-                totalPositionCount = 0;
             }
 
             return listPosts;

@@ -135,13 +135,14 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, AccountBannedResponse filter, PagingRequest paging)
         {
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
                                                 .ProjectTo<AccountBannedResponse>(_mapper.ConfigurationProvider)
                                                 .Where(x => x.AccountIdBanned == accountId)
+                                                .DynamicFilter(filter)
                                                 .DynamicSort(paging.Sort, paging.Order)
                                                 .PagingQueryable(paging.Page, paging.PageSize);
 

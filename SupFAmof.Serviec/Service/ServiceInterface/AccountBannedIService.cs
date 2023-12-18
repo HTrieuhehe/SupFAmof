@@ -13,7 +13,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IAccountBannedService
     {
         Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBanneds(AccountBannedResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, AccountBannedResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountBannedResponse>> GetCuurentAccountBanned(int accountId);
         Task<BaseResponseViewModel<AccountBannedResponse>> CreateAccountBanned(int accountId, CreateAccountBannedRequest request);
         Task<BaseResponseViewModel<AccountBannedResponse>> UpdateAccountBanned(int accountId, int accountBannedId, UpdateAccountBannedRequest request);

@@ -128,6 +128,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Collaborator is not currently premium")]
             INVALID_CREDENTIAL = 4019,
 
+            //400
+            [Display(Name = "Identification card number allow only number")]
+            CARD_CONTAINT_ONLY_NUMBER = 4020,
+
+            //400
+            [Display(Name = "You are using CMND with 9 digit number! Upgrade to CCCD to scan")]
+            CCCD_INVALID_VERSION = 4021,
+
             //403
             [Display(Name = "You did not have permission to use this function")]
             PERMISSION_NOT_ALLOW = 4032,

@@ -981,7 +981,7 @@ namespace SupFAmof.Service.Service
             }
             catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
 
@@ -1345,6 +1345,19 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationFrontImgInformation(int accountId, UpdateCitizenIdentification request)
         {
+            //validate identification Card valid for check in continues
+            if (!Ultils.CheckIsOnlyNumber(request.IdentityNumber))
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.CARD_CONTAINT_ONLY_NUMBER,
+                                    AccountErrorEnums.CARD_CONTAINT_ONLY_NUMBER.GetDisplayName());
+            }
+
+            if (request.IdentityNumber.Length <= 9)
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.CCCD_INVALID_VERSION,
+                                    AccountErrorEnums.CCCD_INVALID_VERSION.GetDisplayName());
+            }
+
             var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
             var differentAccount = accountInformation.Where(x => x.AccountId != accountId);
             var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
@@ -1381,6 +1394,19 @@ namespace SupFAmof.Service.Service
 
         public async Task<BaseResponseViewModel<AccountInformationResponse>> UpdateCitizenIdentificationBackImgInformation(int accountId, UpdateCitizenIdentification2 request)
         {
+            //validate identification Card valid for check in continues
+            if (!Ultils.CheckIsOnlyNumber(request.IdentityNumber))
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.CARD_CONTAINT_ONLY_NUMBER,
+                                    AccountErrorEnums.CARD_CONTAINT_ONLY_NUMBER.GetDisplayName());
+            }
+
+            if (request.IdentityNumber.Length <= 9)
+            {
+                throw new ErrorResponse(400, (int)AccountErrorEnums.CCCD_INVALID_VERSION,
+                                    AccountErrorEnums.CCCD_INVALID_VERSION.GetDisplayName());
+            }
+
             var accountInformation = _unitOfWork.Repository<AccountInformation>().GetAll();
             var differentAccount = accountInformation.Where(x => x.AccountId != accountId);
             var accountInformationCheck = await accountInformation.FirstOrDefaultAsync(x => x.AccountId == accountId);
@@ -1430,7 +1456,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var accountCheck =  _unitOfWork.Repository<AccountInformation>().GetAll();
+                var accountCheck = _unitOfWork.Repository<AccountInformation>().GetAll();
                 var differentAccount = accountCheck.Where(x => x.AccountId != accountId);
                 var account = await accountCheck.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
@@ -1439,7 +1465,7 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
-                
+
                 var checkStuId = Ultils.CheckStudentId(request.IdStudent);
                 var checkPersonalId = Ultils.CheckPersonalId(request.IdentityNumber);
 
@@ -1596,7 +1622,7 @@ namespace SupFAmof.Service.Service
                 };
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -1628,7 +1654,7 @@ namespace SupFAmof.Service.Service
                                        AccountErrorEnums.COLLABORATOR_NOT_FOUND.GetDisplayName());
                 }
 
-                if(collaboratorAccount.IsPremium == false)
+                if (collaboratorAccount.IsPremium == false)
                 {
                     throw new ErrorResponse(404, (int)AccountErrorEnums.INVALID_CREDENTIAL,
                                        AccountErrorEnums.INVALID_CREDENTIAL.GetDisplayName());

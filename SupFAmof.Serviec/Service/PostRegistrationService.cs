@@ -1239,8 +1239,8 @@ namespace SupFAmof.Service.Service
                 if (Ultils.CheckAccountBanned(account.AccountBanneds))
                 {
 
-                    throw new ErrorResponse(403, (int)AccountErrorEnums.BANNED_IN_PROCESS,
-                                                   AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                   PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                 }
 
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
@@ -1605,6 +1605,57 @@ namespace SupFAmof.Service.Service
             return list;
         }
 
+
+        //code dành cho dasboard
+        public async Task<BaseResponseViewModel<DashboardPostRegistration>> GetTotalRegistrationInCurrentMonth(int accountId)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var currentTime = Ultils.GetCurrentDatetime();
+                var beginDateOfMonth = Ultils.GetStartOfMonth(currentTime);
+
+                var registration = _unitOfWork.Repository<CheckAttendance>()
+                                              .GetAll()
+                                              .Where(x => x.Status == (int)CheckAttendanceEnum.Approved && x.PostRegistration.Position.Post.AccountId == accountId
+                                                && x.PostRegistration.ConfirmTime >= beginDateOfMonth && x.PostRegistration.ConfirmTime <= currentTime);
+
+                DashboardPostRegistration dashboardTotalRegistration = new()
+                {
+                    TotalRegistration = registration.Count()
+                };
+
+                return new BaseResponseViewModel<DashboardPostRegistration>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = dashboardTotalRegistration,
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 
 }

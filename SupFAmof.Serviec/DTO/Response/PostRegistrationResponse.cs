@@ -305,5 +305,8 @@ namespace SupFAmof.Service.DTO.Response
 
     }
 
-
+    public class DashboardPostRegistration
+    {
+        public int TotalRegistration { get; set; }
+    }
 }

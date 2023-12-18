@@ -19,11 +19,13 @@ namespace SupFAmof.API.Controllers.AdmissionController
     {
         private readonly IAccountService _admissionAccountService;
         private readonly IApplicationService _admissionApplicationService;
+        private readonly IPostRegistrationService _postRegistrationService;
 
-        public AdmissionManageCollaboratorController(IAccountService admissionAccountService, IApplicationService admissionApplicationService)
+        public AdmissionManageCollaboratorController(IAccountService admissionAccountService, IApplicationService admissionApplicationService, IPostRegistrationService postRegistrationService)
         {
             _admissionAccountService = admissionAccountService;
             _admissionApplicationService = admissionApplicationService;
+            _postRegistrationService = postRegistrationService;
         }
 
         [HttpGet("search")]
@@ -219,6 +221,33 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _admissionAccountService.DisableCollaboratorCredential(account.Id, collaboratorAccountId);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        ///<summary>
+        /// View Total Complete Registration (cái ô nho nhỏ trên đầu web admission)
+        /// </summary>
+        /// 
+        [HttpGet("viewCompleteRegistration")]
+        public async Task<ActionResult<BaseResponseViewModel<DashboardPostRegistration>>> DisableCollaboratorCredential()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.GetTotalRegistrationInCurrentMonth(account.Id);
             }
             catch (ErrorResponse ex)
             {

@@ -804,8 +804,8 @@ namespace SupFAmof.Service.Service
                 //if it true
                 if (accountBanned)
                 {
-                    throw new ErrorResponse(403, (int)AccountErrorEnums.BANNED_IN_PROCESS,
-                                                         AccountErrorEnums.BANNED_IN_PROCESS.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                         PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                 }
 
                 switch (status)

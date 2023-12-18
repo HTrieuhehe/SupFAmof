@@ -917,6 +917,12 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
+                if (checkAccount.IsActive == false)
+                {
+                    throw new ErrorResponse(400, (int)AccountErrorEnums.ACCOUNT_DISABLE,
+                                         AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
+                }
+
                 if (checkAccount.IsPremium == true)
                 {
                     if (!string.IsNullOrEmpty(search))

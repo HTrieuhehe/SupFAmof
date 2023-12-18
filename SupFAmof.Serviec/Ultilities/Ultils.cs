@@ -91,6 +91,11 @@ namespace SupFAmof.Service.Utilities
             return new DateTime(value.Year, value.Month, value.Day, 0, 0, 0);
         }
 
+        public static DateTime GetStartOfMonth(this DateTime value)
+        {
+            return new DateTime(value.Year, value.Month, 1, 0, 0, 0);
+        }
+
         public static DateTime GetEndOfDate(this DateTime value)
         {
             return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);

@@ -36,6 +36,25 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //check Account
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //check account banned current or not
+                var accountBanned = Ultils.CheckAccountBanned(account.AccountBanneds);
+
+                //if it true
+                if (accountBanned)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                         PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                }
+
                 var checkAttendance = _mapper.Map<CheckAttendance>(checkin);
                 checkAttendance.CheckInTime = Ultils.GetCurrentDatetime();
 
@@ -113,6 +132,25 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //check Account
+                var account = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                //check account banned current or not
+                var accountBanned = Ultils.CheckAccountBanned(account.AccountBanneds);
+
+                //if it true
+                if (accountBanned)
+                {
+                    throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                         PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                }
+
                 //check Checking Existed
                 var checkOut = await _unitOfWork.Repository<CheckAttendance>().GetAll()
                                     .FirstOrDefaultAsync(x => x.PostRegistration.AccountId == accountId && x.PostRegistrationId == checkout.PostRegistrationId);

@@ -31,6 +31,10 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<List<PostRegistrationResponse>>> CancelPostRegistrationAdmission(List<int> Ids, int accountId);
         Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, AdmissionUpdateRequestResponse fitler, FilterUpdateRequestResponse IdFilter);
         Task<BaseResponsePagingViewModel<PostRegistrationResponse>> GetRegistrationByPositionIdAdmission(int admissionAccountId, PagingRequest paging, int? positionId);
+
+
+        //code của dashboard
+        Task<BaseResponseViewModel<DashboardPostRegistration>> GetTotalRegistrationInCurrentMonth(int accountId);
     }
 
 }

@@ -1157,6 +1157,7 @@ namespace SupFAmof.Service.Service
 
                     //transafer data to field in post position
                     itemDetail.PositionRegisterAmount = totalCount;
+                    itemDetail.TotalPositionRegisterAmount = totalPositionRegister;
 
                     //add number of amount required to total amount of a specific post
                     totalAmountPosition += itemDetail.Amount;

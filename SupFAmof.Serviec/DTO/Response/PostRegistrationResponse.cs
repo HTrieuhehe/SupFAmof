@@ -305,8 +305,14 @@ namespace SupFAmof.Service.DTO.Response
 
     }
 
-    public class DashboardPostRegistration
+    public class DashboardPostRegistrationResponse
     {
         public int TotalRegistration { get; set; }
+    }
+
+    public class DashboardRegistrationAnalyticsResponse
+    {
+        public int CollaboratorNeeded { get; set; }
+        public int CollaboratorCompleteJob { get; set; }
     }
 }

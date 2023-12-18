@@ -61,4 +61,10 @@ namespace SupFAmof.Service.DTO.Request
         public int Id { get; set; }
         public bool SchoolBusOption { get; set; }
     }
+
+    public class DashBoardAnalyticsTimeRequest
+    {
+        public int Month { get; set; }
+        public int Year { get; set; }
+    }
 }

@@ -1637,7 +1637,7 @@ namespace SupFAmof.Service.Service
 
 
         //code dành cho dasboard
-        public async Task<BaseResponseViewModel<DashboardPostRegistration>> GetTotalRegistrationInCurrentMonth(int accountId)
+        public async Task<BaseResponseViewModel<DashboardPostRegistrationResponse>> GetTotalRegistrationInCurrentMonth(int accountId)
         {
             try
             {
@@ -1658,18 +1658,19 @@ namespace SupFAmof.Service.Service
 
                 var currentTime = Ultils.GetCurrentDatetime();
                 var beginDateOfMonth = Ultils.GetStartOfMonth(currentTime);
+                var endDateOfMonth = Ultils.GetEndOfMonth(currentTime);
 
                 var registration = _unitOfWork.Repository<CheckAttendance>()
                                               .GetAll()
                                               .Where(x => x.Status == (int)CheckAttendanceEnum.Approved && x.PostRegistration.Position.Post.AccountId == accountId
-                                                && x.PostRegistration.ConfirmTime >= beginDateOfMonth && x.PostRegistration.ConfirmTime <= currentTime);
+                                                && x.PostRegistration.ConfirmTime >= beginDateOfMonth && x.PostRegistration.ConfirmTime <= endDateOfMonth);
 
-                DashboardPostRegistration dashboardTotalRegistration = new()
+                DashboardPostRegistrationResponse dashboardTotalRegistration = new()
                 {
                     TotalRegistration = registration.Count()
                 };
 
-                return new BaseResponseViewModel<DashboardPostRegistration>()
+                return new BaseResponseViewModel<DashboardPostRegistrationResponse>()
                 {
                     Status = new StatusViewModel()
                     {
@@ -1685,6 +1686,88 @@ namespace SupFAmof.Service.Service
             {
                 throw;
             }
+        }
+
+        public async Task<BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>> GetAnalyticsInMonth(int accountId, DashBoardAnalyticsTimeRequest request)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+                var currentDate = Ultils.GetCurrentDatetime();
+
+                //set to default if request is not valid
+
+                if (request.Year == null || request.Year == 0 || request.Year <= 2000)
+                {
+                    request.Year = currentDate.Year;
+                }
+
+                if (request.Month == null || request.Month < 1 || request.Month > 12)
+                {
+                    request.Month = currentDate.Month;
+                }
+
+                var beginDateOfMonth = new DateTime(request.Year, request.Month, 1, 0, 0, 0);
+                var endDateOfMonth = new DateTime(request.Year, request.Month, DateTime.DaysInMonth(request.Year, request.Month), 23, 59, 59);
+                //count personnel needed
+
+                int personnelCount = 0;
+                var postRegistrations = _unitOfWork.Repository<Post>()
+                                    .GetAll()
+                                    .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete 
+                                                                         && x.DateFrom >= beginDateOfMonth
+                                                                         && x.DateTo <= endDateOfMonth);
+
+                personnelCount = CountTotalAmount(postRegistrations);
+
+                //cout how many collab finished their job
+
+                var registrations = _unitOfWork.Repository<CheckAttendance>()
+                                              .GetAll()
+                                              .Where(x => x.Status == (int)CheckAttendanceEnum.Approved && x.PostRegistration.Position.Post.AccountId == accountId
+                                                && x.PostRegistration.ConfirmTime >= beginDateOfMonth && x.PostRegistration.ConfirmTime <= endDateOfMonth);
+
+                DashboardRegistrationAnalyticsResponse dashboardRegistrationAnalyticsResponse = new()
+                {
+                    CollaboratorNeeded = personnelCount,
+                    CollaboratorCompleteJob = registrations.Count()
+                };
+
+                return new BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = dashboardRegistrationAnalyticsResponse,
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private int CountTotalAmount(IQueryable<Post> posts)
+        {
+            return posts.SelectMany(p => p.PostPositions)
+                        .Sum(pp => pp.Amount);
         }
     }
 

@@ -101,6 +101,11 @@ namespace SupFAmof.Service.Utilities
             return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);
         }
 
+        public static DateTime GetEndOfMonth(this DateTime value)
+        {
+            return new DateTime(value.Year, value.Month, DateTime.DaysInMonth(value.Year, value.Month), 23, 59, 59);
+        }
+
         public static bool CheckStudentId(string studentId)
         {
             string strRegex = @"^[A-Za-z]{2}\d{6}$";

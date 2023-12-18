@@ -1293,9 +1293,9 @@ namespace SupFAmof.Service.Service
         }
         private static IQueryable<AdmissionUpdateRequestResponse> FilterUpdateRequest(IQueryable<AdmissionUpdateRequestResponse> list, FilterUpdateRequestResponse filter)
         {
-            if (filter.Id != null)
+            if (filter.PostId != null)
             {
-                list = list.Where(d => d.Post.Id == filter.Id);
+                list = list.Where(d => d.Post.Id == filter.PostId);
             }
             return list;
         }

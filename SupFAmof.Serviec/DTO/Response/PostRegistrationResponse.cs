@@ -288,7 +288,7 @@ namespace SupFAmof.Service.DTO.Response
     }
     public class FilterUpdateRequestResponse
     {
-        public int? Id { get; set; }
+        public int? PostId { get; set; }
     }
     public class AdmissionUpdateRequestResponse
     {

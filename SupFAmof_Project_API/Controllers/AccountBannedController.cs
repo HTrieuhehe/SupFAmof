@@ -26,7 +26,7 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [HttpGet("getAll")]
+        [HttpGet("getByToken")]
         public async Task<ActionResult<BaseResponseViewModel<AccountBannedResponse>>> GetAccountBannedByToken
             ([FromQuery] PagingRequest paging)
         {
@@ -39,6 +39,34 @@ namespace SupFAmof.API.Controllers
                     return Unauthorized();
                 }
                 return await _accountBannedService.GetAccountBannedByToken(account.Id, paging);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        /// <summary>
+        /// Get Current Account Banned 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [HttpGet("getCurrentAccountBanned")]
+        public async Task<ActionResult<BaseResponseViewModel<AccountBannedResponse>>> GetCurrentAccountBanned()
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                return await _accountBannedService.GetCuurentAccountBanned(account.Id);
             }
             catch (ErrorResponse ex)
             {

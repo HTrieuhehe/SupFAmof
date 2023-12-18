@@ -135,32 +135,35 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponseViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountBannedResponse>> GetAccountBannedByToken(int accountId, PagingRequest paging)
         {
             try
             {
                 var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
-                                                .Where(x => x.AccountIdBanned == accountId);
+                                                .ProjectTo<AccountBannedResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.AccountIdBanned == accountId)
+                                                .DynamicSort(paging.Sort, paging.Order)
+                                                .PagingQueryable(paging.Page, paging.PageSize);
 
                 var currentDateTime = Ultils.GetCurrentDatetime();
 
-                var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+                var maxDayEnd = accountBanned.Item2.Max(x => x.DayEnd);
 
                 if (maxDayEnd < currentDateTime)
                 {
                     throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
                                                    AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
                 }
-                                                
-                return new BaseResponseViewModel<AccountBannedResponse>()
+
+                return new BaseResponsePagingViewModel<AccountBannedResponse>()
                 {
-                    Status = new StatusViewModel()
+                    Metadata = new PagingsMetadata()
                     {
-                        Message = "Success",
-                        Success = true,
-                        ErrorCode = 0
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = accountBanned.Item1
                     },
-                    Data = _mapper.Map<AccountBannedResponse>(accountBanned)
+                    Data = accountBanned.Item2.ToList(),
                 };
             }
             catch(Exception ex)
@@ -191,6 +194,36 @@ namespace SupFAmof.Service.Service
                 };
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponseViewModel<AccountBannedResponse>> GetCuurentAccountBanned(int accountId)
+        {
+            try
+            {
+                var currentDateTime = Ultils.GetCurrentDatetime();
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().FindAsync(x => x.AccountIdBanned == accountId && x.DayEnd >= currentDateTime);
+
+                if (accountBanned == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT,
+                                                   AccountBannedErrorEnum.NOT_FOUND_BANNED_ACCOUNT.GetDisplayName());
+                }
+
+                return new BaseResponseViewModel<AccountBannedResponse>()
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Success",
+                        Success = true,
+                        ErrorCode = 0
+                    },
+                    Data = _mapper.Map<AccountBannedResponse>(accountBanned)
+                };
+            }
+            catch (Exception ex)
             {
                 throw;
             }

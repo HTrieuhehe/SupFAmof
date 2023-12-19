@@ -40,7 +40,7 @@ namespace SupFAmof.Service.Service
         {
             try
             {
-                var checkAdmission = _unitOfWork.Repository<Account>().GetAll().FirstOrDefault(x => x.Id == accountId);
+                var checkAdmission = await _unitOfWork.Repository<Account>().GetAll().FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (checkAdmission == null)
                 {
@@ -65,7 +65,7 @@ namespace SupFAmof.Service.Service
                 var currentDate = Ultils.GetCurrentDatetime();
 
                 //find if there is any banned day in range
-                var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentDate && x.DayStart <= request.DayEnd);
+                var checkBanned = await accountBanned.FirstOrDefaultAsync(x => x.DayStart >= currentDate && x.DayStart <= request.DayEnd);
 
                 if (checkBanned != null)
                 {
@@ -78,15 +78,16 @@ namespace SupFAmof.Service.Service
 
                 var registrationUnComplete = _unitOfWork.Repository<PostRegistration>()
                                                 .GetAll()
-                                                .Where(p => p.AccountId == request.AccountIdBanned && p.Status != (int)PostRegistrationStatusEnum.Cancel
-                                                                                                                && p.Status != (int)PostRegistrationStatusEnum.Pending
-                                                                                                                && p.Status != (int)PostRegistrationStatusEnum.Confirm);
-                foreach( var registration in registrationUnComplete )
+                                                .Where(p => p.AccountId == request.AccountIdBanned);
+
+                var findingRegistrations = registrationUnComplete.Where(p => p.Status == (int)PostRegistrationStatusEnum.Pending
+                                                                                                   || p.Status == (int)PostRegistrationStatusEnum.Confirm);
+                foreach(var registration in findingRegistrations)
                 {
                     registration.Status = (int)PostRegistrationStatusEnum.Reject;
                     registration.UpdateAt = currentDate;
-                    await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
                 }
+                _unitOfWork.Repository<PostRegistration>().UpdateRange(findingRegistrations);
 
                 //banned if possible to banned
 

@@ -61,7 +61,7 @@ namespace SupFAmof.Service.Service
                                        AdmissionCredentialErrorEnums.ALREADY_UPGRADE.GetDisplayName());
                 }
 
-                admission.IsPremium = true;
+                admission.PostPermission = true;
                 admission.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(admission);
@@ -112,7 +112,7 @@ namespace SupFAmof.Service.Service
                                        AdmissionCredentialErrorEnums.ALREADY_DISABLE.GetDisplayName());
                 }
 
-                admission.IsPremium = false;
+                admission.PostPermission = false;
                 admission.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Account>().UpdateDetached(admission);

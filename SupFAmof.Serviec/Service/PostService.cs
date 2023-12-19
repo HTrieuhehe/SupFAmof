@@ -449,8 +449,8 @@ namespace SupFAmof.Service.Service
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
                     var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
 
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrationsFiltering.Count();
@@ -1080,8 +1080,8 @@ namespace SupFAmof.Service.Service
                 item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
                 var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
 
                 // tính tổng các registration đã được confirm
                 item.RegisterAmount = postRegistrationsFiltering.Count();
@@ -1163,15 +1163,15 @@ namespace SupFAmof.Service.Service
                                                     .Where(reg => postPositionIds.Contains(reg.PositionId))
                                                     .ToListAsync();
 
-                var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel 
+                var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
                                                                             && reg.Status != (int)PostRegistrationStatusEnum.Quit
                                                                             && reg.Status != (int)PostRegistrationStatusEnum.Reject);
 
                 postMapping.TotalRegisterAmount = postRegistrationsTotal.Count();
 
                 var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                            && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                            && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                                                                            || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                            || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
 
                 // tính tổng các registration đã được confirm
                 postMapping.RegisterAmount = postRegistrationsFiltering.Count();

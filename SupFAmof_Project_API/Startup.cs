@@ -119,7 +119,7 @@ namespace SupFAmof.API
             services.AddScoped<ScheduleNotificationPostReOpen>();
             services.AddScoped<SchedulePositionWorkCancelled>();
             services.AddScoped<ScheduleEndPost>();
-
+            services.AddScoped<ScheduleRejectPostRegistration>();
             #endregion
         }
 
@@ -186,6 +186,11 @@ namespace SupFAmof.API
               .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 scheduler.OnWorker("CheckAttendance");
                 scheduler.Schedule<SchedulePositionWorkCancelled>().EveryFifteenMinutes();
+
+                scheduler.OnWorker("PostRegistration");
+                scheduler.Schedule<ScheduleRejectPostRegistration>()
+                        .EveryFiveMinutes()
+                   .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")).RunOnceAtStart();
 
             });
             //app.ConfigMigration<>();

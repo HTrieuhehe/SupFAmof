@@ -29,14 +29,14 @@ namespace SupFAmof.Service.TaskSchedule
                 if (postRegistration.Position.Date == checkTime.Date && postRegistration.Position.TimeFrom < checkTime.TimeOfDay)
                 {
                     postRegistration.Status = (int)PostRegistrationStatusEnum.Reject;
-                    postRegistration.CancelTime = checkTime;
+                    postRegistration.UpdateAt = checkTime;
                     await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                     await _unitOfWork.CommitAsync();
                 }
                 if(postRegistration.Position.Date < checkTime.Date)
                 {
                     postRegistration.Status = (int)PostRegistrationStatusEnum.Reject;
-                    postRegistration.CancelTime = checkTime;
+                    postRegistration.UpdateAt = checkTime;
                     await _unitOfWork.Repository<PostRegistration>().UpdateDetached(postRegistration);
                     await _unitOfWork.CommitAsync();
                 }

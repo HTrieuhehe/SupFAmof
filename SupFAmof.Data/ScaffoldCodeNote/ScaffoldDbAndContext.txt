@@ -97,3 +97,9 @@ https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contrac
   "identityBackImg": null,
   "taxNumber": null
 }
+
+{
+  "postRegistrationId": 2,
+  "longtitude": 10.855155474347079,
+  "latitude": 106.7648137311369
+}

@@ -46,10 +46,11 @@ namespace SupFAmof.Service.Service
                 }
 
                 //check account banned current or not
-                var accountBanned = Ultils.CheckAccountBanned(account.AccountBanneds);
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                              .Where(x => x.AccountIdBanned == accountId && x.IsActive);
 
                 //if it true
-                if (accountBanned)
+                if (Ultils.CheckAccountBanned(accountBanned))
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
                                                          PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());

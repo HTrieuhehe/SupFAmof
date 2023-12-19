@@ -1265,8 +1265,10 @@ namespace SupFAmof.Service.Service
                     throw new ErrorResponse(404, (int)AccountErrorEnums.COLLABORATOR_NOT_FOUND,
                                                        AccountErrorEnums.COLLABORATOR_NOT_FOUND.GetDisplayName());
                 }
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                              .Where(x => x.AccountIdBanned == accountId && x.IsActive);
 
-                if (Ultils.CheckAccountBanned(account.AccountBanneds))
+                if (Ultils.CheckAccountBanned(accountBanned))
                 {
 
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,

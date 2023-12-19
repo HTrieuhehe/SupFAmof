@@ -278,7 +278,7 @@ namespace SupFAmof.Service.Utilities
             return result;
         }
 
-        public static bool CheckAccountBanned(ICollection<AccountBanned> accountBanneds)
+        public static bool CheckAccountBanned(IQueryable<AccountBanned> accountBanneds)
         {
             if (accountBanneds.Any(x => x.IsActive == true) && accountBanneds.Max(x => x.DayEnd) >= Ultils.GetCurrentDatetime())
             {

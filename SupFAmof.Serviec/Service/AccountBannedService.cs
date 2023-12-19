@@ -85,7 +85,7 @@ namespace SupFAmof.Service.Service
                 foreach(var registration in findingRegistrations)
                 {
                     registration.Status = (int)PostRegistrationStatusEnum.Cancel;
-                    registration.UpdateAt = currentDate;
+                    registration.CancelTime = currentDate;
                 }
                 _unitOfWork.Repository<PostRegistration>().UpdateRange(findingRegistrations);
 

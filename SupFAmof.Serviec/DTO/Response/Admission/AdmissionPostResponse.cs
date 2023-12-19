@@ -14,6 +14,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
             RegisterAmount = 0;
             TotalAmountPosition = 0;
             TotalUpdateRegisterAmount = 0;
+            TotalRegisterAmount = 0;
         }
 
         public int? Id { get; set; }
@@ -32,6 +33,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public DateTime? UpdateAt { get; set; }
 
         public int? RegisterAmount;
+        public int? TotalRegisterAmount;
         //public  int? RegisterAmount { get => registerAmount ?? 0; set => registerAmount = value; }
 
         public int? TotalAmountPosition;

@@ -78,12 +78,14 @@ namespace SupFAmof.Service.Service
                     var trainingRegister = await _unitOfWork.Repository<TrainingRegistration>()
                                                     .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id
                                                                                              && x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
-                                                                                             || x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
+                                                                                             && x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
 
                     if (trainingRegister != null)
                     {
                         trainingCertificate.IsRegistered = true;
                     }
+                    
+                    
                 }
 
                 return new BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>()

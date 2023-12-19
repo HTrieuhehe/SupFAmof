@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using System.Linq;
 using ServiceStack;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
@@ -16,8 +18,6 @@ using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
 
 namespace SupFAmof.Service.Service
 {
@@ -647,8 +647,8 @@ namespace SupFAmof.Service.Service
                             }
                             else
                             {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED_POST,
+                                    PostRegistrationErrorEnum.UPDATE_FAILED_POST.GetDisplayName());
                             }
                             break;
 

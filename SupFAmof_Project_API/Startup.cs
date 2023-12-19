@@ -190,7 +190,7 @@ namespace SupFAmof.API
                 scheduler.OnWorker("PostRegistration");
                 scheduler.Schedule<ScheduleRejectPostRegistration>()
                         .EveryFiveMinutes()
-                   .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")).RunOnceAtStart();
+                   .Zoned(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
 
             });
             //app.ConfigMigration<>();

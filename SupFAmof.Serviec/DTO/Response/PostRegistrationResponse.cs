@@ -315,4 +315,12 @@ namespace SupFAmof.Service.DTO.Response
         public int CollaboratorNeeded { get; set; }
         public int CollaboratorCompleteJob { get; set; }
     }
+
+    public class DashboardContributionResponse
+    {
+        public string? Email { get; set; }
+        public string? Name { get; set; }
+        public string? ImgUrl { get; set; }
+        public int? TotalRegistration { get; set; }
+    }
 }

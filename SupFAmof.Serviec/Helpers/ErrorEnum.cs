@@ -541,17 +541,14 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Collaborator is not banned by you")]
             ADMISSION_INVALID = 4032,
 
-            //403
+            //400
             [Display(Name = "Account has been ban until")]
             CREATE_BANNED_INVALID = 4001,
 
 
-            //403
+            //400
             [Display(Name = "Ending Day must equal or higher than")]
             DAY_END_INVALID = 4002,
-
-
-
         }
 
         public enum MailErrorEnum

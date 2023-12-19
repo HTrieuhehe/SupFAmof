@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Service.Commons;
@@ -19,6 +20,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static SupFAmof.Service.Helpers.Enum;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 
 namespace SupFAmof.Service.Service
@@ -60,10 +62,10 @@ namespace SupFAmof.Service.Service
                 int bannedAttempt = accountBanned.Count();
 
                 // get current Time for 
-                var currentTime = Ultils.GetCurrentDatetime();
+                var currentDate = Ultils.GetCurrentDatetime();
 
                 //find if there is any banned day in range
-                var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentTime && x.DayStart <= request.DayEnd);
+                var checkBanned = accountBanned.FirstOrDefault(x => x.DayStart >= currentDate && x.DayStart <= request.DayEnd);
 
                 if (checkBanned != null)
                 {
@@ -72,20 +74,36 @@ namespace SupFAmof.Service.Service
                                                    + $": {checkBanned.DayEnd}");
                 }
 
+                //reject all registration not complete yet
+
+                var registrationUnComplete = _unitOfWork.Repository<PostRegistration>()
+                                                .GetAll()
+                                                .Where(p => p.AccountId == request.AccountIdBanned && p.Status != (int)PostRegistrationStatusEnum.Cancel
+                                                                                                                && p.Status != (int)PostRegistrationStatusEnum.Pending
+                                                                                                                && p.Status != (int)PostRegistrationStatusEnum.Confirm);
+                foreach( var registration in registrationUnComplete )
+                {
+                    registration.Status = (int)PostRegistrationStatusEnum.Reject;
+                    registration.UpdateAt = currentDate;
+                    await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
+                }
+
+                //banned if possible to banned
+
                 if (bannedAttempt == 0)
                 {
-                    if (request.DayEnd < currentTime.AddDays(7))
+                    if (request.DayEnd < currentDate.AddDays(7))
                     {
                         throw new ErrorResponse(400, (int)AccountBannedErrorEnum.DAY_END_INVALID,
                                                        AccountBannedErrorEnum.DAY_END_INVALID.GetDisplayName()
-                                                       + $": {currentTime.AddDays(7)} days because the account has been banned {bannedAttempt} times");
+                                                       + $": {currentDate.AddDays(7)} days because the account has been banned {bannedAttempt} times");
                     }
 
                     var accountBannedMappingAfter = _mapper.Map<AccountBanned>(request);
 
                     accountBannedMappingAfter.Note.Trim();
                     accountBannedMappingAfter.BannedPersonId = accountId;
-                    accountBannedMappingAfter.DayStart = currentTime;
+                    accountBannedMappingAfter.DayStart = currentDate;
                     accountBannedMappingAfter.IsActive = true;
 
                     await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMappingAfter);
@@ -103,19 +121,20 @@ namespace SupFAmof.Service.Service
                     };
                 }    
 
-                else if (request.DayEnd < currentTime.AddDays(7 * bannedAttempt))
+                else if (request.DayEnd < currentDate.AddDays(7 * bannedAttempt))
                 {
                     throw new ErrorResponse(400, (int)AccountBannedErrorEnum.DAY_END_INVALID,
                                                    AccountBannedErrorEnum.DAY_END_INVALID.GetDisplayName() 
-                                                   + $": {currentTime.AddDays(7 * bannedAttempt)} days because the account has been banned {bannedAttempt} times");
+                                                   + $": {currentDate.AddDays(7 * bannedAttempt)} days because the account has been banned {bannedAttempt} times");
                 }
 
                 var accountBannedMapping = _mapper.Map<AccountBanned>(request);
                 accountBannedMapping.BannedPersonId = accountId;
-                accountBannedMapping.DayStart = currentTime;
+                accountBannedMapping.DayStart = currentDate;
                 accountBannedMapping.IsActive = true;
 
                 await _unitOfWork.Repository<AccountBanned>().InsertAsync(accountBannedMapping);
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AccountBannedResponse>()

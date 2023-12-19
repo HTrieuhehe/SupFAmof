@@ -1764,7 +1764,7 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        private int CountTotalAmount(IQueryable<Post> posts)
+        private static int CountTotalAmount(IQueryable<Post> posts)
         {
             return posts.SelectMany(p => p.PostPositions)
                         .Sum(pp => pp.Amount);

@@ -16,6 +16,8 @@ using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace SupFAmof.Service.Service
 {
@@ -192,7 +194,7 @@ namespace SupFAmof.Service.Service
 
         }
 
-        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, AdmissionUpdateRequestResponse filter,  FilterUpdateRequestResponse IdFilter)
+        public async Task<BaseResponsePagingViewModel<AdmissionUpdateRequestResponse>> AdmissionUpdateRequests(int admissionAccountId, PagingRequest paging, AdmissionUpdateRequestResponse filter, FilterUpdateRequestResponse IdFilter)
         {
             try
             {
@@ -660,7 +662,7 @@ namespace SupFAmof.Service.Service
                             throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE, PostRegistrationErrorEnum.APPROVE_OR_DISAPPROVE.GetDisplayName());
                     }
                 }
-                if(listResponse.Any())
+                if (listResponse.Any())
                 {
 
                     var accountIds = listResponse.Select(x => x.AccountId).ToList();
@@ -1730,7 +1732,7 @@ namespace SupFAmof.Service.Service
                 int personnelCount = 0;
                 var postRegistrations = _unitOfWork.Repository<Post>()
                                     .GetAll()
-                                    .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete 
+                                    .Where(x => x.AccountId == accountId && x.Status != (int)PostStatusEnum.Delete
                                                                          && x.DateFrom >= beginDateOfMonth
                                                                          && x.DateTo <= endDateOfMonth);
 
@@ -1760,7 +1762,7 @@ namespace SupFAmof.Service.Service
                     Data = dashboardRegistrationAnalyticsResponse,
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -1770,6 +1772,94 @@ namespace SupFAmof.Service.Service
         {
             return posts.SelectMany(p => p.PostPositions)
                         .Sum(pp => pp.Amount);
+        }
+
+        public async Task<BaseResponsePagingViewModel<DashboardContributionResponse>> GetCollaboratorContributionInMonth(int accountId, DashBoardContributionTimeRequest request)
+        {
+            try
+            {
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
+
+                //setting time defalut or has data
+                var currentDate = Ultils.GetCurrentDatetime();
+
+                //set to default if request is not valid
+
+                if (request.Year == null || request.Year == 0 || request.Year <= 2000)
+                {
+                    request.Year = currentDate.Year;
+                }
+
+                if (request.Month == null || request.Month < 1 || request.Month > 12)
+                {
+                    request.Month = currentDate.Month;
+                }
+
+                var beginDateOfMonth = new DateTime(request.Year, request.Month, 1, 0, 0, 0);
+                var endDateOfMonth = new DateTime(request.Year, request.Month, DateTime.DaysInMonth(request.Year, request.Month), 23, 59, 59);
+
+                //get contribution in month
+                //var registrations = _unitOfWork.Repository<CheckAttendance>()
+                //                              .GetAll()
+                //                              .Where(x => x.Status == (int)CheckAttendanceEnum.Approved && x.PostRegistration.Position.Post.AccountId == accountId
+                //                                && x.PostRegistration.ConfirmTime >= beginDateOfMonth && x.PostRegistration.ConfirmTime <= endDateOfMonth);
+
+                var contributorTop5 = _unitOfWork.Repository<Account>()
+                                                .GetAll()
+                                                .Where(account => account.PostRegistrations
+                                                    .Any(pr => pr.Status == (int)PostRegistrationStatusEnum.CheckOut &&
+                                                               pr.Position.Post.AccountId == accountId &&
+                                                               pr.ConfirmTime >= beginDateOfMonth &&
+                                                               pr.ConfirmTime <= endDateOfMonth &&
+                                                               pr.CheckAttendances.Any(ca => ca.Status == (int)CheckAttendanceEnum.Approved)))
+                                                .OrderByDescending(account => account.PostRegistrations.Count(pr => pr.Status == (int)PostRegistrationStatusEnum.CheckOut))
+                                                .Take(5)
+                                                .ToList();
+
+                List<DashboardContributionResponse> contributionList = new List<DashboardContributionResponse>();
+
+                foreach (var contributor in contributorTop5)
+                {
+                    DashboardContributionResponse contribution = new DashboardContributionResponse
+                    {
+                        Email = contributor.Email,
+                        Name = contributor.Name,
+                        ImgUrl = contributor.ImgUrl,
+                        TotalRegistration = contributor.PostRegistrations.Count(pr => pr.Status == (int)PostRegistrationStatusEnum.CheckOut)
+                    };
+
+                    contributionList.Add(contribution);
+                }
+
+                return new BaseResponsePagingViewModel<DashboardContributionResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = 1,
+                        Size = contributionList.Count(),
+                        Total = contributionList.Count()
+                    },
+                    Data = contributionList
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 

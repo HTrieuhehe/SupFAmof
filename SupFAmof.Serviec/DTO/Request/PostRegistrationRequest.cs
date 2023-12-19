@@ -67,4 +67,10 @@ namespace SupFAmof.Service.DTO.Request
         public int Month { get; set; }
         public int Year { get; set; }
     }
+
+    public class DashBoardContributionTimeRequest
+    {
+        public int Month { get; set; }
+        public int Year { get; set; }
+    }
 }

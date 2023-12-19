@@ -646,7 +646,7 @@ namespace SupFAmof.Service.Service
                     if (accountBanned != null)
                     {
                         //check collaborator banned or not
-                        collarboratorResponseList.Remove(collaborator);
+                        continue;
                     }
 
                     //check valid to display to send email

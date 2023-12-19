@@ -264,7 +264,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// </summary>
         /// 
         [HttpGet("viewAnalytics")]
-        public async Task<ActionResult<BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>>> GetAn([FromQuery] DashBoardAnalyticsTimeRequest request)
+        public async Task<ActionResult<BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>>> GetAnalytics([FromQuery] DashBoardAnalyticsTimeRequest request)
         {
             try
             {
@@ -275,6 +275,33 @@ namespace SupFAmof.API.Controllers.AdmissionController
                     return Unauthorized();
                 }
                 return await _postRegistrationService.GetAnalyticsInMonth(account.Id, request);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
+        ///<summary>
+        /// View Contributor
+        /// </summary>
+        /// 
+        [HttpGet("viewContributor")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<DashboardContributionResponse>>> GetContributor([FromQuery] DashBoardContributionTimeRequest request)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                return await _postRegistrationService.GetCollaboratorContributionInMonth(account.Id, request);
             }
             catch (ErrorResponse ex)
             {

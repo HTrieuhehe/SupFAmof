@@ -36,6 +36,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         //code của dashboard
         Task<BaseResponseViewModel<DashboardPostRegistrationResponse>> GetTotalRegistrationInCurrentMonth(int accountId);
         Task<BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>> GetAnalyticsInMonth(int accountId, DashBoardAnalyticsTimeRequest request);
+        Task<BaseResponsePagingViewModel<DashboardContributionResponse>> GetCollaboratorContributionInMonth(int accountId, DashBoardContributionTimeRequest request);
     }
 
 }

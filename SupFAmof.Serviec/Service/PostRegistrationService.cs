@@ -4,6 +4,7 @@ using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Utilities;
 using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
@@ -616,9 +617,9 @@ namespace SupFAmof.Service.Service
 
                             var matchingEntity = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
-                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId);
+                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId&&x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
-                            var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll();
+                            var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x=>x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                             if (checkMatching.Contains(matchingEntity))
                             {

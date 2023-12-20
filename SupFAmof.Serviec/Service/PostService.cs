@@ -514,48 +514,6 @@ namespace SupFAmof.Service.Service
 
                 var postResponses = post.Item2.ToList();
 
-                //foreach (var item in postResponses)
-                //{
-                //    // lấy tất cả các position Id của bài post hiện tại
-                //    var postPositionIds = item.PostPositions.Select(p => p.Id).ToList();
-
-                //    // tìm post Registration có position Id trung với các bài post
-                //    var postRegistrations = _unitOfWork.Repository<PostRegistration>()
-                //                                        .GetAll()
-                //                                        .Where(reg => postPositionIds.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
-                //                                        .ToList();
-
-                //    // Tính toán các trường cần thiết
-                //    item.RegisterAmount = postRegistrations.Count;
-
-                //    foreach (var itemDetail in item.PostPositions)
-                //    {
-                //        //count register amount in post attendee based on position
-                //        totalCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
-
-                //        //transafer data to field in post position
-                //        itemDetail.PositionRegisterAmount = totalCount;
-
-                //        //add number of amount required to total amount of a specific post
-                //        totalAmountPosition += itemDetail.Amount;
-
-                //        // Reset temp variable
-                //        totalCount = 0;
-
-                //        //tìm post update history có status pending
-                //        var updateRegistration = _unitOfWork.Repository<PostRgupdateHistory>()
-                //                .GetAll().Where(x => x.PositionId == itemDetail.Id && x.Status == (int)PostRGUpdateHistoryEnum.Pending);
-
-                //        item.TotalUpdateRegisterAmount += updateRegistration.Count();
-                //    }
-
-                //    //transfer data from position after add to field in post
-                //    item.TotalAmountPosition = totalAmountPosition;
-
-                //    // Reset temp variable
-                //    totalAmountPosition = 0;
-                //}
-
                 foreach (var item in postResponses)
                 {
                     // lấy tất cả các position Id của bài post hiện tại
@@ -567,7 +525,8 @@ namespace SupFAmof.Service.Service
                             .Where(reg => postPositionIds.Contains(reg.PositionId))
                             .ToListAsync();
 
-                    var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel && reg.Status != (int)PostRegistrationStatusEnum.Quit && reg.Status != (int)PostRegistrationStatusEnum.Reject);
+                    //lấy pending
+                    var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Pending);
 
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
 

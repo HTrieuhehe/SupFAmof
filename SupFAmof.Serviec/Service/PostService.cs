@@ -470,6 +470,12 @@ namespace SupFAmof.Service.Service
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
 
+                        //tìm post update history có status pending
+                        var updateRegistration = _unitOfWork.Repository<PostRgupdateHistory>()
+                                .GetAll().Where(x => x.PositionId == itemDetail.Id && x.Status == (int)PostRGUpdateHistoryEnum.Pending);
+
+                        item.TotalUpdateRegisterAmount += updateRegistration.Count();
+
                         //reset temp count
                         totalCount = 0;
                         totalPositionCount = 0;
@@ -552,6 +558,12 @@ namespace SupFAmof.Service.Service
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
+
+                        //tìm post update history có status pending
+                        var updateRegistration = _unitOfWork.Repository<PostRgupdateHistory>()
+                                .GetAll().Where(x => x.PositionId == itemDetail.Id && x.Status == (int)PostRGUpdateHistoryEnum.Pending);
+
+                        item.TotalUpdateRegisterAmount += updateRegistration.Count();
 
                         //reset temp count
                         totalCount = 0;

@@ -1085,15 +1085,14 @@ namespace SupFAmof.Service.Service
                         .Where(reg => postPositionIds.Contains(reg.PositionId))
                         .ToListAsync();
 
+                //lấy những position pending, confirm , check in và check out
                 var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel 
                                                                         && reg.Status != (int)PostRegistrationStatusEnum.Quit
                                                                         && reg.Status != (int)PostRegistrationStatusEnum.Reject);
 
                 item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
-                var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                var postRegistrationsFiltering = postRegistrationsTotal.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Pending);
 
                 // tính tổng các registration đã được confirm
                 item.RegisterAmount = postRegistrationsFiltering.Count();
@@ -1102,7 +1101,7 @@ namespace SupFAmof.Service.Service
                 {
                     //count register amount in post attendee based on position
                     totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
-                    totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+                    totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);
 
                     //transafer data to field in post position
                     itemDetail.PositionRegisterAmount = totalCount;
@@ -1181,9 +1180,7 @@ namespace SupFAmof.Service.Service
 
                 postMapping.TotalRegisterAmount = postRegistrationsTotal.Count();
 
-                var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                            || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                            || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                var postRegistrationsFiltering = postRegistrationsTotal.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Pending);
 
                 // tính tổng các registration đã được confirm
                 postMapping.RegisterAmount = postRegistrationsFiltering.Count();
@@ -1192,7 +1189,7 @@ namespace SupFAmof.Service.Service
                 {
                     //count register amount in post attendee based on position
                     totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
-                    totalPositionRegister += CountRegisterAmount(itemDetail.Id, postRegistrations);
+                    totalPositionRegister += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);
 
                     //transafer data to field in post position
                     itemDetail.PositionRegisterAmount = totalCount;

@@ -22,11 +22,13 @@ namespace SupFAmof.Service.Service
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
 
-        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper)
+        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         #region Admission
@@ -142,10 +144,18 @@ namespace SupFAmof.Service.Service
                         }
                     }
                     await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
-
-
+                  
                 }
                 await _unitOfWork.CommitAsync();
+                List<int> accountIds = new List<int>(filteredList.Select(x=>x.PostRegistration.AccountId)).ToList();
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.CheckOut_Confirmed.GetDisplayName(),
+                    Body = "Your attendance is reivewed.Check now!",
+                    NotificationsType = (int)NotificationTypeEnum.CheckOut_Confirmed
+                };
+                await _notificationService.PushNotification(notificationRequest);
                 return new BaseResponseViewModel<dynamic>()
                 {
                     Status = new StatusViewModel()

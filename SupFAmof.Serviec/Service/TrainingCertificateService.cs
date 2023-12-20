@@ -899,14 +899,24 @@ namespace SupFAmof.Service.Service
                         x => x.EventDayId == eventDayId);
                 foreach (var registration in listRegistration)
                 {
+                    List<int> accountIds = new List<int>();
                     if (requestStatusMap.ContainsKey(registration.Id))
                     {
                         registration.Status = requestStatusMap[registration.Id];
                         registration.ConfirmedAt = GetCurrentDatetime();
+                        accountIds.Add(registration.AccountId);
                     }
                     await AddCertificateToAccount(registration);
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(
                         registration);
+                    PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                    {
+                        Ids = accountIds,
+                        Title = NotificationTypeEnum.Interview_Result.GetDisplayName(),
+                        Body = "Your interview result is here.Check now !",
+                        NotificationsType = (int)NotificationTypeEnum.Interview_Result
+                    };
+                    await _notificationService.PushNotification(notificationRequest);
                 }
                 await _unitOfWork.CommitAsync();
                 return new BaseResponseViewModel<dynamic>()

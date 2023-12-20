@@ -527,28 +527,24 @@ namespace SupFAmof.Service.Service
                             .Where(reg => postPositionIds.Contains(reg.PositionId))
                             .ToListAsync();
 
-                    //lấy pending
                     var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Pending);
 
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
-                    var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                    //lấy những position pending, confirm , check in và check out
+                    var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Quit
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Reject
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Pending);
 
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrationsFiltering.Count();
-
-                    //lấy những position pending, confirm , check in và check out
-                    var postRegistrationss = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
-                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Quit
-                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Reject);
 
                     foreach (var itemDetail in item.PostPositions)
                     {
                         //count register amount in post attendee based on position
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
-                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationss);
+                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);
 
                         //transafer data to field in post position
                         itemDetail.PositionRegisterAmount = totalCount;
@@ -556,12 +552,6 @@ namespace SupFAmof.Service.Service
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += itemDetail.Amount;
-
-                        //tìm post update history có status pending
-                        var updateRegistration = _unitOfWork.Repository<PostRgupdateHistory>()
-                                .GetAll().Where(x => x.PositionId == itemDetail.Id && x.Status == (int)PostRGUpdateHistoryEnum.Pending);
-
-                        item.TotalUpdateRegisterAmount += updateRegistration.Count();
 
                         //reset temp count
                         totalCount = 0;

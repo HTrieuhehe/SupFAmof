@@ -449,8 +449,8 @@ namespace SupFAmof.Service.Service
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
                     var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
 
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrationsFiltering.Count();

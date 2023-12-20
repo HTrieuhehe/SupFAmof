@@ -144,18 +144,18 @@ namespace SupFAmof.Service.Service
                         }
                     }
                     await _unitOfWork.Repository<CheckAttendance>().UpdateDetached(item);
-                    List<int> accountIds = new List<int>(item.PostRegistration.AccountId);
-                    PushNotificationRequest notificationRequest = new PushNotificationRequest()
-                    {
-                        Ids = accountIds,
-                        Title = NotificationTypeEnum.CheckOut_Confirmed.GetDisplayName(),
-                        Body = "Your attendance confirmed.Check money now!",
-                        NotificationsType = (int)NotificationTypeEnum.CheckOut_Confirmed
-                    };
-                    await _notificationService.PushNotification(notificationRequest);
+                  
                 }
                 await _unitOfWork.CommitAsync();
-      
+                List<int> accountIds = new List<int>(filteredList.Select(x=>x.PostRegistration.AccountId));
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = accountIds,
+                    Title = NotificationTypeEnum.CheckOut_Confirmed.GetDisplayName(),
+                    Body = "Your attendance confirmed.Check money now!",
+                    NotificationsType = (int)NotificationTypeEnum.CheckOut_Confirmed
+                };
+                await _notificationService.PushNotification(notificationRequest);
                 return new BaseResponseViewModel<dynamic>()
                 {
                     Status = new StatusViewModel()

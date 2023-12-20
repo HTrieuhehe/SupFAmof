@@ -198,7 +198,9 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRgupdateHistory, AdmissionUpdateRequestResponse>()
                 .ForMember(dest => dest.OriginalPosition, opt => opt.MapFrom(src => src.OriginalPosition))
                 .ForMember(dest => dest.PostPositionNeedToBeUpdated, opt => opt.MapFrom(src => src.Position))
-                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.PostRegistration.Position.Post));
+                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.PostRegistration.Position.Post))
+                .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.PostRegistration.Account));
+
             #endregion
 
             #region Admission Post Category

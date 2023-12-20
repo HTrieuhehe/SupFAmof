@@ -301,6 +301,9 @@ namespace SupFAmof.Service.DTO.Response
 
         public virtual PostPositionResponse? OriginalPosition { get; set; }
         public virtual CollabPostResponse? Post { get; set; }
+        public virtual AccountResponse? Account { get; set; }
+
+
 
 
     }

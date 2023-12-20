@@ -152,7 +152,7 @@ namespace SupFAmof.Service.Service
                 {
                     Ids = accountIds,
                     Title = NotificationTypeEnum.CheckOut_Confirmed.GetDisplayName(),
-                    Body = "Your attendance confirmed.Check money now!",
+                    Body = "Your attendance is reivewed.Check now!",
                     NotificationsType = (int)NotificationTypeEnum.CheckOut_Confirmed
                 };
                 await _notificationService.PushNotification(notificationRequest);

@@ -181,7 +181,7 @@ namespace SupFAmof.Service.Helpers
             Interview_Day = 7,
             [Display(Name = "Your interview result is here")]
             Interview_Result = 8,
-            [Display(Name = "Your attendance has been approved.Check report")]
+            [Display(Name = "Your attendance has been reviewed")]
             CheckOut_Confirmed = 9,
         }
         public enum TrainingRegistrationStatusEnum

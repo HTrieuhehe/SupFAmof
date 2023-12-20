@@ -541,7 +541,7 @@ namespace SupFAmof.Service.Service
                     {
                         //count register amount in post attendee based on position
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
-                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrations);
+                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);
 
                         //transafer data to field in post position
                         itemDetail.PositionRegisterAmount = totalCount;
@@ -1086,8 +1086,8 @@ namespace SupFAmof.Service.Service
                 item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
                 var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         || reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
+                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
 
                 // tính tổng các registration đã được confirm
                 item.RegisterAmount = postRegistrationsFiltering.Count();
@@ -1255,7 +1255,7 @@ namespace SupFAmof.Service.Service
 
         private static int CountRegisterAmount(int positionId, IEnumerable<PostRegistration> postRegistrations)
         {
-            return postRegistrations.Count(x => x.PositionId == positionId && x.Status != (int)PostRegistrationStatusEnum.Cancel && x.Status != (int)PostRegistrationStatusEnum.Reject);
+            return postRegistrations.Count(x => x.PositionId == positionId);
         }
 
         public async Task<BaseResponsePagingViewModel<PostResponse>> GetPostReOpen(int accountId, PostResponse filter, string search, TimeFromFilter timeFromFilter, PagingRequest paging)

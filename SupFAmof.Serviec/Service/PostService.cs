@@ -448,14 +448,11 @@ namespace SupFAmof.Service.Service
 
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
 
-                    var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckIn
-                                                                                         && reg.Status == (int)PostRegistrationStatusEnum.CheckOut);
-
                     //lấy những position pending, confirm , check in và check out
-                    var postRegistrationss = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
+                    var postRegistrationsFiltering = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
                                                                             && reg.Status != (int)PostRegistrationStatusEnum.Quit
-                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Reject);
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Reject
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Pending);
 
                     // tính tổng các registration đã được confirm
                     item.RegisterAmount = postRegistrationsFiltering.Count();
@@ -464,7 +461,7 @@ namespace SupFAmof.Service.Service
                     {
                         //count register amount in post attendee based on position
                         totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
-                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationss);
+                        totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);
 
                         //transafer data to field in post position
                         itemDetail.PositionRegisterAmount = totalCount;

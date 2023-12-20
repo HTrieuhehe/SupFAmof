@@ -104,6 +104,7 @@ namespace SupFAmof.Service.Service
 
                     registration.Status = (int)PostRegistrationStatusEnum.CheckIn;
                     checkAttendance.Status = (int)CheckAttendanceEnum.Pending;
+                    checkAttendance.CheckInTime = GetCurrentDatetime();
                     await _unitOfWork.Repository<CheckAttendance>().InsertAsync(checkAttendance);
                     await _unitOfWork.CommitAsync();
 
@@ -211,6 +212,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 registration.Status = (int)PostRegistrationStatusEnum.CheckOut;
+
 
                 //CreateAccountReportRequest accountReport = new CreateAccountReportRequest()
                 //{

@@ -897,15 +897,16 @@ namespace SupFAmof.Service.Service
                         x => x.EventDayId == eventDayId);
                 foreach (var registration in listRegistration)
                 {
+                    List<int> accountIds = new List<int>();
                     if (requestStatusMap.ContainsKey(registration.Id))
                     {
                         registration.Status = requestStatusMap[registration.Id];
                         registration.ConfirmedAt = GetCurrentDatetime();
+                        accountIds.Add(registration.AccountId);
                     }
                     await AddCertificateToAccount(registration);
                     await _unitOfWork.Repository<TrainingRegistration>().UpdateDetached(
                         registration);
-                    List<int> accountIds = new List<int>(registration.AccountId);
                     PushNotificationRequest notificationRequest = new PushNotificationRequest()
                     {
                         Ids = accountIds,

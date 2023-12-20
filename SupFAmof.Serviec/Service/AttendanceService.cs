@@ -147,7 +147,7 @@ namespace SupFAmof.Service.Service
                   
                 }
                 await _unitOfWork.CommitAsync();
-                List<int> accountIds = new List<int>(filteredList.Select(x=>x.PostRegistration.AccountId));
+                List<int> accountIds = new List<int>(filteredList.Select(x=>x.PostRegistration.AccountId)).ToList();
                 PushNotificationRequest notificationRequest = new PushNotificationRequest()
                 {
                     Ids = accountIds,

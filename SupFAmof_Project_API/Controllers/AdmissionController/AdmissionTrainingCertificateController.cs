@@ -27,7 +27,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
         /// Get List Training Certificates
         /// </summary>    
         [HttpGet("getAll")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<TrainingCertificateResponse>>> GetTratiningCertificates
+        public async Task<ActionResult<BaseResponsePagingViewModel<TrainingCertificateResponse>>> GetTrainingCertificates
             ([FromQuery] TrainingCertificateResponse filter, [FromQuery] PagingRequest paging)
         {
             try

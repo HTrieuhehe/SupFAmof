@@ -7,6 +7,7 @@ namespace SupFAmof.Data.Entity
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
+        public int? AccountReplyId { get; set; }
         public DateTime ReportDate { get; set; }
         public DateTime? ReplyDate { get; set; }
         public string ProblemNote { get; set; } = null!;
@@ -14,5 +15,6 @@ namespace SupFAmof.Data.Entity
         public int Status { get; set; }
 
         public virtual Account Account { get; set; } = null!;
+        public virtual Account? AccountReply { get; set; }
     }
 }

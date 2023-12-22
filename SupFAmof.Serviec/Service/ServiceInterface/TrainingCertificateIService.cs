@@ -12,6 +12,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
 {
     public interface ITrainingCertificateService
     {
+        //code của Triều
         Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> GetAdmissionTrainingCertificates(TrainingCertificateResponse filter, PagingRequest paging);
         Task<BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>> GetTrainingCertificates(int accountId, CollaboratorTrainingCertificateResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<TrainingCertificateResponse>> GetTrainingCertificateById(int trainingCertificateId);
@@ -19,6 +20,8 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<TrainingCertificateResponse>> UpdateTrainingCertificate(int accountId, int trainingCertificateId, UpdateTrainingCertificateRequest request);
         Task<BaseResponseViewModel<bool>> DisableTrainingCertificate(int accountId, int trainingCertificateId);
         Task<BaseResponsePagingViewModel<TrainingCertificateResponse>> SearchTrainingCertificate(string search, PagingRequest paging);
+
+        //code của Mạnh
         Task<BaseResponseViewModel<dynamic>> CreateDaysForCertificateInterview(int accountId, EventDaysCertificate request);
         Task<BaseResponseViewModel<CollabRegistrationsResponse>> TrainingCertificateRegistration(int accountId, TrainingCertificateRegistration request);
         Task<BaseResponseViewModel<dynamic>> AssignDayToRegistration(int accountId, List<AssignEventDayToAccount> requests);

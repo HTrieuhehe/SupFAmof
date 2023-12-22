@@ -159,10 +159,10 @@ namespace SupFAmof.Service.Helpers
 
         public enum NotificationTypeEnum
         {
-            [Display(Name = "New Upcoming Event")]
+            [Display(Name = "New Upcoming Recruitment Post")]
             Post_Created = 1,
 
-            [Display(Name = "Post Registration Confirm")]
+            [Display(Name = "Recruitment Registration Confirm")]
             PostRegistration_Confirm = 2,
 
             [Display(Name = "Bing Bong! New contract to you")]
@@ -171,10 +171,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Bing Bong! Check out complete")]
             Check_out_complete = 4,
 
-            [Display(Name = "Bing Bong! Post is re-opened")]
+            [Display(Name = "Bing Bong! Recruitment post is re-opened")]
             Post_Re_Opened = 5,
 
-            [Display(Name = "Application Request")]
+            [Display(Name = "Application Request!")]
             Application = 6,
 
             [Display(Name = "Your interview day is here ")]
@@ -183,6 +183,9 @@ namespace SupFAmof.Service.Helpers
             Interview_Result = 8,
             [Display(Name = "Your attendance has been reviewed")]
             CheckOut_Confirmed = 9,
+
+            [Display(Name = "Certificate warning!")]
+            ACCOUNT_CERTIFICATE_REMOVED = 11,
         }
         public enum TrainingRegistrationStatusEnum
         {

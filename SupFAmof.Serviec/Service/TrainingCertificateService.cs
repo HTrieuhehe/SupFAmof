@@ -15,6 +15,7 @@ using static SupFAmof.Service.Utilities.Ultils;
 using SupFAmof.Service.Service.ServiceInterface;
 using static SupFAmof.Service.Helpers.ErrorEnum;
 using ErrorResponse = SupFAmof.Service.Exceptions.ErrorResponse;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace SupFAmof.Service.Service
 {
@@ -48,7 +49,7 @@ namespace SupFAmof.Service.Service
                         AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
                 }
 
-                var trainingCertificates = _unitOfWork.Repository<TrainingCertificate>()
+                var trainingCertificates = _unitOfWork.Repository<Certificate>()
                                .GetAll()
                                .ProjectTo<CollaboratorTrainingCertificateResponse>(
                                    _mapper.ConfigurationProvider)
@@ -84,8 +85,8 @@ namespace SupFAmof.Service.Service
                     {
                         trainingCertificate.IsRegistered = true;
                     }
-                    
-                    
+
+
                 }
 
                 return new BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>()
@@ -373,22 +374,18 @@ namespace SupFAmof.Service.Service
                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                var trainingCertificate =
-                    await _unitOfWork.Repository<TrainingCertificate>().FindAsync(
-                        x => x.Id == trainingCertificateId && x.IsActive == true);
+                var certificate = await _unitOfWork.Repository<Certificate>().FindAsync(x => x.Id == trainingCertificateId && x.IsActive == true);
 
-                if (trainingCertificate == null)
+                if (certificate == null)
                 {
-                    throw new ErrorResponse(
-                        404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                    throw new ErrorResponse(404, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
                         TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
                 }
 
-                trainingCertificate.IsActive = false;
-                trainingCertificate.UpdateAt = Ultils.GetCurrentDatetime();
+                certificate.IsActive = false;
+                certificate.UpdateAt = Ultils.GetCurrentDatetime();
 
-                await _unitOfWork.Repository<TrainingCertificate>().UpdateDetached(
-                    trainingCertificate);
+                await _unitOfWork.Repository<Certificate>().UpdateDetached(certificate);
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<bool>()
@@ -646,7 +643,7 @@ namespace SupFAmof.Service.Service
                 var filteredList =
                     _unitOfWork.Repository<TrainingRegistration>().GetAll().Where(
                         registration => requestIds.Contains(registration.Id) &&
-                                        (registration.Status == (int)TrainingRegistrationStatusEnum.Pending||registration.Status == (int)TrainingRegistrationStatusEnum.Assigned));
+                                        (registration.Status == (int)TrainingRegistrationStatusEnum.Pending || registration.Status == (int)TrainingRegistrationStatusEnum.Assigned));
                 if (!filteredList.Any())
                 {
                     throw new ErrorResponse(400, 4001, "Nothing to show");
@@ -669,7 +666,7 @@ namespace SupFAmof.Service.Service
                             400, (int)TrainingCertificateErrorEnum.PAST_INTERVIEW,
                             TrainingCertificateErrorEnum.PAST_INTERVIEW.GetDisplayName());
                     }
-                    if (!await CheckOverlapPostRegistration(dateTimeOfAssignDay,registration.AccountId))
+                    if (!await CheckOverlapPostRegistration(dateTimeOfAssignDay, registration.AccountId))
                     {
                         throw new ErrorResponse(
                             400, (int)TrainingCertificateErrorEnum.MATCHED_WORK_TIME,
@@ -707,9 +704,9 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        private async Task<bool> CheckOverlapPostRegistration(TrainingEventDay request,int accountId)
+        private async Task<bool> CheckOverlapPostRegistration(TrainingEventDay request, int accountId)
         {
-            var checkPostRegistration = await _unitOfWork.Repository<PostRegistration>().GetWhere(x=>x.AccountId == accountId&&x.Status == (int)PostRegistrationStatusEnum.Confirm);
+            var checkPostRegistration = await _unitOfWork.Repository<PostRegistration>().GetWhere(x => x.AccountId == accountId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
             // Check for overlap with each PostRegistration entry
             foreach (var postRegistration in checkPostRegistration)
             {
@@ -796,7 +793,7 @@ namespace SupFAmof.Service.Service
             BaseResponsePagingViewModel<AdmissionGetCertificateRegistrationResponse>>
         GetCertificateRegistration(int accountId,
                                    AdmissionGetCertificateRegistrationResponse filter,
-                                   PagingRequest paging,FilterStatusRegistrationResponse? statusFilter)
+                                   PagingRequest paging, FilterStatusRegistrationResponse? statusFilter)
         {
             try
             {
@@ -826,7 +823,7 @@ namespace SupFAmof.Service.Service
             .ToList()
                          });
 
-                var newList= FilterStatusRegistrationAdmission(list, statusFilter)
+                var newList = FilterStatusRegistrationAdmission(list, statusFilter)
                         .DynamicFilter(filter)
                         .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<
@@ -1160,13 +1157,13 @@ namespace SupFAmof.Service.Service
                             PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
                     }
                 }
-                var list =  _unitOfWork.Repository<TrainingRegistration>()
-                               .GetAll().Where(x=>x.AccountId== collabId)
+                var list = _unitOfWork.Repository<TrainingRegistration>()
+                               .GetAll().Where(x => x.AccountId == collabId)
                                .ProjectTo<CollabRegistrationsResponse>(
                                    _mapper.ConfigurationProvider);
 
                 var listAfterFilter = FilterStatusRegistration(list, filter)
-                                      .DynamicSort(paging.Sort,paging.Order)
+                                      .DynamicSort(paging.Sort, paging.Order)
                                       .PagingQueryable(paging.Page, paging.PageSize);
                 return new BaseResponsePagingViewModel<CollabRegistrationsResponse>()
                 {
@@ -1199,7 +1196,7 @@ namespace SupFAmof.Service.Service
 
 
 
-        public async Task<BaseResponseViewModel<dynamic>> UnAssignClass(int accountId,int trainingRegistrationId)
+        public async Task<BaseResponseViewModel<dynamic>> UnAssignClass(int accountId, int trainingRegistrationId)
         {
             try
             {
@@ -1215,7 +1212,7 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(404, 404, "No registration");
                 }
-                if(!trainingRegistration.EventDayId.HasValue)
+                if (!trainingRegistration.EventDayId.HasValue)
                 {
                     throw new ErrorResponse(404, 404, "Nothing to unassign");
 
@@ -1244,7 +1241,7 @@ namespace SupFAmof.Service.Service
                     }
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }

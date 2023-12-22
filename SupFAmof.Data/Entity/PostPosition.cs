@@ -33,7 +33,7 @@ namespace SupFAmof.Data.Entity
 
         public virtual DocumentTemplate? Document { get; set; }
         public virtual Post Post { get; set; } = null!;
-        public virtual TrainingCertificate? TrainingCertificate { get; set; }
+        public virtual Certificate? TrainingCertificate { get; set; }
         public virtual ICollection<AccountReport> AccountReports { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<PostRgupdateHistory> PostRgupdateHistoryOriginalPositions { get; set; }

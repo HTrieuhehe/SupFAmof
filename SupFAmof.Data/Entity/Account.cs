@@ -18,10 +18,10 @@ namespace SupFAmof.Data.Entity
             Applications = new HashSet<Application>();
             Contracts = new HashSet<Contract>();
             ExpoPushTokens = new HashSet<ExpoPushToken>();
+            InterviewRegistrations = new HashSet<InterviewRegistration>();
             NotificationHistories = new HashSet<NotificationHistory>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
-            TrainingRegistrations = new HashSet<TrainingRegistration>();
         }
 
         public int Id { get; set; }
@@ -51,9 +51,9 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<Application> Applications { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
         public virtual ICollection<ExpoPushToken> ExpoPushTokens { get; set; }
+        public virtual ICollection<InterviewRegistration> InterviewRegistrations { get; set; }
         public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
-        public virtual ICollection<TrainingRegistration> TrainingRegistrations { get; set; }
     }
 }

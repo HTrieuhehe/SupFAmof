@@ -26,10 +26,13 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<AccountReport> AccountReports { get; set; } = null!;
         public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<Application> Applications { get; set; } = null!;
+        public virtual DbSet<Certificate> Certificates { get; set; } = null!;
         public virtual DbSet<CheckAttendance> CheckAttendances { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
         public virtual DbSet<DocumentTemplate> DocumentTemplates { get; set; } = null!;
         public virtual DbSet<ExpoPushToken> ExpoPushTokens { get; set; } = null!;
+        public virtual DbSet<InterviewDay> InterviewDays { get; set; } = null!;
+        public virtual DbSet<InterviewRegistration> InterviewRegistrations { get; set; } = null!;
         public virtual DbSet<NotificationHistory> NotificationHistories { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
         public virtual DbSet<PostCategory> PostCategories { get; set; } = null!;
@@ -37,9 +40,6 @@ namespace SupFAmof.Data.Entity
         public virtual DbSet<PostRegistration> PostRegistrations { get; set; } = null!;
         public virtual DbSet<PostRgupdateHistory> PostRgupdateHistories { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
-        public virtual DbSet<TrainingCertificate> TrainingCertificates { get; set; } = null!;
-        public virtual DbSet<TrainingEventDay> TrainingEventDays { get; set; } = null!;
-        public virtual DbSet<TrainingRegistration> TrainingRegistrations { get; set; } = null!;
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //        {
@@ -262,6 +262,19 @@ namespace SupFAmof.Data.Entity
                     .HasConstraintName("FK_AccountReportProblem_Account");
             });
 
+            modelBuilder.Entity<Certificate>(entity =>
+            {
+                entity.ToTable("Certificate");
+
+                entity.Property(e => e.CertificateName).HasMaxLength(50);
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<CheckAttendance>(entity =>
             {
                 entity.ToTable("CheckAttendance");
@@ -325,6 +338,47 @@ namespace SupFAmof.Data.Entity
                     .WithMany(p => p.ExpoPushTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK_FCMToken_Account");
+            });
+
+            modelBuilder.Entity<InterviewDay>(entity =>
+            {
+                entity.ToTable("InterviewDay");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.Room).HasMaxLength(100);
+
+                entity.Property(e => e.Updateat).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<InterviewRegistration>(entity =>
+            {
+                entity.ToTable("InterviewRegistration");
+
+                entity.Property(e => e.ConfirmedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.InterviewRegistrations)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainingRegistration_Account");
+
+                entity.HasOne(d => d.EventDay)
+                    .WithMany(p => p.InterviewRegistrations)
+                    .HasForeignKey(d => d.EventDayId)
+                    .HasConstraintName("FK_TrainingRegistration_TrainingEventDay");
+
+                entity.HasOne(d => d.TrainingCertificate)
+                    .WithMany(p => p.InterviewRegistrations)
+                    .HasForeignKey(d => d.TrainingCertificateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainingRegistration_TrainingCertificate");
             });
 
             modelBuilder.Entity<NotificationHistory>(entity =>
@@ -484,60 +538,6 @@ namespace SupFAmof.Data.Entity
                 entity.Property(e => e.RoleName).HasMaxLength(20);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<TrainingCertificate>(entity =>
-            {
-                entity.ToTable("TrainingCertificate");
-
-                entity.Property(e => e.CertificateName).HasMaxLength(50);
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.TrainingTypeId).HasMaxLength(10);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<TrainingEventDay>(entity =>
-            {
-                entity.ToTable("TrainingEventDay");
-
-                entity.Property(e => e.Class).HasMaxLength(100);
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.Property(e => e.Updateat).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<TrainingRegistration>(entity =>
-            {
-                entity.ToTable("TrainingRegistration");
-
-                entity.Property(e => e.ConfirmedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.TrainingRegistrations)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TrainingRegistration_Account");
-
-                entity.HasOne(d => d.EventDay)
-                    .WithMany(p => p.TrainingRegistrations)
-                    .HasForeignKey(d => d.EventDayId)
-                    .HasConstraintName("FK_TrainingRegistration_TrainingEventDay");
-
-                entity.HasOne(d => d.TrainingCertificate)
-                    .WithMany(p => p.TrainingRegistrations)
-                    .HasForeignKey(d => d.TrainingCertificateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TrainingRegistration_TrainingCertificate");
             });
 
             OnModelCreatingPartial(modelBuilder);

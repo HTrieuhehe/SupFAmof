@@ -15,7 +15,8 @@ namespace SupFAmof.Data.Entity
             AccountInformations = new HashSet<AccountInformation>();
             AccountReactivations = new HashSet<AccountReactivation>();
             AccountReports = new HashSet<AccountReport>();
-            Applications = new HashSet<Application>();
+            ApplicationAccountReplies = new HashSet<Application>();
+            ApplicationAccounts = new HashSet<Application>();
             Contracts = new HashSet<Contract>();
             ExpoPushTokens = new HashSet<ExpoPushToken>();
             NotificationHistories = new HashSet<NotificationHistory>();
@@ -48,7 +49,8 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<AccountInformation> AccountInformations { get; set; }
         public virtual ICollection<AccountReactivation> AccountReactivations { get; set; }
         public virtual ICollection<AccountReport> AccountReports { get; set; }
-        public virtual ICollection<Application> Applications { get; set; }
+        public virtual ICollection<Application> ApplicationAccountReplies { get; set; }
+        public virtual ICollection<Application> ApplicationAccounts { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
         public virtual ICollection<ExpoPushToken> ExpoPushTokens { get; set; }
         public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }

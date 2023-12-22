@@ -210,6 +210,7 @@ namespace SupFAmof.Service.Service
                 var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
                 replyReport.ReplyNote.Trim();
+                replyReport.AccountReplyId = accountId;
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Reject;
 
@@ -288,6 +289,7 @@ namespace SupFAmof.Service.Service
                 var replyReport = _mapper.Map<UpdateAdmissionAccountApplicationRequest, Application>(request, report);
 
                 replyReport.ReplyNote.Trim();
+                replyReport.AccountReplyId = accountId; 
                 replyReport.ReplyDate = Ultils.GetCurrentDatetime();
                 replyReport.Status = (int)ReportProblemStatusEnum.Approve;
 

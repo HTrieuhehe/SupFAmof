@@ -19,5 +19,6 @@ namespace SupFAmof.Service.DTO.Response.Admission
         public int? Status { get; set; }
 
         public virtual AccountResponse? Account { get; set; }
+        public virtual Account? AccountReply { get; set; }
     }
 }

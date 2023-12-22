@@ -10,6 +10,7 @@ Kinh độ (longitude): Giá trị nằm trong khoảng -180 đến 180, lưu ý
 
 // dotnet ef dbcontext scaffold "Server=3.0.33.161;Database=SupFAmOf_Stg_Db;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
 dotnet ef dbcontext scaffold "Server=3.0.33.161;Database=SupFAmOf_Prod_Db;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
+dotnet ef dbcontext scaffold "Server=3.0.33.161;Database=SupFAmOf_Prod_1_Db;User ID=sa;Password=QW0%mG0#%jRC3Z7&T4fL38ygt5Jhhx;MultipleActiveResultSets=true;Integrated Security=true;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity --force
 
 access token của admin 
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNzk3OTk3OS1mZWFjLTQ1MDUtYmI0Ni1iZDk4Y2UyNmI2NTMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiMyIsImV4cCI6MTcwMzA0NTczMCwiaXNzIjoiU3VwRkFtb2YuQVBJIiwiYXVkIjoiU3VwRkFtb2YuQVBJIn0.wzeL0fIBctRIv2LYNoGHp-VyvnaChKr8tHcyyG6Id5o

@@ -55,13 +55,13 @@ namespace SupFAmof.API.Mapper
             CreateMap<UpdateAccountRequest, Account>();
             CreateMap<UpdateAccountAvatar, Account>();
 
-            CreateMap<Account,ManageCollabAccountResponse>()
-                .ForMember(x=>x.certificates,opt=>opt.MapFrom(src=>src.AccountCertificateAccounts))
+            CreateMap<Account, ManageCollabAccountResponse>()
+                .ForMember(x => x.certificates, opt => opt.MapFrom(src => src.AccountCertificateAccounts))
                 .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.AccountInformation.IdStudent))
                 .ReverseMap();
             CreateMap<Account, ContractCollaboratorResponse>().ReverseMap();
             CreateMap<AccountCertificate, CertificateResponse>()
-                .ForMember(x=>x.CertificateName,opt=>opt.MapFrom(src=>src.TrainingCertificate.CertificateName))
+                .ForMember(x => x.CertificateName, opt => opt.MapFrom(src => src.TrainingCertificate.CertificateName))
                 .ReverseMap();
 
             CreateMap<Account, AttendanceAccountResponse>();
@@ -86,7 +86,7 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<CreateAccountReportRequest, AccountReport>();
             CreateMap<Account, CollabReportResponse>()
-                .ForMember(x=>x.IdStudent , opt=>opt.MapFrom(src=>src.AccountInformation.IdStudent))
+                .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.AccountInformation.IdStudent))
                 .ForMember(x => x.IdentityNumber, opt => opt.MapFrom(src => src.AccountInformation.IdentityNumber))
                 .ForMember(x => x.TaxNumber, opt => opt.MapFrom(src => src.AccountInformation.TaxNumber))
                 .ForMember(x => x.Beneficiary, opt => opt.MapFrom(src => src.AccountBankings.First().Beneficiary))
@@ -121,18 +121,18 @@ namespace SupFAmof.API.Mapper
             #region PostRegistration
             CreateMap<PostRegistration, PostRegistrationResponse>()
               .ReverseMap();
-            
+
             CreateMap<PostRegistration, PostRGUpdatePostRegistrationResponse>()
                 .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
               .ReverseMap();
 
             CreateMap<Post, AdmissionPostsResponse>()
-                .ForMember(dest => dest.PostCategoryName, opt=> opt.MapFrom(src=>src.PostCategory.PostCategoryType))
-                .ForMember(dest=>dest.Positions,opt=>opt.MapFrom(src=>src.PostPositions))
+                .ForMember(dest => dest.PostCategoryName, opt => opt.MapFrom(src => src.PostCategory.PostCategoryType))
+                .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.PostPositions))
                 .ReverseMap();
 
             CreateMap<PostRegistration, CollabRegistrationResponse>()
-                .ForMember(dest=>dest.Post,opt=>opt.MapFrom(src=>src.Position.Post))
+                .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
                 .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
                 .ForMember(dest => dest.PositionDate, opt => opt.MapFrom(src => src.Position.Date))
                 .ForMember(dest => dest.PostCategoryId, opt => opt.MapFrom(src => src.Position.Post.PostCategoryId))
@@ -142,7 +142,7 @@ namespace SupFAmof.API.Mapper
                 .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
                 .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
                 .ReverseMap();
-            
+
             CreateMap<Post, CollabRegistrationUpdatePostResponse>()
                 .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
                 .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.PostCategory))
@@ -168,12 +168,14 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
 
             CreateMap<PostPosition, AdmissionPostPositionResponse>()
-                .ForMember(dest=>dest.CollabRequest ,opt=>opt.MapFrom(src=>src.PostRegistrations))
+                .ForMember(dest => dest.CollabRequest, opt => opt.MapFrom(src => src.PostRegistrations))
                 .ReverseMap();
 
-            CreateMap<PostPosition, PostRGUpdateOriginalPositionResponse>().ReverseMap();
-          CreateMap<PostRegistration, CollabRegistrationFormResponse>()
+            CreateMap<PostPosition, PostRGUpdateOriginalPositionResponse>()
+                .ForMember(x => x.TrainingCertificateId, opt => opt.MapFrom(src => src.CertificateId))
                 .ReverseMap();
+            CreateMap<PostRegistration, CollabRegistrationFormResponse>()
+                  .ReverseMap();
             CreateMap<PostRegistrationRequest, PostRegistration>()
             .ForMember(dest => dest.CreateAt, opt => opt.MapFrom(src => src.CreateAt))
             .ForMember(dest => dest.UpdateAt, opt => opt.Ignore())
@@ -211,44 +213,42 @@ namespace SupFAmof.API.Mapper
             #endregion
 
             #region Admission Training Certificate
-            CreateMap<TrainingCertificate, TrainingCertificateResponse>().ReverseMap();
-            CreateMap<TrainingCertificate, CollaboratorTrainingCertificateResponse>().ReverseMap();
-            CreateMap<CreateTrainingCertificateRequest, TrainingCertificate>();
-            CreateMap<UpdateTrainingCertificateRequest, TrainingCertificate>();
-            CreateMap<EventDaysCertificate, TrainingEventDay>().ReverseMap();
+            CreateMap<Certificate, TrainingCertificateResponse>().ReverseMap();
+            CreateMap<Certificate, CollaboratorTrainingCertificateResponse>().ReverseMap();
+            CreateMap<CreateTrainingCertificateRequest, Certificate>();
+            CreateMap<UpdateTrainingCertificateRequest, Certificate>();
+            CreateMap<EventDaysCertificate, InterviewDay>().ReverseMap();
             #endregion
             CreateMap<InterviewDay, ViewCollabInterviewClassResponse>()
                 .ReverseMap();
-            CreateMap<InterviewRegistration, TrainingRegistrationResponse>().ReverseMap();
+            CreateMap<CertificateRegistration, TrainingRegistrationResponse>().ReverseMap();
             CreateMap<Account, AccountCertificateRegistrationResponse>()
-                .ForMember(dest=>dest.IdStudent ,opt=>opt.MapFrom(src=>src.AccountInformation.IdStudent))
+                .ForMember(dest => dest.IdStudent, opt => opt.MapFrom(src => src.AccountInformation.IdStudent))
                 .ReverseMap();
-            CreateMap<InterviewRegistration, TrainingCertificateRegistrationResponse>().ReverseMap();
+            CreateMap<CertificateRegistration, TrainingCertificateRegistrationResponse>().ReverseMap();
             #region Admission Account Certificate
             CreateMap<AccountCertificate, AccountCertificateResponse>()
                 .ReverseMap();
             CreateMap<CreateAccountCertificateRequest, AccountCertificate>();
             CreateMap<UpdateAccountCertificateRequest, AccountCertificate>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AccountCertificateId))
-                .ReverseMap(); 
-
-            CreateMap<TrainingCertificateRegistration, TrainingRegistration>().ReverseMap();
-            CreateMap<TrainingCertificate, AdmissionGetCertificateRegistrationResponse>()
-                .ForMember(dest=>dest.Registrations,opt=>opt.MapFrom(src=>src.TrainingRegistrations))
-                .ForMember(dest=>dest.RegisterAmount,opt=>opt.MapFrom(src=>src.TrainingRegistrations.Count()))
                 .ReverseMap();
-            CreateMap<TrainingEventDay, TrainingEventDayResponse>().ReverseMap();
-            CreateMap<TrainingRegistration, CollabRegistrationsResponse>()
-                .ForMember(x=>x.ConfirmAt,opt=>opt.MapFrom(src=>src.ConfirmedAt));
-            CreateMap<TrainingRegistration, AccountCertificateRegistrationResponse>()
-                .ForMember(x=>x.Email,opt=>opt.MapFrom(src=>src.Account.Email))
+
+            CreateMap<TrainingCertificateRegistration, Certificate>().ReverseMap();
+            CreateMap<Certificate, AdmissionGetCertificateRegistrationResponse>()
+                .ForMember(dest => dest.Registrations, opt => opt.MapFrom(src => src.CertificateRegistrations))
+                .ForMember(dest => dest.RegisterAmount, opt => opt.MapFrom(src => src.CertificateRegistrations.Count()))
+                .ReverseMap();
+            CreateMap<InterviewDay, TrainingEventDayResponse>().ReverseMap();
+            CreateMap<CertificateRegistration, CollabRegistrationsResponse>()
+                .ForMember(x => x.ConfirmAt, opt => opt.MapFrom(src => src.ConfirmedAt));
+            CreateMap<CertificateRegistration, AccountCertificateRegistrationResponse>()
+                .ForMember(x => x.Email, opt => opt.MapFrom(src => src.Account.Email))
                 .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Account.Name))
                 .ForMember(x => x.ImgUrl, opt => opt.MapFrom(src => src.Account.ImgUrl))
                 .ForMember(x => x.IsPremium, opt => opt.MapFrom(src => src.Account.IsPremium))
                 .ForMember(x => x.Phone, opt => opt.MapFrom(src => src.Account.Phone))
-                .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.Account.AccountInformation.IdStudent))
-
-                ;
+                .ForMember(x => x.IdStudent, opt => opt.MapFrom(src => src.Account.AccountInformation.IdStudent));
             #endregion
 
             #region Admission Post
@@ -256,12 +256,14 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, PostPositionResponse>().ReverseMap();
 
             CreateMap<PostPosition, PostPositionResponse>()
-                .ForMember(x => x.CertificateName, opt => opt.MapFrom(src => src.TrainingCertificate.CertificateName))
+                .ForMember(x => x.CertificateName, opt => opt.MapFrom(src => src.Certificate.CertificateName))
+                .ForMember(x => x.TrainingCertificateId, opt => opt.MapFrom(src => src.CertificateId))
                 .ReverseMap();
 
             CreateMap<CreatePostRequest, Post>();
 
-            CreateMap<CreatePostPositionRequest, PostPosition>();
+            CreateMap<CreatePostPositionRequest, PostPosition>()
+                .ForMember(x => x.CertificateId, opt => opt.MapFrom(src => src.TrainingCertificateId));
 
             CreateMap<UpdatePostRequest, Post>()
               .ForMember(dest => dest.PostPositions, opt => opt.MapFrom(src => src.PostPositions))
@@ -298,15 +300,20 @@ namespace SupFAmof.API.Mapper
             CreateMap<Post, ReportPostResponse>().ReverseMap();
             CreateMap<Post, CollabReportPostResponse>().ReverseMap();
             CreateMap<PostPosition, ReportPostPositionResponse>()
+                .ForMember(x => x.TrainingCertificateId, opt => opt.MapFrom(src => src.CertificateId))
                 .ReverseMap();
-            CreateMap<PostPosition, PostRGUpdatePositionResponse>().ReverseMap();
-            CreateMap<PostPosition, AccountReportPostPositionResponse>().ReverseMap();
+            CreateMap<PostPosition, PostRGUpdatePositionResponse>()
+                .ForMember(x => x.TrainingCertificateId, opt => opt.MapFrom(src => src.CertificateId))
+                .ReverseMap();
+            CreateMap<PostPosition, AccountReportPostPositionResponse>()
+                .ForMember(x => x.TrainingCertificateId, opt => opt.MapFrom(src => src.CertificateId))
+                .ReverseMap();
             #endregion
 
             #region DocumentTemplate
-            CreateMap<AdmissionDocumentResponse,DocumentTemplate>().ReverseMap();
+            CreateMap<AdmissionDocumentResponse, DocumentTemplate>().ReverseMap();
             CreateMap<DocumentRequest, DocumentTemplate>().ReverseMap();
-            CreateMap<DocumentUpdateRequest,DocumentTemplate>().ReverseMap();
+            CreateMap<DocumentUpdateRequest, DocumentTemplate>().ReverseMap();
             #endregion
 
             #region Profile Reactivtion
@@ -324,7 +331,7 @@ namespace SupFAmof.API.Mapper
 
             CreateMap<AdmissionConfirmAttendanceRequest, CheckAttendance>().ReverseMap();
             CreateMap<CheckAttendance, AdmissionAttendanceResponse>()
-                .ForMember(x=>x.PostRegistration,opt=>opt.MapFrom(src=>src.PostRegistration))
+                .ForMember(x => x.PostRegistration, opt => opt.MapFrom(src => src.PostRegistration))
                 .ReverseMap();
             CreateMap<PostRegistration, AttendancePostRegistrationResponse>()
                 .ForMember(x => x.Post, opt => opt.MapFrom(src => src.Position.Post))

@@ -334,7 +334,7 @@ namespace SupFAmof.Service.Service
                 foreach (var item in request.PostPositions)
                 {
                     //validate Certificate
-                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
+                    var checkCerti = _unitOfWork.Repository<Certificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
 
                     if (item.TrainingCertificateId > 0 && checkCerti == null)
                     {

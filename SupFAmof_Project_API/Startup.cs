@@ -139,9 +139,9 @@ namespace SupFAmof.API
             builder.RegisterType<ExpoTokenService>().As<IExpoTokenService>();
             builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
             builder.RegisterType<AdminAccountService>().As<IAdminAccountService>();
-            builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
+            //builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
             builder.RegisterType<PostCategoryService>().As<IPostCategoryService>();
-            builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
+            //builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
             builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
             builder.RegisterType<PostService>().As<IPostService>();
             builder.RegisterType<DocumentService>().As<IDocumentService>();

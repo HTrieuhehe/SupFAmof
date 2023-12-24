@@ -5,7 +5,6 @@ using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
-using Org.BouncyCastle.Tls;
 using Service.Commons;
 using ServiceStack.Web;
 using SupFAmof.Data.Entity;
@@ -81,7 +80,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 //get All training certificate
-                var trainingCertificates = _unitOfWork.Repository<TrainingCertificate>()
+                var trainingCertificates = _unitOfWork.Repository<Certificate>()
                                                       .GetAll()
                                                       .Where(a => a.IsActive == true);
 
@@ -270,7 +269,7 @@ namespace SupFAmof.Service.Service
                         //check recruit registration to remove
                         var registrationUnComplete = _unitOfWork.Repository<PostRegistration>()
                                                                 .GetAll()
-                                                                .Where(p => p.Position.TrainingCertificate != null && p.Position.TrainingCertificate.Id == accountCertificate.TrainingCertificateId);
+                                                                .Where(p => p.Position.Certificate != null && p.Position.Certificate.Id == accountCertificate.TrainingCertificateId);
 
                         var findingRegistrations = registrationUnComplete.Where(p => p.Status >= (int)PostRegistrationStatusEnum.Pending
                                                                                                            && p.Status <= (int)PostRegistrationStatusEnum.Confirm);

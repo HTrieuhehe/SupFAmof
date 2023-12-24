@@ -259,7 +259,7 @@ namespace SupFAmof.Service.Service
 
         private static bool VerifyDateTimeCheckin(PostRegistration postTime, DateTime checkInTime)
         {
-            if (postTime.Position.TrainingCertificate != null)
+            if (postTime.Position.Certificate != null)
             {
                 if (postTime.Position.Date != checkInTime.Date)
                 {

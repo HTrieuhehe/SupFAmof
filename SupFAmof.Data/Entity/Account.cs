@@ -17,9 +17,9 @@ namespace SupFAmof.Data.Entity
             AccountReports = new HashSet<AccountReport>();
             ApplicationAccountReplies = new HashSet<Application>();
             ApplicationAccounts = new HashSet<Application>();
+            CertificateRegistrations = new HashSet<CertificateRegistration>();
             Contracts = new HashSet<Contract>();
             ExpoPushTokens = new HashSet<ExpoPushToken>();
-            InterviewRegistrations = new HashSet<InterviewRegistration>();
             NotificationHistories = new HashSet<NotificationHistory>();
             PostRegistrations = new HashSet<PostRegistration>();
             Posts = new HashSet<Post>();
@@ -51,9 +51,9 @@ namespace SupFAmof.Data.Entity
         public virtual ICollection<AccountReport> AccountReports { get; set; }
         public virtual ICollection<Application> ApplicationAccountReplies { get; set; }
         public virtual ICollection<Application> ApplicationAccounts { get; set; }
+        public virtual ICollection<CertificateRegistration> CertificateRegistrations { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
         public virtual ICollection<ExpoPushToken> ExpoPushTokens { get; set; }
-        public virtual ICollection<InterviewRegistration> InterviewRegistrations { get; set; }
         public virtual ICollection<NotificationHistory> NotificationHistories { get; set; }
         public virtual ICollection<PostRegistration> PostRegistrations { get; set; }
         public virtual ICollection<Post> Posts { get; set; }

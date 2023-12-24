@@ -7,7 +7,7 @@ namespace SupFAmof.Data.Entity
     {
         public InterviewDay()
         {
-            InterviewRegistrations = new HashSet<InterviewRegistration>();
+            CertificateRegistrations = new HashSet<CertificateRegistration>();
         }
 
         public int Id { get; set; }
@@ -19,6 +19,6 @@ namespace SupFAmof.Data.Entity
         public DateTime CreateAt { get; set; }
         public DateTime? Updateat { get; set; }
 
-        public virtual ICollection<InterviewRegistration> InterviewRegistrations { get; set; }
+        public virtual ICollection<CertificateRegistration> CertificateRegistrations { get; set; }
     }
 }

@@ -183,6 +183,9 @@ namespace SupFAmof.Service.Helpers
             Interview_Result = 8,
             [Display(Name = "Your attendance has been reviewed")]
             CheckOut_Confirmed = 9,
+
+            [Display(Name = "Certificate warning!")]
+            ACCOUNT_CERTIFICATE_REMOVED = 11,
         }
         public enum TrainingRegistrationStatusEnum
         {

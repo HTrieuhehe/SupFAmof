@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using LAK.Sdk.Core.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -30,11 +29,13 @@ namespace SupFAmof.Service.Service
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
-        public AccountCertificateService(IMapper mapper, IUnitOfWork unitOfWork)
+        public AccountCertificateService(IMapper mapper, IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         public async Task<BaseResponseViewModel<AccountCertificateResponse>> CreateAccountCertificate(int certificateIssuerId, CreateAccountCertificateRequest request)
@@ -247,13 +248,63 @@ namespace SupFAmof.Service.Service
                                          AccountCertificateErrorEnum.STATUS_ALREADY_SAME.GetDisplayName());
                 }
 
-                var accountCertificateResult = _mapper.Map<UpdateAccountCertificateRequest, AccountCertificate>(request, accountCertificate);
+                switch (request.Status)
+                {
+                    case (int)AccountCertificateStatusEnum.Complete:
+                        var accountCertificateResult = _mapper.Map<UpdateAccountCertificateRequest, AccountCertificate>(request, accountCertificate);
 
-                accountCertificateResult.UpdateAt = Ultils.GetCurrentDatetime();
+                        accountCertificateResult.UpdateAt = Ultils.GetCurrentDatetime();
 
-                await _unitOfWork.Repository<AccountCertificate>().UpdateDetached(accountCertificateResult);
-                await _unitOfWork.CommitAsync();
+                        await _unitOfWork.Repository<AccountCertificate>().UpdateDetached(accountCertificateResult);
+                        await _unitOfWork.CommitAsync();
+                        break;
 
+                    case (int)AccountCertificateStatusEnum.Reject:
+
+                        var accountCertificateResultRemove = _mapper.Map<UpdateAccountCertificateRequest, AccountCertificate>(request, accountCertificate);
+
+                        accountCertificateResultRemove.UpdateAt = Ultils.GetCurrentDatetime();
+
+                        await _unitOfWork.Repository<AccountCertificate>().UpdateDetached(accountCertificateResultRemove);
+
+                        //check recruitment registration to remove them and send notification
+                        var currentDate = Ultils.GetCurrentDatetime();
+
+                        //check recruit registration to remove
+                        var registrationUnComplete = _unitOfWork.Repository<PostRegistration>()
+                                                                .GetAll()
+                                                                .Where(p => p.Position.TrainingCertificate != null && p.Position.TrainingCertificate.Id == accountCertificate.TrainingCertificateId);
+
+                        var findingRegistrations = registrationUnComplete.Where(p => p.Status >= (int)PostRegistrationStatusEnum.Pending
+                                                                                                           && p.Status <= (int)PostRegistrationStatusEnum.Confirm);
+                        foreach (var registration in findingRegistrations)
+                        {
+                            registration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                            registration.CancelTime = currentDate;
+                            await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
+                        }
+                        
+
+                        await _unitOfWork.CommitAsync();
+
+                        var account = _unitOfWork.Repository<Account>().GetAll()
+                                            .Where(x => x.Id == accountCertificate.AccountId && x.RoleId == (int)SystemRoleEnum.Collaborator);
+
+                        var accountIds = account.Select(p => p.Id).ToList();
+
+                        //create notification request 
+                        PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                        {
+                            Ids = accountIds,
+                            Title = NotificationTypeEnum.ACCOUNT_CERTIFICATE_REMOVED.GetDisplayName(),
+                            Body = "Your both certificate and relevant registrations have been removed!",
+                            NotificationsType = (int)NotificationTypeEnum.ACCOUNT_CERTIFICATE_REMOVED
+                        };
+
+                        await _notificationService.PushNotification(notificationRequest);
+                        break;
+
+                }
                 return new BaseResponseViewModel<AccountCertificateResponse>()
                 {
                     Status = new StatusViewModel()

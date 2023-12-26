@@ -76,16 +76,18 @@ namespace SupFAmof.Service.Service
                     }
 
                     //check training Register
-                    var trainingRegister = await _unitOfWork.Repository<TrainingRegistration>()
-                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id);
+                    var trainingRegister = await _unitOfWork.Repository<TrainingRegistration>().
+                                                    GetAll().FirstOrDefaultAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id);
 
-                    if (trainingRegister != null && trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
-                                                 && trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Canceled)
+                    if (trainingRegister != null)
                     {
-                        trainingCertificate.IsRegistered = true;
+                        if (trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
+                                                 && trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Canceled)
+                        {
+                            trainingCertificate.IsRegistered = true;
+                        }
+                        trainingCertificate.CertificateStatus = trainingRegister.Status;
                     }
-
-                    trainingCertificate.CertificateStatus = trainingRegister.Status;
                 }
 
                 return new BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>()

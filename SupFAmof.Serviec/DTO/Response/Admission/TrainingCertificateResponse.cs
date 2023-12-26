@@ -37,7 +37,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
 
         public bool? IsRegistered;
         public bool? isHasThisCertificate;
-        public int? CertificateStatus; 
+        public int CertificateStatus; 
     }
 
 

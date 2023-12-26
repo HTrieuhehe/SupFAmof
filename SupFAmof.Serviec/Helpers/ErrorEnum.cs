@@ -373,6 +373,17 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Interview day matched with collab work time")]
             MATCHED_WORK_TIME = 4014,
+            //400
+            [Display(Name = "Can't assign same interview ")]
+            SAME_INTERVIEW = 4015,
+            //400
+            [Display(Name = "Interview time must be more than 1 hour")]
+            INTERVIEW_TIME_1_HOUR = 4016,
+            //400
+            [Display(Name = "Either the time is in the pass or you can't assign due to it being only one hour to assign")]
+            FAILED_TO_ASSIGN = 4017,
+            [Display(Name = "Either the time is in the pass or you must create 3 hour more than you current time")]
+            FAILED_TO_CREATE = 4018,
         }
 
         public enum AccountCertificateErrorEnum

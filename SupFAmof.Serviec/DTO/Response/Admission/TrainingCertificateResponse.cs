@@ -23,6 +23,9 @@ namespace SupFAmof.Service.DTO.Response.Admission
         {
             IsRegistered = false;
             isHasThisCertificate = false;
+
+            //default is 4 for not passed
+            CertificateStatus = 4;
         }
 
         public int? Id { get; set; }
@@ -34,6 +37,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
 
         public bool? IsRegistered;
         public bool? isHasThisCertificate;
+        public int? CertificateStatus; 
     }
 
 

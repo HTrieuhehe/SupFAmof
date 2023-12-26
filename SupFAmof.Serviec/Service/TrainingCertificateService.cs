@@ -71,21 +71,21 @@ namespace SupFAmof.Service.Service
                         //if he/she has certificate, so it is not neccessary to register training
                         trainingCertificate.IsRegistered = true;
                         trainingCertificate.isHasThisCertificate = true;
+                        trainingCertificate.CertificateStatus = (int)TrainingRegistrationStatusEnum.Passed;
                         continue;
                     }
 
                     //check training Register
                     var trainingRegister = await _unitOfWork.Repository<TrainingRegistration>()
-                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id
-                                                                                             && x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
-                                                                                             && x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
+                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id);
 
-                    if (trainingRegister != null)
+                    if (trainingRegister != null && trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Not_Passed
+                                                 && trainingRegister.Status != (int)TrainingRegistrationStatusEnum.Canceled)
                     {
                         trainingCertificate.IsRegistered = true;
                     }
-                    
-                    
+
+                    trainingCertificate.CertificateStatus = trainingRegister.Status;
                 }
 
                 return new BaseResponsePagingViewModel<CollaboratorTrainingCertificateResponse>()

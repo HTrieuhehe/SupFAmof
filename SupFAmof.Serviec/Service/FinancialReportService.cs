@@ -185,7 +185,7 @@ namespace SupFAmof.Service.Service
                                         ExcelPicture frontPicture = worksheet.Drawings.AddPicture($"FrontImg_{row}", frontImageFileInfo);
                                         frontPicture.From.Column = 7;
                                         frontPicture.From.Row = row - 1;
-                                        frontPicture.SetSize(100, 100);
+                                        frontPicture.SetSize(60, 80);
                                     }
                                 }
                             }
@@ -218,7 +218,7 @@ namespace SupFAmof.Service.Service
                                         ExcelPicture backPicture = worksheet.Drawings.AddPicture($"BackImg_{row}", backImageFileInfo);
                                         backPicture.From.Column = 8;
                                         backPicture.From.Row = row - 1;
-                                        backPicture.SetSize(100, 100);
+                                        backPicture.SetSize(50, 80);
                                     }
                                 }
                             }

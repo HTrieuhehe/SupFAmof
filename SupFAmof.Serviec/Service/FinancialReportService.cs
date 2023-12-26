@@ -218,7 +218,7 @@ namespace SupFAmof.Service.Service
                                         ExcelPicture backPicture = worksheet.Drawings.AddPicture($"BackImg_{row}", backImageFileInfo);
                                         backPicture.From.Column = 8;
                                         backPicture.From.Row = row - 1;
-                                        backPicture.SetSize(50, 80);
+                                        backPicture.SetSize(60, 80);
                                     }
                                 }
                             }

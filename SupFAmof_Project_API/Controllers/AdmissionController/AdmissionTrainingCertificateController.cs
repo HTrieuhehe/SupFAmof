@@ -381,6 +381,30 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 return BadRequest(ex.Error);
             }
         }
-        
+        [HttpDelete("cancel-event-day")]
+        public async Task<ActionResult<BaseResponseViewModel<bool>>> CancelEventDay
+([FromQuery] int trainingEventDay)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
+                {
+                    return Unauthorized();
+                }
+                var result = await _certificateService.CancelEventDay(account.Id, trainingEventDay);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
     }
 }

@@ -426,11 +426,18 @@ namespace SupFAmof.Service.Service
                                             AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var eventDay = _mapper.Map<TrainingEventDay>(request);
-                if (!await CheckTimeAvailability((DateTime)eventDay.Date))
+                if (!await CheckTimeAvailability(eventDay))
                 {
                     throw new ErrorResponse(
-                        400, (int)TrainingCertificateErrorEnum.PAST_CLASS,
-                        TrainingCertificateErrorEnum.PAST_CLASS.GetDisplayName());
+                        400, (int)TrainingCertificateErrorEnum.FAILED_TO_CREATE,
+                        TrainingCertificateErrorEnum.FAILED_TO_CREATE.GetDisplayName());
+                }
+                 var timeSpan = eventDay.TimeTo - eventDay.TimeFrom;
+                if (timeSpan< TimeSpan.FromHours(1))
+                {
+                    throw new ErrorResponse(
+                 400, (int)TrainingCertificateErrorEnum.INTERVIEW_TIME_1_HOUR,
+                 TrainingCertificateErrorEnum.INTERVIEW_TIME_1_HOUR.GetDisplayName());
                 }
                 await _unitOfWork.Repository<TrainingEventDay>().InsertAsync(eventDay);
                 await _unitOfWork.CommitAsync();
@@ -514,14 +521,19 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-        private async Task<bool> CheckTimeAvailability(DateTime timeOfClass)
+        private async Task<bool> CheckTimeAvailability(TrainingEventDay timeOfClass)
         {
-            var currentDate = GetCurrentDatetime().Date;
-            if (timeOfClass.Date < currentDate)
-            {
-                return false;
-            }
-            return true;
+            var currentDate = GetCurrentDatetime();
+            var result = timeOfClass.TimeFrom - currentDate.TimeOfDay;
+            var timedifference =  result>= TimeSpan.FromHours(3);
+            return (timeOfClass.Date > currentDate || (timeOfClass.Date == currentDate.Date && timedifference));
+        }
+        private async Task<bool> CheckTimeAvailabilityAssigning(TrainingEventDay timeOfClass)
+        {
+            var currentDate = GetCurrentDatetime();
+            var result = timeOfClass.TimeFrom - currentDate.TimeOfDay;
+            var timedifference = result >= TimeSpan.FromHours(1);
+            return (timeOfClass.Date > currentDate || (timeOfClass.Date == currentDate.Date && timedifference));
         }
         private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1,
                                               TimeSpan? start2, TimeSpan? end2)
@@ -664,15 +676,22 @@ namespace SupFAmof.Service.Service
                             400, (int)TrainingCertificateErrorEnum.OVERLAP_INTERVIEW,
                             TrainingCertificateErrorEnum.OVERLAP_INTERVIEW.GetDisplayName());
                     }
-                    var dateTimeOfAssignDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == requestStatusMap[registration.Id].Value);
-                    if (!await CheckTimeAvailability((DateTime)dateTimeOfAssignDay.Date))
+                    if (!await CheckAssignSameRoom(registration,
+                                                  requestStatusMap[registration.Id].Value))
                     {
                         throw new ErrorResponse(
-                            400, (int)TrainingCertificateErrorEnum.PAST_INTERVIEW,
-                            TrainingCertificateErrorEnum.PAST_INTERVIEW.GetDisplayName());
+                            400, (int)TrainingCertificateErrorEnum.SAME_INTERVIEW,
+                            TrainingCertificateErrorEnum.SAME_INTERVIEW.GetDisplayName());
+                    }
+                    var dateTimeOfAssignDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == requestStatusMap[registration.Id].Value);
+                    if (!await CheckTimeAvailabilityAssigning(dateTimeOfAssignDay))
+                    {
+                        throw new ErrorResponse(
+                            400, (int)TrainingCertificateErrorEnum.FAILED_TO_ASSIGN,
+                            TrainingCertificateErrorEnum.FAILED_TO_ASSIGN.GetDisplayName());
                     }
                     if (!await CheckOverlapPostRegistration(dateTimeOfAssignDay,registration.AccountId))
-                    {
+                    { 
                         throw new ErrorResponse(
                             400, (int)TrainingCertificateErrorEnum.MATCHED_WORK_TIME,
                             TrainingCertificateErrorEnum.MATCHED_WORK_TIME.GetDisplayName());
@@ -747,6 +766,14 @@ namespace SupFAmof.Service.Service
                 {
                     return false;
                 }
+            }
+            return true;
+        }
+        private async Task<bool> CheckAssignSameRoom(TrainingRegistration trainingRegistration,int tranningEventDayId)
+        {
+            if (trainingRegistration.EventDayId.HasValue && trainingRegistration.EventDayId == tranningEventDayId)
+            {
+                return false;
             }
             return true;
         }
@@ -983,8 +1010,8 @@ namespace SupFAmof.Service.Service
                     TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST
                         .GetDisplayName());
             }
-            if (eventDay.Date == current.Date &&
-                eventDay.TimeFrom <= current.TimeOfDay)
+            if ((eventDay.Date == current.Date &&
+                eventDay.TimeFrom <= current.TimeOfDay) || eventDay.Date < current.Date)
             {
                 return true;
             }
@@ -1275,6 +1302,47 @@ namespace SupFAmof.Service.Service
                           Total = trainingCertificates.Item1
                       },
                     Data = trainingCertificates.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+
+        public async Task<BaseResponseViewModel<dynamic>> CancelEventDay(int accountId,int eventDayId)
+        {
+            try
+            {
+                var account = await _unitOfWork.Repository<Account>().FindAsync(
+                   x => x.Id == accountId);
+                if (!account.PostPermission)
+                {
+                    throw new ErrorResponse(401, (int)AccountErrorEnums.API_INVALID,
+                                            AccountErrorEnums.API_INVALID.GetDisplayName());
+                }
+                var eventDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x=>x.Id == eventDayId);
+                if(eventDay ==null)
+                {
+                    throw new ErrorResponse(400, 400, "Cant found that interview");
+                }
+                if(eventDay.TrainingRegistrations.Any())
+                {
+                    throw new ErrorResponse(400, 400, "This interview has been assigned to someone");
+                }
+                eventDay.Status = (int)TrainingEventDayStatusEnum.Cancel;
+                await _unitOfWork.Repository<TrainingEventDay>().UpdateDetached(eventDay);
+                await _unitOfWork.CommitAsync();
+                return new BaseResponseViewModel<dynamic>
+                {
+                    Status = new StatusViewModel()
+                    {
+                        Message = "Cancel interview success",
+                        Success = true,
+                        ErrorCode = 0
+                    }
                 };
             }
             catch (Exception ex)

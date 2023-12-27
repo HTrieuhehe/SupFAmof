@@ -384,6 +384,8 @@ namespace SupFAmof.Service.Helpers
             FAILED_TO_ASSIGN = 4017,
             [Display(Name = "Either the time is in the pass or you must create 3 hour more than you current time")]
             FAILED_TO_CREATE = 4018,
+            [Display(Name = "Can't assign")]
+            CANT_ASIGN = 4019,
         }
 
         public enum AccountCertificateErrorEnum

@@ -674,7 +674,12 @@ namespace SupFAmof.Service.Service
                 }
                 foreach (var registration in filteredList)
                 {
-
+                    if(!(registration.Status == (int)TrainingRegistrationStatusEnum.Assigned|| registration.Status == (int)TrainingRegistrationStatusEnum.Pending))
+                    {
+                        throw new ErrorResponse(
+                     400, (int)TrainingCertificateErrorEnum.CANT_ASIGN,
+                     TrainingCertificateErrorEnum.CANT_ASIGN.GetDisplayName());
+                    }
                     if (!await AssignDuplicateTime(registration,
                                                    requestStatusMap[registration.Id].Value,
                                                    registration.AccountId))

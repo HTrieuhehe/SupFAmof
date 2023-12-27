@@ -210,6 +210,8 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Cancel")]
             Cancel = 2,
+            [Display(Name = "Complete")]
+            Complete = 3,
         }
         public enum PostCategoryStatusEnum
         {

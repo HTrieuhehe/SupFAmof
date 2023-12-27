@@ -86,6 +86,14 @@ namespace SupFAmof.Service.Service
                         {
                             trainingCertificate.IsRegistered = true;
                         }
+                        
+                        if (trainingRegister.Status == (int)TrainingRegistrationStatusEnum.Passed
+                            && accountCertificate != null
+                            && accountCertificate.Status == (int)AccountCertificateStatusEnum.Reject)
+                        {
+                            trainingCertificate.IsRegistered = true;
+                        }
+
                         trainingCertificate.CertificateStatus = trainingRegister.Status;
                     }
                 }

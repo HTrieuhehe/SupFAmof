@@ -353,7 +353,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Same time with different training  day")]
             OVERLAP_INTERVIEW = 4007,
             //400
-            [Display(Name = "Training Day does not exist")]
+            [Display(Name = "Interview does not exist")]
             TRAINING_DAY_DOES_NOT_EXIST = 4008,
             //400
             [Display(Name = "Only check attedance on the day of the interview and on time")]
@@ -384,6 +384,8 @@ namespace SupFAmof.Service.Helpers
             FAILED_TO_ASSIGN = 4017,
             [Display(Name = "Either the time is in the pass or you must create 3 hour more than you current time")]
             FAILED_TO_CREATE = 4018,
+            [Display(Name = "Can't assign")]
+            CANT_ASIGN = 4019,
         }
 
         public enum AccountCertificateErrorEnum

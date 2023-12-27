@@ -440,8 +440,8 @@ namespace SupFAmof.Service.Helpers
             INVALID_RUN_POST = 4005,
 
             //400
-            [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
-            UPDATE_FAIL = 4006,
+            [Display(Name = "Cannot delete because there are one or more people applied to this post")]
+            DELETE_POST_FAIL = 4006,
 
             //400
             [Display(Name = "Your post status ended or it has alrady opened")]

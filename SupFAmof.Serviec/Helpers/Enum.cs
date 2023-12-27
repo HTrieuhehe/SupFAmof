@@ -186,6 +186,9 @@ namespace SupFAmof.Service.Helpers
 
             [Display(Name = "Certificate warning!")]
             ACCOUNT_CERTIFICATE_REMOVED = 11,
+
+            [Display(Name = "Recruitment Removed!")]
+            RECRUITMENT_POST_REMOVED = 12,
         }
         public enum TrainingRegistrationStatusEnum
         {

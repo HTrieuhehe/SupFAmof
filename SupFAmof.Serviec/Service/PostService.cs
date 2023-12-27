@@ -31,6 +31,7 @@ using static ServiceStack.Diagnostics;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Math;
 
 namespace SupFAmof.Service.Service
 {
@@ -760,8 +761,8 @@ namespace SupFAmof.Service.Service
 
                 if (checkApplied != null)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIL,
-                                         PostErrorEnum.UPDATE_FAIL.GetDisplayName());
+                    throw new ErrorResponse(400, (int)PostErrorEnum.DELETE_POST_FAIL,
+                                         PostErrorEnum.DELETE_POST_FAIL.GetDisplayName());
                 }
 
                 postPosition.Status = (int)PostPositionStatusEnum.Delete;
@@ -792,6 +793,24 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //define collabroator accountId to send notification
+                List<int> collaboratorId = new List<int>();
+
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
                 //make sure post is update status by someone who created them
                 var post = await _unitOfWork.Repository<Post>()
                                     .FindAsync(x => x.Id == postId && x.AccountId == accountId);
@@ -805,20 +824,60 @@ namespace SupFAmof.Service.Service
                 //validate to makesure there is no applied in this position
                 var postPositionIds = post.PostPositions.Select(p => p.Id).ToList();
 
-                var checkApplied = await _unitOfWork.Repository<PostRegistration>()
-                                                    .GetAll()
-                                                    .FirstOrDefaultAsync(x => postPositionIds.Contains(x.PositionId));
+                //get registration relevant to this post
 
+                var checkApplied = _unitOfWork.Repository<PostRegistration>()
+                                                    .GetAll()
+                                                    .Where(x => postPositionIds.Contains(x.PositionId));
+
+                //check if there is any registration is confirmed or more
+                if (checkApplied.Any(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                         || x.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                         || x.Status == (int)PostRegistrationStatusEnum.CheckOut))
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.DELETE_POST_FAIL,
+                        PostErrorEnum.DELETE_POST_FAIL.GetDisplayName());
+                }
+
+                //remove registration 
                 if (checkApplied != null)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.UPDATE_FAIL,
-                                         PostErrorEnum.UPDATE_FAIL.GetDisplayName());
+                    foreach (var registration in checkApplied)
+                    {
+                        if (registration.Status == (int)PostRegistrationStatusEnum.Pending)
+                        {
+                            collaboratorId.Add(registration.AccountId);
+                            registration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                            registration.CancelTime = Ultils.GetCurrentDatetime();
+
+                            await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
+                        }
+                    }
+                }
+
+                //if no one is applied so remove the registration too
+                foreach (var position in post.PostPositions)
+                {
+                    position.Status = (int)PostPositionStatusEnum.Delete;
+                    await _unitOfWork.Repository<PostPosition>().UpdateDetached(position);
                 }
 
                 post.Status = (int)PostStatusEnum.Delete;
                 post.UpdateAt = Ultils.GetCurrentDatetime();
 
                 await _unitOfWork.Repository<Post>().UpdateDetached(post);
+
+                //create notification request 
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = collaboratorId,
+                    Title = NotificationTypeEnum.RECRUITMENT_POST_REMOVED.GetDisplayName(),
+                    Body = "Your recruitment registration is canceled by the admission removed post",
+                    NotificationsType = (int)NotificationTypeEnum.RECRUITMENT_POST_REMOVED
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()

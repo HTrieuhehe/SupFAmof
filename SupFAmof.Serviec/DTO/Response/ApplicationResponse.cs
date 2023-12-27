@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SupFAmof.Service.DTO.Response.Admission;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,5 +19,6 @@ namespace SupFAmof.Service.DTO.Response
         public int? Status { get; set; }
 
         public virtual AccountResponse? Account { get; set; }
+        public virtual AdmissionReplyAccountReponse? AccountReply { get; set; }
     }
 }

@@ -465,6 +465,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Missing position valid with post end time")]
             VALID_POSITION_MISSING = 40011,
 
+            //400
+            [Display(Name = "Cannot delete because there are one or more people applied to this position")]
+            DELETE_POSITION_FAIL = 40012,
+
             //403
             [Display(Name = "You are not premium to see this post!")]
             PREMIUM_REQUIRED = 4031,

@@ -745,6 +745,24 @@ namespace SupFAmof.Service.Service
         {
             try
             {
+                //define collabroator accountId to send notification
+                List<int> collaboratorId = new List<int>();
+
+                //check account post Permission
+                var checkAccount = await _unitOfWork.Repository<Account>().FindAsync(x => x.Id == accountId);
+
+                if (checkAccount == null)
+                {
+                    throw new ErrorResponse(404, (int)AccountErrorEnums.ACCOUNT_NOT_FOUND,
+                                        AccountErrorEnums.ACCOUNT_NOT_FOUND.GetDisplayName());
+                }
+
+                else if (checkAccount.PostPermission == false)
+                {
+                    throw new ErrorResponse(403, (int)AccountErrorEnums.PERMISSION_NOT_ALLOW,
+                                        AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
+                }
+
                 //make sure position is update status by someone who created them
                 var postPosition = await _unitOfWork.Repository<PostPosition>()
                                     .FindAsync(x => x.Id == positionId && x.Post.AccountId == accountId && x.Post.Id == x.PostId);
@@ -757,19 +775,55 @@ namespace SupFAmof.Service.Service
 
                 //validate to makesure there is no applied in this position
 
-                var checkApplied = await _unitOfWork.Repository<PostRegistration>().GetAll().FirstOrDefaultAsync(x => x.PositionId == positionId);
+                var checkApplied = _unitOfWork.Repository<PostRegistration>()
+                                                   .GetAll()
+                                                   .Where(x => x.PositionId == positionId);
 
+                //check if there is any registration is confirmed or more
+                if (checkApplied.Any(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                         || x.Status == (int)PostRegistrationStatusEnum.CheckIn
+                                         || x.Status == (int)PostRegistrationStatusEnum.CheckOut))
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.DELETE_POSITION_FAIL,
+                        PostErrorEnum.DELETE_POSITION_FAIL.GetDisplayName());
+                }
+
+                //remove registration 
                 if (checkApplied != null)
                 {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.DELETE_POST_FAIL,
-                                         PostErrorEnum.DELETE_POST_FAIL.GetDisplayName());
+                    foreach (var registration in checkApplied)
+                    {
+                        if (registration.Status == (int)PostRegistrationStatusEnum.Pending)
+                        {
+                            collaboratorId.Add(registration.AccountId);
+                            registration.Status = (int)PostRegistrationStatusEnum.Cancel;
+                            registration.CancelTime = Ultils.GetCurrentDatetime();
+
+                            await _unitOfWork.Repository<PostRegistration>().UpdateDetached(registration);
+                        }
+                    }
                 }
 
                 postPosition.Status = (int)PostPositionStatusEnum.Delete;
 
                 await _unitOfWork.Repository<PostPosition>().UpdateDetached(postPosition);
+
+
+                //create notification request 
+                PushNotificationRequest notificationRequest = new PushNotificationRequest()
+                {
+                    Ids = collaboratorId,
+                    Title = NotificationTypeEnum.RECRUITMENT_POSITION_REMOVED.GetDisplayName(),
+                    Body = "Your recruitment registration is canceled by the admission removed position",
+                    NotificationsType = (int)NotificationTypeEnum.RECRUITMENT_POSITION_REMOVED
+                };
+
+                await _notificationService.PushNotification(notificationRequest);
+
                 await _unitOfWork.CommitAsync();
 
+
+                //call to get post
                 var result = await _unitOfWork.Repository<Post>().FindAsync(x => x.Id == postPosition.PostId);
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()

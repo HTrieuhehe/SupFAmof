@@ -353,7 +353,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Same time with different training  day")]
             OVERLAP_INTERVIEW = 4007,
             //400
-            [Display(Name = "Training Day does not exist")]
+            [Display(Name = "Interview does not exist")]
             TRAINING_DAY_DOES_NOT_EXIST = 4008,
             //400
             [Display(Name = "Only check attedance on the day of the interview and on time")]

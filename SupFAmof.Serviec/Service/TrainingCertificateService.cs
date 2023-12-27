@@ -470,18 +470,18 @@ namespace SupFAmof.Service.Service
                                             AccountErrorEnums.API_INVALID.GetDisplayName());
                 }
                 var eventDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(
-                    x => x.Id == evenDayId);
+                    x => x.Id == evenDayId && (x.Status == (int)TrainingEventDayStatusEnum.Create));
                 if (eventDay == null)
                 {
                     throw new ErrorResponse(
-                        401, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST,
+                        400, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST,
                         TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST
                             .GetDisplayName());
                 }
                 if (eventDay.TrainingRegistrations.Any())
                 {
                     throw new ErrorResponse(
-                        401, (int)TrainingCertificateErrorEnum.CANT_UPDATE,
+                        400, (int)TrainingCertificateErrorEnum.CANT_UPDATE,
                         TrainingCertificateErrorEnum.CANT_UPDATE
                             .GetDisplayName());
                 }
@@ -683,7 +683,15 @@ namespace SupFAmof.Service.Service
                             400, (int)TrainingCertificateErrorEnum.SAME_INTERVIEW,
                             TrainingCertificateErrorEnum.SAME_INTERVIEW.GetDisplayName());
                     }
-                    var dateTimeOfAssignDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(x => x.Id == requestStatusMap[registration.Id].Value);
+                    var dateTimeOfAssignDay = await _unitOfWork.Repository<TrainingEventDay>().FindAsync(
+                        x => x.Id == requestStatusMap[registration.Id].Value && (x.Status == (int)TrainingEventDayStatusEnum.Create));
+                    if(dateTimeOfAssignDay== null)
+                    {
+                        throw new ErrorResponse(
+                    400, (int)TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST,
+                    TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST
+                        .GetDisplayName());
+                    }
                     if (!await CheckTimeAvailabilityAssigning(dateTimeOfAssignDay))
                     {
                         throw new ErrorResponse(

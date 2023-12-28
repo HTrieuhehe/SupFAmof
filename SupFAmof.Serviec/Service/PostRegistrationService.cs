@@ -115,6 +115,16 @@ namespace SupFAmof.Service.Service
                         registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
                     }
 
+                    var canceledPositions = registration.PostPositionsUnregistereds.ToList();
+
+                    foreach (var canceledPosition in canceledPositions)
+                    {
+                        if (canceledPosition.Status == (int)PostPositionStatusEnum.Delete)
+                        {
+                            registration.PostPositionsUnregistereds.Remove(canceledPosition);
+                        }
+                    }
+
                     #region Count Registration Amount
 
                     //lấy thời gian min max

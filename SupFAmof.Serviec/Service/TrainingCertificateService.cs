@@ -670,7 +670,7 @@ namespace SupFAmof.Service.Service
                                         (registration.Status == (int)TrainingRegistrationStatusEnum.Pending||registration.Status == (int)TrainingRegistrationStatusEnum.Assigned));
                 if (!filteredList.Any())
                 {
-                    throw new ErrorResponse(400, 4001, "Nothing to show");
+                    throw new ErrorResponse(400, 4001, "Nothing to assign ");
                 }
                 foreach (var registration in filteredList)
                 {

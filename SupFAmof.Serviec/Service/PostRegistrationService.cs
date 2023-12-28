@@ -249,7 +249,7 @@ namespace SupFAmof.Service.Service
                 postRegistration.AccountId = accountId;
 
                 var postPosition = await _unitOfWork.Repository<PostPosition>()
-                                .FindAsync(x => x.Id == request.PositionId);
+                                .FindAsync(x => x.Id == request.PositionId && x.Status == (int)PostPositionStatusEnum.Active);
                 postRegistration.Salary = postPosition.Salary;
                 if (postPosition == null)
                 {
@@ -410,7 +410,7 @@ namespace SupFAmof.Service.Service
                 }
                 PostRegistration updateEntity = original;
                 var checkPostPostion = _unitOfWork.Repository<PostPosition>().GetAll().Where(x => x.PostId == updateEntity.Position.PostId &&
-                                                                                              x.Id == request.PositionId).First();
+                                                                                              x.Id == request.PositionId && x.Status == (int)PostPositionStatusEnum.Active).First();
 
                 var CountAllRegistrationForm = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.PositionId == request.PositionId
                                                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm).Count();
@@ -419,6 +419,11 @@ namespace SupFAmof.Service.Service
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
                         case PostRegistrationStatusEnum.Pending:
+                            if(checkPostPostion == null)
+                            {
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                      PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
+                            }
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
                                 updateEntity.PositionId = request.PositionId;
@@ -457,7 +462,11 @@ namespace SupFAmof.Service.Service
 
                         case PostRegistrationStatusEnum.Confirm:
                             PostRgupdateHistory entityPostTgupdate = new PostRgupdateHistory();
-
+                            if (checkPostPostion == null)
+                            {
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                      PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
+                            }
                             if (checkPostPostion.Amount - CountAllRegistrationForm > 0)
                             {
 
@@ -607,9 +616,13 @@ namespace SupFAmof.Service.Service
                         case true:
                             var checkPostPostion = _unitOfWork.Repository<PostPosition>()
                                 .GetAll()
-                                .Where(x => x.PostId == findRequest.Position.PostId && x.Id == findRequest.PositionId)
+                                .Where(x => x.PostId == findRequest.Position.PostId && x.Id == findRequest.PositionId && x.Status == (int)PostPositionStatusEnum.Active)
                                 .First();
-
+                            if (checkPostPostion == null)
+                            {
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                      PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
+                            }
                             var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
                                 .Where(x => x.PositionId == findRequest.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
@@ -786,7 +799,7 @@ namespace SupFAmof.Service.Service
                     {
                         case true:
                             var checkPostPosition = await _unitOfWork.Repository<PostPosition>()
-                              .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId);
+                              .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId && x.Status == (int)PostPositionStatusEnum.Active);
 
                             if (checkPostPosition != null)
                             {
@@ -812,8 +825,8 @@ namespace SupFAmof.Service.Service
                             }
                             else
                             {
-                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.NOT_FOUND_POST,
-                                    PostRegistrationErrorEnum.NOT_FOUND_POST.GetDisplayName());
+                                throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
+                                    PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                             }
                             break;
 

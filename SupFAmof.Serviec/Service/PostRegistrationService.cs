@@ -113,13 +113,13 @@ namespace SupFAmof.Service.Service
                     foreach (var unregisteredPosition in unregisteredPositions)
                     {
                         registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
-
-                        
                     }
 
-                    foreach (var canceledPosition in registration.PostPositionsUnregistereds)
+                    var canceledPositions = registration.PostPositionsUnregistereds.ToList();
+
+                    foreach (var canceledPosition in canceledPositions)
                     {
-                        if (canceledPosition.Status == (int)PostPositionStatusEnum.Active)
+                        if (canceledPosition.Status == (int)PostPositionStatusEnum.Delete)
                         {
                             registration.PostPositionsUnregistereds.Remove(canceledPosition);
                         }

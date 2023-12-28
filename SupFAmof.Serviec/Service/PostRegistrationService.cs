@@ -96,7 +96,7 @@ namespace SupFAmof.Service.Service
                 {
                     //tìm ra các position đã đăng ký của bạn í
                     var unregisteredPositions = registration.PostPositionsUnregistereds
-                        .Where(x => positionIds.Contains(x.Id))
+                        .Where(x => positionIds.Contains(x.Id) && x.Status == (int)PostPositionStatusEnum.Active)
                         .ToList();
 
                     var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();

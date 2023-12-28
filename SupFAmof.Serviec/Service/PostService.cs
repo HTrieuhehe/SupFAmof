@@ -655,15 +655,16 @@ namespace SupFAmof.Service.Service
 
                 var postPositionIds = checkPost.PostPositions.Select(p => p.Id).ToList();
 
-                //check if anyone apply to any position
-                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                    .FirstOrDefault(x => postPositionIds.Contains(x.PositionId));
                 checkPost.Id = postId;
                 checkPost.AccountId = accountId;
                 checkPost.PostCategoryId = request.PostCategoryId;
-                checkPost.PostDescription = request.PostDescription;
-                checkPost.PostImg = request.PostImg;
+                checkPost.PostDescription = request.PostDescription.Trim();
+                checkPost.PostImg = request.PostImg.Trim();
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
+
+                //check if anyone apply to any position
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
+                                                    .FirstOrDefault(x => postPositionIds.Contains(x.PositionId));
 
                 if (postRegistration == null)
                 {
@@ -676,6 +677,8 @@ namespace SupFAmof.Service.Service
                         {
                             continue;
                         }
+
+                        //validate date and location
 
                         item.Id = item.Id;
                         item.PositionName = checkPosition.PositionName;
@@ -1208,7 +1211,7 @@ namespace SupFAmof.Service.Service
                         .ToListAsync();
 
                 //lấy những position pending, confirm , check in và check out
-                var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel 
+                var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
                                                                         && reg.Status != (int)PostRegistrationStatusEnum.Quit
                                                                         && reg.Status != (int)PostRegistrationStatusEnum.Reject);
 
@@ -1267,7 +1270,9 @@ namespace SupFAmof.Service.Service
                                          AccountErrorEnums.ACCOUNT_DISABLE.GetDisplayName());
                 }
 
-                var post = await _unitOfWork.Repository<Post>().GetAll().FirstOrDefaultAsync(x => x.Id == postId);
+                var post = await _unitOfWork.Repository<Post>().GetAll()
+                                            .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                            .FirstOrDefaultAsync(x => x.Id == postId);
 
                 if (post == null)
                 {

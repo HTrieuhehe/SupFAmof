@@ -442,8 +442,8 @@ namespace SupFAmof.Service.Helpers
             INVALID_RUN_POST = 4005,
 
             //400
-            [Display(Name = "Cannot delete because there are one or more people applied to this post/position")]
-            UPDATE_FAIL = 4006,
+            [Display(Name = "Cannot delete because there are one or more people applied to this post")]
+            DELETE_POST_FAIL = 4006,
 
             //400
             [Display(Name = "Your post status ended or it has alrady opened")]
@@ -464,6 +464,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Missing position valid with post end time")]
             VALID_POSITION_MISSING = 40011,
+
+            //400
+            [Display(Name = "Cannot delete because there are one or more people applied to this position")]
+            DELETE_POSITION_FAIL = 40012,
 
             //403
             [Display(Name = "You are not premium to see this post!")]

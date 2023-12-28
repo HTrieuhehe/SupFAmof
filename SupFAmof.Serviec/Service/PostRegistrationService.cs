@@ -96,7 +96,7 @@ namespace SupFAmof.Service.Service
                 {
                     //tìm ra các position đã đăng ký của bạn í
                     var unregisteredPositions = registration.PostPositionsUnregistereds
-                        .Where(x => positionIds.Contains(x.Id) && x.Status == (int)PostPositionStatusEnum.Active)
+                        .Where(x => positionIds.Contains(x.Id))
                         .ToList();
 
                     var positionIdsForCount = registration.PostPositionsUnregistereds.Select(x => x.Id).ToList();
@@ -113,6 +113,16 @@ namespace SupFAmof.Service.Service
                     foreach (var unregisteredPosition in unregisteredPositions)
                     {
                         registration.PostPositionsUnregistereds.Remove(unregisteredPosition);
+
+                        
+                    }
+
+                    foreach (var canceledPosition in registration.PostPositionsUnregistereds)
+                    {
+                        if (canceledPosition.Status == (int)PostPositionStatusEnum.Active)
+                        {
+                            registration.PostPositionsUnregistereds.Remove(canceledPosition);
+                        }
                     }
 
                     #region Count Registration Amount

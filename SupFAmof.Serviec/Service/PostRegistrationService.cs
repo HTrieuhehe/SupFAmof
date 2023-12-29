@@ -71,6 +71,7 @@ namespace SupFAmof.Service.Service
 
                 int totalCount = 0;
                 int? totalAmountPosition = 0;
+                int totalPositionCount = 0;
 
                 //find registration base on collaborator based on their accountId
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
@@ -104,11 +105,18 @@ namespace SupFAmof.Service.Service
                     // tìm post Registration có position Id trung với các bài post
                     var postRegistrations = await _unitOfWork.Repository<PostRegistration>()
                                                         .GetAll()
-                                                        .Where(reg => positionIdsForCount.Contains(reg.PositionId) && reg.Status == (int)PostRegistrationStatusEnum.Confirm)
+                                                        .Where(reg => positionIdsForCount.Contains(reg.PositionId))
                                                         .ToListAsync();
 
+                    //lấy những position pending, confirm , check in và check out
+                    var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Cancel
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Quit
+                                                                            && reg.Status != (int)PostRegistrationStatusEnum.Reject);
+
+                    var postRegistrationsFiltering = postRegistrationsTotal.Where(reg => reg.Status != (int)PostRegistrationStatusEnum.Pending);
+
                     // tính tổng các registration đã được confirm
-                    registration.Post.RegisterAmount = postRegistrations.Count;
+                    registration.Post.RegisterAmount = postRegistrationsTotal.Count();
 
                     foreach (var unregisteredPosition in unregisteredPositions)
                     {
@@ -134,10 +142,13 @@ namespace SupFAmof.Service.Service
                     foreach (var postPosition in registration.PostPositionsUnregistereds)
                     {
                         //count register amount in post attendee based on position
-                        totalCount += CountRegisterAmount(postPosition.Id, postRegistrations);
+                        totalCount += CountRegisterAmount(postPosition.Id, postRegistrationsFiltering);
+                        totalPositionCount += CountRegisterAmount(postPosition.Id, postRegistrationsTotal);
 
                         //transafer data to field in post position
                         postPosition.PositionRegisterAmount = totalCount;
+                        postPosition.TotalPositionRegisterAmount = totalPositionCount;
+
 
                         //add number of amount required to total amount of a specific post
                         totalAmountPosition += postPosition.Amount;
@@ -1489,7 +1500,7 @@ namespace SupFAmof.Service.Service
             return true;
         }
 
-        private static int CountRegisterAmount(int positionId, List<PostRegistration> postRegistrations)
+        private static int CountRegisterAmount(int positionId, IEnumerable<PostRegistration> postRegistrations)
         {
             return postRegistrations.Count(x => x.PositionId == positionId);
         }

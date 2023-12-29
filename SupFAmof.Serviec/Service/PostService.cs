@@ -735,7 +735,8 @@ namespace SupFAmof.Service.Service
 
                     //check amount of position to makesure that the new amount can not less than the old one
 
-                    var positionCounting = postRegistration.Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                    var positionCounting = postRegistration.Where(x => x.PositionId == item.Id
+                                                                            && x.Status == (int)PostRegistrationStatusEnum.Confirm
                                                                             || x.Status == (int)PostRegistrationStatusEnum.CheckOut
                                                                             || x.Status == (int)PostRegistrationStatusEnum.CheckIn).Count();
 

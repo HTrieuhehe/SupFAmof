@@ -663,7 +663,7 @@ namespace SupFAmof.Service.Service
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
 
                 //check if anyone apply to any position
-                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => postPositionIds.Contains(x.PositionId) 
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => postPositionIds.Contains(x.PositionId)
                                                                                                           && x.Status != (int)PostRegistrationStatusEnum.Cancel
                                                                                                           && x.Status != (int)PostRegistrationStatusEnum.Reject);
 
@@ -679,11 +679,11 @@ namespace SupFAmof.Service.Service
                             continue;
                         }
 
-                        else if(item.Status == (int)PostPositionStatusEnum.Delete)
+                        else if (item.Status == (int)PostPositionStatusEnum.Delete)
                         {
                             throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
                                         $"The position {item.PositionName} " + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
-                        }    
+                        }
 
                         //validate date and location
                         if (checkPosition.Date < checkPost.DateFrom || checkPosition.Date > checkPost.DateTo)
@@ -1132,7 +1132,7 @@ namespace SupFAmof.Service.Service
 
                     var premiumPost = _unitOfWork.Repository<Post>().GetAll()
                                       .Where(x => x.Status >= (int)PostStatusEnum.Opening && x.Status <= (int)PostStatusEnum.Avoid_Regist)
-                                      .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
+                                       .Include(x => x.PostPositions.Where(x => x.Status == (int)PostPositionStatusEnum.Active))
                                       .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                                       .DynamicFilter(filter)
                                       .DynamicSort(paging.Sort, paging.Order);
@@ -1253,6 +1253,11 @@ namespace SupFAmof.Service.Service
 
                 foreach (var itemDetail in item.PostPositions)
                 {
+                    if (itemDetail.Status == (int)PostPositionStatusEnum.Delete)
+                    {
+                        continue;
+                    }
+
                     //count register amount in post attendee based on position
                     totalCount += CountRegisterAmount(itemDetail.Id, postRegistrationsFiltering);
                     totalPositionCount += CountRegisterAmount(itemDetail.Id, postRegistrationsTotal);

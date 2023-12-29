@@ -663,10 +663,11 @@ namespace SupFAmof.Service.Service
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
 
                 //check if anyone apply to any position
-                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll()
-                                                    .FirstOrDefault(x => postPositionIds.Contains(x.PositionId));
+                var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => postPositionIds.Contains(x.PositionId) 
+                                                                                                          && x.Status != (int)PostRegistrationStatusEnum.Cancel
+                                                                                                          && x.Status != (int)PostRegistrationStatusEnum.Reject);
 
-                if (postRegistration == null)
+                if (!postRegistration.Any())
                 {
                     // allow update salary because there is a post registration in that post
                     foreach (var item in checkPost.PostPositions)
@@ -678,12 +679,24 @@ namespace SupFAmof.Service.Service
                             continue;
                         }
 
+                        else if(item.Status == (int)PostPositionStatusEnum.Delete)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
+                                        $"The position {item.PositionName} " + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
+                        }    
+
                         //validate date and location
+                        if (checkPosition.Date < checkPost.DateFrom || checkPosition.Date > checkPost.DateTo)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_DATE_UPDATE_INALID,
+                                        PostErrorEnum.POSITION_DATE_UPDATE_INALID.GetDisplayName());
+                        }
 
                         item.Id = item.Id;
-                        item.PositionName = checkPosition.PositionName;
-                        item.SchoolName = checkPosition.SchoolName;
-                        item.Location = checkPosition.Location;
+                        item.PositionName = checkPosition.PositionName.Trim();
+                        item.PositionDescription = checkPosition.PositionDescription.Trim();
+                        item.SchoolName = checkPosition.SchoolName.Trim();
+                        item.Location = checkPosition.Location.Trim();
                         item.Latitude = checkPosition.Latitude;
                         item.Longitude = checkPosition.Longitude;
                         item.Amount = checkPosition.Amount;
@@ -697,7 +710,7 @@ namespace SupFAmof.Service.Service
                     {
                         Status = new StatusViewModel()
                         {
-                            Message = "Success",
+                            Message = "Date is not ",
                             Success = true,
                             ErrorCode = 0
                         },
@@ -714,10 +727,26 @@ namespace SupFAmof.Service.Service
                         continue;
                     }
 
+                    else if (item.Status == (int)PostPositionStatusEnum.Delete)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
+                                    $"The position {item.PositionName}" + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
+                    }
+
+                    //check amount of position to makesure that the new amount can not less than the old one
+
+                    if (checkPosition.Amount < postRegistration.Count())
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
+                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{postRegistration.Count()}");
+                    }
+
                     item.Id = item.Id;
-                    item.PositionName = checkPosition.PositionName;
-                    item.SchoolName = checkPosition.SchoolName;
-                    item.Location = checkPosition.Location;
+                    item.PositionName = checkPosition.PositionName.Trim();
+                    item.SchoolName = checkPosition.SchoolName.Trim();
+                    item.Location = checkPosition.Location.Trim();
+                    item.PositionDescription = checkPosition.PositionDescription.Trim();
+                    item.Date = checkPosition.Date;
                     item.Latitude = checkPosition.Latitude;
                     item.Longitude = checkPosition.Longitude;
                     item.Amount = checkPosition.Amount;

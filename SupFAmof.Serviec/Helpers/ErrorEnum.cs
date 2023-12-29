@@ -473,6 +473,18 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Recruitment post is not allowed to re open")]
             INVALID_RE_OPEN = 40013,
 
+            //400
+            [Display(Name = "has been deleted so it can not be edited")]
+            POSITION_EDITED_FORBIDDEN = 40014,
+
+            //400
+            [Display(Name = "Position date must in range of post")]
+            POSITION_DATE_UPDATE_INALID = 40015,
+
+            //400
+            [Display(Name = "Position amount must higher than: ")]
+            AMOUNT_INVALID = 40016,
+
             //403
             [Display(Name = "You are not premium to see this post!")]
             PREMIUM_REQUIRED = 4031,

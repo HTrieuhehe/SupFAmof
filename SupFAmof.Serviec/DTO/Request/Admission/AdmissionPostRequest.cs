@@ -88,8 +88,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
     {
         [Required(ErrorMessage = "PostCategoryId is requied")]
         public int PostCategoryId { get; set; }
+
         [Required(ErrorMessage = "Post Description is requied")]
         public string? PostDescription { get; set; }
+
         [Required(ErrorMessage = "Post Img is requied")]
         public string? PostImg { get; set; }
 

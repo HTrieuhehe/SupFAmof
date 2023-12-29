@@ -446,7 +446,7 @@ namespace SupFAmof.Service.Helpers
             DELETE_POST_FAIL = 4006,
 
             //400
-            [Display(Name = "Your post status ended or it has alrady opened")]
+            [Display(Name = "Recruitment post is not allowed to re open")]
             INVALID_RE_OPEN_POST = 4007,
 
             //400
@@ -468,6 +468,10 @@ namespace SupFAmof.Service.Helpers
             //400
             [Display(Name = "Cannot delete because there are one or more people applied to this position")]
             DELETE_POSITION_FAIL = 40012,
+
+            //400
+            [Display(Name = "Recruitment post is not allowed to re open")]
+            INVALID_RE_OPEN = 40013,
 
             //403
             [Display(Name = "You are not premium to see this post!")]

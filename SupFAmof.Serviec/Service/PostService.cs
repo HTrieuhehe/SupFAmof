@@ -735,10 +735,14 @@ namespace SupFAmof.Service.Service
 
                     //check amount of position to makesure that the new amount can not less than the old one
 
-                    if (checkPosition.Amount < postRegistration.Count())
+                    var positionCounting = postRegistration.Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                            || x.Status == (int)PostRegistrationStatusEnum.CheckOut
+                                                                            || x.Status == (int)PostRegistrationStatusEnum.CheckIn).Count();
+
+                    if (checkPosition.Amount < positionCounting)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
-                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{postRegistration.Count()}");
+                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{positionCounting}");
                     }
 
                     item.Id = item.Id;

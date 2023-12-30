@@ -557,9 +557,9 @@ namespace SupFAmof.Service.Service
             }
             return false;
         }
-        private async Task<bool> AssignPastInterview(TrainingEventDay eventAboutToAssign,TrainingEventDay current)
+        private async Task<bool> AssignPastInterview(TrainingEventDay eventAboutToAssign,TrainingEventDay currentInterviewDay)
         {
-            if(current == null)
+            if(currentInterviewDay == null)
             {
                 return true;
             }
@@ -568,12 +568,16 @@ namespace SupFAmof.Service.Service
             {
                 return false;
             }
-            if(currentTime.Date == eventAboutToAssign.Date || currentTime.Date<eventAboutToAssign.Date)
+            if(currentTime.Date  == eventAboutToAssign.Date)
             {
-                if(eventAboutToAssign.Date < current.Date) { return false; }
-                
+                var timeDifference = eventAboutToAssign.TimeFrom - currentTime.TimeOfDay;
+                if(timeDifference<=TimeSpan.FromHours(1))
+                {
+                    return false;
+                }
             }
             return true;
+            
         }
         private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1,
                                               TimeSpan? start2, TimeSpan? end2)

@@ -386,6 +386,8 @@ namespace SupFAmof.Service.Helpers
             FAILED_TO_CREATE = 4018,
             [Display(Name = "Can't assign")]
             CANT_ASIGN = 4019,
+            [Display(Name = "Interview Day is in the past")]
+            INTERVIEW_PAST  = 4020,
         }
 
         public enum AccountCertificateErrorEnum

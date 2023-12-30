@@ -535,16 +535,20 @@ namespace SupFAmof.Service.Service
             var timedifference =  result>= TimeSpan.FromHours(3);
             return (timeOfClass.Date > currentDate || (timeOfClass.Date == currentDate.Date && timedifference));
         }
-        private async Task<bool> CheckTimeAvailabilityAssigning(TrainingEventDay timeOfClass)
+        private async Task<bool> CheckTimeAvailabilityAssigning(TrainingEventDay current)
         {
-            var currentDate = GetCurrentDatetime();
-            var result = timeOfClass.TimeFrom - currentDate.TimeOfDay;
-            var timedifference = result >= TimeSpan.FromHours(1);
-            if(timeOfClass.Date > currentDate.Date)
+            if(current ==null)
             {
                 return true;
             }
-            if(timeOfClass.Date == currentDate.Date && timedifference)
+            var currentDate = GetCurrentDatetime();
+            var result = current.TimeFrom - currentDate.TimeOfDay;
+            var timedifference = result >= TimeSpan.FromHours(1);
+            if(current.Date > currentDate.Date)
+            {
+                return true;
+            }
+            if(current.Date == currentDate.Date && timedifference)
             {
                 return true;
             }
@@ -712,7 +716,7 @@ namespace SupFAmof.Service.Service
                     TrainingCertificateErrorEnum.TRAINING_DAY_DOES_NOT_EXIST
                         .GetDisplayName());
                     }
-                    if (!await CheckTimeAvailabilityAssigning(dateTimeOfAssignDay))
+                    if (!await CheckTimeAvailabilityAssigning(registration.EventDay))
                     {
                         throw new ErrorResponse(
                             400, (int)TrainingCertificateErrorEnum.FAILED_TO_ASSIGN,

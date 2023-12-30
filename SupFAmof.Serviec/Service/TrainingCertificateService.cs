@@ -554,6 +554,25 @@ namespace SupFAmof.Service.Service
             }
             return false;
         }
+        private async Task<bool> AssignPastInterview(TrainingEventDay eventAboutToAssign,TrainingEventDay current)
+        {
+            if(current == null)
+            {
+                return true;
+            }
+            var currentTime = GetCurrentDatetime();
+            if(currentTime.Date > eventAboutToAssign.Date)
+            {
+                return false;
+            }
+            if(currentTime.Date == eventAboutToAssign.Date)
+            {
+                var timeDifference = eventAboutToAssign.TimeFrom - current.TimeFrom;
+                var check = timeDifference > TimeSpan.Zero;
+                return check;
+            }
+            return true;
+        }
         private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1,
                                               TimeSpan? start2, TimeSpan? end2)
         {
@@ -721,6 +740,12 @@ namespace SupFAmof.Service.Service
                         throw new ErrorResponse(
                             400, (int)TrainingCertificateErrorEnum.FAILED_TO_ASSIGN,
                             TrainingCertificateErrorEnum.FAILED_TO_ASSIGN.GetDisplayName());
+                    }
+                    if (!await AssignPastInterview(dateTimeOfAssignDay,registration.EventDay))
+                    {
+                        throw new ErrorResponse(
+                            400, (int)TrainingCertificateErrorEnum.INTERVIEW_PAST,
+                            TrainingCertificateErrorEnum.INTERVIEW_PAST.GetDisplayName());
                     }
                     if (!await CheckOverlapPostRegistration(dateTimeOfAssignDay,registration.AccountId))
                     { 

@@ -533,6 +533,9 @@ namespace SupFAmof.Service.Service
             var currentDate = GetCurrentDatetime();
             var result = timeOfClass.TimeFrom - currentDate.TimeOfDay;
             var timedifference =  result>= TimeSpan.FromHours(3);
+            if(timeOfClass.Date < currentDate.Date) {
+                return false;
+            }
             return (timeOfClass.Date > currentDate || (timeOfClass.Date == currentDate.Date && timedifference));
         }
         private async Task<bool> CheckTimeAvailabilityAssigning(TrainingEventDay current)

@@ -540,7 +540,15 @@ namespace SupFAmof.Service.Service
             var currentDate = GetCurrentDatetime();
             var result = timeOfClass.TimeFrom - currentDate.TimeOfDay;
             var timedifference = result >= TimeSpan.FromHours(1);
-            return (timeOfClass.Date > currentDate || (timeOfClass.Date == currentDate.Date && timedifference));
+            if(timeOfClass.Date > currentDate.Date)
+            {
+                return true;
+            }
+            if(timeOfClass.Date == currentDate.Date && timedifference)
+            {
+                return true;
+            }
+            return false;
         }
         private bool IsTimeSpanOverlapPostion(TimeSpan? start1, TimeSpan? end1,
                                               TimeSpan? start2, TimeSpan? end2)

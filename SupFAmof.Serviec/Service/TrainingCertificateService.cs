@@ -571,11 +571,6 @@ namespace SupFAmof.Service.Service
             if(currentTime.Date == eventAboutToAssign.Date || currentTime.Date<eventAboutToAssign.Date)
             {
                 if(eventAboutToAssign.Date < current.Date) { return false; }
-                if(eventAboutToAssign.Date == current.Date) {
-                    var timeDifference = eventAboutToAssign.TimeFrom - current.TimeFrom;
-                    var check = timeDifference > TimeSpan.Zero;
-                    return check;
-                }
                 
             }
             return true;

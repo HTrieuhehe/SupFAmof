@@ -386,7 +386,7 @@ namespace SupFAmof.Service.Helpers
             FAILED_TO_CREATE = 4018,
             [Display(Name = "Can't assign")]
             CANT_ASIGN = 4019,
-            [Display(Name = "Interview Day is in the past")]
+            [Display(Name = "Interview Day is in the past or if you assign now collab wont have enough time to prepare")]
             INTERVIEW_PAST  = 4020,
         }
 

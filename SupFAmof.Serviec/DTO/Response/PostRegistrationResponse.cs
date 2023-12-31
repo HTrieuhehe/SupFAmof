@@ -232,7 +232,7 @@ namespace SupFAmof.Service.DTO.Response
         public CollabRegistrationUpdatePostResponse()
         {
             RegisterAmount = 0;
-            TotalAmountPosition = 0;
+            TotalAmountPosition = 0;  
         }
 
         public int? Id { get; set; }

@@ -62,10 +62,10 @@ namespace SupFAmof.Service.Service
                 foreach (var trainingCertificate in trainingCertificateResponses)
                 {
                     //check account has certi or not
-                    var accountCertificate = await _unitOfWork.Repository<AccountCertificate>()
-                                                    .FindAsync(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id);
+                    var accountCertificate = _unitOfWork.Repository<AccountCertificate>().GetAll()
+                                                    .Where(x => x.AccountId == accountId && x.TrainingCertificateId == trainingCertificate.Id);
 
-                    if (accountCertificate != null && accountCertificate.Status == (int)AccountCertificateStatusEnum.Complete)
+                    if (accountCertificate != null && accountCertificate.Any(x => x.Status == (int)AccountCertificateStatusEnum.Complete))
                     {
                         //if he/she has certificate, so it is not neccessary to register training
                         trainingCertificate.IsRegistered = true;
@@ -88,7 +88,7 @@ namespace SupFAmof.Service.Service
                         
                         if (trainingRegister.Status == (int)TrainingRegistrationStatusEnum.Passed
                             && accountCertificate != null
-                            && accountCertificate.Status == (int)AccountCertificateStatusEnum.Reject)
+                            && !accountCertificate.Any(x => x.Status == (int)AccountCertificateStatusEnum.Complete))
                         {
                             trainingCertificate.IsRegistered = false;
                         }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
 using AutoMapper.QueryableExtensions;
 using static SupFAmof.Service.Helpers.Enum;
+using DocumentFormat.OpenXml.Wordprocessing;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using static SupFAmof.Service.Utilities.Ultils;
@@ -615,14 +616,15 @@ namespace SupFAmof.Service.Service
                 }
                 var registration = _mapper.Map<TrainingRegistration>(request);
                 registration.AccountId = accountId;
-                if (!await CheckIfAccountHasCertificate(request, accountId))
+                var hasCertificate = await CheckIfAccountHasCertificate(request, accountId);
+                if (!hasCertificate)
                 {
                     throw new ErrorResponse(
                         400, (int)TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE,
                         TrainingCertificateErrorEnum.ALREADY_HAVE_CERTIFICATE
                             .GetDisplayName());
                 }
-                if (!await CheckDuplicateTrainingCertificateRegistration(registration))
+                if (!await CheckDuplicateTrainingCertificateRegistration(registration,hasCertificate))
                 {
                     throw new ErrorResponse(
                         400, (int)TrainingCertificateErrorEnum.DUPLICATE_REGISTRATION,
@@ -654,20 +656,19 @@ namespace SupFAmof.Service.Service
             }
         }
         private async Task<bool>
-        CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request)
+        CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request,bool notHaveCertificate)
         {
             var duplicates =
-                await _unitOfWork.Repository<TrainingRegistration>().GetWhere(
+                await _unitOfWork.Repository<TrainingRegistration>().GetAll().LastOrDefaultAsync(
                     x => x.TrainingCertificateId == request.TrainingCertificateId &&
                          x.AccountId == request.AccountId &&
-                         x.Status != (int)TrainingRegistrationStatusEnum.Not_Passed &&
                          x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
-            if (duplicates.Any())
-            {
-                return false;
+                if((duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed|| duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed)&& notHaveCertificate)
+                    {
+                        return true;
+                    }
+            return false;
             }
-            return true;
-        }
         private async Task<bool>
         CheckIfAccountHasCertificate(TrainingCertificateRegistration request,
                                      int accountId)

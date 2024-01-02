@@ -645,6 +645,7 @@ namespace SupFAmof.Service.Service
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
                       PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                             }
+                     
                             var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
                                 .Where(x => x.PositionId == findRequest.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
@@ -668,6 +669,11 @@ namespace SupFAmof.Service.Service
                                     {
                                         throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.UPDATE_FAILED,
                                                        PostRegistrationErrorEnum.UPDATE_FAILED.GetDisplayName());
+                                    }
+                                    if (!await CheckOverLapTimeWithTrainingCertificateRegistration(matchingEntity))
+                                    {
+                                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY,
+                                           PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY.GetDisplayName());
                                     }
                                     await _unitOfWork.Repository<PostRegistration>().Update(matchingEntity, matchingEntity.Id);
                                     await _unitOfWork.Repository<PostRgupdateHistory>().UpdateDetached(findRequest);
@@ -822,7 +828,11 @@ namespace SupFAmof.Service.Service
                         case true:
                             var checkPostPosition = await _unitOfWork.Repository<PostPosition>()
                               .FindAsync(x => x.PostId == postRegis.Position.PostId && x.Id == postRegis.PositionId && x.Status == (int)PostPositionStatusEnum.Active);
-
+                            if (!await CheckOverLapTimeWithTrainingCertificateRegistration(postRegis))
+                            {
+                                throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY,
+                                   PostRegistrationErrorEnum.OVERLAP_TRAINING_EVENT_DAY.GetDisplayName());
+                            }
                             if (checkPostPosition != null)
                             {
 
@@ -906,6 +916,7 @@ namespace SupFAmof.Service.Service
             }
 
         }
+ 
         private List<MailBookingRequest> MailEntity(List<PostRegistration> request)
         {
             List<MailBookingRequest> listMail = new List<MailBookingRequest>();

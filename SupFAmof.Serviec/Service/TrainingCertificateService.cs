@@ -659,10 +659,14 @@ namespace SupFAmof.Service.Service
         CheckDuplicateTrainingCertificateRegistration(TrainingRegistration request,bool notHaveCertificate)
         {
             var duplicates =
-                await _unitOfWork.Repository<TrainingRegistration>().GetAll().LastOrDefaultAsync(
+                await _unitOfWork.Repository<TrainingRegistration>().GetAll().OrderBy(x=>x.Id).LastOrDefaultAsync(
                     x => x.TrainingCertificateId == request.TrainingCertificateId &&
                          x.AccountId == request.AccountId &&
                          x.Status != (int)TrainingRegistrationStatusEnum.Canceled);
+                if(duplicates == null)
+            {
+                return true;
+            }
                 if((duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed|| duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed)&& notHaveCertificate)
                     {
                         return true;

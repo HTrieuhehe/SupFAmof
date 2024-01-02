@@ -4,6 +4,7 @@ using System.Text;
 using SupFAmof.Data.Entity;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SupFAmof.Service.DTO.Response.Admission;
 
 namespace SupFAmof.Service.DTO.Response
 {
@@ -60,6 +61,7 @@ namespace SupFAmof.Service.DTO.Response
 
         public virtual CollabReportPostResponse? Post { get; set; }
         public virtual ReportPostPositionResponse? PostPosition { get; set; }
+        public virtual PostCategoryResponse? PostCategory { get; set; }
         public virtual ICollection<CheckAttendanceResponse>? CheckAttendances { get; set; }
     }
 

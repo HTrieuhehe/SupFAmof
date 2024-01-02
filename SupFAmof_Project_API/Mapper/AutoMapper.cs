@@ -193,6 +193,7 @@ namespace SupFAmof.API.Mapper
             CreateMap<PostRegistration, ReportPostRegistrationResponse>()
                 .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Position.Post))
                 .ForMember(dest => dest.PostPosition, opt => opt.MapFrom(src => src.Position))
+                .ForMember(dest => dest.PostCategory, opt => opt.MapFrom(src => src.Position.Post.PostCategory))
               .ReverseMap();
 
 

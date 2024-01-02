@@ -667,7 +667,7 @@ namespace SupFAmof.Service.Service
             {
                 return true;
             }
-                if((duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed|| duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed)&& notHaveCertificate)
+                if((duplicates.Status == (int)TrainingRegistrationStatusEnum.Passed|| duplicates.Status == (int)TrainingRegistrationStatusEnum.Not_Passed)&& notHaveCertificate)
                     {
                         return true;
                     }

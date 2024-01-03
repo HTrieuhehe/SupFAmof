@@ -9,6 +9,7 @@ using SupFAmof.Service.DTO.Request.Staff;
 using SupFAmof.Service.DTO.Request.Admin;
 using SupFAmof.Service.DTO.Response.Admin;
 using SupFAmof.Service.DTO.Request.Account;
+using static SupFAmof.Service.Helpers.Enum;
 using SupFAmof.Service.DTO.Request.Admission;
 using SupFAmof.Service.DTO.Response.Admission;
 using SupFAmof.Service.DTO.Request.AccounBanking;
@@ -240,7 +241,10 @@ namespace SupFAmof.API.Mapper
                 .ReverseMap();
             CreateMap<TrainingEventDay, TrainingEventDayResponse>().ReverseMap();
             CreateMap<TrainingRegistration, CollabRegistrationsResponse>()
-                .ForMember(x=>x.ConfirmAt,opt=>opt.MapFrom(src=>src.ConfirmedAt));
+                .ForMember(x => x.ConfirmAt, opt => opt.MapFrom(src => src.ConfirmedAt))
+                .ForMember(x => x.isHasThisCertificate, opt => opt.MapFrom(src=>src.Account.AccountCertificateAccounts.Any(
+                    x=>x.TrainingCertificateId == src.TrainingCertificateId
+                    &&x.AccountId == src.AccountId && x.Status == (int)AccountCertificateStatusEnum.Complete)));
             CreateMap<TrainingRegistration, AccountCertificateRegistrationResponse>()
                 .ForMember(x=>x.Email,opt=>opt.MapFrom(src=>src.Account.Email))
                 .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Account.Name))

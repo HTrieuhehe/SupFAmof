@@ -196,6 +196,9 @@ namespace SupFAmof.Service.Utilities
             string[] placeValues = new string[] { "", "nghìn", "triệu", "tỷ" };
             bool isNegative = false;
 
+            if (inputNumber == 0)
+                return "không";
+
             // -12345678.3445435 => "-12345678"
             string sNumber = inputNumber.ToString("#");
             double number = Convert.ToDouble(sNumber);
@@ -205,7 +208,6 @@ namespace SupFAmof.Service.Utilities
                 sNumber = number.ToString();
                 isNegative = true;
             }
-
 
             int ones, tens, hundreds;
 

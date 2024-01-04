@@ -628,7 +628,7 @@ namespace SupFAmof.Service.Helpers
             END_DATE_INVALID_WITH_START_DATE = 4007,
 
             //400
-            [Display(Name = "End Date must be within 30 days: ")]
+            [Display(Name = "End Date exceed 30 days limit: ")]
             END_DATE_INVALID = 4008,
 
             //404

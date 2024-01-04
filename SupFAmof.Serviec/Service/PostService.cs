@@ -284,8 +284,19 @@ namespace SupFAmof.Service.Service
                                         AccountErrorEnums.PERMISSION_NOT_ALLOW.GetDisplayName());
                 }
 
-                //trim description
-                request.PostDescription = request.PostDescription.Trim();
+                if (request.DateFrom <= Ultils.GetCurrentDatetime())
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
+                                         PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
+                }
+
+                else if (request.DateTo.HasValue && request.DateTo < request.DateFrom)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATETIME_CREATE_POST,
+                                         PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
+                }
+
+                //check post position need to full fill in range date from and to
                 var validatePositionMissing = request.PostPositions.Find(x => x.Date.Date >= request.DateTo);
                 if (validatePositionMissing == null)
                 {
@@ -309,64 +320,52 @@ namespace SupFAmof.Service.Service
                         //continue -> 
                     }
 
+                    //validate Date
+                    //request DateFrom must be greater than Current time or before 12 hours before event start
+
+                    //validate Certificate if it is not null
+                    if (position.TrainingCertificateId != null)
+                    {
+                        var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == position.TrainingCertificateId);
+
+                        if (position.TrainingCertificateId > 0 && checkCerti == null)
+                        {
+                            throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
+                                                 TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
+                        }
+                    }
+
                     //validate date in range
                     if (request.DateFrom > position.Date || request.DateTo < position.Date)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_POSITION_DATE,
                                          PostErrorEnum.INVALID_POSITION_DATE.GetDisplayName());
                     }
-                    continue;
-                }
-
-                //validate Date
-                //request DateFrom must be greater than Current time or before 12 hours before event start
-                if (request.DateFrom <= Ultils.GetCurrentDatetime())
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATE_CREATE_POST,
-                                         PostErrorEnum.INVALID_DATE_CREATE_POST.GetDisplayName());
-                }
-
-                else if (request.DateTo.HasValue && request.DateTo < request.DateFrom)
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_DATETIME_CREATE_POST,
-                                         PostErrorEnum.INVALID_DATETIME_CREATE_POST.GetDisplayName());
-                }
-
-                foreach (var item in request.PostPositions)
-                {
-                    //validate Certificate
-                    var checkCerti = _unitOfWork.Repository<TrainingCertificate>().GetAll().FirstOrDefault(x => x.Id == item.TrainingCertificateId);
-
-                    if (item.TrainingCertificateId > 0 && checkCerti == null)
-                    {
-                        throw new ErrorResponse(400, (int)TrainingCertificateErrorEnum.NOT_FOUND_ID,
-                                             TrainingCertificateErrorEnum.NOT_FOUND_ID.GetDisplayName());
-                    }
 
                     //validate Time
-                    if (item.TimeFrom < TimeSpan.FromHours(3) || item.TimeFrom > TimeSpan.FromHours(20))
+                    if (position.TimeFrom < TimeSpan.FromHours(3) || position.TimeFrom > TimeSpan.FromHours(20))
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
                                              PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
                     }
 
-                    if (item.TimeTo.HasValue)
+                    if (position.TimeTo.HasValue)
                     {
-                        if (item.TimeTo <= item.TimeFrom)
+                        if (position.TimeTo <= position.TimeFrom)
                         {
                             throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
                                              PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
                         }
                     }
-                    item.Status = (int)PostPositionStatusEnum.Active;
-                    item.PositionName.Trim();
-                    item.PositionDescription.Trim();
-                    item.Location.Trim();
+                    position.Status = (int)PostPositionStatusEnum.Active;
+                    position.PositionName.Trim();
+                    position.PositionDescription.Trim();
+                    position.Location.Trim();
                 }
 
                 var post = _mapper.Map<Post>(request);
 
-
+                post.PostDescription = post.PostDescription.Trim();
                 post.PostCode = Ultils.GenerateRandomCode();
                 post.AccountId = accountId;
                 post.Status = (int)PostStatusEnum.Opening;

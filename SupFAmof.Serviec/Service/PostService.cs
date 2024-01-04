@@ -296,17 +296,17 @@ namespace SupFAmof.Service.Service
                 //check document
                 foreach (var position in request.PostPositions)
                 {
-                    var checkdocument = await _unitOfWork.Repository<DocumentTemplate>().GetAll().FirstOrDefaultAsync(x => x.Id == position.DocumentId);
-
-                    if (position.DocumentId == null)
+                    if (position.DocumentId != null)
                     {
+                        var checkdocument = await _unitOfWork.Repository<DocumentTemplate>().GetAll().FirstOrDefaultAsync(x => x.Id == position.DocumentId);
 
-                    }
+                        if (checkdocument == null)
+                        {
+                            throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
+                                             DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $" in Position Name: {position.PositionName}");
+                        }
 
-                    else if (checkdocument == null)
-                    {
-                        throw new ErrorResponse(400, (int)DocumentErrorEnum.NOT_FOUND_DOCUMENT,
-                                         DocumentErrorEnum.NOT_FOUND_DOCUMENT.GetDisplayName() + $"in Position Name: {position.PositionName}");
+                        //continue -> 
                     }
 
                     //validate date in range

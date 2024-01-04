@@ -308,7 +308,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "MUST WAIT FOR THE PREVIOUS BE REVIEWED ")]
             OVERLAP_APPLICATION_SEND = 4028,
             //400
-            [Display(Name = "Same time with the training day")]
+            [Display(Name = "Same time with the interview day")]
             OVERLAP_TRAINING_EVENT_DAY = 4029,
         }
 

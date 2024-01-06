@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
-using System.Linq;
 using ServiceStack;
 using SupFAmof.Data.Entity;
 using LAK.Sdk.Core.Utilities;
 using SupFAmof.Data.UnitOfWork;
 using System.Linq.Dynamic.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http;
 using SupFAmof.Service.Utilities;
-using SupFAmof.Service.Exceptions;
 using SupFAmof.Service.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using SupFAmof.Service.DTO.Response;
@@ -277,7 +273,7 @@ namespace SupFAmof.Service.Service
                         PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                 }
                 postRegistration.Salary = postPosition.Salary;
-               
+
                 if (!await CheckPendingDuplicateTimePosition(request, accountId))
                 {
                     throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.REQUEST_FAILED,
@@ -441,7 +437,7 @@ namespace SupFAmof.Service.Service
                     switch ((PostRegistrationStatusEnum)original.Status)
                     {
                         case PostRegistrationStatusEnum.Pending:
-                            if(checkPostPostion == null)
+                            if (checkPostPostion == null)
                             {
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
                       PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
@@ -645,7 +641,7 @@ namespace SupFAmof.Service.Service
                                 throw new ErrorResponse(404, (int)PostRegistrationErrorEnum.POSITION_NOTFOUND,
                       PostRegistrationErrorEnum.POSITION_NOTFOUND.GetDisplayName());
                             }
-                     
+
                             var countAllRegistrationForm = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
                                 .Where(x => x.PositionId == findRequest.PositionId && x.Status == (int)PostRegistrationStatusEnum.Confirm)
@@ -653,9 +649,9 @@ namespace SupFAmof.Service.Service
 
                             var matchingEntity = _unitOfWork.Repository<PostRegistration>()
                                 .GetAll()
-                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId&&x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                                .FirstOrDefault(x => x.Id == findRequest.PostRegistrationId && x.Position.PostId == findRequest.Position.PostId && x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
-                            var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x=>x.Status == (int)PostRegistrationStatusEnum.Confirm);
+                            var checkMatching = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.Status == (int)PostRegistrationStatusEnum.Confirm);
 
                             if (checkMatching.Contains(matchingEntity))
                             {
@@ -916,7 +912,7 @@ namespace SupFAmof.Service.Service
             }
 
         }
- 
+
         private List<MailBookingRequest> MailEntity(List<PostRegistration> request)
         {
             List<MailBookingRequest> listMail = new List<MailBookingRequest>();
@@ -1907,6 +1903,66 @@ namespace SupFAmof.Service.Service
                 throw;
             }
         }
-    }
 
+
+
+        public async Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> SearchRegistrationByCollab(int accountId, string? search,PagingRequest paging)
+        {
+            try
+            {
+                var accountBanned = _unitOfWork.Repository<AccountBanned>().GetAll()
+                                             .Where(x => x.AccountIdBanned == accountId && x.IsActive);
+                if (accountBanned.Any())
+                {
+                    var currentDateTime = Ultils.GetCurrentDatetime();
+
+                    var maxDayEnd = accountBanned.Max(x => x.DayEnd);
+
+                    if (maxDayEnd > currentDateTime)
+                    {
+                        throw new ErrorResponse(400, (int)PostRegistrationErrorEnum.ACCOUNT_BANNED,
+                                                       PostRegistrationErrorEnum.ACCOUNT_BANNED.GetDisplayName());
+                    }
+                }
+                var getPostRegistrations = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => x.AccountId == accountId)
+                                                            .ProjectTo<CollabRegistrationResponse>(_mapper.ConfigurationProvider);
+                if (search.IsNullOrEmpty())
+                {
+                    var getPostRegistration1 = getPostRegistrations
+                                                                 .DynamicSort(paging.Sort, paging.Order)
+                                                                 .PagingQueryable(paging.Page, paging.PageSize);
+                    return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = getPostRegistration1.Item1
+                        },
+                        Data = getPostRegistration1.Item2.ToList()
+                    };
+                }
+                var searchPostRegistration = getPostRegistrations
+                            .Where(x => x.PostPosition.PositionName.ToLower().StartsWith(search.Trim().ToLower()))
+                            .DynamicSort(paging.Sort, paging.Order)
+                            .PagingQueryable(paging.Page, paging.PageSize);
+
+                return new BaseResponsePagingViewModel<CollabRegistrationResponse>()
+                {
+                    Metadata = new PagingsMetadata()
+                    {
+                        Page = paging.Page,
+                        Size = paging.PageSize,
+                        Total = searchPostRegistration.Item1
+                    },
+                    Data = searchPostRegistration.Item2.ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+    }
 }

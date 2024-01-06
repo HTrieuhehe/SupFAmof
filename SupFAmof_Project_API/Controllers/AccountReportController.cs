@@ -53,7 +53,7 @@ namespace SupFAmof.API.Controllers
         /// 
         [HttpGet("getByToken")]
         public async Task<ActionResult<BaseResponsePagingViewModel<AccountReportResponse>>> GetAccountReportbyToken
-        ([FromQuery] AccountReportResponse filter, [FromQuery] AccountReportFilter dateFilter, [FromQuery] PagingRequest paging)
+        ([FromQuery] AccountReportResponse filter, [FromQuery] AccountReportFilter dateFilter, [FromQuery] PagingRequest paging, string? searchAccountReport)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _accountReportService.GetAccountReportByToken(account.Id, filter, dateFilter, paging);
+                return await _accountReportService.GetAccountReportByToken(account.Id, filter, dateFilter, paging, searchAccountReport);
             }
             catch (ErrorResponse ex)
             {

@@ -11,7 +11,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
     public interface IAccountReportService
     {
         Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReports(AccountReportResponse filter, PagingRequest paging);
-        Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReportByToken(int accountId, AccountReportResponse filter, AccountReportFilter dateFilter, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReportByToken(int accountId, AccountReportResponse filter, AccountReportFilter dateFilter, PagingRequest paging, string searchAccountReport);
         Task<BaseResponseViewModel<ReportPostRegistrationResponse>> GetReportRegistrationById(int accountId, int accountReportId);
     }
 }

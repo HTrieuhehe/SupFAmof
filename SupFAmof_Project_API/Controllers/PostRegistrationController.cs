@@ -317,6 +317,33 @@ namespace SupFAmof.API.Controllers
                 return BadRequest(ex.Error);
             }
         }
+
+
+
+        [HttpGet("search")]
+        public async Task<ActionResult<BaseResponsePagingViewModel<CollabRegistrationResponse>>> SearchPostRegistration([FromQuery]string? search, [FromQuery] PagingRequest paging)
+        {
+            try
+            {
+                var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
+                {
+                    return Unauthorized();
+                }
+                var result= await _postRegistrationService.SearchRegistrationByCollab(account.Id, search,paging);
+                return Ok(result);
+            }
+            catch (ErrorResponse ex)
+            {
+                if (ex.Error.StatusCode == 404)
+                {
+                    return NotFound(ex.Error);
+                }
+                return BadRequest(ex.Error);
+            }
+        }
+
     }
 }
 

@@ -37,6 +37,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         Task<BaseResponseViewModel<DashboardPostRegistrationResponse>> GetTotalRegistrationInCurrentMonth(int accountId);
         Task<BaseResponseViewModel<DashboardRegistrationAnalyticsResponse>> GetAnalyticsInMonth(int accountId, DashBoardAnalyticsTimeRequest request);
         Task<BaseResponsePagingViewModel<DashboardContributionResponse>> GetCollaboratorContributionInMonth(int accountId, DashBoardContributionTimeRequest request);
+        Task<BaseResponsePagingViewModel<CollabRegistrationResponse>> SearchRegistrationByCollab(int accountId, string search, PagingRequest paging);
     }
 
 }

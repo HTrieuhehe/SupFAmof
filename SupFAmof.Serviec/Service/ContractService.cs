@@ -955,7 +955,7 @@ namespace SupFAmof.Service.Service
 
                         var overlapContracts = _unitOfWork.Repository<AccountContract>()
                                                              .GetAll()
-                                                             .Where(x => x.Status == (int)AccountContractStatusEnum.Confirm && // must be confirmed status
+                                                             .Where(x => x.Status == (int)AccountContractStatusEnum.Pending && // must be confirmed status
                                                                     x.AccountId == accountId &&
                                                                     x != accountContract && // not the same contract  
                                                                     (

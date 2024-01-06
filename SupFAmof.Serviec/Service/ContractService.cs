@@ -951,9 +951,10 @@ namespace SupFAmof.Service.Service
                         accountContract.UpdateAt = Ultils.GetCurrentDatetime();
 
                         await _unitOfWork.Repository<AccountContract>().UpdateDetached(accountContract);
+                        
                         await _unitOfWork.CommitAsync();
 
-                        var overlapContracts = _unitOfWork.Repository<AccountContract>()
+                        var overlapContracts = await _unitOfWork.Repository<AccountContract>()
                                                              .GetAll()
                                                              .Where(x => x.Status == (int)AccountContractStatusEnum.Pending && // must be confirmed status
                                                                     x.AccountId == accountId &&
@@ -965,7 +966,7 @@ namespace SupFAmof.Service.Service
                                                                          x.Contract.EndDate <= accountContract.Contract.EndDate) ||
                                                                         (x.Contract.EndDate > accountContract.Contract.EndDate &&
                                                                          x.Contract.StartDate <= accountContract.Contract.EndDate)
-                                                                    ));
+                                                                    )).ToListAsync();
                         foreach (var item in overlapContracts)
                         {
                             item.Status = (int)AccountContractStatusEnum.Reject;

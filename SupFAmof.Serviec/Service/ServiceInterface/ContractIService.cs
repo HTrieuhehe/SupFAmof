@@ -25,7 +25,7 @@ namespace SupFAmof.Service.Service.ServiceInterface
         //Collabotator Contract Zone
         Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContracts(AccountContractResponse filter, PagingRequest paging);
         Task<BaseResponseViewModel<AccountContractResponse>> GetContractById(int contractId);
-        Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging);
+        Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, string searchContract, PagingRequest paging);
         Task<BaseResponsePagingViewModel<AccountContractResponse>> ConfirmContract(int accountId, int accountContractId, int status);
     }
 }

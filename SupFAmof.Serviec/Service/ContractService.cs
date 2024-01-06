@@ -892,11 +892,29 @@ namespace SupFAmof.Service.Service
                         }
 
                         // validate if there is any contract in range of this collaborator
+                        //var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
+                        //                                            .GetAll()
+                        //                                            .FirstOrDefaultAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm &&
+                        //                                                                      x.AccountId == accountId &&
+                        //                                                                      x.Contract.StartDate >= accountContract.Contract.StartDate &&
+                        //                                                                      x.Contract.StartDate < accountContract.Contract.EndDate ||
+                        //                                                                      x.Contract.EndDate > accountContract.Contract.StartDate &&
+                        //                                                                      x.Contract.EndDate <= accountContract.Contract.EndDate);
+
                         var checkCurrentContract = await _unitOfWork.Repository<AccountContract>()
-                                                                    .GetAll()
-                                                                    .FirstOrDefaultAsync(x => x.Status == (int)AccountContractStatusEnum.Confirm &&
-                                                                                              x.Contract.EndDate >= accountContract.Contract.StartDate &&
-                                                                                              x.AccountId == accountId);
+                                                                .GetAll()
+                                                                .FirstOrDefaultAsync(x =>
+                                                                    x.Status == (int)AccountContractStatusEnum.Confirm && // must be confirmed status
+                                                                    x.AccountId == accountId &&
+                                                                    x != accountContract && // not the same contract  
+                                                                    (
+                                                                        (x.Contract.StartDate >= accountContract.Contract.StartDate &&
+                                                                         x.Contract.StartDate < accountContract.Contract.EndDate) ||
+                                                                        (x.Contract.EndDate > accountContract.Contract.StartDate &&
+                                                                         x.Contract.EndDate <= accountContract.Contract.EndDate) ||
+                                                                        (x.Contract.EndDate > accountContract.Contract.EndDate &&
+                                                                         x.Contract.StartDate <= accountContract.Contract.EndDate)
+                                                                    ));
 
                         if (checkCurrentContract != null)
                         {
@@ -938,8 +956,11 @@ namespace SupFAmof.Service.Service
                         var overlapContracts = _unitOfWork.Repository<AccountContract>()
                                                              .GetAll()
                                                              .Where(x => x.Status == (int)AccountContractStatusEnum.Pending &&
-                                                                                              x.Contract.EndDate >= accountContract.Contract.StartDate &&
-                                                                                              x.AccountId == accountId);
+                                                                x.Contract.StartDate >= accountContract.Contract.StartDate &&
+                                                                     x.Contract.StartDate < accountContract.Contract.EndDate ||
+                                                                    x.Contract.EndDate > accountContract.Contract.StartDate &&
+                                                                     x.Contract.EndDate <= accountContract.Contract.EndDate
+                                                                && x.AccountId == accountId);
                         foreach (var item in overlapContracts)
                         {
                             item.Status = (int)AccountContractStatusEnum.Reject;

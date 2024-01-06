@@ -35,10 +35,37 @@ namespace SupFAmof.Service.Service
         }
 
         public async Task<BaseResponsePagingViewModel<AccountReportResponse>> GetAccountReportByToken
-            (int accountId, AccountReportResponse filter, AccountReportFilter dateFilter, PagingRequest paging)
+            (int accountId, AccountReportResponse filter, AccountReportFilter dateFilter, PagingRequest paging, string searchAccountReports)
         {
             try
             {
+                if (!string.IsNullOrEmpty(searchAccountReports))
+                {
+                    var accountReportSearchs = _unitOfWork.Repository<AccountReport>()
+                                                .GetAll()
+                                                .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)
+                                                .Where(x => x.AccountId == accountId && x.Position.PositionName.Contains(searchAccountReports)
+                                                                                     || x.Position.PositionDescription.Contains(searchAccountReports)
+                                                                                     || x.Position.SchoolName.Contains(searchAccountReports)
+                                                                                     || x.Position.Location.Contains(searchAccountReports))
+                                                .OrderByDescending(x => x.CreateAt)
+                                                .DynamicFilter(filter)
+                                                .DynamicSort(paging.Sort, paging.Order);
+
+                    var dateSearchFilterLists = FilterReportDate(accountReportSearchs, dateFilter).PagingQueryable(paging.Page, paging.PageSize);
+
+                    return new BaseResponsePagingViewModel<AccountReportResponse>()
+                    {
+                        Metadata = new PagingsMetadata()
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = dateSearchFilterLists.Item1
+                        },
+                        Data = dateSearchFilterLists.Item2.ToList()
+                    };
+                }
+
                 var accountReport = _unitOfWork.Repository<AccountReport>()
                                                 .GetAll()
                                                 .ProjectTo<AccountReportResponse>(_mapper.ConfigurationProvider)

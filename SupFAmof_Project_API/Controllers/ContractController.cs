@@ -52,7 +52,8 @@ namespace SupFAmof.API.Controllers
         /// </summary>
         /// 
         [HttpGet("getById")]
-        public async Task<ActionResult<BaseResponsePagingViewModel<AccountContractResponse>>> GetContractsByAccountId([FromQuery] AccountContractResponse filter, [FromQuery] PagingRequest paging)
+        public async Task<ActionResult<BaseResponsePagingViewModel<AccountContractResponse>>> GetContractsByAccountId
+            ([FromQuery] AccountContractResponse filter, [FromQuery] PagingRequest paging, string? searchContract)
         {
             try
             {
@@ -62,7 +63,7 @@ namespace SupFAmof.API.Controllers
                 {
                     return Unauthorized();
                 }
-                return await _contractService.GetContractsByAccountId(account.Id, paging);
+                return await _contractService.GetContractsByAccountId(account.Id, searchContract, paging);
             }
             catch (ErrorResponse ex)
             {

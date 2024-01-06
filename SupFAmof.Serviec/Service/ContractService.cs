@@ -741,10 +741,40 @@ namespace SupFAmof.Service.Service
             }
         }
 
-        public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, PagingRequest paging)
+        public async Task<BaseResponsePagingViewModel<AccountContractResponse>> GetContractsByAccountId(int accountId, string searchContract, PagingRequest paging)
         {
             try
             {
+                if (!string.IsNullOrEmpty(searchContract))
+                {
+                    var contractSearchs = _unitOfWork.Repository<AccountContract>()
+                                          .GetAll()
+                                          .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)
+                                          .Where(x => x.AccountId == accountId && x.Status != (int)AccountContractStatusEnum.Fail
+                                                                               && x.Contract.ContractDescription.Contains(searchContract)
+                                                                               || x.Contract.ContractName.Contains(searchContract)
+                                                                               || x.Contract.TotalSalary.ToString().Contains(searchContract))
+                                          .DynamicSort(paging.Sort, paging.Order)
+                                          .PagingQueryable(paging.Page, paging.PageSize);
+
+                    if (contractSearchs.Item2 == null)
+                    {
+                        throw new ErrorResponse(404, (int)ContractErrorEnum.NOT_FOUND_CONTRACT,
+                                            ContractErrorEnum.NOT_FOUND_CONTRACT.GetDisplayName());
+                    }
+
+                    return new BaseResponsePagingViewModel<AccountContractResponse>
+                    {
+                        Metadata = new PagingsMetadata
+                        {
+                            Page = paging.Page,
+                            Size = paging.PageSize,
+                            Total = contractSearchs.Item1
+                        },
+                        Data = contractSearchs.Item2.ToList(),
+                    };
+                }
+
                 var contracts = _unitOfWork.Repository<AccountContract>()
                                           .GetAll()
                                           .ProjectTo<AccountContractResponse>(_mapper.ConfigurationProvider)

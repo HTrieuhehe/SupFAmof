@@ -92,6 +92,9 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Required(ErrorMessage = "Post Description is requied")]
         public string? PostDescription { get; set; }
 
+        public DateTime DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+
         [Required(ErrorMessage = "Post Img is requied")]
         public string? PostImg { get; set; }
 
@@ -103,6 +106,10 @@ namespace SupFAmof.Service.DTO.Request.Admission
         [Required(ErrorMessage = "Id is required")]
         [Int]
         public int Id { get; set; }
+
+        [Int]
+        public int? TrainingCertificateId { get; set; }
+        public int? DocumentId { get; set; }
 
         [MaxLength(30, ErrorMessage = "Position Name cannot exceed 30 characters.")]
         public string? PositionName { get; set; }
@@ -120,6 +127,11 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         [Required(ErrorMessage = "Date is requied")]
         public DateTime Date { get; set; }
+
+        public TimeSpan? TimeFrom { get; set; }
+        public TimeSpan? TimeTo { get; set; }
+
+        public bool? IsBusService { get; set; }
 
         [Required(ErrorMessage = "Latitude is requied")]
         [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Latitude must be a decimal number.")]

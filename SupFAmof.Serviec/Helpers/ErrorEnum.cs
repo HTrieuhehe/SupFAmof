@@ -487,6 +487,18 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Position amount must higher than: ")]
             AMOUNT_INVALID = 40016,
 
+            //400
+            [Display(Name = "Update Post Date Invalid")]
+            INVALID_DATE_UPDATE_POST = 40017,
+
+            //400
+            [Display(Name = "Date To must equal or greater than Date From")]
+            INVALID_DATETIME_UPDATE_POST = 40018,
+
+            //400
+            [Display(Name = "Post can not update")]
+            INVALID_UPDATE_POST_BY_STATUS = 40017,
+
             //403
             [Display(Name = "You are not premium to see this post!")]
             PREMIUM_REQUIRED = 4031,

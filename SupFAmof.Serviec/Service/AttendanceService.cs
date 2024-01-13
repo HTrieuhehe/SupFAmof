@@ -130,11 +130,6 @@ namespace SupFAmof.Service.Service
                             await CreateAccountReport(request);
                         }
                     }
-                    if(!item.CheckOutTime.HasValue)
-                    {
-                        throw new ErrorResponse(400, 400,
-                                    $"{item.PostRegistration.Account.Name} cant confirm attendance because he has not checked out");
-                    }
                     if(item.Status == (int)CheckAttendanceEnum.Pending)
                     {
                         CreateAccountReportRequest reject = new CreateAccountReportRequest

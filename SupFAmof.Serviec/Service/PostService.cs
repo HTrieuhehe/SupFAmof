@@ -670,17 +670,18 @@ namespace SupFAmof.Service.Service
                 var postRegistration = _unitOfWork.Repository<PostRegistration>().GetAll().Where(x => postPositionIds.Contains(x.PositionId)
                                                                                                           && x.Status != (int)PostRegistrationStatusEnum.Cancel
                                                                                                           && x.Status != (int)PostRegistrationStatusEnum.Reject);
+
+                //update những field vô tri
+                checkPost.Id = postId;
+                checkPost.AccountId = accountId;
+                checkPost.PostCategoryId = request.PostCategoryId;
+                checkPost.PostDescription = request.PostDescription.Trim();
+                checkPost.PostImg = request.PostImg.Trim();
+                checkPost.UpdateAt = Ultils.GetCurrentDatetime();
+
                 if (!postRegistration.Any())
                 {
                     //allow to update full including time
-
-                    checkPost.Id = postId;
-                    checkPost.AccountId = accountId;
-                    checkPost.PostCategoryId = request.PostCategoryId;
-                    checkPost.PostDescription = request.PostDescription.Trim();
-                    checkPost.PostImg = request.PostImg.Trim();
-                    checkPost.UpdateAt = Ultils.GetCurrentDatetime();
-
                     //date and validate
 
                     if (request.DateFrom != null && request.DateTo != null)
@@ -757,7 +758,8 @@ namespace SupFAmof.Service.Service
                             }
 
                             await _unitOfWork.Repository<PostPosition>().InsertAsync(newPosition);
-                            
+
+                            continue;
                         }
 
                         //find root position to update
@@ -779,7 +781,7 @@ namespace SupFAmof.Service.Service
                         if (updatePosition.Date < checkPost.DateFrom || updatePosition.Date > checkPost.DateTo)
                         {
                             throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_DATE_UPDATE_INVALID,
-                                        PostErrorEnum.POSITION_DATE_UPDATE_INVALID.GetDisplayName());
+                                        PostErrorEnum.POSITION_DATE_UPDATE_INVALID.GetDisplayName() + $"'{updatePosition.PositionName}' date must in range of post");
                         }
 
                         currentPosition.Id = currentPosition.Id;
@@ -799,51 +801,121 @@ namespace SupFAmof.Service.Service
                         currentPosition.Salary = updatePosition.Salary;
                     }
 
-                    foreach (var item in checkPost.PostPositions)
-                    {
-                        var checkPosition = request.PostPositions
-                                    .FirstOrDefault(x => x.Id == item.Id);
-                        if (checkPosition == null)
-                        {
-                            continue;
-                        }
-
-                        else if (item.Status == (int)PostPositionStatusEnum.Delete)
-                        {
-                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
-                                        $"The position {item.PositionName}" + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
-                        }
-
-                        //check amount of position to makesure that the new amount can not less than the old one
-
-                        var positionCounting = postRegistration.Where(x => x.PositionId == item.Id
-                                                                                && x.Status == (int)PostRegistrationStatusEnum.Confirm
-                                                                                || x.Status == (int)PostRegistrationStatusEnum.CheckOut
-                                                                                || x.Status == (int)PostRegistrationStatusEnum.CheckIn).Count();
-
-                        if (checkPosition.Amount < positionCounting)
-                        {
-                            throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
-                                            PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{positionCounting}");
-                        }
-
-                        item.Id = item.Id;
-                        item.PositionName = checkPosition.PositionName.Trim();
-                        item.SchoolName = checkPosition.SchoolName.Trim();
-                        item.Location = checkPosition.Location.Trim();
-                        item.PositionDescription = checkPosition.PositionDescription.Trim();
-                        item.Date = checkPosition.Date;
-                        item.Latitude = checkPosition.Latitude;
-                        item.Longitude = checkPosition.Longitude;
-                        item.Amount = checkPosition.Amount;
-                        item.Salary = checkPosition.Salary;
-                    }
-
                     await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
                     await _unitOfWork.CommitAsync();
+
+                    return new BaseResponseViewModel<AdmissionPostResponse>()
+                    {
+                        Status = new StatusViewModel()
+                        {
+                            Message = "Success",
+                            Success = true,
+                            ErrorCode = 0
+                        },
+                        Data = _mapper.Map<AdmissionPostResponse>(checkPost)
+                    };
                 }
 
+                //update current position except post Date, position Date, position time and position salary
+                //validate amount need to greater than position
+                foreach (var updatePosition in request.PostPositions)
+                {
+                    if (updatePosition.Id == 0)
+                    {
+                        //create new position for this post
+                        PostPosition newPosition = new PostPosition()
+                        {
+                            PostId = checkPost.Id,
+                            TrainingCertificateId = updatePosition.TrainingCertificateId,
+                            DocumentId = updatePosition.DocumentId,
+                            PositionName = updatePosition.PositionName.Trim(),
+                            PositionDescription = updatePosition.PositionDescription.Trim(),
+                            SchoolName = updatePosition.SchoolName.Trim(),
+                            Location = updatePosition.Location.Trim(),
+                            Latitude = updatePosition.Latitude,
+                            Longitude = updatePosition.Longitude,
+                            Date = updatePosition.Date,
+                            TimeFrom = updatePosition.TimeFrom.Value,
+                            TimeTo = updatePosition.TimeTo,
+                            IsBusService = updatePosition.IsBusService,
 
+                            //Active this position
+                            Status = (int)PostPositionStatusEnum.Active,
+
+                            Amount = updatePosition.Amount,
+                            Salary = updatePosition.Salary,
+                        };
+
+                        //validate date and time in position
+                        //validate date in range
+                        if (checkPost.DateFrom > newPosition.Date || checkPost.DateTo < newPosition.Date)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_POSITION_DATE,
+                                             PostErrorEnum.INVALID_POSITION_DATE.GetDisplayName());
+                        }
+
+                        //validate Time
+                        if (newPosition.TimeFrom < TimeSpan.FromHours(3) || newPosition.TimeFrom > TimeSpan.FromHours(20))
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                                 PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                        }
+
+                        if (newPosition.TimeTo.HasValue)
+                        {
+                            if (newPosition.TimeTo <= newPosition.TimeFrom)
+                            {
+                                throw new ErrorResponse(400, (int)PostErrorEnum.INVALID_TIME_CREATE_POST,
+                                                 PostErrorEnum.INVALID_TIME_CREATE_POST.GetDisplayName());
+                            }
+                        }
+
+                        await _unitOfWork.Repository<PostPosition>().InsertAsync(newPosition);
+
+                    }
+
+                    //find root position to update
+                    var currentPosition = checkPost.PostPositions
+                                        .FirstOrDefault(x => x.Id == updatePosition.Id);
+
+                    if (currentPosition == null)
+                    {
+                        continue;
+                    }
+
+                    else if (currentPosition.Status == (int)PostPositionStatusEnum.Delete)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
+                                    $"The position {currentPosition.PositionName}" + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
+                    }
+
+                    //check amount of position to makesure that the new amount can not less than the old one
+                    var positionCounting = postRegistration.Where(x => x.PositionId == currentPosition.Id
+                                                                            && x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                            || x.Status == (int)PostRegistrationStatusEnum.CheckOut
+                                                                            || x.Status == (int)PostRegistrationStatusEnum.CheckIn).Count();
+
+                    if (updatePosition.Amount < positionCounting)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
+                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{positionCounting}");
+                    }
+
+                    currentPosition.Id = currentPosition.Id;
+                    currentPosition.TrainingCertificateId = currentPosition.TrainingCertificateId;
+                    currentPosition.DocumentId = currentPosition.DocumentId;
+                    currentPosition.PositionName = updatePosition.PositionName.Trim();
+                    currentPosition.PositionDescription = updatePosition.PositionDescription.Trim();
+                    currentPosition.SchoolName = updatePosition.SchoolName.Trim();
+                    currentPosition.Location = updatePosition.Location.Trim();
+                    currentPosition.Latitude = updatePosition.Latitude;
+                    currentPosition.Longitude = updatePosition.Longitude;
+                    currentPosition.IsBusService = updatePosition.IsBusService;
+                    currentPosition.Amount = updatePosition.Amount;
+                }
+
+                await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
+                await _unitOfWork.CommitAsync();
 
                 return new BaseResponseViewModel<AdmissionPostResponse>()
                 {

@@ -480,7 +480,7 @@ namespace SupFAmof.Service.Helpers
             POSITION_EDITED_FORBIDDEN = 40014,
 
             //400
-            [Display(Name = "Position date must in range of post")]
+            [Display(Name = "Position ")]
             POSITION_DATE_UPDATE_INVALID = 40015,
 
             //400

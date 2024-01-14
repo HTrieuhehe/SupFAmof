@@ -15,6 +15,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
             TotalAmountPosition = 0;
             TotalUpdateRegisterAmount = 0;
             TotalRegisterAmount = 0;
+            AnyRegister = false;
         }
 
         public int? Id { get; set; }
@@ -40,6 +41,7 @@ namespace SupFAmof.Service.DTO.Response.Admission
         //public  int? TotalAmountPosition { get => totalAmountPosition ?? 0; set => totalAmountPosition = value; }
 
         public int? TotalUpdateRegisterAmount;
+        public bool? AnyRegister;
 
         public AccountResponse? Account { get; set; }
         public PostCategoryResponse? PostCategory { get; set; }

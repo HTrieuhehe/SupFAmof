@@ -484,7 +484,7 @@ namespace SupFAmof.Service.Helpers
             POSITION_DATE_UPDATE_INVALID = 40015,
 
             //400
-            [Display(Name = "Position amount must higher than: ")]
+            [Display(Name = "Position ")]
             AMOUNT_INVALID = 40016,
 
             //400

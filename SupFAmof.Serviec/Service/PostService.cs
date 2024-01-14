@@ -898,7 +898,7 @@ namespace SupFAmof.Service.Service
                     if (updatePosition.Amount < positionCounting)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
-                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{positionCounting}");
+                                        PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"'{updatePosition.PositionName}' amount must higher than: {positionCounting}");
                     }
 
                     currentPosition.Id = currentPosition.Id;

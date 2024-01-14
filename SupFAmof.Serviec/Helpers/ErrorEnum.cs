@@ -481,7 +481,7 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "Position date must in range of post")]
-            POSITION_DATE_UPDATE_INALID = 40015,
+            POSITION_DATE_UPDATE_INVALID = 40015,
 
             //400
             [Display(Name = "Position amount must higher than: ")]

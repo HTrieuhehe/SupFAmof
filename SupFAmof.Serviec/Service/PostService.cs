@@ -533,6 +533,11 @@ namespace SupFAmof.Service.Service
                             .Where(reg => postPositionIds.Contains(reg.PositionId))
                             .ToListAsync();
 
+                    if(postRegistrations.Any(x => x.Status != (int)PostRegistrationStatusEnum.Cancel || x.Status != (int)PostRegistrationStatusEnum.Reject))
+                    {
+                        item.AnyRegister = true;
+                    }
+
                     var postRegistrationsTotal = postRegistrations.Where(reg => reg.Status == (int)PostRegistrationStatusEnum.Pending);
 
                     item.TotalRegisterAmount = postRegistrationsTotal.Count();
@@ -755,7 +760,7 @@ namespace SupFAmof.Service.Service
                             
                         }
 
-                        //check and update this position
+                        //find root position to update
                         var currentPosition = checkPost.PostPositions
                                         .FirstOrDefault(x => x.Id == updatePosition.Id);
 
@@ -764,9 +769,78 @@ namespace SupFAmof.Service.Service
                             continue;
                         }
 
+                        else if (currentPosition.Status == (int)PostPositionStatusEnum.Delete)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
+                                        $"The position {currentPosition.PositionName} " + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
+                        }
 
+                        //validate date and location
+                        if (updatePosition.Date < checkPost.DateFrom || updatePosition.Date > checkPost.DateTo)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_DATE_UPDATE_INVALID,
+                                        PostErrorEnum.POSITION_DATE_UPDATE_INVALID.GetDisplayName());
+                        }
+
+                        currentPosition.Id = currentPosition.Id;
+                        currentPosition.TrainingCertificateId = currentPosition.TrainingCertificateId;
+                        currentPosition.DocumentId = currentPosition.DocumentId;
+                        currentPosition.PositionName = updatePosition.PositionName.Trim();
+                        currentPosition.PositionDescription = updatePosition.PositionDescription.Trim();
+                        currentPosition.SchoolName = updatePosition.SchoolName.Trim();
+                        currentPosition.Location = updatePosition.Location.Trim();
+                        currentPosition.Latitude = updatePosition.Latitude;
+                        currentPosition.Longitude = updatePosition.Longitude;
+                        currentPosition.Date = updatePosition.Date;
+                        currentPosition.TimeFrom = updatePosition.TimeFrom.Value;
+                        currentPosition.TimeTo = updatePosition.TimeTo;
+                        currentPosition.IsBusService = updatePosition.IsBusService;
+                        currentPosition.Amount = updatePosition.Amount;
+                        currentPosition.Salary = updatePosition.Salary;
                     }
 
+                    foreach (var item in checkPost.PostPositions)
+                    {
+                        var checkPosition = request.PostPositions
+                                    .FirstOrDefault(x => x.Id == item.Id);
+                        if (checkPosition == null)
+                        {
+                            continue;
+                        }
+
+                        else if (item.Status == (int)PostPositionStatusEnum.Delete)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.POSITION_EDITED_FORBIDDEN,
+                                        $"The position {item.PositionName}" + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
+                        }
+
+                        //check amount of position to makesure that the new amount can not less than the old one
+
+                        var positionCounting = postRegistration.Where(x => x.PositionId == item.Id
+                                                                                && x.Status == (int)PostRegistrationStatusEnum.Confirm
+                                                                                || x.Status == (int)PostRegistrationStatusEnum.CheckOut
+                                                                                || x.Status == (int)PostRegistrationStatusEnum.CheckIn).Count();
+
+                        if (checkPosition.Amount < positionCounting)
+                        {
+                            throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
+                                            PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"{positionCounting}");
+                        }
+
+                        item.Id = item.Id;
+                        item.PositionName = checkPosition.PositionName.Trim();
+                        item.SchoolName = checkPosition.SchoolName.Trim();
+                        item.Location = checkPosition.Location.Trim();
+                        item.PositionDescription = checkPosition.PositionDescription.Trim();
+                        item.Date = checkPosition.Date;
+                        item.Latitude = checkPosition.Latitude;
+                        item.Longitude = checkPosition.Longitude;
+                        item.Amount = checkPosition.Amount;
+                        item.Salary = checkPosition.Salary;
+                    }
+
+                    await _unitOfWork.Repository<Post>().UpdateDetached(checkPost);
+                    await _unitOfWork.CommitAsync();
                 }
 
 

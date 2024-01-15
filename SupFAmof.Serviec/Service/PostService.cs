@@ -921,7 +921,7 @@ namespace SupFAmof.Service.Service
                 {
                     Status = new StatusViewModel()
                     {
-                        Message = "Success",
+                        Message = "Success! Post and Position Date and Salary will keep due to one or more register",
                         Success = true,
                         ErrorCode = 0
                     },

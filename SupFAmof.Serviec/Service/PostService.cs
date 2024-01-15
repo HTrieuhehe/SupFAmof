@@ -681,16 +681,16 @@ namespace SupFAmof.Service.Service
 
 
                 // error mess: There is register so keep
-                if (request.DateFrom != checkPost.DateFrom)
+                if (request.DateFrom.Date != checkPost.DateFrom.Date)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Start Date at: {checkPost.DateFrom}");
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post start Date at: {checkPost.DateFrom}");
                 }
 
-                if (request.DateTo != checkPost.DateTo)
+                if (request.DateTo?.Date != checkPost.DateTo?.Date)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"End Date at: {checkPost.DateTo}");
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post end Date at: {checkPost.DateTo}");
                 }
 
                 if (!postRegistration.Any())
@@ -910,19 +910,19 @@ namespace SupFAmof.Service.Service
                     if (updatePosition.Date != currentPosition.Date)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position Date at: {currentPosition.Date}");
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Position Date at: {currentPosition.Date}");
                     }
 
                     if (updatePosition.TimeFrom != currentPosition.TimeFrom)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position Start Time at: {currentPosition.TimeFrom}");
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Position Start Time at: {currentPosition.TimeFrom}");
                     }
 
                     if (updatePosition.TimeTo != currentPosition.TimeTo)
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position End Time at: {currentPosition.TimeTo}");
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Position End Time at: {currentPosition.TimeTo}");
                     }
 
                     //check amount of position to makesure that the new amount can not less than the old one

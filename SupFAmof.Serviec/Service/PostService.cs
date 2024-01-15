@@ -679,20 +679,6 @@ namespace SupFAmof.Service.Service
                 checkPost.PostImg = request.PostImg.Trim();
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
 
-
-                // error mess: There is register so keep
-                if (request.DateFrom.Date != checkPost.DateFrom.Date)
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post start Date at: {checkPost.DateFrom}");
-                }
-
-                if (request.DateTo?.Date != checkPost.DateTo?.Date)
-                {
-                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
-                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post end Date at: {checkPost.DateTo}");
-                }
-
                 if (!postRegistration.Any())
                 {
                     //allow to update full including time
@@ -828,6 +814,19 @@ namespace SupFAmof.Service.Service
                         },
                         Data = _mapper.Map<AdmissionPostResponse>(checkPost)
                     };
+                }
+
+                // error mess: There is register so keep
+                if (request.DateFrom.Date != checkPost.DateFrom.Date)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post start date at: {checkPost.DateFrom}");
+                }
+
+                if (request.DateTo?.Date != checkPost.DateTo?.Date)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post end Date at: {checkPost.DateTo}");
                 }
 
                 //update current position except post Date, position Date, position time and position salary

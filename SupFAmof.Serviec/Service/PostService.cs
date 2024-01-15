@@ -785,8 +785,8 @@ namespace SupFAmof.Service.Service
                         }
 
                         currentPosition.Id = currentPosition.Id;
-                        currentPosition.TrainingCertificateId = currentPosition.TrainingCertificateId;
-                        currentPosition.DocumentId = currentPosition.DocumentId;
+                        currentPosition.TrainingCertificateId = updatePosition.TrainingCertificateId;
+                        currentPosition.DocumentId = updatePosition.DocumentId;
                         currentPosition.PositionName = updatePosition.PositionName.Trim();
                         currentPosition.PositionDescription = updatePosition.PositionDescription.Trim();
                         currentPosition.SchoolName = updatePosition.SchoolName.Trim();
@@ -944,9 +944,20 @@ namespace SupFAmof.Service.Service
                                              PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Salary at: {currentPosition.Salary}");
                     }
 
+                    if (updatePosition.Salary != currentPosition.Salary)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Salary at: {currentPosition.Salary}");
+                    }
+
+                    if(updatePosition.TrainingCertificateId != null && updatePosition.TrainingCertificateId != currentPosition.TrainingCertificateId)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.CERTIFICATE_MUST_KEEP,
+                                             PostErrorEnum.CERTIFICATE_MUST_KEEP.GetDisplayName());
+                    }
+
                     currentPosition.Id = currentPosition.Id;
-                    currentPosition.TrainingCertificateId = currentPosition.TrainingCertificateId;
-                    currentPosition.DocumentId = currentPosition.DocumentId;
+                    currentPosition.DocumentId = updatePosition.DocumentId;
                     currentPosition.PositionName = updatePosition.PositionName.Trim();
                     currentPosition.PositionDescription = updatePosition.PositionDescription.Trim();
                     currentPosition.SchoolName = updatePosition.SchoolName.Trim();

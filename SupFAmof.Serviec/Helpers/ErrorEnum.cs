@@ -503,6 +503,10 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "There is register so keep")]
             FIELD_MUST_KEEP = 40020,
 
+            //400
+            [Display(Name = "Ther is register so keep certificate")]
+            CERTIFICATE_MUST_KEEP = 40021,
+
             //403
             [Display(Name = "You are not premium to see this post!")]
             PREMIUM_REQUIRED = 4031,

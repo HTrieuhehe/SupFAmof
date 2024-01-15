@@ -679,6 +679,20 @@ namespace SupFAmof.Service.Service
                 checkPost.PostImg = request.PostImg.Trim();
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
 
+
+                // error mess: There is register so keep
+                if (request.DateFrom != checkPost.DateFrom)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Start Date at: {checkPost.DateFrom}");
+                }
+
+                if (request.DateTo != checkPost.DateTo)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                         PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"End Date at: {checkPost.DateTo}");
+                }
+
                 if (!postRegistration.Any())
                 {
                     //allow to update full including time
@@ -889,6 +903,28 @@ namespace SupFAmof.Service.Service
                                     $"The position {currentPosition.PositionName}" + PostErrorEnum.POSITION_EDITED_FORBIDDEN.GetDisplayName());
                     }
 
+                    //validate Post and Position date and time and salary
+
+                    // error mess: There is register so keep
+
+                    if (updatePosition.Date != currentPosition.Date)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position Date at: {currentPosition.Date}");
+                    }
+
+                    if (updatePosition.TimeFrom != currentPosition.TimeFrom)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position Start Time at: {currentPosition.TimeFrom}");
+                    }
+
+                    if (updatePosition.TimeTo != currentPosition.TimeTo)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $"Position End Time at: {currentPosition.TimeTo}");
+                    }
+
                     //check amount of position to makesure that the new amount can not less than the old one
                     var positionCounting = postRegistration.Where(x => x.PositionId == currentPosition.Id
                                                                             && x.Status == (int)PostRegistrationStatusEnum.Confirm
@@ -899,6 +935,14 @@ namespace SupFAmof.Service.Service
                     {
                         throw new ErrorResponse(400, (int)PostErrorEnum.AMOUNT_INVALID,
                                         PostErrorEnum.AMOUNT_INVALID.GetDisplayName() + $"'{updatePosition.PositionName}' amount must higher than: {positionCounting}");
+                    }
+
+
+                    //check salary
+                    if (updatePosition.Salary != currentPosition.Salary)
+                    {
+                        throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
+                                             PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Salary at: {currentPosition.Salary}");
                     }
 
                     currentPosition.Id = currentPosition.Id;
@@ -921,7 +965,7 @@ namespace SupFAmof.Service.Service
                 {
                     Status = new StatusViewModel()
                     {
-                        Message = "Success! Post and Position Date and Salary will keep due to one or more register",
+                        Message = "Success",
                         Success = true,
                         ErrorCode = 0
                     },

@@ -497,7 +497,11 @@ namespace SupFAmof.Service.Helpers
 
             //400
             [Display(Name = "Post can not update")]
-            INVALID_UPDATE_POST_BY_STATUS = 40017,
+            INVALID_UPDATE_POST_BY_STATUS = 40019,
+
+            //400
+            [Display(Name = "There is register so keep")]
+            FIELD_MUST_KEEP = 40020,
 
             //403
             [Display(Name = "You are not premium to see this post!")]

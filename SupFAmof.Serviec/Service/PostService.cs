@@ -833,7 +833,7 @@ namespace SupFAmof.Service.Service
                 }
 
                 //not allow to upgrade to premium -> Allow to downgrade
-                if (checkPost.IsPremium == true && request.IsPremium == false)
+                if (checkPost.IsPremium == false && request.IsPremium == true)
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.PREMIUM_MUST_KEEP,
                                     PostErrorEnum.PREMIUM_MUST_KEEP.GetDisplayName());

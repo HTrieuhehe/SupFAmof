@@ -677,13 +677,16 @@ namespace SupFAmof.Service.Service
                 checkPost.PostCategoryId = request.PostCategoryId;
                 checkPost.PostDescription = request.PostDescription.Trim();
                 checkPost.PostImg = request.PostImg.Trim();
+                
                 checkPost.UpdateAt = Ultils.GetCurrentDatetime();
 
                 if (!postRegistration.Any())
                 {
+                    //allow to update premium credential
+                    checkPost.IsPremium = request.IsPremium;
+
                     //allow to update full including time
                     //date and validate
-
                     if (request.DateFrom != null && request.DateTo != null)
                     {
                         checkPost.DateFrom = request.DateFrom;
@@ -827,6 +830,13 @@ namespace SupFAmof.Service.Service
                 {
                     throw new ErrorResponse(400, (int)PostErrorEnum.FIELD_MUST_KEEP,
                                          PostErrorEnum.FIELD_MUST_KEEP.GetDisplayName() + $" Post end Date at: {checkPost.DateTo}");
+                }
+
+                //not allow to upgrade to premium -> Allow to downgrade
+                if (checkPost.IsPremium == true && request.IsPremium == false)
+                {
+                    throw new ErrorResponse(400, (int)PostErrorEnum.PREMIUM_MUST_KEEP,
+                                    PostErrorEnum.PREMIUM_MUST_KEEP.GetDisplayName());
                 }
 
                 //update current position except post Date, position Date, position time and position salary

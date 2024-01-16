@@ -94,6 +94,7 @@ namespace SupFAmof.Service.DTO.Request.Admission
 
         public DateTime DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+        public bool IsPremium { get; set; }
 
         [Required(ErrorMessage = "Post Img is requied")]
         public string? PostImg { get; set; }

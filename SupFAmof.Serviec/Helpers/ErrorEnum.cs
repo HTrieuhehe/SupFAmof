@@ -504,8 +504,12 @@ namespace SupFAmof.Service.Helpers
             FIELD_MUST_KEEP = 40020,
 
             //400
-            [Display(Name = "Ther is register so keep certificate")]
+            [Display(Name = "There is register so keep certificate")]
             CERTIFICATE_MUST_KEEP = 40021,
+
+            //400
+            [Display(Name = "System allow to downgrade premium credential by the registeration")]
+            PREMIUM_MUST_KEEP = 40022,
 
             //403
             [Display(Name = "You are not premium to see this post!")]

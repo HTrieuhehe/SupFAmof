@@ -508,7 +508,7 @@ namespace SupFAmof.Service.Helpers
             CERTIFICATE_MUST_KEEP = 40021,
 
             //400
-            [Display(Name = "System allow to downgrade premium credential by the registeration")]
+            [Display(Name = "System only allow to downgrade premium credential by the registeration")]
             PREMIUM_MUST_KEEP = 40022,
 
             //403

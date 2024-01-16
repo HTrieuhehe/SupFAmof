@@ -839,6 +839,8 @@ namespace SupFAmof.Service.Service
                                     PostErrorEnum.PREMIUM_MUST_KEEP.GetDisplayName());
                 }
 
+                checkPost.IsPremium = request.IsPremium;
+
                 //update current position except post Date, position Date, position time and position salary
                 //validate amount need to greater than position
                 foreach (var updatePosition in request.PostPositions)

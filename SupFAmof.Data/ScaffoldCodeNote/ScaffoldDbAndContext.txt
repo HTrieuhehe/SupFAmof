@@ -23,6 +23,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ZmNmNTY5Zi1mZjUxLTQyYWYtYmMxZS0
 
 access token gmail SupFAmOf
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxNDkwOGYyMC00ZjRjLTQ3NGItOTk0NC04ODE2MDIyMDQ1MmQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiSOG6o2kgVHJp4buBdSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIxIiwiZXhwIjoxNzA3NzQ2OTA3LCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.ynJH3tcdCqSVUGS78sgEhTGXfbVihwE3i1C3340RU5M
+
 Access Token FPT sau login (duy)
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNDA4NjlkMS1hNjllLTQ4Y2MtOGM0Ny03YjJmNTZhNmYyMWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVm8gVGhhbmggRHV5IChLMTUgSENNKSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMjQiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiZXhwIjoxNzA0NTU2NzM4LCJpc3MiOiJTdXBGQW1vZi5BUEkiLCJhdWQiOiJTdXBGQW1vZi5BUEkifQ.Jn8xdniSl4M-n0JgMk851_w5qI_olJdBDpxchPy1BGw
 
@@ -86,4 +87,14 @@ https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contrac
   "postRegistrationId": 2,
   "longtitude": 10.855155474347079,
   "latitude": 106.7648137311369
+}
+
+if (account.Id == (int)SystemAuthorize.TokenExpired)
+{
+    ErrorDetailResponse ex = new ErrorDetailResponse();
+    ex.StatusCode = 403;
+    ex.ErrorCode = 4031;
+    ex.Message = "Login expired";
+
+    return Unauthorized(ex);
 }

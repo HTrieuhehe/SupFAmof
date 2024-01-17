@@ -27,7 +27,8 @@ namespace SupFAmof.Service.Helpers
             var token = new JwtSecurityToken(tokenConfig["Issuer"],
                 tokenConfig["Issuer"],
                 permClaims,
-                expires: DateTime.Now.AddDays(30),
+                //expires: DateTime.Now.AddDays(30),
+                expires: DateTime.Now.AddDays(0.02083),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

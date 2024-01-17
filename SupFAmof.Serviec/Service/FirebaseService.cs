@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SupFAmof.Service.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -29,6 +30,17 @@ namespace SupFAmof.Service.Service
             var claims = tokenS.Claims;
             var id = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value.ToString());
             var roleId = Int32.Parse(claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value.ToString());
+
+            DateTime ExpireDate = DateTime.Parse(claims.Where(x => x.Type == ClaimTypes.Expired).FirstOrDefault().Value.ToString());
+
+            if (ExpireDate < Ultils.GetCurrentDatetime())
+            {
+                return new GetUser()
+                {
+                    Id = (int)SystemAuthorize.TokenExpired
+                };
+            }
+
             return new GetUser()
             {
                 Id = id,

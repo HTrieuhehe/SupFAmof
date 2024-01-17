@@ -14,6 +14,9 @@ namespace SupFAmof.Service.Helpers
         {
             [Display(Name = "Not Authorize")]
             NotAuthorize = -1,
+
+            [Display(Name = "Access Token Expired")]
+            TokenExpired = -2,
         }
 
         public enum SystemRoleEnum

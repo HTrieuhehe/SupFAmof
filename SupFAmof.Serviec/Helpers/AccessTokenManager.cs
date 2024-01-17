@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SupFAmof.Service.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,6 +12,8 @@ namespace SupFAmof.Service.Helpers
     {
         public static string GenerateJwtToken(string name, int role, int? accountId, IConfiguration configuration)
         {
+            var ExpireDate = Ultils.GetCurrentDatetime().AddDays(0.00138);
+
             var tokenConfig = configuration.GetSection("Token");
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenConfig["SecretKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -21,6 +24,7 @@ namespace SupFAmof.Service.Helpers
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.NameIdentifier, accountId.ToString()),
                 new Claim(ClaimTypes.Role, role.ToString()),
+                new Claim(ClaimTypes.Expired, ExpireDate.ToString()),
 
             };
 
@@ -28,7 +32,7 @@ namespace SupFAmof.Service.Helpers
                 tokenConfig["Issuer"],
                 permClaims,
                 //expires: DateTime.Now.AddDays(30),
-                expires: DateTime.Now.AddDays(0.02083),
+                expires: ExpireDate,
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

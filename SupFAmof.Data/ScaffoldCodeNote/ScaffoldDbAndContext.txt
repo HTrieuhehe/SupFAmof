@@ -92,8 +92,8 @@ https://firebasestorage.googleapis.com/v0/b/supfamof-c8c84.appspot.com/o/contrac
 if (account.Id == (int)SystemAuthorize.TokenExpired)
 {
     ErrorDetailResponse ex = new ErrorDetailResponse();
-    ex.StatusCode = 403;
-    ex.ErrorCode = 4031;
+    ex.StatusCode = 401;
+    ex.ErrorCode = 4011;
     ex.Message = "Login expired";
 
     return Unauthorized(ex);

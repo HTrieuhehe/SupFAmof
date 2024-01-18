@@ -58,8 +58,8 @@ namespace SupFAmof.API.Controllers.AdmissionController
                 if (account.Id == (int)SystemAuthorize.TokenExpired)
                 {
                     ErrorDetailResponse ex = new ErrorDetailResponse();
-                    ex.StatusCode = 403;
-                    ex.ErrorCode = 4031;
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
                     ex.Message = "Login expired";
 
                     return Unauthorized(ex);
@@ -94,6 +94,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
+
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
@@ -122,6 +133,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
+
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
@@ -173,6 +195,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
+
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
@@ -202,6 +235,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
+
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();
@@ -259,6 +303,17 @@ namespace SupFAmof.API.Controllers.AdmissionController
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
+
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.AdmissionManager)
                 {
                     return Unauthorized();

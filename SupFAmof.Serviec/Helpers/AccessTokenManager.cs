@@ -12,7 +12,11 @@ namespace SupFAmof.Service.Helpers
     {
         public static string GenerateJwtToken(string name, int role, int? accountId, IConfiguration configuration)
         {
-            var ExpireDate = Ultils.GetCurrentDatetime().AddDays(0.00138);
+            //2 minutes
+            //var ExpireDate = Ultils.GetCurrentDatetime().AddDays(0.00138);
+            
+            //30 days
+            var ExpireDate = Ultils.GetCurrentDatetime().AddDays(30);
 
             var tokenConfig = configuration.GetSection("Token");
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenConfig["SecretKey"]));

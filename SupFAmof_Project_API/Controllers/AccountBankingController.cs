@@ -28,6 +28,15 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
@@ -76,6 +85,15 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
@@ -100,6 +118,15 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
@@ -123,6 +150,15 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();
@@ -146,6 +182,15 @@ namespace SupFAmof.API.Controllers
             {
                 var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var account = FireBaseService.GetUserIdFromHeaderToken(accessToken);
+                if (account.Id == (int)SystemAuthorize.TokenExpired)
+                {
+                    ErrorDetailResponse ex = new ErrorDetailResponse();
+                    ex.StatusCode = 401;
+                    ex.ErrorCode = 4011;
+                    ex.Message = "Login expired";
+
+                    return Unauthorized(ex);
+                }
                 if (account.Id == (int)SystemAuthorize.NotAuthorize || account.RoleId != (int)SystemRoleEnum.Collaborator)
                 {
                     return Unauthorized();

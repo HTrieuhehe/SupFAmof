@@ -330,15 +330,15 @@ namespace SupFAmof.Service.Helpers
         public enum TrainingCertificateErrorEnum
         {
             //400
-            [Display(Name = "Training Certificate existed!")]
+            [Display(Name = "Certificate existed!")]
             TRAINING_CERTIFICATE_EXISTED = 4001,
 
             //400
-            [Display(Name = "Training Certificate Type invalid!")]
+            [Display(Name = "Certificate Type invalid!")]
             INVALID_TRAINING_CERTIFICATE_TYPE = 4002,
 
             //404
-            [Display(Name = "Training Certificate not found!")]
+            [Display(Name = "Certificate not found!")]
             NOT_FOUND_ID = 4041,
             //400
             [Display(Name = "Cant create interview from the past")]
@@ -350,7 +350,7 @@ namespace SupFAmof.Service.Helpers
             [Display(Name = "Duplicate registration")]
             DUPLICATE_REGISTRATION = 4006,
             //400
-            [Display(Name = "Same time with different training  day")]
+            [Display(Name = "Same time with different interview day")]
             OVERLAP_INTERVIEW = 4007,
             //400
             [Display(Name = "Interview does not exist")]

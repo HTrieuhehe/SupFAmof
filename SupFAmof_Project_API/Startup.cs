@@ -135,30 +135,30 @@ namespace SupFAmof.API
                             .As<IUnitOfWork>()
                             .InstancePerLifetimeScope();
 
-            builder.RegisterType<RoleService>().As<IRoleService>();
-            builder.RegisterType<AccountService>().As<IAccountService>();
-            builder.RegisterType<AccountBankingService>().As<IAccountBankingService>();
-            builder.RegisterType<ExpoTokenService>().As<IExpoTokenService>();
-            builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>();
-            builder.RegisterType<AdminAccountService>().As<IAdminAccountService>();
-            builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>();
-            builder.RegisterType<PostCategoryService>().As<IPostCategoryService>();
-            builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>();
-            builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>();
-            builder.RegisterType<PostService>().As<IPostService>();
-            builder.RegisterType<DocumentService>().As<IDocumentService>();
-            builder.RegisterType<SendMailService>().As<ISendMailService>();
-            builder.RegisterType<CheckInService>().As<ICheckInService>();
-            builder.RegisterType<AccountReportService>().As<IAccountReportService>();
-            builder.RegisterType<AccountBannedService>().As<IAccountBannedService>();
-            builder.RegisterType<ContractService>().As<IContractService>();
-            builder.RegisterType<ApplicationService>().As<IApplicationService>();
-            builder.RegisterType<NotificationHistoryService>().As<INotificationService>();
-            builder.RegisterType<FinancialReportService>().As<IFinancialReportService>();
-            builder.RegisterType<AttendanceService>().As<IAttendanceService>();
-            builder.RegisterType<SystemManagementService>().As<ISystemManagementService>();
-            builder.RegisterType<ManageAdmissionProfileService>().As<IManageAdmissionProfileService>();
-            builder.RegisterType<AdmissionCredentialService>().As<IAdmissionCredentialService>();
+            builder.RegisterType<RoleService>().As<IRoleService>().InstancePerLifetimeScope();
+            builder.RegisterType<AccountService>().As<IAccountService>().InstancePerLifetimeScope();
+            builder.RegisterType<AccountBankingService>().As<IAccountBankingService>().InstancePerLifetimeScope();
+            builder.RegisterType<ExpoTokenService>().As<IExpoTokenService>().InstancePerLifetimeScope();
+            builder.RegisterType<FirebaseMessagingService>().As<IFirebaseMessagingService>().InstancePerLifetimeScope();
+            builder.RegisterType<AdminAccountService>().As<IAdminAccountService>().InstancePerLifetimeScope();
+            builder.RegisterType<PostRegistrationService>().As<IPostRegistrationService>().InstancePerLifetimeScope();
+            builder.RegisterType<PostCategoryService>().As<IPostCategoryService>().InstancePerLifetimeScope();
+            builder.RegisterType<TrainingCertificateService>().As<ITrainingCertificateService>().InstancePerLifetimeScope();
+            builder.RegisterType<AccountCertificateService>().As<IAccountCertificateService>().InstancePerLifetimeScope();
+            builder.RegisterType<PostService>().As<IPostService>().InstancePerLifetimeScope();
+            builder.RegisterType<DocumentService>().As<IDocumentService>().InstancePerLifetimeScope();
+            builder.RegisterType<SendMailService>().As<ISendMailService>().InstancePerLifetimeScope();
+            builder.RegisterType<CheckInService>().As<ICheckInService>().InstancePerLifetimeScope();
+            builder.RegisterType<AccountReportService>().As<IAccountReportService>().InstancePerLifetimeScope();
+            builder.RegisterType<AccountBannedService>().As<IAccountBannedService>().InstancePerLifetimeScope();
+            builder.RegisterType<ContractService>().As<IContractService>().InstancePerLifetimeScope();
+            builder.RegisterType<ApplicationService>().As<IApplicationService>().InstancePerLifetimeScope();
+            builder.RegisterType<NotificationHistoryService>().As<INotificationService>().InstancePerLifetimeScope();
+            builder.RegisterType<FinancialReportService>().As<IFinancialReportService>().InstancePerLifetimeScope();
+            builder.RegisterType<AttendanceService>().As<IAttendanceService>().InstancePerLifetimeScope();
+            builder.RegisterType<SystemManagementService>().As<ISystemManagementService>().InstancePerLifetimeScope();
+            builder.RegisterType<ManageAdmissionProfileService>().As<IManageAdmissionProfileService>().InstancePerLifetimeScope();
+            builder.RegisterType<AdmissionCredentialService>().As<IAdmissionCredentialService>().InstancePerLifetimeScope();
 
 
             builder.Register<IRedisClientsManager>(c =>

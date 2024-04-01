@@ -42,11 +42,7 @@ namespace SupFAmof.API.Controllers.AdminController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
 
@@ -70,11 +66,7 @@ namespace SupFAmof.API.Controllers.AdminController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404) 
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
 
@@ -98,11 +90,7 @@ namespace SupFAmof.API.Controllers.AdminController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
     }

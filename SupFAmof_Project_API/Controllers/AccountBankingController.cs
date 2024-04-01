@@ -46,11 +46,7 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
 
@@ -103,11 +99,7 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
 
@@ -135,11 +127,7 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
 
@@ -167,13 +155,8 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
-        }
 
         [HttpDelete("delete")]
         public async Task<ActionResult<BaseResponseViewModel<bool>>> DeleteAccountBanking()
@@ -199,12 +182,8 @@ namespace SupFAmof.API.Controllers
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
+                    return StatusCode((int)ex.Error.StatusCode, ex.Error);
                 }
-                return BadRequest(ex.Error);
-            }
         }
     }
 }

@@ -45,11 +45,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
         [HttpGet("get-money-year-report")]
@@ -77,11 +73,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
         [HttpPost("get-account-excel")]
@@ -110,11 +102,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
         [HttpPost("get-account-identity-excel")]
@@ -143,11 +131,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
         [HttpPost("get-od-monthly-excel")]
@@ -176,11 +160,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
         [HttpPost("get-tuyen-sinh-monthly-excel")]
@@ -209,11 +189,7 @@ namespace SupFAmof.API.Controllers.AdmissionController
             }
             catch (ErrorResponse ex)
             {
-                if (ex.Error.StatusCode == 404)
-                {
-                    return NotFound(ex.Error);
-                }
-                return BadRequest(ex.Error);
+                return StatusCode((int)ex.Error.StatusCode, ex.Error);
             }
         }
     }
